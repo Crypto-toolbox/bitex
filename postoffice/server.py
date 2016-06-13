@@ -83,7 +83,7 @@ class PostOffice:
         self._subscriptions = defaultdict(Subscription)
 
     def get_subscription(self, name):
-        self._subscriptions[name]
+        return self._subscriptions[name]
 
     def serve(self, addr):
         sock = socket(AF_INET, SOCK_DGRAM)

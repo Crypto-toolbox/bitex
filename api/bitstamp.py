@@ -86,7 +86,11 @@ class API(object):
         else:
             r = requests.get(url, data=req)
 
-        response = r.json()
+        try:
+            response = r.json()
+        except json.decoder.JSONDecodeError:
+            print(r.text)
+            raise
 
         return response
 
