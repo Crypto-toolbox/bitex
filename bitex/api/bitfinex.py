@@ -4,13 +4,13 @@ Descripion of script here.
 """
 
 # Import Built-Ins
-import urllib.request, urllib.parse, urllib.error
 import logging
 import json
 import hashlib
 import hmac
 import base64
 import time
+
 # Import Third-Party
 import requests
 # Import Homebrew

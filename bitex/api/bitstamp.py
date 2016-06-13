@@ -5,24 +5,23 @@ Descripion of script here.
 
 # Import Built-Ins
 import logging
+import hashlib
+import hmac
+import time
+import json
 
 # Import Third-Party
 import requests
+
 # Import Homebrew
 
 # Init Logging Facilities
 log = logging.getLogger(__name__)
 
-import json
-import urllib.request, urllib.parse, urllib.error
 
-# private query nonce
-import time
 
-# private query signing
-import hashlib
-import hmac
-import base64
+
+
 
 
 class APIError(Exception):
