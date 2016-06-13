@@ -9,12 +9,12 @@ As of now, only REST APIs are supported, implementations of websockets and FIX c
 
 The following exchanges are planned:
 
-- GDAX (in progress)
+- GDAX (done)
 - Bitfinex (done)
 - Bitstamp (done)
 - Kraken (done)
 - Coincheck (done)
-- OKCoin (planned)
+- OKCoin (done)
 - BTC-E (planned)
 
 Additional clients will be added to (or removed from) this list, according to their liquidity and market volume.
