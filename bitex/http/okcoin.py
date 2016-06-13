@@ -9,7 +9,7 @@ import socket
 import time
 
 # Import Third-Party
-from okcoin_client.okcoinex.api import API
+from ..api.okcoin import API
 
 # Import Homebrew
 

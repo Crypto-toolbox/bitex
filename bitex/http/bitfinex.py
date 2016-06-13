@@ -10,7 +10,7 @@ import time
 import json
 
 # Import Third-Party
-from bitfinex_client.bitfinexex.api import API
+from ..api.bitfinex import API
 
 # Import Homebrew
 

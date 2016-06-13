@@ -10,7 +10,7 @@ import time
 import json
 
 # Import Third-Party
-from bitstampex.api import API
+from ..api.bitstamp import API
 
 # Import Homebrew
 

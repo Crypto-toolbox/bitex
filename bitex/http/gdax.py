@@ -9,7 +9,7 @@ import socket
 import time
 
 # Import Third-Party
-from gdax_client.gdaxex.api import API
+from ..api.gdax import API
 
 # Import Homebrew
 

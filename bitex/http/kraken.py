@@ -10,7 +10,7 @@ import time
 import json
 
 # Import Third-Party
-from kraken_client.krakenex import API
+from ..api.kraken import API
 
 # Import Homebrew
 

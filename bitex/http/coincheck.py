@@ -9,7 +9,7 @@ import socket
 import time
 
 # Import Third-Party
-from coincheck_client.coincheckex.api import API
+from ..api.coincheck import API
 
 # Import Homebrew
 
