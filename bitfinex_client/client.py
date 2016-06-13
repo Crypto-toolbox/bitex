@@ -7,6 +7,7 @@ Do fancy shit.
 import logging
 import socket
 import time
+import json
 
 # Import Third-Party
 from bitfinex_client.bitfinexex.api import API
@@ -35,10 +36,31 @@ class Client:
                 resp = api.query_private(endpoint, q)
             else:
                 resp = api.query_public(endpoint, q)
-            self.send(resp)
+
+            self.format_orderbook('BTCUSD', resp)
             time.sleep(5)
+
+    def format_orderbook(self, symbol, js, level=1):
+        asks = js['asks'][0]
+        ask_p = asks['price']
+        ask_v = asks['amount']
+        ask_ts = asks['timestamp']
+        bids = js['bids'][0]
+        bid_p = bids['price']
+        bid_v = bids['amount']
+        bid_ts = bids['timestamp']
+        msg = '\t'.join([ask_ts, symbol,'bitfinex', 'Ask Vol', ask_v])
+        self.send(msg)
+        msg = '\t'.join([ask_ts, symbol,'bitfinex', 'Ask Price', ask_p])
+        self.send(msg)
+        msg = '\t'.join([bid_ts, symbol, 'bitfinex', 'Bid Vol', bid_v])
+        self.send(msg)
+        msg = '\t'.join([bid_ts, symbol, 'bitfinex', 'Bid Price', bid_p])
+        self.send(msg)
+        return
+
 
 
 if __name__ == '__main__':
     uix = Client(('localhost', 6666), './bitfinex.key')
-    uix.listen('account_infos', private=True)
+    uix.listen('book/BTCUSD', private=False)
