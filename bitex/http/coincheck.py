@@ -35,30 +35,17 @@ class CoincheckHTTP(Client):
                      [None, 'Ask Vol', ask_v],
                      [None, 'Bid Price',  bid_p],
                      [None, 'Bid Vol', bid_v]]
-
         return formatted
 
     def query_ob(self):
+        q = {'pair': self._pair}
         sent = time.time()
-        resp = self._query('order_books')
+        resp = self._query('order_books', q)
         received = time.time()
         formatted = self.format_ob(resp)
-        print(resp)
         for i in formatted:
             self.send(super(CoincheckHTTP, self)._format(sent, received, *i))
 
-    def listen(self, endpoint, q={}, private=False):
-        api = API()
-
-        while True:
-            print("listening!")
-            if private:
-                api.load_key(self.__key)
-                resp = api.query_private(endpoint, q)
-            else:
-                resp = api.query_public(endpoint, q)
-            self.send(resp)
-            time.sleep(5)
 
 
 if __name__ == '__main__':
