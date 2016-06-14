@@ -10,10 +10,7 @@ import time
 import json
 
 # Import Homebrew
-try:
-    from ..api.bitstamp import API
-except SystemError:
-    from bitex.api.bitstamp import API
+from bitex.api.bitstamp import API
 from bitex.http.client import Client
 
 
