@@ -29,10 +29,9 @@ class KrakenHTTP(Client):
     def send(self, message):
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         sock.sendto(json.dumps(message).encode('ascii'), self._receiver)
-        print(message)
+        super(KrakenHTTP, self).send(message)
 
     def format_ob(self, input):
-        print(input)
         ask_p, ask_v, ask_t = input['result'][self._pair]['asks'][0]
         bid_p, bid_v, bid_t = input['result'][self._pair]['bids'][0]
         formatted = [[ask_t, 'Ask Price', ask_p],
@@ -56,4 +55,4 @@ class KrakenHTTP(Client):
 
 if __name__ == '__main__':
     test = KrakenHTTP(('localhost', 676), 'XXBTZEUR')
-    test.listen_ob()
+    test.query_ob()

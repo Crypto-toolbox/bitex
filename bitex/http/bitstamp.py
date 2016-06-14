@@ -30,7 +30,7 @@ class BitstampHTTP(Client):
     def send(self, message):
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         sock.sendto(json.dumps(message).encode('ascii'), self._receiver)
-        print(message)
+        super(BitstampHTTP, self).send(message)
 
     def format_ob(self, input):
         ts = input['timestamp']
@@ -59,4 +59,4 @@ class BitstampHTTP(Client):
 
 if __name__ == '__main__':
     uix = BitstampHTTP(('localhost', 676), 'BTCUSD')
-    uix.listen_ob()
+    uix.query_ob()
