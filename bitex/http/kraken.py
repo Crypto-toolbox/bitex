@@ -40,7 +40,7 @@ class KrakenHTTP(Client):
                      [bid_t, 'Bid Vol', bid_v]]
         return formatted
 
-    def query_ob(self, count=0):
+    def orderbook(self, count=0):
         q = {'pair': self._pair}
         if count:
             q['count'] = count

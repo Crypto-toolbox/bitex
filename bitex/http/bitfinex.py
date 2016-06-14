@@ -44,7 +44,7 @@ class BitfinexHTTP(Client):
                      [bid_ts, 'Bid Price', bid_p]]
         return formatted
 
-    def query_ob(self, limit_orders=50, aggregrate=True):
+    def orderbook(self, limit_orders=50, aggregrate=True):
         q = {'limit_asks': limit_orders, 'limit_bids': limit_orders}
         if not aggregrate:
             q['group'] = 0

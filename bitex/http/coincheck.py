@@ -37,7 +37,7 @@ class CoincheckHTTP(Client):
                      [None, 'Bid Vol', bid_v]]
         return formatted
 
-    def query_ob(self):
+    def orderbook(self):
         q = {'pair': self._pair}
         sent = time.time()
         resp = self._query('order_books', q)
