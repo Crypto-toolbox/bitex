@@ -9,15 +9,15 @@ import socket
 import time
 import json
 
-# Import Third-Party
+# Import Homebrew
 try:
     from ..api.kraken import API
 except SystemError:
     from bitex.api.kraken import API
-
-# Import Homebrew
 from bitex.http.client import Client
+
 log = logging.getLogger(__name__)
+
 
 class KrakenHTTP(Client):
     def __init__(self, server_addr, pair, key='', secret='', key_file=''):
