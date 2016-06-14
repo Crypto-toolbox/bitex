@@ -46,14 +46,14 @@ class KrakenHTTP(Client):
         if count:
             q['count'] = count
 
-        while True:
-            sent = time.time()
-            resp = self._listen('Depth', q)
-            received = time.time()
-            formatted = self.format_ob(resp)
-            for i in formatted:
-                self.send(super(KrakenHTTP, self)._format(sent, received, *i))
-            time.sleep(5)
+
+        sent = time.time()
+        resp = self._listen('Depth', q)
+        received = time.time()
+        formatted = self.format_ob(resp)
+        for i in formatted:
+            self.send(super(KrakenHTTP, self)._format(sent, received, *i))
+
 
 if __name__ == '__main__':
     test = KrakenHTTP(('localhost', 676), 'XXBTZEUR')

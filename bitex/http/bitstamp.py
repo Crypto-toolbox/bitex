@@ -43,20 +43,17 @@ class BitstampHTTP(Client):
                      [ts, 'Bid Vol', bid_v]]
         return formatted
 
-    def listen_ob(self, count=0):
+    def query_ob(self, count=0):
         q = {'pair': self._pair}
         if count:
             q['count'] = count
 
-        while True:
-            print("listening!")
-            sent = time.time()
-            resp = self._listen('order_book/btcusd/')
-            received = time.time()
-            formatted = self.format_ob(resp)
-            for i in formatted:
-                self.send(super(BitstampHTTP, self)._format(sent, received, *i))
-            time.sleep(5)
+        sent = time.time()
+        resp = self._listen('order_book/btcusd/')
+        received = time.time()
+        formatted = self.format_ob(resp)
+        for i in formatted:
+            self.send(super(BitstampHTTP, self)._format(sent, received, *i))
 
 
 
