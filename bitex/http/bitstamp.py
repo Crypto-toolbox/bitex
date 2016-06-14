@@ -56,7 +56,6 @@ class BitstampHTTP(Client):
             self.send(super(BitstampHTTP, self)._format(sent, received, *i))
 
 
-
 if __name__ == '__main__':
     uix = BitstampHTTP(('localhost', 676), 'BTCUSD')
     uix.query_ob()
