@@ -41,7 +41,7 @@ class Client:
         sock = socket(AF_INET, SOCK_DGRAM)
         sock.sendto(message, self._receiver)
 
-    def _listen(self, method, q, private=False):
+    def _listen(self, method, q={}, private=False):
 
         if private:
             resp = self._api.query_private(method, q)
@@ -49,7 +49,7 @@ class Client:
             resp = self._api.query_public(method, q)
         return resp
 
-    def _format(self,sent, received, *ls):
+    def _format(self, sent, received, *ls):
         """
         adds pair and exchange to list, converts to string and sends it out.
         :param sent: timestamp

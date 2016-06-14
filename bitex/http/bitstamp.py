@@ -9,58 +9,57 @@ import socket
 import time
 import json
 
-# Import Third-Party
-from ..api.bitstamp import API
-
 # Import Homebrew
+try:
+    from ..api.bitstamp import API
+except SystemError:
+    from bitex.api.bitstamp import API
+from bitex.http.client import Client
+
 
 log = logging.getLogger(__name__)
 
-class Client:
-    def __init__(self, server_addr, key=None):
-        self.__server_addr = server_addr
-        self.__key = key
+
+class BitstampHTTP(Client):
+    def __init__(self, server_addr, pair, key='', secret='', key_file=''):
+        api = API(key, secret)
+        if key_file:
+            api.load_key(key_file)
+        super(BitstampHTTP, self).__init__(server_addr, api, 'Bitstamp', pair)
 
     def send(self, message):
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        #sock.sendto(json.dumps(message).encode('ascii'), self.__server_addr)
+        sock.sendto(json.dumps(message).encode('ascii'), self._receiver)
         print(message)
 
-    def listen(self, endpoint, q={}, private=False):
-        api = API()
+    def format_ob(self, input):
+        ts = input['timestamp']
+        ask_p, ask_v = input['asks'][0]
+        bid_p, bid_v = input['bids'][0]
+
+        formatted = [[ts, 'Ask Price', ask_p],
+                     [ts, 'Ask Vol', ask_v],
+                     [ts, 'Bid Price', bid_p],
+                     [ts, 'Bid Vol', bid_v]]
+        return formatted
+
+    def listen_ob(self, count=0):
+        q = {'pair': self._pair}
+        if count:
+            q['count'] = count
 
         while True:
             print("listening!")
-            if private:
-                api.load_key(self.__key)
-                resp = api.query_private(endpoint, q)
-            else:
-                resp = api.query_public(endpoint, q)
-            self.format_orderbook('BTCUSD', resp)
+            sent = time.time()
+            resp = self._listen('order_book/btcusd/')
+            received = time.time()
+            formatted = self.format_ob(resp)
+            for i in formatted:
+                self.send(super(BitstampHTTP, self)._format(sent, received, *i))
             time.sleep(5)
 
-    def format_orderbook(self, symbol, js):
-        print(js)
-        ts = js['timestamp']
 
-        asks = js['asks'][0]
-        ask_p = asks[0]
-        ask_v = asks[1]
-
-        bids = js['bids'][0]
-        bid_p = bids[0]
-        bid_v = bids[1]
-
-        msg = '\t'.join([ts, symbol,'bitstamp', 'Ask Vol', ask_v])
-        self.send(msg)
-        msg = '\t'.join([ts, symbol,'bitstamp', 'Ask Price', ask_p])
-        self.send(msg)
-        msg = '\t'.join([ts, symbol, 'bitstamp', 'Bid Vol', bid_v])
-        self.send(msg)
-        msg = '\t'.join([ts, symbol, 'bitstamp', 'Bid Price', bid_p])
-        self.send(msg)
-        return
 
 if __name__ == '__main__':
-    uix = Client(('localhost', 6666), key='./bitstamp.key')
-    uix.listen('order_book/btcusd/', private=False)
+    uix = BitstampHTTP(('localhost', 676), 'BTCUSD')
+    uix.listen_ob()
