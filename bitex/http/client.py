@@ -19,7 +19,7 @@ class Client:
     """
     Base Class for http clients. One client per pair!
     """
-    def __init__(self, receiver_addr, api, name, pair):
+    def __init__(self, receiver_addr, api, name):
         """
         Base Class for http clients
         :param receiver_addr: tuple, ex ('localhost', 6666)
@@ -30,7 +30,6 @@ class Client:
         self._receiver = receiver_addr
         self._api = api
         self._name = name
-        self._pair = pair
 
     def send(self, message):
         """
@@ -48,7 +47,7 @@ class Client:
             resp = self._api.query_public(method, q)
         return resp
 
-    def _format(self, sent, received, *ls):
+    def _format(self, pair, sent, received, *ls):
         """
         adds pair and exchange to list, converts to string and sends it out.
         :param sent: timestamp
@@ -56,7 +55,7 @@ class Client:
         :param ls: list or field values
         :return: str
         """
-        new = [sent, received, self._pair, self._name, *ls]
+        new = [sent, received, pair, self._name, *ls]
 
         return json.dumps(new)
 

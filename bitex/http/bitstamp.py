@@ -18,11 +18,11 @@ log = logging.getLogger(__name__)
 
 
 class BitstampHTTP(Client):
-    def __init__(self, server_addr, pair, key='', secret='', key_file=''):
+    def __init__(self, server_addr, key='', secret='', key_file=''):
         api = API(key, secret)
         if key_file:
             api.load_key(key_file)
-        super(BitstampHTTP, self).__init__(server_addr, api, 'Bitstamp', pair)
+        super(BitstampHTTP, self).__init__(server_addr, api, 'Bitstamp')
 
     def send(self, message):
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -40,19 +40,19 @@ class BitstampHTTP(Client):
                      [ts, 'Bid Vol', bid_v]]
         return formatted
 
-    def orderbook(self, count=0):
-        q = {'pair': self._pair}
+    def orderbook(self, pair, count=0):
+        q = {'pair': pair}
         if count:
             q['count'] = count
 
         sent = time.time()
-        resp = self._query('order_book/btcusd/')
+        resp = self._query('order_book/%s/' % pair)
         received = time.time()
         formatted = self.format_ob(resp)
         for i in formatted:
-            self.send(super(BitstampHTTP, self)._format(sent, received, *i))
+            self.send(super(BitstampHTTP, self)._format(pair, sent, received, *i))
 
 
 if __name__ == '__main__':
-    uix = BitstampHTTP(('localhost', 676), 'BTCUSD')
-    uix.query_ob()
+    uix = BitstampHTTP(('localhost', 676))
+    uix.orderbook('BTCUSD')

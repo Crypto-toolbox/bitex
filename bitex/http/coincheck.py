@@ -17,11 +17,11 @@ log = logging.getLogger(__name__)
 
 
 class CoincheckHTTP(Client):
-    def __init__(self, server_addr, pair, key='', secret='', key_file=''):
+    def __init__(self, server_addr, key='', secret='', key_file=''):
         api = API(key, secret)
         if key_file:
             api.load_key(key_file)
-        super(CoincheckHTTP, self).__init__(server_addr, api, 'Coincheck', pair)
+        super(CoincheckHTTP, self).__init__(server_addr, api, 'Coincheck')
 
     def send(self, message):
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -37,17 +37,17 @@ class CoincheckHTTP(Client):
                      [None, 'Bid Vol', bid_v]]
         return formatted
 
-    def orderbook(self):
-        q = {'pair': self._pair}
+    def orderbook(self, pair):
+        q = {'pair': pair}
         sent = time.time()
         resp = self._query('order_books', q)
         received = time.time()
         formatted = self.format_ob(resp)
         for i in formatted:
-            self.send(super(CoincheckHTTP, self)._format(sent, received, *i))
+            self.send(super(CoincheckHTTP, self)._format(pair, sent, received, *i))
 
 
 
 if __name__ == '__main__':
     uix = CoincheckHTTP(('localhost', 6666), 'BTCJPY')
-    uix.query_ob()
+    uix.orderbook('BTCJPY')

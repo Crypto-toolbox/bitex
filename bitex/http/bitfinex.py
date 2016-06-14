@@ -18,11 +18,11 @@ log = logging.getLogger(__name__)
 
 
 class BitfinexHTTP(Client):
-    def __init__(self, server_addr, pair, key='', secret='', key_file=''):
+    def __init__(self, server_addr, key='', secret='', key_file=''):
         api = API(key, secret)
         if key_file:
             api.load_key(key_file)
-        super(BitfinexHTTP, self).__init__(server_addr, api, 'Bitfinex', pair)
+        super(BitfinexHTTP, self).__init__(server_addr, api, 'Bitfinex')
 
     def send(self, message):
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -44,20 +44,20 @@ class BitfinexHTTP(Client):
                      [bid_ts, 'Bid Price', bid_p]]
         return formatted
 
-    def orderbook(self, limit_orders=50, aggregrate=True):
+    def orderbook(self, pair, limit_orders=50, aggregrate=True):
         q = {'limit_asks': limit_orders, 'limit_bids': limit_orders}
         if not aggregrate:
             q['group'] = 0
 
         sent = time.time()
-        resp = self._query('/book/%s/' % self._pair, q)
+        resp = self._query('/book/%s/' % pair, q)
         received = time.time()
         formatted = self.format_ob(resp)
         for i in formatted:
-            self.send(super(BitfinexHTTP, self)._format(sent, received, *i))
+            self.send(super(BitfinexHTTP, self)._format(pair, sent, received, *i))
 
 
 
 if __name__ == '__main__':
     uix = BitfinexHTTP(('localhost', 6666), 'BTCUSD')
-    uix.query_ob()
+    uix.orderbook('BTCUSD')
