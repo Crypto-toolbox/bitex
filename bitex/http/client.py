@@ -40,7 +40,7 @@ class Client:
         """
         print(message)
 
-    def _listen(self, method, q={}, private=False):
+    def _query(self, method, q={}, private=False):
 
         if private:
             resp = self._api.query_private(method, q)

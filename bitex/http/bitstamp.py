@@ -49,7 +49,7 @@ class BitstampHTTP(Client):
             q['count'] = count
 
         sent = time.time()
-        resp = self._listen('order_book/btcusd/')
+        resp = self._query('order_book/btcusd/')
         received = time.time()
         formatted = self.format_ob(resp)
         for i in formatted:

@@ -46,7 +46,7 @@ class KrakenHTTP(Client):
             q['count'] = count
 
         sent = time.time()
-        resp = self._listen('Depth', q)
+        resp = self._query('Depth', q)
         received = time.time()
         formatted = self.format_ob(resp)
         for i in formatted:
