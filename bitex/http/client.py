@@ -38,8 +38,7 @@ class Client:
         :param message: bytes
         :return: None
         """
-        sock = socket(AF_INET, SOCK_DGRAM)
-        sock.sendto(message, self._receiver)
+        print(message)
 
     def _listen(self, method, q={}, private=False):
 
