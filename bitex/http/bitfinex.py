@@ -16,6 +16,7 @@ from bitex.http.client import Client
 
 log = logging.getLogger(__name__)
 
+
 class BitfinexHTTP(Client):
     def __init__(self, server_addr, pair, key='', secret='', key_file=''):
         api = API(key, secret)
@@ -26,9 +27,9 @@ class BitfinexHTTP(Client):
     def send(self, message):
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         sock.sendto(json.dumps(message).encode('ascii'), self._receiver)
-        super(BitfinexHTTP, self).send(messasge)
+        super(BitfinexHTTP, self).send(message)
 
-    def format_orderbook(self, js):
+    def format_ob(self, js):
         asks = js['asks'][0]
         ask_p = asks['price']
         ask_v = asks['amount']
@@ -49,16 +50,14 @@ class BitfinexHTTP(Client):
             q['group'] = 0
 
         sent = time.time()
-        resp = self._query()
-
-
-
-
-
-
+        resp = self._query('/book/%s/' % self._pair, q)
+        received = time.time()
+        formatted = self.format_ob(resp)
+        for i in formatted:
+            self.send(super(BitfinexHTTP, self)._format(sent, received, *i))
 
 
 
 if __name__ == '__main__':
-    uix = Client(('localhost', 6666), './bitfinex.key')
-    uix.listen('book/BTCUSD', private=False)
+    uix = BitfinexHTTP(('localhost', 6666), 'BTCUSD')
+    uix.query_ob()
