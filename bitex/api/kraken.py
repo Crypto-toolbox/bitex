@@ -127,7 +127,7 @@ class API(object):
         print(url, req)
         if conn is None:
             if self.conn is None:
-                conn = connection.Connection()
+                conn = Connection()
             else:
                 conn = self.conn
 

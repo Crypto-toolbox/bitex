@@ -19,13 +19,9 @@ import requests
 log = logging.getLogger(__name__)
 
 
-
-
-
-
-
 class APIError(Exception):
     pass
+
 
 class API(object):
     """
