@@ -41,11 +41,10 @@ class KrakenHTTP(Client):
                      [bid_t, 'Bid Vol', bid_v]]
         return formatted
 
-    def listen_ob(self, count=0):
+    def query_ob(self, count=0):
         q = {'pair': self._pair}
         if count:
             q['count'] = count
-
 
         sent = time.time()
         resp = self._listen('Depth', q)
