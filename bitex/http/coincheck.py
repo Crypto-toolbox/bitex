@@ -7,24 +7,45 @@ Do fancy shit.
 import logging
 import socket
 import time
-
-# Import Third-Party
-from ..api.coincheck import API
+import json
 
 # Import Homebrew
+from bitex.http.client import Client
+from bitex.api.coincheck import API
 
 log = logging.getLogger(__name__)
 
 
-class Client:
-    def __init__(self, server_addr, key=None):
-        self.__server_addr = server_addr
-        self.__key = key
+class CoincheckHTTP(Client):
+    def __init__(self, server_addr, pair, key='', secret='', key_file=''):
+        api = API(key, secret)
+        if key_file:
+            api.load_key(key_file)
+        super(CoincheckHTTP, self).__init__(server_addr, api, 'Coincheck', pair)
 
     def send(self, message):
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        #sock.sendto(json.dumps(message).encode('ascii'), self.__server_addr)
-        print(message)
+        sock.sendto(json.dumps(message).encode('ascii'), self._receiver)
+        super(CoincheckHTTP, self).send(message)
+
+    def format_ob(self, input):
+        ask_p, ask_v = input['asks'][0]
+        bid_p, bid_v = input['bids'][0]
+        formatted = [[None, 'Ask Price', ask_p],
+                     [None, 'Ask Vol', ask_v],
+                     [None, 'Bid Price',  bid_p],
+                     [None, 'Bid Vol', bid_v]]
+
+        return formatted
+
+    def query_ob(self):
+        sent = time.time()
+        resp = self._query('order_books')
+        received = time.time()
+        formatted = self.format_ob(resp)
+        print(resp)
+        for i in formatted:
+            self.send(super(CoincheckHTTP, self)._format(sent, received, *i))
 
     def listen(self, endpoint, q={}, private=False):
         api = API()
@@ -41,5 +62,5 @@ class Client:
 
 
 if __name__ == '__main__':
-    uix = Client(('localhost', 6666), './coincheck.key')
-    uix.listen('exchange/leverage/positions', private=True)
+    uix = CoincheckHTTP(('localhost', 6666), 'BTCJPY')
+    uix.query_ob()
