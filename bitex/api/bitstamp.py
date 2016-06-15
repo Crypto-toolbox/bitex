@@ -115,7 +115,8 @@ class API(object):
         :type conn: krakenex.Connection
 
         """
-        urlpath = '/' + self.apiversion + '/' + method
+
+        urlpath = '/' + method
 
         nonce = str(int(time.time() * 1e6))
         #postdata = urllib.parse.urlencode(req)
