@@ -39,10 +39,9 @@ class GdaxHTTP(Client):
                      [None, 'Bid Vol', bid_v]]
         return formatted
 
-    def orderbook(self, pair, count=0):
+    def orderbook(self, pair):
         q = {'pair': pair}
-        if count:
-            q['count'] = count
+
 
         sent = time.time()
         resp = self._query('/products/%s/book' % pair, q)
