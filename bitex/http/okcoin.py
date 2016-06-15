@@ -7,39 +7,50 @@ Do fancy shit.
 import logging
 import socket
 import time
+import json
 
 # Import Third-Party
-from ..api.okcoin import API
+
 
 # Import Homebrew
+from bitex.api.okcoin import API
+from bitex.http.client import Client
 
 log = logging.getLogger(__name__)
 
 
-class Client:
-    def __init__(self, server_addr, key=None):
-        self.__server_addr = server_addr
-        self.__key = key
+class OKCoinHTTP(Client):
+    def __init__(self, server_addr, key='', secret='', key_file=''):
+        api = API(key, secret)
+        if key_file:
+            api.load_key(key_file)
+        super(OKCoinHTTP, self).__init__(server_addr, api, 'OKCoin')
 
     def send(self, message):
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        #sock.sendto(json.dumps(message).encode('ascii'), self.__server_addr)
-        print(message)
+        sock.sendto(json.dumps(message).encode('ascii'), self._receiver)
+        super(OKCoinHTTP, self).send(message)
 
-    def listen(self, endpoint, q={}, private=False):
-        api = API()
+    def format_ob(self, input, pair):
+        ask_p, ask_v = input['asks'][0]
+        bid_p, bid_v = input['bids'][0]
+        formatted = [[None, 'Ask Price', ask_p],
+                     [None, 'Ask Vol', ask_v],
+                     [None, 'Bid Price',  bid_p],
+                     [None, 'Bid Vol', bid_v]]
+        return formatted
 
-        while True:
-            print("listening!")
-            if private:
-                api.load_key(self.__key)
-                resp = api.query_private(endpoint, q)
-            else:
-                resp = api.query_public(endpoint, q)
-            self.send(resp)
-            time.sleep(5)
+    def orderbook(self, pair):
+        q = {'pair': pair}
+
+        sent = time.time()
+        resp = self._query('depth.do', q)
+        received = time.time()
+        formatted = self.format_ob(resp, pair)
+        for i in formatted:
+            self.send(super(OKCoinHTTP, self)._format(pair, sent, received, *i))
 
 
 if __name__ == '__main__':
-    uix = Client(('localhost', 6666), './coincheck.key')
-    uix.listen('ticker.do', q={'symbol':'btc_usd'})
+    uix = OKCoinHTTP(('localhost', 6666))
+    uix.orderbook('BTCUSD')
