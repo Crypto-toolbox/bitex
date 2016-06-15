@@ -30,18 +30,12 @@ class BitfinexHTTP(Client):
         super(BitfinexHTTP, self).send(message)
 
     def format_ob(self, js):
-        asks = js['asks'][0]
-        ask_p = asks['price']
-        ask_v = asks['amount']
-        ask_ts = asks['timestamp']
-        bids = js['bids'][0]
-        bid_p = bids['price']
-        bid_v = bids['amount']
-        bid_ts = bids['timestamp']
-        formatted = [[ask_ts, 'Ask Vol', ask_v],
-                     [ask_ts, 'Ask Price', ask_p],
-                     [bid_ts, 'Bid Vol', bid_v],
-                     [bid_ts, 'Bid Price', bid_p]]
+        formatted = []
+        for a, b in zip(js['asks'], js['bids']):
+            formatted.append([a['timestamp'], 'Ask Vol', a['amount']])
+            formatted.append([a['timestamp'], 'Ask Price', a['price']])
+            formatted.append([b['timestamp'], 'Bid Vol', b['amount']])
+            formatted.append([b['timestamp'], 'Bid Price', b['price']])
         return formatted
 
     def orderbook(self, pair, limit_orders=50, aggregrate=True):

@@ -31,13 +31,14 @@ class BitstampHTTP(Client):
 
     def format_ob(self, input):
         ts = input['timestamp']
-        ask_p, ask_v = input['asks'][0]
-        bid_p, bid_v = input['bids'][0]
-
-        formatted = [[ts, 'Ask Price', ask_p],
-                     [ts, 'Ask Vol', ask_v],
-                     [ts, 'Bid Price', bid_p],
-                     [ts, 'Bid Vol', bid_v]]
+        formatted = []
+        for a, b in zip(input['asks'], input['bids']):
+            ask_p, ask_v = a
+            bid_p, bid_v = b
+            formatted.append([ts, 'Ask Price', ask_p])
+            formatted.append([ts, 'Ask Vol', ask_v])
+            formatted.append([ts, 'Bid Price',  bid_p])
+            formatted.append([ts, 'Bid Vol', bid_v])
         return formatted
 
     def orderbook(self, pair, count=0):

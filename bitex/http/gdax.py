@@ -30,18 +30,19 @@ class GdaxHTTP(Client):
         sock.sendto(json.dumps(message).encode('ascii'), self._receiver)
         super(GdaxHTTP, self).send(message)
 
-    def format_ob(self, input, pair):
-        ask_p, ask_v, _ = input['asks'][0]
-        bid_p, bid_v, _ = input['bids'][0]
-        formatted = [[None, 'Ask Price', ask_p],
-                     [None, 'Ask Vol', ask_v],
-                     [None, 'Bid Price', bid_p],
-                     [None, 'Bid Vol', bid_v]]
+    def format_ob(self, input):
+        formatted = []
+        for a, b in zip(input['asks'], input['bids']):
+            ask_p, ask_v, _ = a
+            bid_p, bid_v, _ = b
+            formatted.append([None, 'Ask Price', ask_p])
+            formatted.append([None, 'Ask Vol', ask_v])
+            formatted.append([None, 'Bid Price',  bid_p])
+            formatted.append([None, 'Bid Vol', bid_v])
         return formatted
 
     def orderbook(self, pair):
         q = {'pair': pair}
-
 
         sent = time.time()
         resp = self._query('/products/%s/book' % pair, q)

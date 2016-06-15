@@ -32,12 +32,16 @@ class KrakenHTTP(Client):
         super(KrakenHTTP, self).send(message)
 
     def format_ob(self, input, pair):
-        ask_p, ask_v, ask_t = input['result'][pair]['asks'][0]
-        bid_p, bid_v, bid_t = input['result'][pair]['bids'][0]
-        formatted = [[ask_t, 'Ask Price', ask_p],
-                     [ask_t, 'Ask Vol', ask_v],
-                     [bid_t, 'Bid Price',  bid_p],
-                     [bid_t, 'Bid Vol', bid_v]]
+        formatted = []
+        for a, b in zip(input['result'][pair]['asks'],
+                     input['result'][pair]['bids']):
+            ask_p, ask_v, ask_t = a
+            bid_p, bid_v, bid_t = b
+
+            formatted.append([ask_t, 'Ask Price', ask_p])
+            formatted.append([ask_t, 'Ask Vol', ask_v])
+            formatted.append([bid_t, 'Bid Price',  bid_p])
+            formatted.append([bid_t, 'Bid Vol', bid_v])
         return formatted
 
     def orderbook(self, pair, count=0):
