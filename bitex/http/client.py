@@ -39,12 +39,12 @@ class Client:
         """
         print(message)
 
-    def _query(self, method, q={}, private=False):
+    def _query(self, method, q={}, private=False, **kwargs):
 
         if private:
-            resp = self._api.query_private(method, q)
+            resp = self._api.query_private(method, q, **kwargs)
         else:
-            resp = self._api.query_public(method, q)
+            resp = self._api.query_public(method, q, **kwargs)
         return resp
 
     def _format(self, pair, sent, received, *ls):
