@@ -15,6 +15,7 @@ try:
 except SystemError:
     from bitex.api.kraken import API
 from bitex.http.client import Client
+from bitex.format.kraken import http_format_ob
 
 log = logging.getLogger(__name__)
 
@@ -31,19 +32,21 @@ class KrakenHTTP(Client):
         sock.sendto(json.dumps(message).encode('ascii'), self._receiver)
         super(KrakenHTTP, self).send(message)
 
-    def format_ob(self, input, pair):
-        formatted = []
-        for a, b in zip(input['result'][pair]['asks'],
-                     input['result'][pair]['bids']):
-            ask_p, ask_v, ask_t = a
-            bid_p, bid_v, bid_t = b
+    def run(self, func, *args, **kwargs):
+        """
+        Runs a given method infinitely, every 5 seconds.
+        :param func:
+        :param args:
+        :param kwargs:
+        :return:
+        """
+        while True:
+            resp = func(*args, **kwargs)
+            for i in resp:
+                super(KrakenHTTP, self).send(i)
+            time.sleep(5)
 
-            formatted.append([ask_t, 'Ask Price', ask_p])
-            formatted.append([ask_t, 'Ask Vol', ask_v])
-            formatted.append([bid_t, 'Bid Price',  bid_p])
-            formatted.append([bid_t, 'Bid Vol', bid_v])
-        return formatted
-
+    @http_format_ob
     def orderbook(self, pair, count=0):
         """
         Returns orderbook for passed asset pair.
@@ -58,11 +61,8 @@ class KrakenHTTP(Client):
         sent = time.time()
         resp = self._query('Depth', q)
         received = time.time()
-        formatted = self.format_ob(resp, pair)
-        for i in formatted:
-            self.send(super(KrakenHTTP, self)._format(pair, sent, received, *i))
+        return sent, received, resp, pair
 
-    
     def assets(self, assets, info='info', aclass='currency'):
         """
         Returns a list of Assets available at Kraken.
@@ -79,7 +79,6 @@ class KrakenHTTP(Client):
         response = self._api.query_public('Assets', q)
         return response
 
-    
     def asset_pairs(self, pairs, info='info'):
         """
         Returns a listing of all tradable asset pairs, plus additional information.
@@ -488,4 +487,5 @@ class KrakenHTTP(Client):
 
 if __name__ == '__main__':
     test = KrakenHTTP(('localhost', 676))
-    test.orderbook('XXBTZEUR')
+    print(test.orderbook('XXBTZEUR'))
+    test.run(test.orderbook, 'XXBTZEUR')
