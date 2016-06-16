@@ -47,7 +47,7 @@ class KrakenHTTP(Client):
             time.sleep(5)
 
     @http_format_ob
-    def orderbook(self, pair, count=0):
+    def order_book(self, pair, count=0):
         """
         Returns orderbook for passed asset pair.
         :param pair:
@@ -487,5 +487,5 @@ class KrakenHTTP(Client):
 
 if __name__ == '__main__':
     test = KrakenHTTP(('localhost', 676))
-    print(test.orderbook('XXBTZEUR'))
-    test.run(test.orderbook, 'XXBTZEUR')
+    print(test.order_book('XXBTZEUR')[1])
+
