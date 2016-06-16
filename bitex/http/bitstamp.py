@@ -12,7 +12,7 @@ import json
 # Import Homebrew
 from bitex.api.bitstamp import API
 from bitex.http.client import Client
-
+from bitex.format.bitstamp import http_format_ob
 
 log = logging.getLogger(__name__)
 
@@ -29,19 +29,22 @@ class BitstampHTTP(Client):
         sock.sendto(json.dumps(message).encode('ascii'), self._receiver)
         super(BitstampHTTP, self).send(message)
 
-    def format_ob(self, input):
-        ts = input['timestamp']
-        formatted = []
-        for a, b in zip(input['asks'], input['bids']):
-            ask_p, ask_v = a
-            bid_p, bid_v = b
-            formatted.append([ts, 'Ask Price', ask_p])
-            formatted.append([ts, 'Ask Vol', ask_v])
-            formatted.append([ts, 'Bid Price',  bid_p])
-            formatted.append([ts, 'Bid Vol', bid_v])
-        return formatted
+    def run(self, func, *args, **kwargs):
+        """
+        Runs a given method infinitely, every 5 seconds.
+        :param func:
+        :param args:
+        :param kwargs:
+        :return:
+        """
+        while True:
+            resp = func(*args, **kwargs)
+            for i in resp:
+                super(BitstampHTTP, self).send(i)
+            time.sleep(5)
 
-    def orderbook(self, pair, count=0):
+    @http_format_ob
+    def order_book(self, pair, count=0):
         q = {'pair': pair}
         if count:
             q['count'] = count
@@ -49,9 +52,8 @@ class BitstampHTTP(Client):
         sent = time.time()
         resp = self._query('order_book/%s/' % pair)
         received = time.time()
-        formatted = self.format_ob(resp)
-        for i in formatted:
-            self.send(super(BitstampHTTP, self)._format(pair, sent, received, *i))
+
+        return sent, received, resp, pair
 
     def ticker(self, pair):
         return self._query('ticker/%s/' % pair, q)
@@ -133,4 +135,4 @@ class BitstampHTTP(Client):
 
 if __name__ == '__main__':
     uix = BitstampHTTP(('localhost', 676), key_file='../../keys/bitstamp.key')
-    print(uix.withdrawal_requests())
+    print(uix.order_book('BTCUSD'))
