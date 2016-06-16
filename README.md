@@ -36,6 +36,7 @@ meaning that a request sent at 5am Jan 1st, 2016 for a BTCUSD bid order from an 
 1451624400, 1451624460, XBTUSD, Kraken, 1451624340, Bid Price, 400
 1451624400, 1451624460, XBTUSD, Kraken, 1451624340, Bid Vol, 0.4
 ```
+If Endpoint timestamps arent available, `None` is returned instead.
 
 # Installation
 As of now, there isn't a setup.py and its all mighty gritty and inconvenient; fear not, a fix for that is underway.
