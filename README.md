@@ -25,6 +25,18 @@ In their basic form, clients provide a simple connection to APIs - that is, they
 
 You'll notice that clients relay data via udp socket; this is later caught by the postoffice module, which handles these formatted messages - for example allowing you to `subscribe` to various streams, save data from a particular set of clients to a file or send it out to a slack channel. 
 
+# Output Format
+All fully implemented `http` clients output data in the following format:
+
+```
+sent | received | Symbol | Exchange | Endpoint Timestamp (if available) | Type | Value
+```
+meaning that a request sent at 5am Jan 1st, 2016 for a BTCUSD bid order from an orderbook of layout {price, vol, timestamp}, ie {400, 0.4, 1451624340} from Kraken, and its answer received at 5:01am Jan 1st 2016 would look like this:
+```
+1451624400, 1451624460, XBTUSD, Kraken, 1451624340, Bid Price, 400
+1451624400, 1451624460, XBTUSD, Kraken, 1451624340, Bid Vol, 0.4
+```
+
 # Installation
 As of now, there isn't a setup.py and its all mighty gritty and inconvenient; fear not, a fix for that is underway.
 
