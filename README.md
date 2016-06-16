@@ -1,5 +1,5 @@
-# bitex
-Bitex Crawler is a collection of API Clients for Crypto Currency Exchanges.
+# BitEx
+BitEx is a collection of API Clients for Crypto Currency Exchanges.
 
 This project evolved out of the pure pleasure of writing clients for REST APIs, and a want and need for a single data stream to read from for my bitcoin bots. 
 
@@ -7,8 +7,9 @@ This project evolved out of the pure pleasure of writing clients for REST APIs, 
 
 As of now, only REST APIs are supported, implementations of websockets and FIX connections are planned.
 
-The following exchanges are planned:
+The following exchanges are planned
 
+HTTP:
 - GDAX (done)
 - Bitfinex (done)
 - Bitstamp (done)
@@ -17,9 +18,12 @@ The following exchanges are planned:
 - OKCoin (done)
 - BTC-E (planned)
 
+
 Additional clients will be added to (or removed from) this list, according to their liquidity and market volume.
 
 In their basic form, clients provide a simple connection to APIs - that is, they handle authentication and request construction for you. As soon the above list is completed to a point where most of the exchanges are implemented (or whenever I feel like it), I will add convenience layers to the clients; this layer will aim to make calling the api feel more like a function, instead of string construction (i.e. `kraken.ticker('XBTEUR')`, instead of typing `kraken.public_query({'pair': 'XBTEUR'})`). 
+
+You'll notice that clients relay data via udp socket; this is later caught by the postoffice module, which handles these formatted messages - for example allowing you to `subscribe` to various streams, save data from a particular set of clients to a file or send it out to a slack channel. 
 
 # Installation
 As of now, there isn't a setup.py and its all mighty gritty and inconvenient; fear not, a fix for that is underway.
