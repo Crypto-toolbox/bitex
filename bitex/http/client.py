@@ -53,9 +53,9 @@ class Client:
         :param sent: timestamp
         :param received: timestamp
         :param ls: list or field values
-        :return: str
+        :return: list
         """
         new = [sent, received, pair, self._name, *ls]
 
-        return json.dumps(new)
+        return new
 
