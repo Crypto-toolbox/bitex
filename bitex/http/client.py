@@ -47,7 +47,7 @@ class Client:
             resp = self._api.query_public(method, q, **kwargs)
         return resp
 
-    def _format(self, pair, sent, received, *ls):
+    def _format(self, sent, received, pair, *ls):
         """
         adds pair and exchange to list, converts to string and sends it out.
         :param sent: timestamp
