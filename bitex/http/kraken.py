@@ -15,7 +15,7 @@ try:
 except SystemError:
     from bitex.api.kraken import API
 from bitex.http.client import Client
-from bitex.format.kraken import http_format_ob
+from bitex.format.kraken import http_format_ob, http_format_time, http_format_assets
 
 log = logging.getLogger(__name__)
 
@@ -63,21 +63,42 @@ class KrakenHTTP(Client):
         received = time.time()
         return sent, received, resp, pair
 
-    def assets(self, assets, info='info', aclass='currency'):
+    @http_format_time
+    def server_time(self):
+        """
+        Returns the Kraken server time in unix
+        :return: list
+        """
+        sent = time.time()
+        response = self._api.query_public('Time')
+        received = time.time()
+        return sent, received, response
+
+    @http_format_assets
+    def assets(self, assets='all', info='info', aclass='currency'):
         """
         Returns a list of Assets available at Kraken.
+
+        sent|received|asset|type|value
+
         :param assets: Assets to get info on.
         :type assets: str, list, tuple
         :param info: info to retrieve
         :type info: str
         :param aclass: asset class to query for.
         :type aclass: str
-        :return:
+        :return: list
         """
-        q = {'asset': ','.join(assets), 'info': info, 'aclass': aclass}
-
+        q = {'info': info, 'aclass': aclass}
+        if assets != 'all':
+            if isinstance(assets, list):
+                q['assets'] = ','.join(assets)
+            elif isinstance(assets, str):
+                q['assets'] = assets
+        sent = time.time()
         response = self._api.query_public('Assets', q)
-        return response
+        received = time.time()
+        return sent, received, response
 
     def asset_pairs(self, pairs, info='info'):
         """
@@ -88,8 +109,9 @@ class KrakenHTTP(Client):
         :return:
         """
         q = {'pair': ','.join(pairs), 'info': info}
-
+        sent = time.time()
         response = self._api.query_public('AssetPairs', q)
+        received = time.time()
         return response
 
     def ticker(self, pairs):
@@ -487,5 +509,5 @@ class KrakenHTTP(Client):
 
 if __name__ == '__main__':
     test = KrakenHTTP(('localhost', 676))
-    print(test.order_book('XXBTZEUR')[1])
+    print(test.assets())
 
