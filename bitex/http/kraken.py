@@ -15,7 +15,8 @@ try:
 except SystemError:
     from bitex.api.kraken import API
 from bitex.http.client import Client
-from bitex.format.kraken import http_format_ob, http_format_time, http_format_assets
+from bitex.format.kraken import http_format_ob, http_format_time
+from bitex.format.kraken import http_format_assets, http_format_asset_pairs
 
 log = logging.getLogger(__name__)
 
@@ -100,7 +101,8 @@ class KrakenHTTP(Client):
         received = time.time()
         return sent, received, response
 
-    def asset_pairs(self, pairs, info='info'):
+    @http_format_asset_pairs
+    def asset_pairs(self, pairs='all', info='info'):
         """
         Returns a listing of all tradable asset pairs, plus additional information.
         :param pairs: Asset pairs to get ticker for
@@ -108,11 +110,16 @@ class KrakenHTTP(Client):
         :param info: info to retrieve; one of 'info', 'leverage', 'fees', 'margin'.
         :return:
         """
-        q = {'pair': ','.join(pairs), 'info': info}
+        q = {'info': info}
+        if pairs != 'all':
+            if isinstance(pairs, list):
+                q['assets'] = ','.join(pairs)
+            elif isinstance(pairs, str):
+                q['assets'] = pairs
         sent = time.time()
         response = self._api.query_public('AssetPairs', q)
         received = time.time()
-        return response
+        return sent, received, response
 
     def ticker(self, pairs):
         """
@@ -509,5 +516,5 @@ class KrakenHTTP(Client):
 
 if __name__ == '__main__':
     test = KrakenHTTP(('localhost', 676))
-    print(test.assets())
+    print(test.asset_pairs())
 

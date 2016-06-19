@@ -55,4 +55,27 @@ def http_format_assets(func):
     return wrapper
 
 
+def http_format_asset_pairs(func):
+    def wrapper(self, *args, **kwargs):
+        sent, received, resp = func(self, *args, **kwargs)
+        formatted = []
+        for asset in resp['result']:
+            for key in resp['result'][asset]:
+                print(key)
+                if key != 'fees' and key != 'fees_maker':
+                    formatted.append([sent, received, asset, key,
+                                      resp['result'][asset][key]])
+                else:
+                    print("FEES!")
+                    field = 'Maker Fee ' if key == 'fee_maker' else 'Taker Fee '
+                    for i in range(len(resp['result'][asset][key])):
+                        formatted.append([sent, received, asset,
+                                          field+'Tier %s Vol' % str(i+1),
+                                          resp['result'][asset][key][i][0]])
+
+                        formatted.append([sent, received, asset,
+                                          field + 'Tier %s' % str(i + 1),
+                                          resp['result'][asset][key][i][1]])
+        return formatted
+    return wrapper
 
