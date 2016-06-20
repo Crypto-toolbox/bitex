@@ -117,10 +117,10 @@ class BitstampHTTP(Client):
 
     def ripple_withdrawal(self, address, amount):
         q = {'address': address, 'amount': amount}
-        pass  # See https://github.com/nlsdfnbch/bitex/issues/4
+        return self._query('ripple_withdrawal/', private=True)  # See https://github.com/nlsdfnbch/bitex/issues/4
 
     def ripple_address(self):
-        return self._query('')
+        return self._query('v2/ripple_deposit_address/', private=True) # See https://github.com/nlsdfnbch/bitex/issues/4
 
     def transfer_to_main(self, currency, amount, to_sub=None):
         q = {'currency': currency, 'amount': amount}
@@ -135,4 +135,5 @@ class BitstampHTTP(Client):
 
 if __name__ == '__main__':
     uix = BitstampHTTP(('localhost', 676), key_file='../../keys/bitstamp.key')
-    print(uix.order_book('BTCUSD'))
+    print(uix.ripple_address())
+    print(uix.ripple_withdrawal())
