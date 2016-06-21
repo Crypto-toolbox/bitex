@@ -79,3 +79,58 @@ def http_format_asset_pairs(func):
         return formatted
     return wrapper
 
+
+def http_format_ticker(func):
+    def wrapper(self, *args, **kwargs):
+        sent, received, resp = func(self, *args, **kwargs)
+        formatted = []
+
+        for pair in resp['result']:
+            ask_p, _, ask_v = resp['result'][pair]['a']
+            formatted.append(self._format(sent, received, pair,
+                                          None, 'Ask Price', ask_p))
+            formatted.append(self._format(sent, received, pair,
+                                          None, 'Ask Vol', ask_v))
+            bid_p, _, bid_v = resp['result'][pair]['b']
+            formatted.append(self._format(sent, received, pair,
+                                          None, 'Bid Price', bid_p))
+            formatted.append(self._format(sent, received, pair,
+                                          None, 'Bid Vol', bid_v))
+            close_p, close_v = resp['result'][pair]['c']
+            formatted.append(self._format(sent, received, pair,
+                                          None, 'Close Price', close_p))
+            formatted.append(self._format(sent, received, pair,
+                                          None, 'Close Vol', close_v))
+            vol_t, vol_24h = resp['result'][pair]['v']
+            formatted.append(self._format(sent, received, pair,
+                                          None, 'Trade Volume Today', vol_t))
+            formatted.append(self._format(sent, received, pair,
+                                          None, 'Trade Volume 24h', vol_24h))
+            avg_p_t, avg_p_24h = resp['result'][pair]['p']
+            formatted.append(self._format(sent, received, pair,
+                                          None, 'Avg Volume-Weighted Price Today', avg_p_t))
+            formatted.append(self._format(sent, received, pair,
+                                          None, 'Avg Volume-Weighted Price 24h', avg_p_24h))
+            trades_t, trades_24h = resp['result'][pair]['t']
+            formatted.append(self._format(sent, received, pair, None,
+                                          'Trades Today', trades_t))
+            formatted.append(self._format(sent, received, pair,
+                                          None, 'Trades 24h', trades_24h))
+            low_t, low_24h = resp['result'][pair]['l']
+            formatted.append(self._format(sent, received, pair, None,
+                                          'Low Today', low_t))
+            formatted.append(self._format(sent, received, pair,
+                                          None, 'Low 24h', low_24h))
+            high_t, high_24h = resp['result'][pair]['h']
+            formatted.append(self._format(sent, received, pair, None,
+                                          'High Today', high_t))
+            formatted.append(self._format(sent, received, pair,
+                                          None, 'High 24h', high_24h))
+
+            formatted.append(self._format(sent, received, pair, None,
+                                          'Open Price',
+                                          resp['result'][pair]['p']))
+
+        return formatted
+    return wrapper
+

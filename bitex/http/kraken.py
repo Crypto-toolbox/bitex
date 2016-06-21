@@ -17,6 +17,7 @@ except SystemError:
 from bitex.http.client import Client
 from bitex.format.kraken import http_format_ob, http_format_time
 from bitex.format.kraken import http_format_assets, http_format_asset_pairs
+from bitex.format.kraken import http_format_ticker
 
 log = logging.getLogger(__name__)
 
@@ -121,6 +122,7 @@ class KrakenHTTP(Client):
         received = time.time()
         return sent, received, response
 
+    @http_format_ticker
     def ticker(self, pairs):
         """
         Returns Ticker information for passed asset pairs.
@@ -131,9 +133,10 @@ class KrakenHTTP(Client):
             pairs = ','.join(pairs)
 
         q = {'pair': pairs}
-
+        sent = time.time()
         response = self._api.query_public('Ticker', q)
-        return response
+        received = time.time()
+        return sent, received, response
 
     def ohlc(self, pair, interval=1, since=None):
         """
@@ -516,5 +519,5 @@ class KrakenHTTP(Client):
 
 if __name__ == '__main__':
     test = KrakenHTTP(('localhost', 676))
-    print(test.asset_pairs())
+    print(test.ticker('BTCEUR'))
 
