@@ -129,7 +129,7 @@ def http_format_ticker(func):
 
             formatted.append(self._format(sent, received, pair, None,
                                           'Open Price',
-                                          resp['result'][pair]['p']))
+                                          resp['result'][pair]['o']))
 
         return formatted
     return wrapper
