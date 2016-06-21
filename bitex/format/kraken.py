@@ -108,9 +108,9 @@ def http_format_ticker(func):
                                           None, 'Trade Volume 24h', vol_24h))
             avg_p_t, avg_p_24h = resp['result'][pair]['p']
             formatted.append(self._format(sent, received, pair,
-                                          None, 'Avg Volume-Weighted Price Today', avg_p_t))
+                                          None, 'VWAPe Today', avg_p_t))
             formatted.append(self._format(sent, received, pair,
-                                          None, 'Avg Volume-Weighted Price 24h', avg_p_24h))
+                                          None, 'VWAP 24h', avg_p_24h))
             trades_t, trades_24h = resp['result'][pair]['t']
             formatted.append(self._format(sent, received, pair, None,
                                           'Trades Today', trades_t))
