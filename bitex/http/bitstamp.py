@@ -12,7 +12,7 @@ import json
 # Import Homebrew
 from bitex.api.bitstamp import API
 from bitex.http.client import Client
-from bitex.format.bitstamp import http_format_ob
+from bitex.format.bitstamp import http_format_ob, http_format_ticker
 
 log = logging.getLogger(__name__)
 
@@ -55,8 +55,12 @@ class BitstampHTTP(Client):
 
         return sent, received, resp, pair
 
+    @http_format_ticker
     def ticker(self, pair):
-        return self._query('ticker/%s/' % pair, q)
+        sent = time.time()
+        response = self._query('ticker/%s/' % pair)
+        received = time.time()
+        return sent, received, response, pair
 
     def hourly_ticker(self, pair):
         return self._query('ticker_hour/%s/' % pair, q)
@@ -135,5 +139,5 @@ class BitstampHTTP(Client):
 
 if __name__ == '__main__':
     uix = BitstampHTTP(('localhost', 676), key_file='../../keys/bitstamp.key')
-    print(uix.ripple_address())
-    print(uix.ripple_withdrawal())
+    print(uix.ticker('BTCUSD'))
+
