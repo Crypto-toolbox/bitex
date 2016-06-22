@@ -13,6 +13,7 @@ import json
 from bitex.api.bitstamp import API
 from bitex.http.client import Client
 from bitex.format.bitstamp import http_format_ob, http_format_ticker
+from bitex.format.bitstamp import http_format_hourly_ticker, http_format_trades
 
 log = logging.getLogger(__name__)
 
@@ -62,11 +63,19 @@ class BitstampHTTP(Client):
         received = time.time()
         return sent, received, response, pair
 
+    @http_format_hourly_ticker
     def hourly_ticker(self, pair):
-        return self._query('ticker_hour/%s/' % pair, q)
+        sent = time.time()
+        resp = self._query('ticker_hour/%s/' % pair)
+        received = time.time()
+        return sent, received, resp, pair
 
+    @http_format_trades
     def trades(self, pair, t='hour'):
-        return self._query('transactions/%s/' % pair, {'time': t})
+        sent = time.time()
+        resp = self._query('transactions/%s/' % pair, {'time': t})
+        received = time.time()
+        return sent, received, resp, pair
 
     def eur_usd_conversion(self):
         return self._query('eur_usd/')
@@ -138,6 +147,6 @@ class BitstampHTTP(Client):
 
 
 if __name__ == '__main__':
-    uix = BitstampHTTP(('localhost', 676), key_file='../../keys/bitstamp.key')
-    print(uix.ripple_address())
+    uix = BitstampHTTP(('localhost', 676))
+    print(uix.trades('btcusd'))
 
