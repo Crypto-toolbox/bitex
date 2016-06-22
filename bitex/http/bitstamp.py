@@ -45,16 +45,15 @@ class BitstampHTTP(Client):
             time.sleep(5)
 
     @http_format_ob
+    @time_resp
     def order_book(self, pair, count=0):
         q = {'pair': pair}
         if count:
             q['count'] = count
 
-        sent = time.time()
         resp = self._query('order_book/%s/' % pair)
-        received = time.time()
 
-        return sent, received, resp, pair
+        return resp, pair
 
     @http_format_ticker
     @time_resp
@@ -63,28 +62,29 @@ class BitstampHTTP(Client):
         return response, pair
 
     @http_format_hourly_ticker
+    @time_resp
     def hourly_ticker(self, pair):
-        sent = time.time()
         resp = self._query('ticker_hour/%s/' % pair)
-        received = time.time()
-        return sent, received, resp, pair
+        return resp, pair
 
     @http_format_trades
+    @time_resp
     def trades(self, pair, t='hour'):
-        sent = time.time()
         resp = self._query('transactions/%s/' % pair, {'time': t})
-        received = time.time()
-        return sent, received, resp, pair
+        return resp, pair
 
+    @time_resp
     def eur_usd_conversion(self):
         return self._query('eur_usd/')
 
+    @time_resp
     def balance(self, pair=''):
         if pair:
             return self._query('balance/%s/' % pair, private=True)
         else:
             return self,_api._query('balance/', private=True)
 
+    @time_resp
     def user_transactions(self, pair='', offset=0, limit=100, sort='desc'):
         q = {'offset': offset, 'limit': limit, 'sort': sort}
         if pair:
@@ -93,18 +93,22 @@ class BitstampHTTP(Client):
         else:
             return self, _api._query('user_transactions/', q, private=True)
 
+    @time_resp
     def open_orders(self, pair):
         return self._query('v2/open_orders/%s/' % pair, private=True)
 
+    @time_resp
     def order_status(self, id):
         return self._query('v2/order_status/', {'id': id}, private=True)
 
+    @time_resp
     def cancel_order(self, id, all=False, api='api'):
         if all:
             return self._query('/cancel_all_orders/', private=True)
         else:
             return self._query('/cancel_order/', {'id': id}, private=True)
 
+    @time_resp
     def limit_order(self, order_type, pair, amount, price, limit_price=None):
         if order_type != 'sell' and order_type != 'buy':
             raise ValueError(' order_type argument must be equal to "sell" or "buy"')
@@ -114,32 +118,40 @@ class BitstampHTTP(Client):
             q['limit_price'] = limit_price
         return self._query('v2/%s/%s/' % (order_type, pair), q, private=True)
 
+    @time_resp
     def withdrawal_requests(self):
         return self._query('/withdrawal_requests/', private=True)
 
+    @time_resp
     def bitcoin_withdrawal(self, address, amount, instant=0):
         q = {'address': address, 'amount': amount, 'instant': instant}
         return self._query('bitcoin_withdrawal/', q, private=True)
 
+    @time_resp
     def bitcoin_address(self):
         return self._query('bitcoin_deposit_address/', private=True)
 
+    @time_resp
     def unconfirmed_bitcoin_deposits(self):
         return self._query('unconfirmed_bts/', private=True)
 
+    @time_resp
     def ripple_withdrawal(self, address, amount, currency):
         q = {'address': address, 'amount': amount, 'currency': currency}
         return self._query('ripple_withdrawal/', q, private=True)  # See https://github.com/nlsdfnbch/bitex/issues/4
 
+    @time_resp
     def ripple_address(self):
         return self._query('/ripple_address/', private=True) # See https://github.com/nlsdfnbch/bitex/issues/4
 
+    @time_resp
     def transfer_to_main(self, currency, amount, to_sub=None):
         q = {'currency': currency, 'amount': amount}
         if to_sub:
             q['subAccount'] = to_sub
         return self._query('v2/transfer-to-main', q, private=True)
 
+    @time_resp
     def transfer_to_sub(self, currency, amount, sub_account):
         q = {'currency': currency, 'amount': amount, 'subAccount': sub_account}
         return self._query('v2/transfer-to-main', q , private=True)
