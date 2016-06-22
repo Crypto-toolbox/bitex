@@ -5,17 +5,25 @@ Do fancy shit.
 
 # Import Built-Ins
 import logging
-
+import time
 # Import Third-Party
 
 # Import Homebrew
 
 
-logging.basicConfig(level=logging.DEBUG, datefmt='%m-%d %H:%M',
-                    filename='{}.log'.format(__name__), filemode='w+')
-console = logging.StreamHandler()
-console.setLevel(logging.INFO)
-formatter = logging.Formatter(
-    '%(asctime)s %(name)-4s: %(levelname)-4s %(message)s')
-console.setFormatter(formatter)
-log = logging.getLogger().addHandler(console)
+log = logging.getLogger(__name__)
+
+
+
+def time_resp(func):
+    def wrapper(self, *args, **kwargs):
+        sent = time.time()
+        try:
+            resp, pair = func(self, *args, **kwargs)
+            received = time.time()
+            return sent, received, resp, pair
+        except ValueError:
+            resp = func(self, *args, **kwargs)
+            received = time.time()
+            return sent, received, resp
+    return wrapper
