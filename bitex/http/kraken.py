@@ -15,9 +15,9 @@ try:
 except SystemError:
     from bitex.api.kraken import API
 from bitex.http.client import Client
-from bitex.format.kraken import http_format_ob, http_format_time
-from bitex.format.kraken import http_format_assets, http_format_asset_pairs
-from bitex.format.kraken import http_format_ticker
+from bitex.decorators.kraken import http_format_ob, http_format_time
+from bitex.decorators.kraken import http_format_assets, http_format_asset_pairs
+from bitex.decorators.kraken import http_format_ticker
 
 log = logging.getLogger(__name__)
 
