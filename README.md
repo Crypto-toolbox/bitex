@@ -17,6 +17,16 @@ HTTP:
 - Coincheck (done)
 - OKCoin (done)
 - BTC-E (planned)
+- Bittrex (planned)
+
+Websockets
+- GDAX (planned)
+- Bitstamp (planned)
+- Bitfinex (planned)
+- Poloniex (planned)
+
+FIX
+- GDAX (planned)
 
 
 Additional clients will be added to (or removed from) this list, according to their liquidity and market volume.
