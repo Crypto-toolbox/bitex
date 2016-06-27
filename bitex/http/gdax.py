@@ -51,6 +51,8 @@ class GdaxHTTP(Client):
         for i in formatted:
             self.send(super(GdaxHTTP, self)._format(pair, sent, received, *i))
 
+    def ticker(self, pair):
+        return self._query('/%s/ticker' % pair)
 
 if __name__ == '__main__':
     uix = GdaxHTTP(('localhost', 6666))

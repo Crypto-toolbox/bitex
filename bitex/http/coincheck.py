@@ -46,6 +46,8 @@ class CoincheckHTTP(Client):
         for i in formatted:
             self.send(super(CoincheckHTTP, self)._format(pair, sent, received, *i))
 
+    def ticker(self):
+        return self._query('ticker')
 
 
 if __name__ == '__main__':

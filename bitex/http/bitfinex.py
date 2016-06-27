@@ -50,6 +50,8 @@ class BitfinexHTTP(Client):
         for i in formatted:
             self.send(super(BitfinexHTTP, self)._format(pair, sent, received, *i))
 
+    def ticker(self, pair):
+        return self._query('/pubticker/%s' % pair)
 
 
 if __name__ == '__main__':
