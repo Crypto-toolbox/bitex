@@ -49,8 +49,6 @@ class KrakenHTTP(Client):
                 super(KrakenHTTP, self).send(i)
             time.sleep(5)
 
-    @http_format_ob
-    @time_resp
     def order_book(self, pair, count=0):
         """
         Returns orderbook for passed asset pair.
@@ -66,8 +64,6 @@ class KrakenHTTP(Client):
 
         return resp, pair
 
-    @http_format_time
-    @time_resp
     def server_time(self):
         """
         Returns the Kraken server time in unix
@@ -76,8 +72,6 @@ class KrakenHTTP(Client):
         response = self._api.query_public('Time')
         return response
 
-    @http_format_assets
-    @time_resp
     def assets(self, assets='all', info='info', aclass='currency'):
         """
         Returns a list of Assets available at Kraken.
@@ -102,8 +96,6 @@ class KrakenHTTP(Client):
         response = self._api.query_public('Assets', q)
         return response
 
-    @http_format_asset_pairs
-    @time_resp
     def asset_pairs(self, pairs='all', info='info'):
         """
         Returns a listing of all tradable asset pairs, plus additional information.
@@ -123,8 +115,6 @@ class KrakenHTTP(Client):
 
         return response
 
-    @http_format_ticker
-    @time_resp
     def ticker(self, pairs):
         """
         Returns Ticker information for passed asset pairs.
@@ -138,7 +128,6 @@ class KrakenHTTP(Client):
         response = self._api.query_public('Ticker', q)
         return response
 
-    @time_resp
     def ohlc(self, pair, interval=1, since=None):
         """
         Returns OHLC data for passed asset pair.
@@ -154,7 +143,6 @@ class KrakenHTTP(Client):
         response = self._api.query_public('OHLC', q)
         return response
 
-    @time_resp
     def trades(self, pair, since=None):
         """
         Returns trades for passed asset pair.
@@ -169,7 +157,6 @@ class KrakenHTTP(Client):
         response = self._api.query_public('Trades', q)
         return response
 
-    @time_resp
     def spread(self, pair, since=None):
         """
         Returns spread data for passed asset pair.
@@ -184,7 +171,6 @@ class KrakenHTTP(Client):
         response = self._api.query_public('Spread', q)
         return response
 
-    @time_resp
     def balance(self, asset='ZUSD', aclass=None):
         """
         Returns user's account balance.
@@ -199,7 +185,6 @@ class KrakenHTTP(Client):
         response = self._api.query_private('TradeBalance', q)
         return response
 
-    @time_resp
     def open_orders(self, trades=False, userref=None):
         """
         Returns user account's open orders.
@@ -217,7 +202,6 @@ class KrakenHTTP(Client):
         response = self._api.query_private('OpenOrders', q)
         return response
 
-    @time_resp
     def closed_orders(self,ofs, trades=False, userref=None, start=None, end=None,
                       closetime='both'):
         """
@@ -247,7 +231,6 @@ class KrakenHTTP(Client):
         response = self._api.query_private('ClosedOrders', q)
         return response
 
-    @time_resp
     def query_orders(self, trades=False, userref=None, txid=None):
         """
         Returns information from user's account about orders.
@@ -266,7 +249,6 @@ class KrakenHTTP(Client):
         response = self._api.query_private('QueryOrders', q)
         return response
 
-    @time_resp
     def trade_history(self, ofs, trade_type='all', trades=False, start=None, end=None):
         """
         Returns the user account's trade history.
@@ -292,7 +274,6 @@ class KrakenHTTP(Client):
         response = self._api.query_private('TradesHistory', q)
         return response
 
-    @time_resp
     def trade_info(self, txid, trades=False):
         """
         Returns user account's trade information.
@@ -306,7 +287,6 @@ class KrakenHTTP(Client):
         response = self._api.query_private('QueryTrades', q)
         return response
 
-    @time_resp
     def open_positions(self, txid, docalcs=False):
         """
         Returns user account's open positions.
@@ -319,7 +299,6 @@ class KrakenHTTP(Client):
         response = self._api.query_private('OpenPositions', q)
         return response
 
-    @time_resp
     def ledgers(self, ofs, aclass='currency', asset='all', ledger_type='all',
                 start=None, end=None):
         """
@@ -348,7 +327,6 @@ class KrakenHTTP(Client):
         response = self._api.query_private('Ledgers', q)
         return response
 
-    @time_resp
     def query_ledger(self, ids):
         """
         Return information about passed id from user account's ledger
@@ -360,7 +338,6 @@ class KrakenHTTP(Client):
         response = self._api.query_private('QueryLedgers', q)
         return response
 
-    @time_resp
     def trade_volume(self, pairs=None, fee_info=None):
         """
         Return user account's trade volume.
@@ -383,7 +360,6 @@ class KrakenHTTP(Client):
         response = self._api.query_private('TradeVolume', q)
         return response
 
-    @time_resp
     def add_order(self, pair, ordertype, volume, price=None, price2=None,
                   leverage=None, oflags=None, starttm=None, expiretm=None,
                   userref=None, validate=None, close_ordertype=None,
@@ -424,7 +400,6 @@ class KrakenHTTP(Client):
         response = self._api.query_private('AddOrder', q)
         return response
 
-    @time_resp
     def cancel_order(self, txid):
         """
         Cancel an order by passed txid.
@@ -436,7 +411,6 @@ class KrakenHTTP(Client):
         response = self._api.query_private('CancelOrder', q)
         return response
 
-    @time_resp
     def deposit_method(self, asset, aclass='currency'):
         """
         Query user account's deposit mehtod for passed asset.
@@ -449,7 +423,6 @@ class KrakenHTTP(Client):
         response = self._api.query_private('DepositMethods', q)
         return response
 
-    @time_resp
     def deposit_addresses(self, asset, method, new=False, aclass='currency'):
         """
         Return user account's deposit address for passed asset and method.
@@ -464,7 +437,6 @@ class KrakenHTTP(Client):
         response = self._api.query_private('DepositAddress', q)
         return response
 
-    @time_resp
     def deposit_status(self, asset, method, aclass='currency'):
         """
         Query a deposit's status, by passed asset and method.
@@ -478,7 +450,6 @@ class KrakenHTTP(Client):
         response = self._api.query_private('DepositStatus', q)
         return response
 
-    @time_resp
     def withdraw_info(self, asset, key, amount, aclass='currency'):
         """
         Return withdraw information from user account.
@@ -493,7 +464,6 @@ class KrakenHTTP(Client):
         response = self._api.query_private('WithdrawInfo', q)
         return response
 
-    @time_resp
     def withdraw(self, asset, key, amount, aclass='currency'):
         """
         Withdraw funds from user account by passed asset, key and amount.
@@ -508,7 +478,6 @@ class KrakenHTTP(Client):
         response = self._api.query_private('Withdraw', q)
         return response
 
-    @time_resp
     def withdraw_status(self, asset, aclass='currency', method=None):
         """
         Query status of a withdrawal by passed asset.
@@ -524,7 +493,6 @@ class KrakenHTTP(Client):
         response = self._api.query_private('WithdrawStatus', q)
         return response
 
-    @time_resp
     def withdrawal_cancel(self, asset, refid, aclass='currency'):
         """
         Cancel a withdrawal by passed asset and refid.
