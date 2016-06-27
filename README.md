@@ -28,10 +28,14 @@ Websockets
 FIX
 - GDAX (planned)
 
-`planned`: I'm currently designing base code for this exchange
-`backend done`: You're able to communicate with the API using the base class' functions
-`overlay funcs done`: I've added convenience methods which allow communication with the API, but not all arguments are integrated into the arguments list, and documenation may be missing.
-`fully implemented`: All API endpoints have a overlay method, which also features all applicable arguments as well as doc strings.
+
+-`planned`: I'm currently designing base code for this exchange
+
+-`backend done`: You're able to communicate with the API using the base class' functions
+
+-`overlay funcs done`: I've added convenience methods which allow communication with the API, but not all arguments are integrated into the arguments list, and documenation may be missing.
+
+-`fully implemented`: All API endpoints have a overlay method, which also features all applicable arguments as well as doc strings.
 
 Additional clients will be added to (or removed from) this list, according to their liquidity and market volume.
 
