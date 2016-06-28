@@ -176,8 +176,42 @@ class BitfinexHTTP(Client):
 
         return self._query('/mytrades/', q, private=True)
 
+    def balance(self):
+        return self._query('/balances/', private=True)
 
+    def margin_information(self):
+        return self._query('/margin_infos/', private=True)
 
+    def transfer(self, currency, amount, from_, to_):
+        q = {'currency': currency, 'amount': amount, 'walletfrom': from_,
+             'walletto': to_}
+        return self._query('/transfer/', q, private=True)
+
+    def withdraw_crypto(self, coin_type, wallet, amount, address):
+        q = {'withdraw_type':  coin_type, 'walletselected': wallet,
+             'amount':         amount, 'address': address}
+
+        return self._query('/withdraw/', q, private=True)
+
+    def withdraw_fiat(self, from_wallet, amount, account_name, account_number,
+                      bank_name, bank_addr, bank_city, bank_country,
+                      express_wire=False, **intermediary_kwargs):
+        q = {'withdraw_type':  'wire', 'walletselected': from_wallet,
+             'amount':         amount, 'account_name': account_name,
+             'account_number': account_number, 'bank_name': bank_name,
+             'bank_address':   bank_addr, 'bank_city': bank_city,
+             'bank_country':   bank_country}
+
+        if express_wire:
+            q['expressWire'] = 1
+
+        for kwarg in intermediary_kwargs:
+            q[kwarg] = intermediary_kwargs[kwarg]
+
+        return self._query('/withdraw/', q, private=True)
+
+    def key_permissions(self):
+        return self._query('/key_infos/', private=True)
 
 if __name__ == '__main__':
     uix = BitfinexHTTP(('localhost', 6666), 'BTCUSD')
