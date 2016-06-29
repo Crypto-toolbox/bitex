@@ -91,7 +91,7 @@ class API(object):
         """
         self.conn = conn
 
-    def _query(self, urlpath, req = {}, auth = {}, post=False):
+    def _query(self, urlpath, req=None, auth=None, post=False):
         """Low-level query handling.
         
         :param urlpath: API URL path sans host
@@ -125,7 +125,7 @@ class API(object):
 
         return response
 
-    def query_public(self, method, req = {}, post=False):
+    def query_public(self, method, req=None, post=False):
         """API queries that do not require a valid key/secret pair.
         
         :param method: API method name
@@ -135,10 +135,11 @@ class API(object):
         :param conn: connection TODO
         :type conn: krakenex.Connection
         """
+        auth = CoinbaseExchangeAuth(self.key, self.secret, self.passphrase)
 
-        return self._query(method, req, post=post)
+        return self._query(method, req, auth, post=post)
     
-    def query_private(self, method, req={}, post=False):
+    def query_private(self, method, req=None, post=False):
         """API queries that require a valid key/secret pair.
         
         :param method: API method name
