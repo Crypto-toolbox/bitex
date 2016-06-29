@@ -28,23 +28,9 @@ class CoincheckHTTP(Client):
         sock.sendto(json.dumps(message).encode('ascii'), self._receiver)
         super(CoincheckHTTP, self).send(message)
 
-    def format_ob(self, input):
-        ask_p, ask_v = input['asks'][0]
-        bid_p, bid_v = input['bids'][0]
-        formatted = [[None, 'Ask Price', ask_p],
-                     [None, 'Ask Vol', ask_v],
-                     [None, 'Bid Price',  bid_p],
-                     [None, 'Bid Vol', bid_v]]
-        return formatted
-
-    def orderbook(self, pair):
+    def order_book(self, pair):
         q = {'pair': pair}
-        sent = time.time()
-        resp = self._query('order_books', q)
-        received = time.time()
-        formatted = self.format_ob(resp)
-        for i in formatted:
-            self.send(super(CoincheckHTTP, self)._format(pair, sent, received, *i))
+        return self._query('order_books', q)
 
     def ticker(self):
         return self._query('ticker')

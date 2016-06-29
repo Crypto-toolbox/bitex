@@ -31,26 +31,9 @@ class OKCoinHTTP(Client):
         sock.sendto(json.dumps(message).encode('ascii'), self._receiver)
         super(OKCoinHTTP, self).send(message)
 
-    def format_ob(self, input):
-        formatted = []
-        for a, b in zip(input['asks'], input['bids']):
-            ask_p, ask_v = a
-            bid_p, bid_v = b
-            formatted.append([None, 'Ask Price', ask_p])
-            formatted.append([None, 'Ask Vol', ask_v])
-            formatted.append([None, 'Bid Price',  bid_p])
-            formatted.append([None, 'Bid Vol', bid_v])
-        return formatted
-
-    def orderbook(self, pair):
+    def order_book(self, pair):
         q = {'pair': pair}
-
-        sent = time.time()
-        resp = self._query('depth.do', q)
-        received = time.time()
-        formatted = self.format_ob(resp, pair)
-        for i in formatted:
-            self.send(super(OKCoinHTTP, self)._format(pair, sent, received, *i))
+        return self._query('depth.do', q)
 
     def ticker(self, pair):
         return self._query('/ticker', {'pair':pair})
