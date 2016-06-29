@@ -362,8 +362,7 @@ class KrakenHTTP(Client):
 
     def add_order(self, pair, ordertype, volume, price=None, price2=None,
                   leverage=None, oflags=None, starttm=None, expiretm=None,
-                  userref=None, validate=None, close_ordertype=None,
-                  close_price=None, close_price2=None):
+                  userref=None, validate=None, **close_kwargs):
         """
         Add an order for passed pair of passed ordertype and volume.
         :param pair:
