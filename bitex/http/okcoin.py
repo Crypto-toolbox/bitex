@@ -53,7 +53,7 @@ class OKCoinHTTP(Client):
             self.send(super(OKCoinHTTP, self)._format(pair, sent, received, *i))
 
     def ticker(self, pair):
-        return self._query('/ticker', {'pair':pair})
+        return self._query('/ticker', {'symbol': pair})
 
 if __name__ == '__main__':
     uix = OKCoinHTTP(('localhost', 6666))
