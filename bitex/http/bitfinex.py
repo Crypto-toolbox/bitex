@@ -158,7 +158,7 @@ class BitfinexHTTP(Client):
         if since:
             q['since'] = since
 
-        if until
+        if until:
             q['until'] = until
 
         return self._query('/history/movements/', q, private=True)
@@ -216,4 +216,4 @@ class BitfinexHTTP(Client):
 
 if __name__ == '__main__':
     uix = BitfinexHTTP(('localhost', 6666), 'BTCUSD')
-    uix.orderbook('BTCUSD')
+    uix.order_book('BTCUSD')
