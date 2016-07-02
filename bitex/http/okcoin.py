@@ -36,8 +36,8 @@ class OKCoinHTTP(Client):
         return self._query('depth.do', q)
 
     def ticker(self, pair):
-        return self._query('/ticker', {'symbol': pair})
+        return self._query('/ticker.do', {'symbol': pair})
 
 if __name__ == '__main__':
     uix = OKCoinHTTP(('localhost', 6666))
-    uix.orderbook('BTCUSD')
+    print(uix.ticker('btc_usd'))
