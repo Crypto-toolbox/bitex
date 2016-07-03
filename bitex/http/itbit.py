@@ -6,8 +6,8 @@ Do fancy shit.
 # Import Built-Ins
 import logging
 import socket
-import time
 import json
+
 
 # Import Third-Party
 
@@ -31,21 +31,15 @@ class ITBitHTTP(Client):
         sock.sendto(json.dumps(message).encode('ascii'), self._receiver)
         super(ITBitHTTP, self).send(message)
 
-        # returns ticker information for a specific ticker symbol
-
     def ticker(self, pair):
         path = "/markets/%s/ticker" % (pair)
         response = self._api._query("GET", path, {})
         return response
 
-        # returns order book information for a specific ticker symbol
-
     def get_order_book(self, pair):
         path = "/markets/%s/order_book" % (pair)
         response = self._api._query("GET", path, {})
         return response
-
-        # returns a list of all wallets for the userid provided
 
     def get_wallet(self, walletId='', page=1, per_page=50):
         if not walletId:
@@ -60,14 +54,11 @@ class ITBitHTTP(Client):
             response = self._api._query("GET", path, {})
             return response
 
-
     def create_wallet(self, walletName):
         path = "/wallets"
         response = self._api._query("POST", path, {'userId': self.userId,
                                                     'name': walletName})
         return response
-
-        # returns a specific wallet by wallet id
 
     def balance(self, walletId, currency):
         path = "/wallets/%s/balances/%s" % (walletId, currency)
@@ -103,8 +94,6 @@ class ITBitHTTP(Client):
                                       'side': side, 'amount': amount,
                                       'price': price, 'instrument': instrument})
         return response
-
-        # creates a new limit order with a specific display amount (iceberg order)
 
     def create_order_with_display(self, walletId, side, currency, amount, price,
                                   display, instrument):
