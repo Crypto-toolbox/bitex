@@ -70,17 +70,17 @@ class BitstampHTTP(Client):
 
     def balance(self, pair=''):
         if pair:
-            return self._query('balance/%s/' % pair, private=True)
+            return self._query('v2/balance/%s/' % pair, private=True)
         else:
-            return self,_api._query('balance/', private=True)
+            return self,_api._query('v2/balance/', private=True)
 
     def user_transactions(self, pair='', offset=0, limit=100, sort='desc'):
         q = {'offset': offset, 'limit': limit, 'sort': sort}
         if pair:
-            return self._query('user_transactions/%s/' % pair, q,
+            return self._query('v2/user_transactions/%s/' % pair, q,
                                     private=True)
         else:
-            return self, _api._query('user_transactions/', q, private=True)
+            return self._query('v2/user_transactions/', q, private=True)
 
     def open_orders(self, pair):
         return self._query('v2/open_orders/%s/' % pair, private=True)
@@ -88,8 +88,8 @@ class BitstampHTTP(Client):
     def order_status(self, id):
         return self._query('v2/order_status/', {'id': id}, private=True)
 
-    def cancel_order(self, id, all=False, api='api'):
-        if all:
+    def cancel_order(self, id=None):
+        if id is None:
             return self._query('/cancel_all_orders/', private=True)
         else:
             return self._query('/cancel_order/', {'id': id}, private=True)
@@ -135,6 +135,13 @@ class BitstampHTTP(Client):
 
 
 if __name__ == '__main__':
-    uix = BitstampHTTP(('localhost', 676))
+    uix = BitstampHTTP(('localhost', 676), key_file='../../keys/bitstamp.key')
     print(uix.ticker('btcusd'))
+    print(uix.balance('btcusd'))
+    print(uix.user_transactions())
+    print(uix.open_orders('btceur'))
+    print(uix.cancel_order())
+    print(uix.withdrawal_requests())
+    print(uix.bitcoin_address())
+    print(uix.ripple_address())
 
