@@ -19,7 +19,7 @@ class Client:
     """
     Base Class for http clients. One client per pair!
     """
-    def __init__(self, receiver_addr, api, name):
+    def __init__(self, api, name):
         """
         Base Class for http clients
         :param receiver_addr: tuple, ex ('localhost', 6666)
@@ -27,17 +27,8 @@ class Client:
         :param name: str, name of exchange
         :param pair: str, pair as used in querying exchange.
         """
-        self._receiver = receiver_addr
         self._api = api
         self._name = name
-
-    def send(self, message):
-        """
-        Send message to self._receiver
-        :param message: bytes
-        :return: None
-        """
-        print(message)
 
     def _query(self, method, q={}, private=False, **kwargs):
 

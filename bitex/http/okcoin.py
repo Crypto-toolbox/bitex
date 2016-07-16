@@ -20,16 +20,11 @@ log = logging.getLogger(__name__)
 
 
 class OKCoinHTTP(Client):
-    def __init__(self, server_addr, key='', secret='', key_file=''):
+    def __init__(self, key='', secret='', key_file=''):
         api = API(key, secret)
         if key_file:
             api.load_key(key_file)
-        super(OKCoinHTTP, self).__init__(server_addr, api, 'OKCoin')
-
-    def send(self, message):
-        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        sock.sendto(json.dumps(message).encode('ascii'), self._receiver)
-        super(OKCoinHTTP, self).send(message)
+        super(OKCoinHTTP, self).__init__(api, 'OKCoin')
 
     def order_book(self, pair):
         q = {'pair': pair}
@@ -39,5 +34,5 @@ class OKCoinHTTP(Client):
         return self._query('ticker.do', {'symbol': pair})
 
 if __name__ == '__main__':
-    uix = OKCoinHTTP(('localhost', 6666))
+    uix = OKCoinHTTP()
     print(uix.ticker('btc_usd'))

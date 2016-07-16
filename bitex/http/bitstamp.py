@@ -19,16 +19,11 @@ log = logging.getLogger(__name__)
 
 
 class BitstampHTTP(Client):
-    def __init__(self, server_addr, key='', secret='', key_file=''):
+    def __init__(self, key='', secret='', key_file=''):
         api = API(key, secret)
         if key_file:
             api.load_key(key_file)
-        super(BitstampHTTP, self).__init__(server_addr, api, 'Bitstamp')
-
-    def send(self, message):
-        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        sock.sendto(json.dumps(message).encode('ascii'), self._receiver)
-        super(BitstampHTTP, self).send(message)
+        super(BitstampHTTP, self).__init__(api, 'Bitstamp')
 
     def run(self, func, *args, **kwargs):
         """

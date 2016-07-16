@@ -24,16 +24,11 @@ log = logging.getLogger(__name__)
 
 
 class KrakenHTTP(Client):
-    def __init__(self, server_addr, key='', secret='', key_file=''):
+    def __init__(self, key='', secret='', key_file=''):
         api = API(key, secret)
         if key_file:
             api.load_key(key_file)
-        super(KrakenHTTP, self).__init__(server_addr, api, 'Kraken')
-
-    def send(self, message):
-        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        sock.sendto(json.dumps(message).encode('ascii'), self._receiver)
-        super(KrakenHTTP, self).send(message)
+        super(KrakenHTTP, self).__init__(api, 'Kraken')
 
     def run(self, func, *args, **kwargs):
         """
@@ -506,7 +501,7 @@ class KrakenHTTP(Client):
 
 
 if __name__ == '__main__':
-    test = KrakenHTTP(('localhost', 676), key_file='../../keys/kraken.key')
+    test = KrakenHTTP(key_file='../../keys/kraken.key')
     print(test.ticker('BTCEUR'))
     print(test.balance())
     print(test.asset_pairs())

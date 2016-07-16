@@ -20,16 +20,11 @@ log = logging.getLogger(__name__)
 
 
 class ITBitHTTP(Client):
-    def __init__(self, server_addr, key='', secret='', userId='', key_file=''):
+    def __init__(self, key='', secret='', userId='', key_file=''):
         api = API(key, secret, userId)
         if key_file:
             api.load_key(key_file)
-        super(ITBitHTTP, self).__init__(server_addr, api, 'ITBit')
-
-    def send(self, message):
-        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        sock.sendto(json.dumps(message).encode('ascii'), self._receiver)
-        super(ITBitHTTP, self).send(message)
+        super(ITBitHTTP, self).__init__(api, 'ITBit')
 
     def ticker(self, pair):
         path = "/markets/%s/ticker" % (pair)
@@ -140,5 +135,5 @@ class ITBitHTTP(Client):
 
 
 if __name__ == '__main__':
-    uix = ITBitHTTP(('localhost', 6666))
+    uix = ITBitHTTP()
     print(uix.ticker('XBTUSD'))

@@ -18,16 +18,11 @@ log = logging.getLogger(__name__)
 
 
 class BitfinexHTTP(Client):
-    def __init__(self, server_addr, key='', secret='', key_file=''):
+    def __init__(self, key='', secret='', key_file=''):
         api = API(key, secret)
         if key_file:
             api.load_key(key_file)
-        super(BitfinexHTTP, self).__init__(server_addr, api, 'Bitfinex')
-
-    def send(self, message):
-        sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        sock.sendto(json.dumps(message).encode('ascii'), self._receiver)
-        super(BitfinexHTTP, self).send(message)
+        super(BitfinexHTTP, self).__init__(api, 'Bitfinex')
 
     def order_book(self, pair, limit_orders=50, aggregrate=True):
         q = {'limit_asks': limit_orders, 'limit_bids': limit_orders}
@@ -214,5 +209,5 @@ class BitfinexHTTP(Client):
         return self._query('key_infos', private=True)
 
 if __name__ == '__main__':
-    uix = BitfinexHTTP(('localhost', 6666), 'BTCUSD', key_file='../../keys/bitfinex.key')
+    uix = BitfinexHTTP('BTCUSD', key_file='../../keys/bitfinex.key')
     print(uix.account_infos())
