@@ -1,21 +1,8 @@
-"""
-Task:
-Do fancy shit.
-"""
+from distutils.core import setup
 
-# Import Built-Ins
-import logging
+setup(name='BitEx', version='0.4', author='Nils Diefenbach',
+      author_email='23okrs20+pypi@mykolab.com',
+      url="https://github.com/nlsdfnbch/bitex.git",
+      packages=['bitex', 'bitex.api', 'bitex.decorators', 'bitex.http',
+                'bitex.postoffice'])
 
-# Import Third-Party
-
-# Import Homebrew
-
-
-logging.basicConfig(level=logging.DEBUG, datefmt='%m-%d %H:%M',
-                    filename='{}.log'.format(__name__), filemode='w+')
-console = logging.StreamHandler()
-console.setLevel(logging.INFO)
-formatter = logging.Formatter(
-    '%(asctime)s %(name)-4s: %(levelname)-4s %(message)s')
-console.setFormatter(formatter)
-log = logging.getLogger().addHandler(console)
