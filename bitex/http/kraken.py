@@ -202,7 +202,7 @@ class KrakenHTTP(Client):
         response = self._api.query_private('OpenOrders', q)
         return response
 
-    def closed_orders(self,ofs, trades=False, userref=None, start=None, end=None,
+    def closed_orders(self, ofs, trades=False, userref=None, start=None, end=None,
                       closetime='both'):
         """
         Returns user account's closed orders.
@@ -281,8 +281,7 @@ class KrakenHTTP(Client):
         :param trades:
         :return:
         """
-        q = {'trades': trades}
-        q['txid'] = self.__validate_txid(txid)
+        q = {'trades': trades, 'txid': txid}
 
         response = self._api.query_private('QueryTrades', q)
         return response
@@ -507,6 +506,9 @@ class KrakenHTTP(Client):
 
 
 if __name__ == '__main__':
-    test = KrakenHTTP(('localhost', 676))
+    test = KrakenHTTP(('localhost', 676), key_file='../../keys/kraken.key')
     print(test.ticker('BTCEUR'))
+    print(test.balance())
+    print(test.asset_pairs())
+
 
