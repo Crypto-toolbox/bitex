@@ -28,47 +28,47 @@ class BitfinexHTTP(Client):
         q = {'limit_asks': limit_orders, 'limit_bids': limit_orders}
         if not aggregrate:
             q['group'] = 0
-        return self._query('/book/%s/' % pair, q)
+        return self.query('/book/%s/' % pair, q)
 
     def funding_book(self, pair, limit_bids=50, limit_asks=50):
         q = {'limit_bids': limit_bids, 'limit_asks': limit_asks}
-        return self._query('lendbook/%s/' % pair, q)
+        return self.query('lendbook/%s/' % pair, params=q)
 
     def ticker(self, pair):
-        return self._query("pubticker/%s" % pair)
+        return self.query("pubticker/%s" % pair)
 
     def stats(self, pair):
-        return self._query("stats/%s" % pair)
+        return self.query("stats/%s" % pair)
 
     def trades(self, pair, start_time=None, limit_trades=False):
         q = {'limit_trades': limit_trades}
         if start_time:
             q['timestamp'] = start_time
-        return self._query('trades/%s' % pair, q)
+        return self.query('trades/%s' % pair, params=q)
 
     def lends(self, pair, start_time=None, limit_lends=False):
         q = {'limit_lends': limit_lends}
         if start_time:
             q['timestamp'] = start_time
-        return self._query('lends/%s' % pair, q)
+        return self.query('lends/%s' % pair, params=q)
 
     def pairs(self, verbose=False):
         if verbose:
-            return self._query('symbols_details')
+            return self.query('symbols_details')
         else:
-            return self._query('symbols')
+            return self.query('symbols')
 
     def account_infos(self):
-        return self._query('account_infos', private=True)
+        return self.query('account_infos', authenticate=True, post=True)
 
     def summary(self):
-        return self._query('summary', private=True)
+        return self.query('summary', authenticate=True, post=True)
 
     def deposit_crypto(self, coin, wallet_name, renew=False):
         q = {'method': coin, 'wallet_name': wallet_name}
         if renew:
             q['renew'] = 1
-        return self._query('deposit/new', q, private=True)
+        return self.query('deposit/new', params=q, authenticate=True, post=True)
 
     def _add_order(self, trade, pair, amount, price, post_only=False,
                    hide=False, ocoorder=None):
@@ -84,7 +84,7 @@ class BitfinexHTTP(Client):
             q['ocoorder'] = True
             q['buy_price_oco'] = ocoorder
 
-        return self._query('order/new', q, private=True)
+        return self.query('order/new', params=q, authenticate=True, post=True)
 
     def add_buy_order(self, pair, amount, price, post_only=False, hide=False,
                       ocoorder=None):
@@ -99,12 +99,14 @@ class BitfinexHTTP(Client):
     def cancel_order(self, *order_id):
         q = {'order_id': order_id}
         if isinstance(order_id, (list, tuple)):
-            return self._query('order/cancel/multi', q, private=True)
+            return self.query('order/cancel/multi', params=q, authenticate=True,
+                              post=True)
         else:
-            return self._query('order/cancel', q, private=True)
+            return self.query('order/cancel', params=q, authenticate=True,
+                              post=True)
 
     def cancel_all_orders(self):
-        return self._query('order/cancel/all', private=True)
+        return self.query('order/cancel/all', authenticate=True, post=True)
 
     def replace_order(self, order_id, pair, amount, price, side,
                       exchange='bitfinex', order_type='limit', hidden=False,
@@ -113,21 +115,24 @@ class BitfinexHTTP(Client):
              'price': price, 'side': side, 'exchange': exchange,
              'is_hidden': hidden, 'use_remaining': use_remaining_amount}
 
-        return self._query('order/cancel/replace', q, private=True)
+        return self.query('order/cancel/replace', params=q, authenticate=True,
+                          post=True)
 
     def order_status(self, order_id):
         q = {'order_id': order_id}
-        return self._query('order/status', q, private=True)
+        return self.query('order/status', params=q, authenticate=True,
+                          post=True)
 
     def orders(self):
-        return self._query('order/status', private=True)
+        return self.query('order/status', authenticate=True, post=True)
 
     def positions(self):
-        return self._query('positions', private=True)
+        return self.query('positions', authenticate=True, post=True)
 
     def claim_position(self,position_id, amount):
         q = {'position_id': position_id, 'amount': amount}
-        return self._query('position/claim', q, private=True)
+        return self.query('position/claim', params=q, authenticate=True,
+                          post=True)
 
     def balance_history(self, currency, since=None, until=None, limit=500,
                         wallet=None):
@@ -141,7 +146,7 @@ class BitfinexHTTP(Client):
         if wallet:
             q['wallet'] = wallet
 
-        return self._query('history', q, private=True)
+        return self.query('history', params=q, authenticate=True, post=True)
 
     def funding_history(self, currency, method=None, since=None, until=None,
                         limit=500):
@@ -155,7 +160,8 @@ class BitfinexHTTP(Client):
         if until:
             q['until'] = until
 
-        return self._query('history/movements', q, private=True)
+        return self.query('history/movements', params=q, authenticate=True,
+                          post=True)
 
     def trade_history(self, pair, timestamp=None, until=None,
                         limit_trades=50, reverse=False):
@@ -169,24 +175,24 @@ class BitfinexHTTP(Client):
         if until:
             q['until'] = until
 
-        return self._query('mytrades', q, private=True)
+        return self.query('mytrades', params=q, authenticate=True, post=True)
 
     def balance(self):
-        return self._query('balances', private=True)
+        return self.query('balances', authenticate=True, post=True)
 
     def margin_information(self):
-        return self._query('margin_infos', private=True)
+        return self.query('margin_infos', authenticate=True, post=True)
 
     def transfer(self, currency, amount, from_, to_):
         q = {'currency': currency, 'amount': amount, 'walletfrom': from_,
              'walletto': to_}
-        return self._query('transfer', q, private=True)
+        return self.query('transfer', params=q, authenticate=True, post=True)
 
     def withdraw_crypto(self, coin_type, wallet, amount, address):
         q = {'withdraw_type':  coin_type, 'walletselected': wallet,
              'amount':         amount, 'address': address}
 
-        return self._query('withdraw', q, private=True)
+        return self.query('withdraw', params=q, authenticate=True, post=True)
 
     def withdraw_fiat(self, from_wallet, amount, account_name, account_number,
                       bank_name, bank_addr, bank_city, bank_country,
@@ -203,10 +209,10 @@ class BitfinexHTTP(Client):
         for kwarg in intermediary_kwargs:
             q[kwarg] = intermediary_kwargs[kwarg]
 
-        return self._query('withdraw', q, private=True)
+        return self.query('withdraw', params=q, authenticate=True, post=True)
 
     def key_permissions(self):
-        return self._query('key_infos', private=True)
+        return self.query('key_infos', authenticate=True, post=True)
 
 if __name__ == '__main__':
     uix = BitfinexHTTP('BTCUSD', key_file='../../keys/bitfinex.key')
