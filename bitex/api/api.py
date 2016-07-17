@@ -24,6 +24,7 @@ class RESTAPI:
         self.secret = secret
         self.uri = uri
         self.apiversion = api_version
+        print("URI is: ", uri)
 
     def load_key(self, path):
         """
@@ -51,7 +52,8 @@ class RESTAPI:
         else:
             urlpath = '/' + endpoint
 
-        if authenticate:
+        if authenticate:  # Pass all locally vars to sign(); Sorting left to children
+            kwargs['urlpath'] = urlpath
             kwargs = self.sign(endpoint, *args, **kwargs)
 
         url = self.uri + urlpath
