@@ -55,7 +55,7 @@ class KrakenHTTP(Client):
         if count:
             q['count'] = count
 
-        resp = self._query('Depth', q)
+        resp = self.query('public/Depth', params=q)
 
         return resp, pair
 
@@ -64,7 +64,7 @@ class KrakenHTTP(Client):
         Returns the Kraken server time in unix
         :return: list
         """
-        response = self._api.query_public('Time')
+        response = self._api.query_public('public/Time')
         return response
 
     def assets(self, assets='all', info='info', aclass='currency'):
@@ -88,7 +88,7 @@ class KrakenHTTP(Client):
             elif isinstance(assets, str):
                 q['assets'] = assets
 
-        response = self._api.query_public('Assets', q)
+        response = self._api.query_public('public/Assets', params=q)
         return response
 
     def asset_pairs(self, pairs='all', info='info'):
@@ -106,7 +106,7 @@ class KrakenHTTP(Client):
             elif isinstance(pairs, str):
                 q['assets'] = pairs
 
-        response = self._api.query_public('AssetPairs', q)
+        response = self._api.query_public('public/AssetPairs', params=q)
 
         return response
 
@@ -120,7 +120,7 @@ class KrakenHTTP(Client):
             pairs = ','.join(pairs)
 
         q = {'pair': pairs}
-        response = self._api.query_public('Ticker', q)
+        response = self._api.query('public/Ticker', params=q)
         return response
 
     def ohlc(self, pair, interval=1, since=None):
@@ -135,7 +135,7 @@ class KrakenHTTP(Client):
         if since is not None:
             q['since'] = since
 
-        response = self._api.query_public('OHLC', q)
+        response = self._api.query_public('public/OHLC', params=q)
         return response
 
     def trades(self, pair, since=None):
@@ -149,7 +149,7 @@ class KrakenHTTP(Client):
         if since is not None:
             q['since'] = None
 
-        response = self._api.query_public('Trades', q)
+        response = self._api.query_public('public/Trades', params=q)
         return response
 
     def spread(self, pair, since=None):
@@ -163,7 +163,7 @@ class KrakenHTTP(Client):
         if since is not None:
             q['since'] = None
 
-        response = self._api.query_public('Spread', q)
+        response = self._api.query_public('public/Spread', params=q)
         return response
 
     def balance(self, asset='ZUSD', aclass=None):
@@ -177,7 +177,8 @@ class KrakenHTTP(Client):
         if aclass is not None:
             q['aclass'] = aclass
 
-        response = self._api.query_private('TradeBalance', q)
+        response = self._api.query('private/TradeBalance', params=q, post=True,
+                                   authenticate=True)
         return response
 
     def open_orders(self, trades=False, userref=None):
@@ -194,7 +195,7 @@ class KrakenHTTP(Client):
         if userref is not None:
             q['userref'] = userref
 
-        response = self._api.query_private('OpenOrders', q)
+        response = self._api.query_private('private/OpenOrders', params=q)
         return response
 
     def closed_orders(self, ofs, trades=False, userref=None, start=None, end=None,
@@ -223,7 +224,7 @@ class KrakenHTTP(Client):
         if end is not None:
             q['end'] = end
 
-        response = self._api.query_private('ClosedOrders', q)
+        response = self._api.query_private('private/ClosedOrders', params=q)
         return response
 
     def query_orders(self, trades=False, userref=None, txid=None):
@@ -241,7 +242,7 @@ class KrakenHTTP(Client):
         if txid is not None:
             q['txid'] = txid
 
-        response = self._api.query_private('QueryOrders', q)
+        response = self._api.query_private('private/QueryOrders', params=q)
         return response
 
     def trade_history(self, ofs, trade_type='all', trades=False, start=None, end=None):
@@ -266,7 +267,7 @@ class KrakenHTTP(Client):
         if end is not None:
             q['end'] = end
 
-        response = self._api.query_private('TradesHistory', q)
+        response = self._api.query_private('private/TradesHistory', params=q)
         return response
 
     def trade_info(self, txid, trades=False):
@@ -278,7 +279,7 @@ class KrakenHTTP(Client):
         """
         q = {'trades': trades, 'txid': txid}
 
-        response = self._api.query_private('QueryTrades', q)
+        response = self._api.query_private('private/QueryTrades', params=q)
         return response
 
     def open_positions(self, txid, docalcs=False):
@@ -290,7 +291,7 @@ class KrakenHTTP(Client):
         """
         q = {'txid': self.__validate_txid(txid), 'docalcs': docalcs}
 
-        response = self._api.query_private('OpenPositions', q)
+        response = self._api.query_private('private/OpenPositions', params=q)
         return response
 
     def ledgers(self, ofs, aclass='currency', asset='all', ledger_type='all',
@@ -318,7 +319,7 @@ class KrakenHTTP(Client):
         if end is not None:
             q['end'] = end
 
-        response = self._api.query_private('Ledgers', q)
+        response = self._api.query_private('private/Ledgers', params=q)
         return response
 
     def query_ledger(self, ids):
@@ -329,7 +330,7 @@ class KrakenHTTP(Client):
         """
         q = {'id': self.__validate_txid(id)}
 
-        response = self._api.query_private('QueryLedgers', q)
+        response = self._api.query_private('private/QueryLedgers', params=q)
         return response
 
     def trade_volume(self, pairs=None, fee_info=None):
@@ -351,7 +352,7 @@ class KrakenHTTP(Client):
         if fee_info is not None:
             q['fee-info'] = fee_info
 
-        response = self._api.query_private('TradeVolume', q)
+        response = self._api.query_private('private/TradeVolume', params=q)
         return response
 
     def add_order(self, pair, ordertype, volume, price=None, price2=None,
@@ -390,7 +391,7 @@ class KrakenHTTP(Client):
         else:
             q['price2'] = price2
 
-        response = self._api.query_private('AddOrder', q)
+        response = self._api.query_private('private/AddOrder', params=q)
         return response
 
     def cancel_order(self, txid):
@@ -401,7 +402,7 @@ class KrakenHTTP(Client):
         """
         q = {'txid': txid}
 
-        response = self._api.query_private('CancelOrder', q)
+        response = self._api.query_private('CancelOrder', params=q)
         return response
 
     def deposit_method(self, asset, aclass='currency'):
@@ -413,7 +414,7 @@ class KrakenHTTP(Client):
         """
         q = {'asset': asset, 'aclass': aclass}
 
-        response = self._api.query_private('DepositMethods', q)
+        response = self._api.query_private('private/DepositMethods', params=q)
         return response
 
     def deposit_addresses(self, asset, method, new=False, aclass='currency'):
@@ -427,7 +428,7 @@ class KrakenHTTP(Client):
         """
         q = {'asset': asset, 'method': method, 'new': new, 'aclass': aclass}
 
-        response = self._api.query_private('DepositAddress', q)
+        response = self._api.query_private('private/DepositAddress', params=q)
         return response
 
     def deposit_status(self, asset, method, aclass='currency'):
@@ -440,7 +441,7 @@ class KrakenHTTP(Client):
         """
         q = {'asset': asset, 'method': method, 'aclass': aclass}
 
-        response = self._api.query_private('DepositStatus', q)
+        response = self._api.query_private('private/DepositStatus', params=q)
         return response
 
     def withdraw_info(self, asset, key, amount, aclass='currency'):
@@ -454,7 +455,7 @@ class KrakenHTTP(Client):
         """
         q = {'asset': asset, 'key': key, 'amount': amount, 'aclass': aclass}
 
-        response = self._api.query_private('WithdrawInfo', q)
+        response = self._api.query_private('private/WithdrawInfo', params=q)
         return response
 
     def withdraw(self, asset, key, amount, aclass='currency'):
@@ -468,7 +469,7 @@ class KrakenHTTP(Client):
         """
         q = {'asset': asset, 'key': key, 'amount': amount, 'aclass': aclass}
 
-        response = self._api.query_private('Withdraw', q)
+        response = self._api.query_private('private/Withdraw', params=q)
         return response
 
     def withdraw_status(self, asset, aclass='currency', method=None):
@@ -483,7 +484,7 @@ class KrakenHTTP(Client):
         if method is not None:
             q['method'] = method
 
-        response = self._api.query_private('WithdrawStatus', q)
+        response = self._api.query_private('private/WithdrawStatus', params=q)
         return response
 
     def withdrawal_cancel(self, asset, refid, aclass='currency'):
@@ -496,14 +497,14 @@ class KrakenHTTP(Client):
         """
         q = {'asset': asset, 'refid': refid, 'aclass': aclass}
 
-        response = self._api.query_private('WithdrawCancel', q)
+        response = self._api.query_private('private/WithdrawCancel', params=q)
         return response
 
 
 if __name__ == '__main__':
-    test = KrakenHTTP(key_file='../../keys/kraken.key')
-    print(test.ticker('BTCEUR'))
-    print(test.balance())
-    print(test.asset_pairs())
+    test = KrakenHTTP()
+    print(test.ticker('BTCEUR').text)
+    print(test.ticker('BTCEUR').text)
+
 
 
