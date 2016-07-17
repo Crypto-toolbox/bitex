@@ -26,13 +26,17 @@ class GdaxHTTP(Client):
         super(GdaxHTTP, self).__init__(api, 'GDAX')
 
     def order_book(self, pair):
-        q = {'pair': pair}
-        return self._query('/products/%s/book' % pair, q)
+        return self.query('products/%s/book' % pair, authenticate=True)
 
     def ticker(self, pair):
-        return self._query('/%s/ticker' % pair)
+        return self.query('products/%s/ticker' % pair, authenticate=True)
+
+    def accounts(self):
+        return self.query('accounts', authenticate=True)
+
 
 if __name__ == '__main__':
     uix = GdaxHTTP()
-    print(uix.order_book('BTC-USD'))
-    print(uix.ticker('BTC-USD'))
+    print(uix.order_book('BTC-USD').text)
+    print(uix.ticker('BTC-USD').text)
+    print(uix.accounts().text)
