@@ -8,9 +8,8 @@ import time
 import hashlib
 import hmac
 import base64
-import requests
 import urllib.request, urllib.parse, urllib.error
-import http.client
+
 
 # Import Third-Party
 
