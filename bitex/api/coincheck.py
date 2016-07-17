@@ -8,6 +8,7 @@ import logging
 import hashlib
 import hmac
 import time
+import json
 
 # Import Third-Party
 import requests
@@ -23,29 +24,7 @@ class APIError(Exception):
     pass
 
 
-class API(RESTAPI):
-    def __init__(self, key='', secret='', api_version='',
-                 url='https://coincheck.jp/api'):
-
-        super(API, self).__init__(url, api_version=api_version, key=key,
-                                  secret=secret)
-
-    def sign(self, *args, **kwargs):
-        full_path = self.uri + kwargs['urlpath']
-        nonce = str(int(1000 * time.time()))
-
-        # sig = nonce + url + req
-        data = (nonce + full_path).encode()
-
-        h = hmac.new(self.secret.encode('utf8'), data, hashlib.sha256)
-        signature = h.hexdigest()
-        headers = {"ACCESS-KEY": self.key,
-                   "ACCESS-NONCE": nonce,
-                   "ACCESS-SIGNATURE": signature}
-
-        return kwargs['req'], headers, {}
-
-class _API(object):
+class API(object):
     """
     Bitstamp cryptocurrency Exchange API.
     Based on Veox' krakenex module.
@@ -152,3 +131,30 @@ class _API(object):
                    "ACCESS-SIGNATURE": signature}
 
         return self._query(urlpath, req, headers)
+
+
+class _API(RESTAPI):
+    def __init__(self, passphrase='', key='', secret='', api_version='api',
+                 url='https://coincheck.com'):
+
+        super(API, self).__init__(url, api_version=api_version, key=key,
+                                  secret=secret)
+
+    def sign(self, *args, **kwargs):
+
+        nonce = str(int(1000 * time.time()))
+        try:
+            params = kwargs['params']
+        except KeyError:
+            params = {}
+
+        params = json.dumps(params)
+        # sig = nonce + url + req
+        data = (nonce + kwargs['urlpath'] + params).encode()
+        h = hmac.new(self.secret.encode('utf8'), data, hashlib.sha256)
+        signature = h.hexdigest()
+        headers = {"ACCESS-KEY": self.key,
+                   "ACCESS-NONCE": nonce,
+                   "ACCESS-SIGNATURE": signature}
+
+        return {'headers': headers}

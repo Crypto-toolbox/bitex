@@ -23,14 +23,18 @@ class CoincheckHTTP(Client):
             api.load_key(key_file)
         super(CoincheckHTTP, self).__init__(api, 'Coincheck')
 
-    def order_book(self, pair):
-        q = {'pair': pair}
-        return self._query('order_books', q)
+    def order_book(self):
+        return self.query('order_books')
 
     def ticker(self):
-        return self._query('ticker')
+        return self.query('ticker')
+
+    def balance(self):
+        return self.query('/accounts/balance', authenticate=True)
 
 
 if __name__ == '__main__':
-    uix = CoincheckHTTP('BTCJPY')
-    uix.orderbook('BTCJPY')
+    uix = CoincheckHTTP()
+    print(uix.order_book().text)
+    print(uix.ticker().text)
+    print(uix.balance().text)
