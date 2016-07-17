@@ -35,47 +35,32 @@ class RESTAPI:
 
     def sign(self, *args, **kwargs):
         """
-        Dummy Signature creation method. Override this in child. Must return
-        tuple of request and headers (either can be empty)
+        Dummy Signature creation method. Override this in child.
+        Returned dict must have keywords usable by requests.get or requests.post
         """
-        req = {}
-        headers = {}
-        auth = {}
-        return req, headers, auth
 
-    def _query(self, urlpath, post, req={}, headers={}):
-        """
-        Sends request to api, using given args.
-        """
-        url = self.uri + urlpath
-        print(url, req)
+        return kwargs
 
-        if post:
-            r = requests.post(url, params=req, headers=headers)
-        else:
-            r = requests.get(url, params=req, headers=headers)
-        return r
-
-    def query_public(self, endpoint, req={}, headers={}, post=False):
+    def query(self, endpoint, post=False, authenticate=False, *args, **kwargs):
         """
-        API queries that do not require a valid key/secret pair. Default uses
-        GET
+        Queries exchange using given data. Defaults to unauthenticated GET query.
         """
-        urlpath = '/' + self.apiversion + '/' + endpoint
-        return self._query(urlpath, post, req, headers)
-
-    def query_private(self, endpoint, req={}, post=True, *args, **kwargs):
-        """
-        API queries that require a valid key/secret pair. Default uses POST
-        """
+        print(endpoint, post, authenticate, args, kwargs)
         if self.apiversion:
             urlpath = '/' + self.apiversion + '/' + endpoint
         else:
             urlpath = '/' + endpoint
 
-        req, headers, auth = self.sign(*args, req=req, endpoint=endpoint,
-                                 urlpath=urlpath, post=post, **kwargs)
-        return self._query(urlpath, req=req, post=post, headers=headers,
-                           auth=auth)
+        if authenticate:
+            kwargs = self.sign(endpoint, *args, **kwargs)
+
+        url = self.uri + urlpath
+        print(url)
+        request_method = requests.post if post else requests.get
+
+        r = request_method(url, timeout=5, **kwargs)
+
+        return r
+
 
 

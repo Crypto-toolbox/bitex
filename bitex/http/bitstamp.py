@@ -44,50 +44,56 @@ class BitstampHTTP(Client):
         if count:
             q['count'] = count
 
-        resp = self._query('order_book/%s/' % pair)
+        resp = self.query('v2/order_book/%s/' % pair)
 
-        return resp, pair
+        return resp
 
     def ticker(self, pair):
-        response = self._query('ticker/%s/' % pair)
-        return response, pair
+        response = self.query('v2/ticker/%s/' % pair)
+        return response
 
     def hourly_ticker(self, pair):
-        resp = self._query('ticker_hour/%s/' % pair)
-        return resp, pair
+        resp = self.query('v2/ticker_hour/%s/' % pair)
+        return resp
 
     def trades(self, pair, t='hour'):
-        resp = self._query('transactions/%s/' % pair, {'time': t})
-        return resp, pair
+        resp = self.query('v2/transactions/%s/' % pair, data={'time': t})
+        return resp
 
     def eur_usd_conversion(self):
-        return self._query('eur_usd/')
+        return self.query('v2/eur_usd/')
 
     def balance(self, pair=''):
         if pair:
-            return self._query('v2/balance/%s/' % pair, private=True)
+            return self.query('v2/balance/%s/' % pair, authenticate=True,
+                              post=True, data={})
         else:
-            return self,_api._query('v2/balance/', private=True)
+            return self.query('balance/', authenticate=True, post=True, data={})
 
     def user_transactions(self, pair='', offset=0, limit=100, sort='desc'):
         q = {'offset': offset, 'limit': limit, 'sort': sort}
         if pair:
-            return self._query('v2/user_transactions/%s/' % pair, q,
-                                    private=True)
+            return self.query('v2/user_transactions/%s/' % pair, data=q,
+                               post=True, authenticate=True)
         else:
-            return self._query('v2/user_transactions/', q, private=True)
+            return self.query('v2/user_transactions/', data=q,
+                               post=True, authenticate=True)
 
     def open_orders(self, pair):
-        return self._query('v2/open_orders/%s/' % pair, private=True)
+        return self.query('v2/open_orders/%s/' % pair, post=True,
+                          authenticate=True)
 
     def order_status(self, id):
-        return self._query('v2/order_status/', {'id': id}, private=True)
+        return self.query('order_status/', data={'id': id}, post=True,
+                          authenticate=True)
 
     def cancel_order(self, id=None):
         if id is None:
-            return self._query('/cancel_all_orders/', private=True)
+            return self.query('cancel_all_orders/', post=True,
+                              authenticate=True)
         else:
-            return self._query('/cancel_order/', {'id': id}, private=True)
+            return self.query('v2/cancel_order/', data={'id': id}, post=True,
+                              authenticate=True)
 
     def limit_order(self, order_type, pair, amount, price, limit_price=None):
         if order_type != 'sell' and order_type != 'buy':
@@ -96,37 +102,43 @@ class BitstampHTTP(Client):
         q = {'amount': amount, 'price': price}
         if limit_price is not None:
             q['limit_price'] = limit_price
-        return self._query('v2/%s/%s/' % (order_type, pair), q, private=True)
+        return self.query('v2/%s/%s/' % (order_type, pair), data=q, post=True,
+                          authenticate=True)
 
     def withdrawal_requests(self):
-        return self._query('/withdrawal_requests/', private=True)
+        return self.query('withdrawal_requests/', post=True, authenticate=True)
 
     def bitcoin_withdrawal(self, address, amount, instant=0):
         q = {'address': address, 'amount': amount, 'instant': instant}
-        return self._query('bitcoin_withdrawal/', q, private=True)
+        return self.query('bitcoin_withdrawal/', data=q, post=True,
+                          authenticate=True)
 
     def bitcoin_address(self):
-        return self._query('bitcoin_deposit_address/', private=True)
+        return self.query('bitcoin_deposit_address/', post=True,
+                          authenticate=True)
 
     def unconfirmed_bitcoin_deposits(self):
-        return self._query('unconfirmed_bts/', private=True)
+        return self.query('unconfirmed_bts/', post=True, authenticate=True)
 
     def ripple_withdrawal(self, address, amount, currency):
         q = {'address': address, 'amount': amount, 'currency': currency}
-        return self._query('ripple_withdrawal/', q, private=True)  # See https://github.com/nlsdfnbch/bitex/issues/4
+        return self.query('ripple_withdrawal/', data=q, post=True,
+                          authenticate=True)
 
     def ripple_address(self):
-        return self._query('/ripple_address/', private=True) # See https://github.com/nlsdfnbch/bitex/issues/4
+        return self.query('ripple_address/', post=True, authenticate=True)
 
     def transfer_to_main(self, currency, amount, to_sub=None):
         q = {'currency': currency, 'amount': amount}
         if to_sub:
             q['subAccount'] = to_sub
-        return self._query('v2/transfer-to-main', q, private=True)
+        return self.query('v2/transfer-to-main', data=q, post=True,
+                          authenticate=True)
 
     def transfer_to_sub(self, currency, amount, sub_account):
         q = {'currency': currency, 'amount': amount, 'subAccount': sub_account}
-        return self._query('v2/transfer-to-main', q , private=True)
+        return self.query('v2/transfer-from-main', data=q, post=True,
+                          authenticate=True)
 
 
 if __name__ == '__main__':
