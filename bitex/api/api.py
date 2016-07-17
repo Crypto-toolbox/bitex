@@ -42,11 +42,12 @@ class RESTAPI:
 
         return kwargs
 
-    def query(self, endpoint, post=False, authenticate=False, *args, **kwargs):
+    def query(self, endpoint, authenticate=False, request_method=requests.get,
+              *args, **kwargs):
         """
         Queries exchange using given data. Defaults to unauthenticated GET query.
         """
-        print(endpoint, post, authenticate, args, kwargs)
+        print(endpoint, authenticate, request_method, args, kwargs)
         if self.apiversion:
             urlpath = '/' + self.apiversion + '/' + endpoint
         else:
@@ -58,7 +59,6 @@ class RESTAPI:
 
         url = self.uri + urlpath
         print(url)
-        request_method = requests.post if post else requests.get
 
         r = request_method(url, timeout=5, **kwargs)
 

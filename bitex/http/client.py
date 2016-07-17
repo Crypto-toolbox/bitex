@@ -5,8 +5,8 @@ Do fancy shit.
 
 # Import Built-Ins
 import logging
-import json
-from socket import AF_INET, SOCK_DGRAM, socket
+import requests
+
 # Import Third-Party
 
 # Import Homebrew
@@ -31,9 +31,12 @@ class Client:
         self._name = name
 
     def query(self, method, post=False, authenticate=False, *args, **kwargs):
-
-        return self._api.query(method, post=post, authenticate=authenticate,
-                               *args, **kwargs)
+        if post:
+            request_method = requests.post
+        else:
+            request_method = requests.get
+        return self._api.query(method, request_method=request_method,
+                               authenticate=authenticate, *args, **kwargs)
 
     def _format(self, sent, received, pair, *ls):
         """
