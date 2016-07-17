@@ -30,13 +30,10 @@ class Client:
         self._api = api
         self._name = name
 
-    def _query(self, method, q={}, private=False, **kwargs):
+    def query(self, method, post=False, authenticate=False, *args, **kwargs):
 
-        if private:
-            resp = self._api.query_private(method, q, **kwargs)
-        else:
-            resp = self._api.query_public(method, q, **kwargs)
-        return resp
+        return self._api.query(method, post=post, authenticate=authenticate,
+                               *args, **kwargs)
 
     def _format(self, sent, received, pair, *ls):
         """
