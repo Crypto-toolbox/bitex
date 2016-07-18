@@ -30,19 +30,6 @@ class KrakenHTTP(Client):
             api.load_key(key_file)
         super(KrakenHTTP, self).__init__(api, 'Kraken')
 
-    def run(self, func, *args, **kwargs):
-        """
-        Runs a given method infinitely, every 5 seconds.
-        :param func:
-        :param args:
-        :param kwargs:
-        :return:
-        """
-        while True:
-            resp = func(*args, **kwargs)
-            for i in resp:
-                super(KrakenHTTP, self).send(i)
-            time.sleep(5)
 
     def order_book(self, pair, count=0):
         """

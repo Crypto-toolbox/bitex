@@ -215,5 +215,5 @@ class BitfinexHTTP(Client):
         return self.query('key_infos', authenticate=True, post=True)
 
 if __name__ == '__main__':
-    uix = BitfinexHTTP('BTCUSD', key_file='../../keys/bitfinex.key')
-    print(uix.account_infos())
+    uix = BitfinexHTTP()
+    print(uix.ticker('ltcbtc').text)
