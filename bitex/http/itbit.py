@@ -9,7 +9,7 @@ import logging
 # Import Third-Party
 
 # Import Homebrew
-from bitex.api.itbit import API
+from bitex.api.rest import ItbitREST
 from bitex.http.client import Client
 
 log = logging.getLogger(__name__)
@@ -17,7 +17,7 @@ log = logging.getLogger(__name__)
 
 class ITBitHTTP(Client):
     def __init__(self, key='', secret='', userId='', key_file=''):
-        api = API(key, secret, userId)
+        api = ItbitREST(key, secret, userId)
         if key_file:
             api.load_key(key_file)
         super(ITBitHTTP, self).__init__(api, 'ITBit')
