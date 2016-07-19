@@ -24,7 +24,7 @@ class ITBitHTTP(Client):
 
     def ticker(self, pair):
         path = "/markets/%s/ticker" % (pair)
-        response = self._api._query("GET", path, {})
+        response = self.query(path, {})
         return response
 
     def get_order_book(self, pair):
@@ -32,104 +32,21 @@ class ITBitHTTP(Client):
         response = self._api._query("GET", path, {})
         return response
 
-    def get_wallet(self, walletId='', page=1, per_page=50):
-        if not walletId:
-            q = {'userId': self._api.userId, 'page': page, 'perPage': per_page}
-
-            queryString = self._api._generate_query_string(q)
-            path = "/wallets%s" % (queryString)
-            response = self._api._query("GET", path, {})
-            return response
+    def trades(self, pair, since=None):
+        if since:
+            q = {'since': since}
         else:
-            path = "/wallets/%s" % (walletId)
-            response = self._api._query("GET", path, {})
-            return response
-
-    def create_wallet(self, walletName):
-        path = "/wallets"
-        response = self._api._query("POST", path, {'userId': self.userId,
-                                                    'name': walletName})
-        return response
+            q = {}
+        path = '/markets/%s/trades' % pair
+        return self.query(path, q)
 
     def balance(self, walletId, currency):
         path = "/wallets/%s/balances/%s" % (walletId, currency)
         response = self._api._query("GET", path, {})
         return response
 
-    def trade_history(self, walletId, last_execution_id='', page=1,
-                          per_page=50, range_start=None, range_end=None):
-        q = {'lastExecutionId': last_execution_id, 'page': page,
-             'perPage': per_page}
-
-        if range_start:
-            q['rangeStart'] = range_start
-        if range_end:
-            q['rangeEnd'] = range_end
-
-        queryString = self._api._generate_query_string(q)
-        path = "/wallets/%s/trades%s" % (walletId, queryString)
-        response = self._api._query("GET", path, {})
-        return response
-
-    def get_wallet_orders(self, walletId):
-        q = {}
-        queryString = self._api._generate_query_string(q)
-        path = "/wallets/%s/orders%s" % (walletId, queryString)
-        response = self._api._query("GET", path, {})
-        return response
-
-    def place_order(self, walletId, side, currency, amount, price, instrument):
-        path = "/wallets/%s/orders/" % (walletId)
-        response = self._api._query("POST", path,
-                                     {'type': 'limit', 'currency': currency,
-                                      'side': side, 'amount': amount,
-                                      'price': price, 'instrument': instrument})
-        return response
-
-    def create_order_with_display(self, walletId, side, currency, amount, price,
-                                  display, instrument):
-        path = "/wallets/%s/orders/" % (walletId)
-        response = self._api._query("POST", path,
-                                     {'type': 'limit', 'currency': currency,
-                                      'side': side, 'amount': amount,
-                                      'price': price, 'display': display,
-                                      'instrument': instrument})
-        return response
-
-    def query_order(self, walletId, orderId):
-        path = "/wallets/%s/orders/%s" % (walletId, orderId)
-        response = self._api._query("GET", path, {})
-        return response
-
-    def cancel_order(self, walletId, orderId):
-        path = "/wallets/%s/orders/%s" % (walletId, orderId)
-        response = self._api._query("DELETE", path, {})
-        return response
-
-    def cryptocurrency_withdrawal_request(self, walletId, currency, amount,
-                                          address):
-        path = "/wallets/%s/cryptocurrency_withdrawals" % (walletId)
-        response = self._api._query("POST", path,
-                                     {'currency': currency, 'amount': amount,
-                                      'address': address})
-        return response
-
-    def cryptocurrency_deposit_request(self, walletId, currency):
-        path = "/wallets/%s/cryptocurrency_deposits" % (walletId)
-        response = self._api._query("POST", path, {'currency': currency})
-        return response
-
-    def create_wallet_transfer(self, sourceWalletId, destinationWalletId,
-                               amount, currencyCode):
-        path = "/wallet_transfers"
-        response = self._api._query("POST", path,
-                                     {'sourceWalletId': sourceWalletId,
-                                      'destinationWalletId': destinationWalletId,
-                                      'amount': amount,
-                                      'currencyCode': currencyCode})
-        return response
 
 
 if __name__ == '__main__':
     uix = ITBitHTTP()
-    print(uix.ticker('XBTUSD'))
+    print(uix.trades('XBTUSD').text)

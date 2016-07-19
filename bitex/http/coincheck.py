@@ -26,6 +26,9 @@ class CoincheckHTTP(Client):
     def ticker(self):
         return self.query('ticker')
 
+    def trades(self):
+        return self.query('trades')
+
     def balance(self):
         return self.query('/accounts/balance', authenticate=True)
 
@@ -35,3 +38,4 @@ if __name__ == '__main__':
     print(uix.order_book().text)
     print(uix.ticker().text)
     print(uix.balance().text)
+    print(uix.trades().text)
