@@ -7,7 +7,7 @@ Do fancy shit.
 import logging
 
 # Import Homebrew
-from bitex.api.bitfinex import API
+from bitex.api.rest import BitfinexREST
 from bitex.http.client import Client
 
 
@@ -16,7 +16,7 @@ log = logging.getLogger(__name__)
 
 class BitfinexHTTP(Client):
     def __init__(self, key='', secret='', key_file=''):
-        api = API(key, secret)
+        api = BitfinexREST(key, secret)
         if key_file:
             api.load_key(key_file)
         super(BitfinexHTTP, self).__init__(api, 'Bitfinex')

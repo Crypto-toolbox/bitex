@@ -8,7 +8,7 @@ import logging
 
 
 # Import Third-Party
-from bitex.api.gdax import API
+from bitex.api.rest import GDAXRest
 from bitex.http.client import Client
 
 # Import Homebrew
@@ -18,7 +18,7 @@ log = logging.getLogger(__name__)
 
 class GdaxHTTP(Client):
     def __init__(self, key='', secret='', key_file=''):
-        api = API(key, secret)
+        api = GDAXRest(key, secret)
         if key_file:
             api.load_key(key_file)
         super(GdaxHTTP, self).__init__(api, 'GDAX')

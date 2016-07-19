@@ -8,14 +8,14 @@ import logging
 
 # Import Homebrew
 from bitex.http.client import Client
-from bitex.api.coincheck import API
+from bitex.api.rest import CoincheckREST
 
 log = logging.getLogger(__name__)
 
 
 class CoincheckHTTP(Client):
     def __init__(self, key='', secret='', key_file=''):
-        api = API(key, secret)
+        api = CoincheckREST(key, secret)
         if key_file:
             api.load_key(key_file)
         super(CoincheckHTTP, self).__init__(api, 'Coincheck')

@@ -7,7 +7,7 @@ Do fancy shit.
 import logging
 
 # Import Homebrew
-from bitex.api.kraken import API
+from bitex.api.rest import KrakenREST
 from bitex.http.client import Client
 
 
@@ -16,7 +16,7 @@ log = logging.getLogger(__name__)
 
 class KrakenHTTP(Client):
     def __init__(self, key='', secret='', key_file=''):
-        api = API(key, secret)
+        api = KrakenREST(key, secret)
         if key_file:
             api.load_key(key_file)
         super(KrakenHTTP, self).__init__(api, 'Kraken')
