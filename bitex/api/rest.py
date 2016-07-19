@@ -222,8 +222,8 @@ class KrakenREST(RESTAPI):
 
 
 class ItbitREST(RESTAPI):
-    def __init__(self, user_id = '', key='', secret='', api_version='0',
-                 url='https://api.kraken.com'):
+    def __init__(self, user_id = '', key='', secret='', api_version='v1',
+                 url='https://api.itbit.com'):
         self.userId = user_id
         super(ItbitREST, self).__init__(url, api_version=api_version,
                                  key=key, secret=secret)
