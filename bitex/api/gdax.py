@@ -68,4 +68,6 @@ class API(RESTAPI):
         except KeyError:
             js = {}
 
-        return {'json': js, 'auth': auth}
+        url = self.uri + kwargs['urlpath']
+
+        return url, {'json': js, 'auth': auth}

@@ -38,31 +38,39 @@ class RESTAPI:
         """
         Dummy Signature creation method. Override this in child.
         Returned dict must have keywords usable by requests.get or requests.post
+        URL is required to be returned, as some Signatures use the url for
+        sig generation, and api calls made must match the address exactly.
         """
 
-        return kwargs
+        return url, kwargs
 
     def query(self, endpoint, authenticate=False, request_method=requests.get,
               *args, **kwargs):
         """
         Queries exchange using given data. Defaults to unauthenticated GET query.
         """
-        print(endpoint, authenticate, request_method, args, kwargs)
         if self.apiversion:
             urlpath = '/' + self.apiversion + '/' + endpoint
         else:
             urlpath = '/' + endpoint
 
+        print(endpoint, authenticate, request_method, args, kwargs)
+
         if authenticate:  # Pass all locally vars to sign(); Sorting left to children
             kwargs['urlpath'] = urlpath
-            kwargs = self.sign(endpoint, *args, **kwargs)
+            url, kwargs = self.sign(endpoint, *args, **kwargs)
+        else:
+            url = self.uri + urlpath
 
-        url = self.uri + urlpath
         print(url)
-
         r = request_method(url, timeout=5, **kwargs)
 
         return r
+
+
+
+
+
 
 
 

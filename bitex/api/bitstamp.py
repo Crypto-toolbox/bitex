@@ -56,5 +56,5 @@ class API(RESTAPI):
         req['nonce'] = nonce
         req['signature'] = signature
         print(req)
-
-        return {'data': req}
+        url = self.uri + kwargs['urlpath']
+        return url, {'data': req}

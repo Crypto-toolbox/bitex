@@ -45,4 +45,6 @@ class API(RESTAPI):
             'API-Sign': sigdigest.decode()
         }
 
-        return {'data': req, 'headers': headers}
+        url = self.uri + kwargs['urlpath']
+
+        return url, {'data': req, 'headers': headers}

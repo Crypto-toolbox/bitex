@@ -156,5 +156,5 @@ class _API(RESTAPI):
         headers = {"ACCESS-KEY": self.key,
                    "ACCESS-NONCE": nonce,
                    "ACCESS-SIGNATURE": signature}
-
-        return {'headers': headers}
+        url = self.uri + kwargs['urlpath']
+        return url, {'headers': headers}

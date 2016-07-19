@@ -47,6 +47,7 @@ class API(RESTAPI):
         headers = {"X-BFX-APIKEY": self.key,
                    "X-BFX-SIGNATURE": signature,
                    "X-BFX-PAYLOAD": data}
+        url = self.uri + kwargs['urlpath']
 
-        return {'headers': headers}
+        return url, {'headers': headers}
 
