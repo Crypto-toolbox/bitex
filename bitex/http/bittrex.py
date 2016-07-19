@@ -5,9 +5,6 @@ Do fancy shit.
 
 # Import Built-Ins
 import logging
-import socket
-import time
-import json
 
 # Import Homebrew
 from bitex.api.bittrex import API
@@ -118,5 +115,5 @@ if __name__ == '__main__':
     uix = BittrexHTTP(key='a64db1b5779246fb9dd907ab9571acff', secret='c5011fe2731f40ccb52fa32ab76251ba')
     print(uix._api.key, uix._api.secret)
     print(uix.markets().json())
-    print(uix.ledger('BTC-LTC').request.headers)
+    print(uix.ledger('BTC-LTC').text)
 

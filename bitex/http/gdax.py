@@ -5,9 +5,7 @@ Do fancy shit.
 
 # Import Built-Ins
 import logging
-import socket
-import time
-import json
+
 
 # Import Third-Party
 from bitex.api.gdax import API

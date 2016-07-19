@@ -5,9 +5,6 @@ Do fancy shit.
 
 # Import Built-Ins
 import logging
-import socket
-import time
-import json
 
 # Import Homebrew
 from bitex.http.client import Client

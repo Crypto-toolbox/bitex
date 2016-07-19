@@ -5,12 +5,8 @@ Do fancy shit.
 
 # Import Built-Ins
 import logging
-import socket
-import time
-import json
 
 # Import Third-Party
-
 
 # Import Homebrew
 from bitex.api.okcoin import API

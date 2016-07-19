@@ -5,16 +5,10 @@ Do fancy shit.
 
 # Import Built-Ins
 import logging
-import socket
-import time
-import json
 
 # Import Homebrew
 from bitex.api.bitstamp import API
 from bitex.http.client import Client
-from bitex.decorators.bitstamp import http_format_ob, http_format_ticker
-from bitex.decorators.bitstamp import http_format_hourly_ticker, http_format_trades
-from bitex.decorators.generic import time_resp
 log = logging.getLogger(__name__)
 
 
@@ -24,7 +18,6 @@ class BitstampHTTP(Client):
         if key_file:
             api.load_key(key_file)
         super(BitstampHTTP, self).__init__(api, 'Bitstamp')
-
 
     def order_book(self, pair, count=0):
         q = {'pair': pair}
@@ -129,13 +122,7 @@ class BitstampHTTP(Client):
 
 
 if __name__ == '__main__':
-    uix = BitstampHTTP(('localhost', 676), key_file='../../keys/bitstamp.key')
-    print(uix.ticker('btcusd'))
-    print(uix.balance('btcusd'))
-    print(uix.user_transactions())
-    print(uix.open_orders('btceur'))
-    print(uix.cancel_order())
-    print(uix.withdrawal_requests())
-    print(uix.bitcoin_address())
-    print(uix.ripple_address())
+    uix = BitstampHTTP()
+    print(uix.ticker('btcusd').text)
+    print(uix.balance('btcusd').text)
 
