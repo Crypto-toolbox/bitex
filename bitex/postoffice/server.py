@@ -21,16 +21,23 @@ class Receiver:
     """
     Example of how receivers are to be set up.
     """
-    def __init__(self):
-        pass
+    def __init__(self, address):
+        self.addr = address  # i.e. ('localhost', 6666)
 
     def deliver(self, message):
-        print("Message received! %s" % message)
+        socket(AF_INET, SOCK_DGRAM).sendto(message, self.addr)
+        return True
+
+    def __eq__(self, other):
+        return self.addr == other.addr
+
+    def __hash__(self):
+        return hash(repr(self))
 
 
 class Subscription:
     """
-    Exchange Object; attached subscribers must have a deliver method.
+    Subscription Object; attached subscribers must have a deliver method.
 
     Used to register receivers, like paper traders for example; These will
     have a message send to them whenever Subscription.deliver() is called.
@@ -93,11 +100,11 @@ class PostOffice:
             sender, data = sock.recvfrom(8192)
             action, message = json.loads(data)
             if action is 'subscribe':
-                sub, subscriber = message
-                self.get_subscription(sub).attach(subscriber)
+                sub, subscriber_addr = message
+                self.get_subscription(sub).attach(Receiver(subscriber_addr))
             elif action is 'unsubscribe':
-                sub, subscriber = message
-                self.get_subscription(sub).detach(subscriber)
+                sub, subscriber_addr = message
+                self.get_subscription(sub).detach(Receiver(subscriber_addr))
             elif action is 'deliver':
                 sub, msg = message
                 self.get_subscription(sub).deliver(msg)
