@@ -222,10 +222,10 @@ class KrakenREST(RESTAPI):
 
 
 class ItbitREST(RESTAPI):
-    def __init__(self, key='', secret='', api_version='0',
+    def __init__(self, user_id = '', key='', secret='', api_version='0',
                  url='https://api.kraken.com'):
-        self.userId =
-        super(KrakenREST, self).__init__(url, api_version=api_version,
+        self.userId = user_id
+        super(ItbitREST, self).__init__(url, api_version=api_version,
                                  key=key, secret=secret)
 
     def load_key(self, path):
