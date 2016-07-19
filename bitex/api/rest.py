@@ -104,7 +104,7 @@ class BittrexREST(RESTAPI):
         req_string = urlpath + '?apikey=' + self.key + "&nonce=" + nonce + '&'
         req_string += urllib.parse.urlencode(params)
 
-        headers = {"apisign": hmac.new(self.secret.encode(), req_string.encode(),
+        headers = {"apisign": hmac.new(self.secret.encode('utf-8'), req_string.encode('utf-8'),
                                        hashlib.sha512).hexdigest()}
 
         return req_string, {'headers': headers, 'params': {}}
@@ -126,7 +126,7 @@ class CoincheckREST(RESTAPI):
 
         params = json.dumps(params)
         # sig = nonce + url + req
-        data = (nonce + kwargs['urlpath'] + params).encode()
+        data = (nonce + kwargs['urlpath'] + params).encode('utf-8')
         h = hmac.new(self.secret.encode('utf8'), data, hashlib.sha256)
         signature = h.hexdigest()
         headers = {"ACCESS-KEY": self.key,
@@ -138,15 +138,15 @@ class CoincheckREST(RESTAPI):
 
 class GdaxAuth(AuthBase):
     def __init__(self, api_key, secret_key, passphrase):
-        self.api_key = api_key.encode()
-        self.secret_key = secret_key.encode()
-        self.passphrase = passphrase.encode()
+        self.api_key = api_key.encode('utf-8')
+        self.secret_key = secret_key.encode('utf-8')
+        self.passphrase = passphrase.encode('utf-8')
 
     def __call__(self, request):
         timestamp = str(time.time())
         message = timestamp + request.method + request.path_url + (request.body or '')
         hmac_key = base64.b64decode(self.secret_key)
-        signature = hmac.new(hmac_key, message.encode(), hashlib.sha256)
+        signature = hmac.new(hmac_key, message.encode('utf-8'), hashlib.sha256)
         signature_b64 = base64.b64encode(signature.digest())
 
         request.headers.update({
@@ -194,7 +194,7 @@ class KrakenREST(RESTAPI):
         super(KrakenREST, self).__init__(url, api_version=api_version,
                                          key=key, secret=secret)
 
-    def sign(self, method, *args, **kwargs):
+    def sign(self, *args, **kwargs):
         try:
             req = kwargs['params']
         except KeyError:
@@ -204,8 +204,8 @@ class KrakenREST(RESTAPI):
         postdata = urllib.parse.urlencode(req)
 
         # Unicode-objects must be encoded before hashing
-        encoded = (str(req['nonce']) + postdata).encode()
-        message = kwargs['urlpath'].encode() + hashlib.sha256(encoded).digest()
+        encoded = (str(req['nonce']) + postdata).encode('utf-8')
+        message = kwargs['urlpath'].encode('utf-8') + hashlib.sha256(encoded).digest()
 
         signature = hmac.new(base64.b64decode(self.secret),
                              message, hashlib.sha512)
@@ -213,10 +213,61 @@ class KrakenREST(RESTAPI):
 
         headers = {
             'API-Key': self.key,
-            'API-Sign': sigdigest.decode()
+            'API-Sign': sigdigest.decode('utf-8')
         }
 
         url = self.uri + kwargs['urlpath']
 
         return url, {'data': req, 'headers': headers}
 
+
+class ItbitREST(RESTAPI):
+    def __init__(self, key='', secret='', api_version='0',
+                 url='https://api.kraken.com'):
+        self.userId =
+        super(KrakenREST, self).__init__(url, api_version=api_version,
+                                 key=key, secret=secret)
+
+    def load_key(self, path):
+        """
+        Load user id, key and secret from file.
+        """
+        with open(path, 'r') as f:
+            self.userId = f.readline().strip()
+            self.clientKey = f.readline().strip()
+            self.secret = f.readline().strip()
+
+    def sign(self, *args, **kwargs):
+        try:
+            params = kwargs['params']
+        except KeyError:
+            params = {}
+
+        verb = kwargs['verb']
+
+        if verb in ('PUT', 'POST'):
+            body = params
+        else:
+            body = {}
+
+        url = self.uri + kwargs['urlpath']
+        timestamp = int(time.time() * 1000)
+        nonce = int(time.time())
+
+        message = json.dumps([verb, url, body, str(nonce), str(timestamp)],
+                             separators=(',', ':'))
+        sha256_hash = hashlib.sha256()
+        nonced_message = str(nonce) + message
+        sha256_hash.update(nonced_message.encode('utf8'))
+        hash_digest = sha256_hash.digest()
+        hmac_digest = hmac.new(self.secret.encode('utf-8'), url.encode('utf-8') + hash_digest,
+                               hashlib.sha512).digest()
+        signature = base64.b64encode(hmac_digest)
+
+        auth_headers = {
+            'Authorization': self.key + ':' + signature.decode('utf8'),
+            'X-Auth-Timestamp': timestamp,
+            'X-Auth-Nonce': nonce,
+            'Content-Type': 'application/json'
+        }
+        return url, {'headers': auth_headers}
