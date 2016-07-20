@@ -54,8 +54,8 @@ class BitstampREST(RESTAPI):
     def __init__(self, user_id='', key='', secret='', api_version='',
                  url='https://www.bitstamp.net/api'):
         self.id = user_id
-        super(BitstampREST, self).__init__(url, api_version=api_version, key=key,
-                                           secret=secret)
+        super(BitstampREST, self).__init__(url, api_version=api_version,
+                                           key=key, secret=secret)
 
     def load_key(self, path):
         """
@@ -70,7 +70,7 @@ class BitstampREST(RESTAPI):
         nonce = self.nonce()
         message = nonce + self.id + self.key
 
-        signature = hmac.new(bytes(self.secret, 'utf-8'), bytes(message, 'utf-8'),
+        signature = hmac.new(self.secret.encode(), message.encode(),
                              hashlib.sha256)
         signature = signature.hexdigest().upper()
 
@@ -105,7 +105,8 @@ class BittrexREST(RESTAPI):
         req_string = urlpath + '?apikey=' + self.key + "&nonce=" + nonce + '&'
         req_string += urllib.parse.urlencode(params)
 
-        headers = {"apisign": hmac.new(self.secret.encode('utf-8'), req_string.encode('utf-8'),
+        headers = {"apisign": hmac.new(self.secret.encode('utf-8'),
+                                       req_string.encode('utf-8'),
                                        hashlib.sha512).hexdigest()}
 
         return req_string, {'headers': headers, 'params': {}}
@@ -145,7 +146,8 @@ class GdaxAuth(AuthBase):
 
     def __call__(self, request):
         timestamp = str(time.time())
-        message = timestamp + request.method + request.path_url + (request.body or '')
+        message = (timestamp + request.method + request.path_url +
+                   (request.body or ''))
         hmac_key = base64.b64decode(self.secret_key)
         signature = hmac.new(hmac_key, message.encode('utf-8'), hashlib.sha256)
         signature_b64 = base64.b64encode(signature.digest())
@@ -205,7 +207,8 @@ class KrakenREST(RESTAPI):
 
         # Unicode-objects must be encoded before hashing
         encoded = (str(req['nonce']) + postdata).encode('utf-8')
-        message = kwargs['urlpath'].encode('utf-8') + hashlib.sha256(encoded).digest()
+        message = (kwargs['urlpath'].encode('utf-8') +
+                   hashlib.sha256(encoded).digest())
 
         signature = hmac.new(base64.b64decode(self.secret),
                              message, hashlib.sha512)
@@ -260,7 +263,8 @@ class ItbitREST(RESTAPI):
         nonced_message = str(nonce) + message
         sha256_hash.update(nonced_message.encode('utf8'))
         hash_digest = sha256_hash.digest()
-        hmac_digest = hmac.new(self.secret.encode('utf-8'), url.encode('utf-8') + hash_digest,
+        hmac_digest = hmac.new(self.secret.encode('utf-8'),
+                               url.encode('utf-8') + hash_digest,
                                hashlib.sha512).digest()
         signature = base64.b64encode(hmac_digest)
 
