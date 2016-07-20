@@ -46,7 +46,6 @@ Additional clients will be added to (or removed from) this list, according to th
 
 In their basic form, clients provide a simple connection to APIs - that is, they handle authentication and request construction for you. As soon the above list is completed to a point where most of the exchanges are implemented (or whenever I feel like it), I will add convenience layers to the clients; this layer will aim to make calling the api feel more like a function, instead of string construction (i.e. `kraken.ticker('XBTEUR')`, instead of typing `kraken.public_query({'pair': 'XBTEUR'})`). 
 
-You'll notice that clients relay data via udp socket; this is later caught by the postoffice module, which handles these formatted messages - for example allowing you to `subscribe` to various streams, save data from a particular set of clients to a file or send it out to a slack channel. 
 
 # Output Format
 All fully implemented `http` clients output Market data in the following format:
