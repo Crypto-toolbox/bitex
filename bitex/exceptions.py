@@ -1,6 +1,6 @@
 """
 Task:
-Descripion of script here.
+Module specific Exceptions
 """
 
 # Import Built-Ins
@@ -12,5 +12,7 @@ import logging
 
 # Init Logging Facilities
 log = logging.getLogger(__name__)
+
+
 
 

@@ -1,6 +1,7 @@
 """
 Task:
-Do fancy shit.
+Supplies classes for setting up a basic publish / subscribe system using
+sockets.
 """
 
 # Import Built-Ins
