@@ -1,6 +1,6 @@
 """
 Task:
-Do fancy shit.
+Provides class-independent decorators
 """
 
 # Import Built-Ins
