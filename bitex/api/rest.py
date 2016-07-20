@@ -294,3 +294,13 @@ class OKCoinREST(RESTAPI):
                    "ACCESS-SIGNATURE": signature}
 
         return url, {'headers': headers}
+
+
+class BTCERest(RESTAPI):
+    def __init__(self, key='', secret='', api_version='3',
+                 url='https://btc-e.com/api'):
+        super(BTCERest, self).__init__(url, api_version=api_version, key=key,
+                                         secret=secret)
+
+    def sign(self, **kwargs):
+        pass
