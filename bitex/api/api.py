@@ -62,6 +62,7 @@ class RESTAPI:
 
         if authenticate:  # Pass all locally vars to sign(); Sorting left to children
             kwargs['urlpath'] = urlpath
+            kwargs['request_method'] = request_method
             url, kwargs = self.sign(endpoint, *args, **kwargs)
         else:
             url = self.uri + urlpath

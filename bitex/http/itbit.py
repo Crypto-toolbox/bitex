@@ -24,12 +24,12 @@ class ITBitHTTP(Client):
 
     def ticker(self, pair):
         path = "/markets/%s/ticker" % (pair)
-        response = self.query(path, {})
+        response = self.query(path)
         return response
 
-    def get_order_book(self, pair):
+    def order_book(self, pair):
         path = "/markets/%s/order_book" % (pair)
-        response = self._api._query("GET", path, {})
+        response = self.query(path)
         return response
 
     def trades(self, pair, since=None):
@@ -38,7 +38,7 @@ class ITBitHTTP(Client):
         else:
             q = {}
         path = '/markets/%s/trades' % pair
-        return self.query(path, q)
+        return self.query(path, params=q)
 
     def balance(self, walletId, currency):
         path = "/wallets/%s/balances/%s" % (walletId, currency)
@@ -50,3 +50,5 @@ class ITBitHTTP(Client):
 if __name__ == '__main__':
     uix = ITBitHTTP()
     print(uix.trades('XBTUSD').text)
+    print(uix.ticker('XBTUSD').text)
+    print(uix.order_book('XBTUSD').text)

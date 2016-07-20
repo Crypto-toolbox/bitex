@@ -248,19 +248,19 @@ class ItbitREST(RESTAPI):
 
         verb = kwargs['verb']
 
-        if verb in ('PUT', 'POST'):
+        if kwargs['request_method'].__name__.upper() in ('PUT', 'POST'):
             body = params
         else:
             body = {}
 
         url = self.uri + kwargs['urlpath']
-        timestamp = int(time.time() * 1000)
+        timestamp = str(int(time.time() * 1000))
         nonce = self.nonce()
 
-        message = json.dumps([verb, url, body, str(nonce), str(timestamp)],
+        message = json.dumps([verb, url, body, nonce, timestamp],
                              separators=(',', ':'))
         sha256_hash = hashlib.sha256()
-        nonced_message = str(nonce) + message
+        nonced_message = nonce + message
         sha256_hash.update(nonced_message.encode('utf8'))
         hash_digest = sha256_hash.digest()
         hmac_digest = hmac.new(self.secret.encode('utf-8'),
