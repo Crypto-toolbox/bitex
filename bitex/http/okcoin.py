@@ -9,7 +9,7 @@ import logging
 # Import Third-Party
 
 # Import Homebrew
-from bitex.api.okcoin import API
+from bitex.api.rest import OKCoinREST
 from bitex.http.client import Client
 
 log = logging.getLogger(__name__)
@@ -17,23 +17,24 @@ log = logging.getLogger(__name__)
 
 class OKCoinHTTP(Client):
     def __init__(self, key='', secret='', key_file=''):
-        api = API(key, secret)
+        api = OKCoinREST(key, secret)
         if key_file:
             api.load_key(key_file)
         super(OKCoinHTTP, self).__init__(api, 'OKCoin')
 
     def order_book(self, pair):
         q = {'pair': pair}
-        return self._api._query('/depth.do', q)
+        return self.query('/depth.do', params=q)
 
     def ticker(self, pair):
-        return self._api._query('/ticker.do', {'symbol': pair})
+        return self.query('/ticker.do', params={'symbol': pair})
 
     def trades(self, pair):
         q = {'pair': pair}
-        return self._api._query('/trades.do', q)
+        return self.query('/trades.do', params=q)
+
 if __name__ == '__main__':
     uix = OKCoinHTTP()
-    print(uix.ticker('btc_usd'))
-    print(uix.trades('btc_usd'))
-    print(uix.order_book('btc_usd'))
+    print(uix.ticker('btc_usd').text)
+    print(uix.trades('btc_usd').text)
+    print(uix.order_book('btc_usd').text)
