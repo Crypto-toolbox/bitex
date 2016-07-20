@@ -6,6 +6,7 @@ Do fancy shit.
 # Import Built-Ins
 import logging
 import requests
+import time
 # Import Third-Party
 
 # Import Homebrew
@@ -34,7 +35,10 @@ class RESTAPI:
             self.key = f.readline().strip()
             self.secret = f.readline().strip()
 
-    def sign(self, *args, **kwargs):
+    def nonce(self):
+        return str(int(1000 * time.time()))
+
+    def sign(self, url=None, *args, **kwargs):
         """
         Dummy Signature creation method. Override this in child.
         Returned dict must have keywords usable by requests.get or requests.post
