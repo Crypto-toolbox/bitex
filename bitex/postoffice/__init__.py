@@ -1,1 +1,1 @@
-from bitex.postoffice.server import PostOffice
+from bitex.postoffice.backend import PostOffice
