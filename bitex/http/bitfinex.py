@@ -1,6 +1,6 @@
 """
 Task:
-Do fancy shit.
+Supplies an REST API Interface to the specified exchange.
 """
 
 # Import Built-Ins
@@ -56,16 +56,17 @@ class BitfinexHTTP(Client):
             return self.query('symbols')
 
     def account_infos(self):
-        return self.query('account_infos', authenticate=True, post=True)
+        return self.query('account_infos', authenticate=True, req_type='POST')
 
     def summary(self):
-        return self.query('summary', authenticate=True, post=True)
+        return self.query('summary', authenticate=True, req_type='POST')
 
     def deposit_crypto(self, coin, wallet_name, renew=False):
         q = {'method': coin, 'wallet_name': wallet_name}
         if renew:
             q['renew'] = 1
-        return self.query('deposit/new', params=q, authenticate=True, post=True)
+        return self.query('deposit/new', params=q, authenticate=True,
+                          req_type='POST')
 
     def _add_order(self, trade, pair, amount, price, post_only=False,
                    hide=False, ocoorder=None):
@@ -81,7 +82,8 @@ class BitfinexHTTP(Client):
             q['ocoorder'] = True
             q['buy_price_oco'] = ocoorder
 
-        return self.query('order/new', params=q, authenticate=True, post=True)
+        return self.query('order/new', params=q, authenticate=True,
+                          req_type='POST')
 
     def add_buy_order(self, pair, amount, price, post_only=False, hide=False,
                       ocoorder=None):
@@ -97,13 +99,13 @@ class BitfinexHTTP(Client):
         q = {'order_id': order_id}
         if isinstance(order_id, (list, tuple)):
             return self.query('order/cancel/multi', params=q, authenticate=True,
-                              post=True)
+                              req_type='POST')
         else:
             return self.query('order/cancel', params=q, authenticate=True,
-                              post=True)
+                              req_type='POST')
 
     def cancel_all_orders(self):
-        return self.query('order/cancel/all', authenticate=True, post=True)
+        return self.query('order/cancel/all', authenticate=True, req_type='POST')
 
     def replace_order(self, order_id, pair, amount, price, side,
                       exchange='bitfinex', order_type='limit', hidden=False,
@@ -113,23 +115,23 @@ class BitfinexHTTP(Client):
              'is_hidden': hidden, 'use_remaining': use_remaining_amount}
 
         return self.query('order/cancel/replace', params=q, authenticate=True,
-                          post=True)
+                          req_type='POST')
 
     def order_status(self, order_id):
         q = {'order_id': order_id}
         return self.query('order/status', params=q, authenticate=True,
-                          post=True)
+                          req_type='POST')
 
     def orders(self):
-        return self.query('order/status', authenticate=True, post=True)
+        return self.query('order/status', authenticate=True, req_type='POST')
 
     def positions(self):
-        return self.query('positions', authenticate=True, post=True)
+        return self.query('positions', authenticate=True, req_type='POST')
 
     def claim_position(self,position_id, amount):
         q = {'position_id': position_id, 'amount': amount}
         return self.query('position/claim', params=q, authenticate=True,
-                          post=True)
+                          req_type='POST')
 
     def balance_history(self, currency, since=None, until=None, limit=500,
                         wallet=None):
@@ -143,7 +145,8 @@ class BitfinexHTTP(Client):
         if wallet:
             q['wallet'] = wallet
 
-        return self.query('history', params=q, authenticate=True, post=True)
+        return self.query('history', params=q, authenticate=True,
+                          req_type='POST')
 
     def funding_history(self, currency, method=None, since=None, until=None,
                         limit=500):
@@ -158,7 +161,7 @@ class BitfinexHTTP(Client):
             q['until'] = until
 
         return self.query('history/movements', params=q, authenticate=True,
-                          post=True)
+                          req_type='POST')
 
     def trade_history(self, pair, timestamp=None, until=None,
                         limit_trades=50, reverse=False):
@@ -172,24 +175,27 @@ class BitfinexHTTP(Client):
         if until:
             q['until'] = until
 
-        return self.query('mytrades', params=q, authenticate=True, post=True)
+        return self.query('mytrades', params=q, authenticate=True,
+                          req_type='POST')
 
     def balance(self):
-        return self.query('balances', authenticate=True, post=True)
+        return self.query('balances', authenticate=True, req_type='POST')
 
     def margin_information(self):
-        return self.query('margin_infos', authenticate=True, post=True)
+        return self.query('margin_infos', authenticate=True, req_type='POST')
 
     def transfer(self, currency, amount, from_, to_):
         q = {'currency': currency, 'amount': amount, 'walletfrom': from_,
              'walletto': to_}
-        return self.query('transfer', params=q, authenticate=True, post=True)
+        return self.query('transfer', params=q, authenticate=True,
+                          req_type='POST')
 
     def withdraw_crypto(self, coin_type, wallet, amount, address):
         q = {'withdraw_type':  coin_type, 'walletselected': wallet,
              'amount':         amount, 'address': address}
 
-        return self.query('withdraw', params=q, authenticate=True, post=True)
+        return self.query('withdraw', params=q, authenticate=True,
+                          req_type='POST')
 
     def withdraw_fiat(self, from_wallet, amount, account_name, account_number,
                       bank_name, bank_addr, bank_city, bank_country,
@@ -206,10 +212,11 @@ class BitfinexHTTP(Client):
         for kwarg in intermediary_kwargs:
             q[kwarg] = intermediary_kwargs[kwarg]
 
-        return self.query('withdraw', params=q, authenticate=True, post=True)
+        return self.query('withdraw', params=q, authenticate=True,
+                          req_type='POST')
 
     def key_permissions(self):
-        return self.query('key_infos', authenticate=True, post=True)
+        return self.query('key_infos', authenticate=True, req_type='POST')
 
 if __name__ == '__main__':
     uix = BitfinexHTTP()

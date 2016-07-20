@@ -1,6 +1,7 @@
 """
 Task:
-Do fancy shit.
+Parent class for all APIs. Stores API, exchange name and handles
+calls to the API via the query() method.
 """
 
 # Import Built-Ins
@@ -17,12 +18,11 @@ log = logging.getLogger(__name__)
 
 class Client:
     """
-    Base Class for http clients. One client per pair!
+    Base Class for http clients.
     """
     def __init__(self, api, name):
         """
         Base Class for http clients
-        :param receiver_addr: tuple, ex ('localhost', 6666)
         :param api: API Class
         :param name: str, name of exchange
         :param pair: str, pair as used in querying exchange.
@@ -30,23 +30,14 @@ class Client:
         self._api = api
         self._name = name
 
-    def query(self, method, post=False, authenticate=False, *args, **kwargs):
-        if post:
-            request_method = requests.post
-        else:
-            request_method = requests.get
-        return self._api.query(method, request_method=request_method,
+    def query(self, method, req_type='GET', authenticate=False, *args, **kwargs):
+        request_method = {'POST': requests.post, 'PUT': requests.put,
+                          'GET': requests.get, 'DELETE': requests.delete,
+                          'PATCH': requests.patch}
+        if req_type not in request_method.keys():
+            raise ValueError("req_type contains unknown request type!")
+
+        return self._api.query(method, request_method=request_method[req_type],
                                authenticate=authenticate, *args, **kwargs)
 
-    def _format(self, sent, received, pair, *ls):
-        """
-        adds pair and exchange to list, converts to string and sends it out.
-        :param sent: timestamp
-        :param received: timestamp
-        :param ls: list or field values
-        :return: list
-        """
-        new = [sent, received, pair, self._name, *ls]
-
-        return new
 

@@ -1,6 +1,6 @@
 """
 Task:
-Do fancy shit.
+Supplies an REST API Interface to the specified exchange.
 """
 
 # Import Built-Ins

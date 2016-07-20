@@ -1,6 +1,6 @@
 """
 Task:
-Do fancy shit.
+Supplies an REST API Interface to the specified exchange.
 """
 
 # Import Built-Ins
@@ -46,34 +46,35 @@ class BitstampHTTP(Client):
     def balance(self, pair=''):
         if pair:
             return self.query('v2/balance/%s/' % pair, authenticate=True,
-                              post=True, data={})
+                              req_type='POST', data={})
         else:
-            return self.query('balance/', authenticate=True, post=True, data={})
+            return self.query('balance/', authenticate=True, req_type='POST',
+                              data={})
 
     def user_transactions(self, pair='', offset=0, limit=100, sort='desc'):
         q = {'offset': offset, 'limit': limit, 'sort': sort}
         if pair:
             return self.query('v2/user_transactions/%s/' % pair, data=q,
-                               post=True, authenticate=True)
+                               req_type='POST', authenticate=True)
         else:
             return self.query('v2/user_transactions/', data=q,
-                               post=True, authenticate=True)
+                               req_type='POST', authenticate=True)
 
     def open_orders(self, pair):
-        return self.query('v2/open_orders/%s/' % pair, post=True,
+        return self.query('v2/open_orders/%s/' % pair, req_type='POST',
                           authenticate=True)
 
     def order_status(self, id):
-        return self.query('order_status/', data={'id': id}, post=True,
+        return self.query('order_status/', data={'id': id}, req_type='POST',
                           authenticate=True)
 
     def cancel_order(self, id=None):
         if id is None:
-            return self.query('cancel_all_orders/', post=True,
+            return self.query('cancel_all_orders/', req_type='POST',
                               authenticate=True)
         else:
-            return self.query('v2/cancel_order/', data={'id': id}, post=True,
-                              authenticate=True)
+            return self.query('v2/cancel_order/', data={'id': id},
+                              req_type='POST', authenticate=True)
 
     def limit_order(self, order_type, pair, amount, price, limit_price=None):
         if order_type != 'sell' and order_type != 'buy':
@@ -82,42 +83,43 @@ class BitstampHTTP(Client):
         q = {'amount': amount, 'price': price}
         if limit_price is not None:
             q['limit_price'] = limit_price
-        return self.query('v2/%s/%s/' % (order_type, pair), data=q, post=True,
-                          authenticate=True)
+        return self.query('v2/%s/%s/' % (order_type, pair), data=q,
+                          req_type='POST', authenticate=True)
 
     def withdrawal_requests(self):
-        return self.query('withdrawal_requests/', post=True, authenticate=True)
+        return self.query('withdrawal_requests/', req_type='POST',
+                          authenticate=True)
 
     def bitcoin_withdrawal(self, address, amount, instant=0):
         q = {'address': address, 'amount': amount, 'instant': instant}
-        return self.query('bitcoin_withdrawal/', data=q, post=True,
+        return self.query('bitcoin_withdrawal/', data=q, req_type='POST',
                           authenticate=True)
 
     def bitcoin_address(self):
-        return self.query('bitcoin_deposit_address/', post=True,
+        return self.query('bitcoin_deposit_address/', req_type='POST',
                           authenticate=True)
 
     def unconfirmed_bitcoin_deposits(self):
-        return self.query('unconfirmed_bts/', post=True, authenticate=True)
+        return self.query('unconfirmed_bts/', req_type='POST', authenticate=True)
 
     def ripple_withdrawal(self, address, amount, currency):
         q = {'address': address, 'amount': amount, 'currency': currency}
-        return self.query('ripple_withdrawal/', data=q, post=True,
+        return self.query('ripple_withdrawal/', data=q, req_type='POST',
                           authenticate=True)
 
     def ripple_address(self):
-        return self.query('ripple_address/', post=True, authenticate=True)
+        return self.query('ripple_address/', req_type='POST', authenticate=True)
 
     def transfer_to_main(self, currency, amount, to_sub=None):
         q = {'currency': currency, 'amount': amount}
         if to_sub:
             q['subAccount'] = to_sub
-        return self.query('v2/transfer-to-main', data=q, post=True,
+        return self.query('v2/transfer-to-main', data=q, req_type='POST',
                           authenticate=True)
 
     def transfer_to_sub(self, currency, amount, sub_account):
         q = {'currency': currency, 'amount': amount, 'subAccount': sub_account}
-        return self.query('v2/transfer-from-main', data=q, post=True,
+        return self.query('v2/transfer-from-main', data=q, req_type='POST',
                           authenticate=True)
 
 
