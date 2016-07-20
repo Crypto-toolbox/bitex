@@ -19,8 +19,8 @@ HTTP:
 - Bitstamp (backend done)
 - Kraken (backend done)
 - Coincheck (backend done)
-- OKCoin (backend in progress)
-- BTC-E (planned)
+- OKCoin (backend done)
+- BTC-E (backend done)
 - Bittrex (backend done)
 
 Websockets
