@@ -34,7 +34,7 @@ class BitfinexREST(RESTAPI):
         except KeyError:
             req = {}
         req['request'] = kwargs['urlpath']
-        req['nonce'] = str(int(1000 * time.time()))
+        req['nonce'] = self.nonce()
 
         js = json.dumps(req)
         data = base64.standard_b64encode(js.encode('utf8'))
@@ -44,6 +44,7 @@ class BitfinexREST(RESTAPI):
         headers = {"X-BFX-APIKEY": self.key,
                    "X-BFX-SIGNATURE": signature,
                    "X-BFX-PAYLOAD": data}
+
         url = self.uri + kwargs['urlpath']
 
         return url, {'headers': headers}
@@ -66,7 +67,7 @@ class BitstampREST(RESTAPI):
             self.secret = f.readline().strip()
 
     def sign(self, *args, **kwargs):
-        nonce = str(int(time.time() * 1e6))
+        nonce = self.nonce()
         message = nonce + self.id + self.key
 
         signature = hmac.new(bytes(self.secret, 'utf-8'), bytes(message, 'utf-8'),
@@ -99,7 +100,7 @@ class BittrexREST(RESTAPI):
         except KeyError:
             params = {}
 
-        nonce = str(int(time.time() * 1000))
+        nonce = self.nonce()
 
         req_string = urlpath + '?apikey=' + self.key + "&nonce=" + nonce + '&'
         req_string += urllib.parse.urlencode(params)
@@ -118,7 +119,7 @@ class CoincheckREST(RESTAPI):
 
     def sign(self, *args, **kwargs):
 
-        nonce = str(int(1000 * time.time()))
+        nonce = self.nonce()
         try:
             params = kwargs['params']
         except KeyError:
@@ -176,8 +177,7 @@ class GDAXRest(RESTAPI):
             self.secret = f.readline().strip()
 
     def sign(self, endpoint, *args, **kwargs):
-        auth = GdaxAuth(self.key, self.secret,
-                                              self.passphrase)
+        auth = GdaxAuth(self.key, self.secret, self.passphrase)
         try:
             js = kwargs['json']
         except KeyError:
@@ -200,7 +200,7 @@ class KrakenREST(RESTAPI):
         except KeyError:
             req = {}
 
-        req['nonce'] = int(1000*time.time())
+        req['nonce'] = self.nonce()
         postdata = urllib.parse.urlencode(req)
 
         # Unicode-objects must be encoded before hashing
@@ -252,7 +252,7 @@ class ItbitREST(RESTAPI):
 
         url = self.uri + kwargs['urlpath']
         timestamp = int(time.time() * 1000)
-        nonce = int(time.time())
+        nonce = self.nonce()
 
         message = json.dumps([verb, url, body, str(nonce), str(timestamp)],
                              separators=(',', ':'))
@@ -271,3 +271,26 @@ class ItbitREST(RESTAPI):
             'Content-Type': 'application/json'
         }
         return url, {'headers': auth_headers}
+
+
+class OKCoinREST(RESTAPI):
+    def __init__(self, key='', secret='', api_version='v1',
+                 url='https://www.okcoin.com/api'):
+        super(OKCoinREST, self).__init__(url, api_version=api_version,
+                                         key=key,
+                                         secret=secret)
+
+    def sign(self, **kwargs):
+        url = self.uri + '/' + kwargs['urlpath']
+        nonce = self.nonce()
+
+        # sig = nonce + url + req
+        data = (nonce + url).encode()
+
+        h = hmac.new(self.secret.encode('utf8'), data, hashlib.sha256)
+        signature = h.hexdigest()
+        headers = {"ACCESS-KEY":       self.key,
+                   "ACCESS-NONCE":     nonce,
+                   "ACCESS-SIGNATURE": signature}
+
+        return url, {'headers': headers}
