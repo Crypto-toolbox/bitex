@@ -47,7 +47,7 @@ def validate_response(func):
         try:
             resp.json()
         except json.JSONDecodeError as e:
-            log.error("Returned data wasn't json-seriazable - possibly wrong url? Error: %s", e)
+            log.error("Returned data wasn't json-seriazable - possibly invalid api endpoint? Error: %s", e)
             raise
 
         return resp
