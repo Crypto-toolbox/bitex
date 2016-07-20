@@ -7,7 +7,7 @@ Do fancy shit.
 import logging
 
 # Import Homebrew
-from bitex.api.bittrex import API
+from bitex.api.rest import BittrexREST
 from bitex.http.client import Client
 
 log = logging.getLogger(__name__)
@@ -15,7 +15,7 @@ log = logging.getLogger(__name__)
 
 class BittrexHTTP(Client):
     def __init__(self, key='', secret='', key_file=''):
-        api = API(key, secret)
+        api = BittrexREST(key, secret)
         if key_file:
             api.load_key(key_file)
         super(BittrexHTTP, self).__init__(api, 'Bitstamp')

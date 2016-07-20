@@ -7,14 +7,14 @@ Do fancy shit.
 import logging
 
 # Import Homebrew
-from bitex.api.bitstamp import API
+from bitex.api.rest import BitstampREST
 from bitex.http.client import Client
 log = logging.getLogger(__name__)
 
 
 class BitstampHTTP(Client):
     def __init__(self, key='', secret='', key_file=''):
-        api = API(key, secret)
+        api = BitstampREST(key, secret)
         if key_file:
             api.load_key(key_file)
         super(BitstampHTTP, self).__init__(api, 'Bitstamp')

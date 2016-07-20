@@ -24,11 +24,16 @@ class OKCoinHTTP(Client):
 
     def order_book(self, pair):
         q = {'pair': pair}
-        return self._query('depth.do', q)
+        return self._api._query('/depth.do', q)
 
     def ticker(self, pair):
-        return self._query('ticker.do', {'symbol': pair})
+        return self._api._query('/ticker.do', {'symbol': pair})
 
+    def trades(self, pair):
+        q = {'pair': pair}
+        return self._api._query('/trades.do', q)
 if __name__ == '__main__':
     uix = OKCoinHTTP()
     print(uix.ticker('btc_usd'))
+    print(uix.trades('btc_usd'))
+    print(uix.order_book('btc_usd'))
