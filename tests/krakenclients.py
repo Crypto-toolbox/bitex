@@ -23,13 +23,12 @@ class KrakenHTTPTest(unittest.TestCase):
 
     def test_returns_request_object(self):
         k = KrakenHTTP(key_file="")
-        # Returns a request object
+        # Returns a response object
         r = k.server_time()
-        self.assertIsInstance(r, requests.Request)
+        self.assertIsInstance(r, requests.models.Response)
         # .json() contains 'result' and 'error' keys in dict
         self.assertIn('result', r.json())
         self.assertIn('error', r.json())
-
 
     def test_can_connect_to_public_endpoints(self):
         k = KrakenHTTP(key_file="")
@@ -43,12 +42,12 @@ class KrakenHTTPTest(unittest.TestCase):
 
         # connect to trades endpoint and 'error' is empty
         r = k.trades('XBTEUR')
-        self.assertTrue(r.json()['error'] == False)
-        self.assertIsInstance(r.json()['result'], list)
+        self.assertFalse(r.json()['error'])
+        self.assertIsInstance(r.json()['result']['XXBTZEUR'], list)
 
         # connect to orderbook endpoint and 'error' is empty
         r = k.order_book('XBTEUR')
-        self.assertTrue(r.json()['error'] == False)
+        self.assertFalse(r.json()['error'])
         self.assertIn('asks', r.json()['result']['XXBTZEUR'])
         self.assertIn('bids', r.json()['result']['XXBTZEUR'])
 
@@ -59,15 +58,15 @@ class KrakenHTTPTest(unittest.TestCase):
         self.assertTrue(k._api.secret == 'This_is_a_secret')
 
         # load by using key file
-        k = KrakenHTTP(key_file="./kraken.key")
+        k = KrakenHTTP(key_file="./test.key")
         self.assertTrue(k._api.key == 'This_is_a_key')
         self.assertTrue(k._api.secret == 'This_is_a_secret')
 
     def test_can_connect_to_private_endpoint(self):
-        # connect to account balance endpoint
-        # connect to open_orders endpoint
-        # connect to place_order endpoint
+        # connect to balance endpoint
+        # connect to orders endpoint
+        # connect to ledger endpoint
+        # connect to add_order endpoint
         # connect to cancel_order endpoint
-        # connect to account info endpoint
-        # connect to order_history endpoint
+        # connect to fees endpoint
         pass
