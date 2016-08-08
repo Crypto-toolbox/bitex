@@ -3,6 +3,10 @@ BitEx is a collection of API Clients for Crypto Currency Exchanges.
 
 This project evolved out of the pure pleasure of writing clients for REST APIs, and a want and need for a single data stream to read from for my bitcoin bots. 
 
+# Before you download this
+
+..be aware that it's still in pre-alpha-half-baked-work-in-progress-stage - many features and implementations may change rapidly and in ways you may not desire. Once I get to a point that I'm comfortable with, I will release a version on pypy, which will then serve as basis for further releases. So until then, nothing's final!
+
 # What is BitEx
 
 Bitex provides primarily REST-based clients for a variety of Crypto exchanges. It comes packaged with a publish-subscribe module, which allows easy polling and distribution of exchange data to, for example, an automated trading strategy.
