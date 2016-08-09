@@ -10,7 +10,7 @@ import requests
 # Import Third-Party
 
 # Import Homebrew
-from bitex.http import KrakenHTTP
+from bitex.http import KrakenHTTP, BitstampHTTP
 
 log = logging.getLogger(__name__)
 
@@ -26,6 +26,7 @@ class KrakenHTTPTest(unittest.TestCase):
         # Returns a response object
         r = k.server_time()
         self.assertIsInstance(r, requests.models.Response)
+        self.assertEqual(r.status_code, 200)
         # .json() contains 'result' and 'error' keys in dict
         self.assertIn('result', r.json())
         self.assertIn('error', r.json())
@@ -69,4 +70,17 @@ class KrakenHTTPTest(unittest.TestCase):
         # connect to add_order endpoint
         # connect to cancel_order endpoint
         # connect to fees endpoint
-        pass
+        pass+
+
+class BitstampHTTPTest(unittest.TestCase):
+    def test_public_endpoints_return_code_200(self):
+        k = BitstampHTTP()
+        # Returns a response object
+        r = k.ticker('BTCUSD')
+        self.assertIsInstance(r, requests.models.Response)
+        r = k.trades('BTCUSD')
+        self.assertIsInstance(r, requests.models.Response)
+        r = k.order_book('BTCUSD')
+        self.assertIsInstance(r, requests.models.Response)
+
+
