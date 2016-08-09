@@ -70,10 +70,10 @@ class KrakenHTTPTest(unittest.TestCase):
         # connect to add_order endpoint
         # connect to cancel_order endpoint
         # connect to fees endpoint
-        pass+
+        pass
 
 class BitstampHTTPTest(unittest.TestCase):
-    def test_public_endpoints_return_code_200(self):
+    def test_public_endpoints_return_requests_response_object(self):
         k = BitstampHTTP()
         # Returns a response object
         r = k.ticker('BTCUSD')
@@ -82,5 +82,56 @@ class BitstampHTTPTest(unittest.TestCase):
         self.assertIsInstance(r, requests.models.Response)
         r = k.order_book('BTCUSD')
         self.assertIsInstance(r, requests.models.Response)
+
+    def test_private_endpoints_returns_requests_response_object(self):
+        k = BitstampHTTP()
+        # Returns a response object with a status code
+        r = k.balance()
+        self.assertIsInstance(r, requests.models.Response)
+        r = k.orders()
+        self.assertIsInstance(r, requests.models.Response)
+        r = k.ledger()
+        self.assertIsInstance(r, requests.models.Response)
+        r = k.add_order(200.0, 1, 'btcusd', 'ask')
+        self.assertIsInstance(r, requests.models.Response)
+        r = k.cancel_order(11111111)
+        self.assertIsInstance(r, requests.models.Response)
+        r = k.fees()
+        self.assertIsInstance(r, requests.models.Response)
+
+    def test_order_book(self):
+        k = BitstampHTTP()
+        r = k.order_book('btcusd')
+        # Must return a dict
+        self.assertIsInstance(r.json(), dict)
+
+        # Must contain certain keys
+        a = {'asks', 'bids', 'timestamp'}
+        b = set(r.json().keys())
+        print(a,b)
+        self.assertCountEqual(a, b)
+
+    def test_ticker(self):
+        k = BitstampHTTP()
+        r = k.ticker('btcusd')
+        # Must return a dict
+        self.assertIsInstance(r.json(), dict)
+
+        # Must contain certain keys
+        a = {'last', 'high', 'low', 'vwap', 'volume', 'bid', 'ask', 'open', 'timestamp'}
+        b = set(r.json().keys())
+        self.assertCountEqual(a, b)
+
+    def test_trades(self):
+        k = BitstampHTTP()
+        r = k.trades('btcusd')
+        # Must return a list
+        self.assertIsInstance(r.json(), list)
+
+        # list must contain dict only, with certain keys
+        a = {'date', 'tid', 'price', 'amount', 'type'}
+        for b in r.json():
+            self.assertIsInstance(b, dict)
+            self.assertCountEqual(a, set(b.keys()))
 
 

@@ -61,7 +61,7 @@ class BitstampHTTP(Client):
         """
         pass
 
-    def add_order(self, prive, vol, pair, ask_or_bid, order_type='limit',
+    def add_order(self, price, vol, pair, ask_or_bid, order_type='limit',
                   **kwargs):
         """
         Places a bid or ask order of given order type.
