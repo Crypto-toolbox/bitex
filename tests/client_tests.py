@@ -10,7 +10,7 @@ import requests
 # Import Third-Party
 
 # Import Homebrew
-from bitex.http import KrakenHTTP, BitstampHTTP
+from bitex.http import KrakenHTTP, BitstampHTTP, BitfinexHTTP
 
 log = logging.getLogger(__name__)
 
@@ -135,3 +135,64 @@ class BitstampHTTPTest(unittest.TestCase):
             self.assertCountEqual(a, set(b.keys()))
 
 
+class BitfinexHTTPTest(unittest.TestCase):
+    def test_public_endpoints_return_requests_response_object(self):
+        k = BitfinexHTTP()
+        # Returns a response object
+        r = k.ticker('BTCUSD')
+        self.assertIsInstance(r, requests.models.Response)
+        r = k.trades('BTCUSD')
+        self.assertIsInstance(r, requests.models.Response)
+        r = k.order_book('BTCUSD')
+        self.assertIsInstance(r, requests.models.Response)
+
+    def test_private_endpoints_returns_requests_response_object(self):
+        k = BitfinexHTTP()
+        # Returns a response object with a status code
+        r = k.balance()
+        self.assertIsInstance(r, requests.models.Response)
+        r = k.orders()
+        self.assertIsInstance(r, requests.models.Response)
+        r = k.ledger()
+        self.assertIsInstance(r, requests.models.Response)
+        r = k.add_order(200.0, 1, 'btcusd', 'ask')
+        self.assertIsInstance(r, requests.models.Response)
+        r = k.cancel_order(11111111)
+        self.assertIsInstance(r, requests.models.Response)
+        r = k.fees()
+        self.assertIsInstance(r, requests.models.Response)
+
+    def test_order_book(self):
+        k = BitfinexHTTP()
+        r = k.order_book('btcusd')
+        # Must return a dict
+        self.assertIsInstance(r.json(), dict)
+
+        # Must contain certain keys
+        a = {'asks', 'bids'}
+        b = set(r.json().keys())
+        self.assertCountEqual(a, b)
+
+    def test_ticker(self):
+        k = BitfinexHTTP()
+        r = k.ticker('btcusd')
+        # Must return a dict
+        self.assertIsInstance(r.json(), dict)
+
+        # Must contain certain keys
+        a = {'last_price', 'high', 'low', 'volume', 'bid', 'ask', 'mid',
+             'timestamp'}
+        b = set(r.json().keys())
+        self.assertCountEqual(a, b)
+
+    def test_trades(self):
+        k = BitfinexHTTP()
+        r = k.trades('btcusd')
+        # Must return a list
+        self.assertIsInstance(r.json(), list)
+
+        # list must contain dict only, with certain keys
+        a = {'created_at', 'id', 'pair', 'price', 'amount', 'side', 'platform'}
+        for b in r.json():
+            self.assertIsInstance(b, dict)
+            self.assertCountEqual(a, set(b.keys()))
