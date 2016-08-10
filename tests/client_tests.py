@@ -58,6 +58,7 @@ class OverlayTest(unittest.TestCase):
     """
     def setUp(self):
         self.exchange = KrakenHTTP()
+        self.pair = "XXBTZUSD"
 
     def tearDown(self):
         self.exchange = None
@@ -68,9 +69,8 @@ class OverlayTest(unittest.TestCase):
         items:
         Current Price, 24h vol, current ask price, current bid price, timestamp.
         Each item contains a string represenation of a float or int.
-        :return:
         """
-        r = self.exchange.ticker('XXBTZUSD')
+        r = self.exchange.ticker(self.pair)
         self.assertIsInstance(r, dict)
         a = ['last', '24h Vol', 'ask', 'bid', 'timestamp']
         b = list(r.keys())
@@ -83,10 +83,43 @@ class OverlayTest(unittest.TestCase):
                 self.fail("%s could not be converted to Decimal!" % r[key])
 
     def test_orderbook_endpoint(self):
-        pass
+        """
+        Calling the order book endpoint returns a dict with the following
+        items:
+        asks [price, vol, ts], bids [price, vol, ts]
+
+        If a timestamp for quotes is unavailable, it should be None. If there
+        is only a timestamp for the entire order book, use that instead.
+        """
+        r = self.exchange.order_book(self.pair)
+        self.assertIsInstance(r, dict)
+        self.assertCountEqual(['asks', 'bids'], list(r.keys()))
+        for q in (r['asks'] + r['bids']):
+            self.assertIsInstance(q[0], str)
+            self.assertIsInstance(q[1], str)
+            self.assertIsInstance(q[2], str)
+            try:
+                [dec.Decimal(i) for i in q]
+            except dec.InvalidOperation:
+                self.fail("An element contains non-decimalable items! %s" % q)
 
     def test_trades_endpoint(self):
-        pass
+        """
+        Calling the trades endpoint returns a dict with the following items:
+        filled bids [price, amount, time], filled asks [price, amount, time]
+
+        """
+        r = self.exchange.trades(self.pair)
+        self.assertIsInstance(r, dict)
+        self.assertCountEqual(['asks', 'bids'], list(r.keys()))
+        for q in (r['asks'] + r['bids']):
+            self.assertIsInstance(q[0], str)
+            self.assertIsInstance(q[1], str)
+            self.assertIsInstance(q[2], str)
+            try:
+                [dec.Decimal(i) for i in q]
+            except dec.InvalidOperation:
+                self.fail("An element contains non-decimalable items! %s" % q)
 
     def test_balance_endpoint(self):
         pass

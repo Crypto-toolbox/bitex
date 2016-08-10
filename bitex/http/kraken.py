@@ -35,13 +35,6 @@ class KrakenHTTP(Client):
 
         return self.query('public/Depth', params=q)
 
-    def server_time(self):
-        """
-        Returns the Kraken server time in unix
-        :return: list
-        """
-        return self.query('public/Time')
-
     def ticker(self, pair):
         """
         Returns Ticker information for passed asset pairs.
@@ -58,10 +51,7 @@ class KrakenHTTP(Client):
                 'bid': r['result'][pair]['b'][0],
                 'timestamp': r['result'][pair]['c'][0]}
 
-
-
-
-    def trades(self, pair, since=None):
+    def trades(self, pair, **kwargs):
         """
         Returns trades for passed asset pair.
         :param pair:
@@ -69,8 +59,7 @@ class KrakenHTTP(Client):
         :return:
         """
         q = {'pair': pair}
-        if since is not None:
-            q['since'] = None
+        q.update(kwargs)
 
         return self.query('public/Trades', params=q)
 
