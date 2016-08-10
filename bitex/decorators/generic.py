@@ -37,18 +37,11 @@ def logging(func):
     return wrapper
 
 
-def validate_response(func):
-    def wrapper(self, *args, **kwargs):
+def check_status_code(func):
+    def wrapper(*args, **kwargs):
         resp = func(*args, **kwargs)
-
         if resp.status_code != 200:
-            raise ConnectionError("Response Code was %s" % resp.status_code)
-
-        try:
-            resp.json()
-        except json.JSONDecodeError as e:
-            log.error("Returned data wasn't json-seriazable - possibly invalid api endpoint? Error: %s", e)
-            raise
-
+            msg = "Request faulty! Status Code %s for url %s" % (resp.status_code, resp.request.url)
+            raise ConnectionError(msg)
         return resp
     return wrapper
