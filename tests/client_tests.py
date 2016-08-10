@@ -11,7 +11,7 @@ import requests
 
 # Import Homebrew
 from bitex.api.api import RESTAPI
-
+from bitex.http import BitstampHTTP
 log = logging.getLogger(__name__)
 
 
@@ -51,14 +51,37 @@ class APITests(unittest.TestCase):
         self.assertTrue(r.request.url == url)
 
 
-
 class OverlayTest(unittest.TestCase):
     """
     Tests that each client returns the expected data
     """
+    def setUp(self):
+        self.exchange = BitstampHTTP()
+
+    def tearDown(self):
+        self.exchange = None
 
     def test_ticker_endpoint(self):
-        pass
+        """
+        Calling the ticker endpoint returns a dictionary with the following
+        items:
+        Current Price, 24h vol, current ask price, current bid price, timestamp.
+        Each item contains a string represenation of a float or int.
+        :return:
+        """
+        r = self.exchange.ticker('btcusd')
+        self.assertIsInstance(r, dict)
+        a = ['last', '24h Vol', 'ask', 'bid', 'timestamp']
+        b = list(r.keys())
+        self.assertCountEqual(a, b)
+        for i in r:
+            self.assertIsInstance(i, str)
+            try:
+                float(str)
+            except ValueError:
+                self.fail("%s is not a stringified float!" % i)
+
+
 
     def test_orderbook_endpoint(self):
         pass
