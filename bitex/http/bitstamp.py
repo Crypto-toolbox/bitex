@@ -13,8 +13,8 @@ log = logging.getLogger(__name__)
 
 
 class BitstampHTTP(Client):
-    def __init__(self, key='', secret='', key_file=''):
-        api = BitstampREST(key, secret)
+    def __init__(self, key='', secret='', user_id='', key_file=''):
+        api = BitstampREST(user_id, key, secret)
         if key_file:
             api.load_key(key_file)
         super(BitstampHTTP, self).__init__(api, 'Bitstamp')
@@ -42,16 +42,17 @@ class BitstampHTTP(Client):
         :param kwargs:
         :return:
         """
-        pass
+        return self.query('v2/balance/', req_type='POST', authenticate=True)
 
-    def orders(self, *args, **kwargs):
+    def orders(self, pair, *args, **kwargs):
         """
         Return open orders.
         :param pair:
         :param kwargs:
         :return:
         """
-        pass
+        return self.query('v2/open_orders/%s/' % pair, authenticate=True,
+                          req_type='POST')
 
     def ledger(self):
         """
