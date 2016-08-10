@@ -42,17 +42,24 @@ class KrakenHTTP(Client):
         """
         return self.query('public/Time')
 
-    def ticker(self, pairs):
+    def ticker(self, pair):
         """
         Returns Ticker information for passed asset pairs.
         :param pairs:
         :return:
         """
-        if isinstance(pairs, (list, tuple)):
-            pairs = ','.join(pairs)
 
-        q = {'pair': pairs}
-        return self.query('public/Ticker', params=q)
+        q = {'pair': pair}
+        r = self.query('public/Ticker', params=q).json()
+
+        return {'last': r['result'][pair]['c'][0],
+                '24h Vol': r['result'][pair]['v'][1],
+                'ask': r['result'][pair]['a'][0],
+                'bid': r['result'][pair]['b'][0],
+                'timestamp': r['result'][pair]['c'][0]}
+
+
+
 
     def trades(self, pair, since=None):
         """

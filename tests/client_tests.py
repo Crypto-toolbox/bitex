@@ -7,11 +7,12 @@ Do fancy shit.
 import logging
 import unittest
 import requests
+import decimal as dec
 # Import Third-Party
 
 # Import Homebrew
 from bitex.api.api import RESTAPI
-from bitex.http import BitstampHTTP
+from bitex.http import KrakenHTTP
 log = logging.getLogger(__name__)
 
 
@@ -56,7 +57,7 @@ class OverlayTest(unittest.TestCase):
     Tests that each client returns the expected data
     """
     def setUp(self):
-        self.exchange = BitstampHTTP()
+        self.exchange = KrakenHTTP()
 
     def tearDown(self):
         self.exchange = None
@@ -69,19 +70,17 @@ class OverlayTest(unittest.TestCase):
         Each item contains a string represenation of a float or int.
         :return:
         """
-        r = self.exchange.ticker('btcusd')
+        r = self.exchange.ticker('XXBTZUSD')
         self.assertIsInstance(r, dict)
         a = ['last', '24h Vol', 'ask', 'bid', 'timestamp']
         b = list(r.keys())
         self.assertCountEqual(a, b)
-        for i in r:
-            self.assertIsInstance(i, str)
+        for key in r:
+            self.assertIsInstance(r[key], str)
             try:
-                float(str)
+                dec.Decimal(r[key])
             except ValueError:
-                self.fail("%s is not a stringified float!" % i)
-
-
+                self.fail("%s could not be converted to Decimal!" % r[key])
 
     def test_orderbook_endpoint(self):
         pass
