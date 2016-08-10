@@ -45,8 +45,10 @@ class RESTAPI:
         URL is required to be returned, as some Signatures use the url for
         sig generation, and api calls made must match the address exactly.
         """
+        url = self.uri + kwargs.pop('urlpath')
 
-        return url, kwargs
+        kwargs.pop('request_method')
+        return url, {'params': {'test_param': "authenticated_chimichanga"}}
 
     def query(self, endpoint, authenticate=False, request_method=requests.get,
               *args, **kwargs):
