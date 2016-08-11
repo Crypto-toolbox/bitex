@@ -25,6 +25,9 @@ class RESTAPI:
         self.secret = secret
         self.uri = uri
         self.apiversion = api_version
+        self.req_methods = {'POST': requests.post, 'PUT': requests.put,
+                            'GET': requests.get, 'DELETE': requests.delete,
+                            'PATCH': requests.patch}
         print("URI is: ", uri)
 
     def load_key(self, path):
@@ -50,11 +53,13 @@ class RESTAPI:
         kwargs.pop('request_method')
         return url, {'params': {'test_param': "authenticated_chimichanga"}}
 
-    def query(self, endpoint, authenticate=False, request_method=requests.get,
+    def query(self, method, endpoint, authenticate=False,
               *args, **kwargs):
         """
         Queries exchange using given data. Defaults to unauthenticated GET query.
         """
+        request_method = self.req_methods[method]
+
         if self.apiversion:
             urlpath = '/' + self.apiversion + '/' + endpoint
         else:

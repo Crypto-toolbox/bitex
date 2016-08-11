@@ -29,16 +29,10 @@ class Client:
         """
         self._api = api
         self._name = name
-        self._methods = {'POST': requests.post, 'PUT': requests.put,
-                         'GET': requests.get, 'DELETE': requests.delete,
-                         'PATCH': requests.patch}
 
     def query(self, endpoint, req_type='GET', authenticate=False, *args, **kwargs):
 
-        if req_type not in self._methods:
-            raise ValueError("req_type contains unknown request type!")
-
-        return self._api.query(endpoint, request_method=self._methods[req_type],
-                               authenticate=authenticate, *args, **kwargs)
+        return self._api.query(req_type, endpoint, authenticate=authenticate,
+                               *args, **kwargs)
 
 
