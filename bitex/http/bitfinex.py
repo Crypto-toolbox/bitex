@@ -14,27 +14,27 @@ from bitex.http.client import Client
 log = logging.getLogger(__name__)
 
 
-class BitfinexHTTP(Client):
+class BitfinexHTTP(BitfinexREST):
     def __init__(self, key='', secret='', key_file=''):
-        api = BitfinexREST(key, secret)
+
+        super(BitfinexHTTP, self).__init__(key, secret)
         if key_file:
-            api.load_key(key_file)
-        super(BitfinexHTTP, self).__init__(api, 'Bitfinex')
+            self.load_key(key_file)
 
     def order_book(self, pair, limit_orders=50, aggregrate=True):
         q = {'limit_asks': limit_orders, 'limit_bids': limit_orders}
         if not aggregrate:
             q['group'] = 0
-        return self.query('/book/%s/' % pair, params=q)
+        return self.query('GET', '/book/%s/' % pair, params=q)
 
     def ticker(self, pair):
-        return self.query("pubticker/%s" % pair)
+        return self.query('GET', "pubticker/%s" % pair)
 
     def trades(self, pair, start_time=None, limit_trades=False):
         q = {'limit_trades': limit_trades}
         if start_time:
             q['timestamp'] = start_time
-        return self.query('trades/%s' % pair, params=q)
+        return self.query('GET', 'trades/%s' % pair, params=q)
 
     def balance(self, **kwargs):
         """

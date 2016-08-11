@@ -7,35 +7,32 @@ Supplies an REST API Interface to the specified exchange.
 import logging
 
 # Import Homebrew
-from bitex.http.client import Client
 from bitex.api.rest import CoincheckREST
 
 log = logging.getLogger(__name__)
 
 
-class CoincheckHTTP(Client):
+class CoincheckHTTP(CoincheckREST):
     def __init__(self, key='', secret='', key_file=''):
-        api = CoincheckREST(key, secret)
+
+        super(CoincheckHTTP, self).__init__(key, secret)
         if key_file:
-            api.load_key(key_file)
-        super(CoincheckHTTP, self).__init__(api, 'Coincheck')
+            self.load_key(key_file)
 
     def order_book(self):
-        return self.query('order_books')
+        return self.query('GET', 'order_books')
 
     def ticker(self):
-        return self.query('ticker')
+        return self.query('GET', 'ticker')
 
     def trades(self):
-        return self.query('trades')
+        return self.query('GET', 'trades')
 
     def balance(self):
-        return self.query('/accounts/balance', authenticate=True)
+        return self.query('GET', '/accounts/balance', authenticate=True)
 
 
 if __name__ == '__main__':
     uix = CoincheckHTTP()
     print(uix.order_book().text)
-    print(uix.ticker().text)
-    print(uix.balance().text)
-    print(uix.trades().text)
+

@@ -8,17 +8,16 @@ import logging
 
 # Import Homebrew
 from bitex.api.rest import BTCERest
-from bitex.http.client import Client
+
 
 log = logging.getLogger(__name__)
 
 
-class BTCEHTTP(Client):
+class BTCEHTTP(BTCERest):
     def __init__(self, key='', secret='', key_file=''):
-        api = BTCERest(key, secret)
+        super(BTCEHTTP, self).__init__(key, secret)
         if key_file:
-            api.load_key(key_file)
-        super(BTCEHTTP, self).__init__(api, 'BTCE')
+            self.load_key(key_file)
 
     def ticker(self, *pairs):
         if len(pairs) > 1:
@@ -26,15 +25,15 @@ class BTCEHTTP(Client):
         else:
             pairs = pairs[0]
 
-        return self.query('ticker/%s' % pairs)
+        return self.query('GET', 'ticker/%s' % pairs)
 
     def order_book(self, pair, limit=150):
         q = {'limit': limit}
-        return self.query('depth/%s' % pair, params=q)
+        return self.query('GET', 'depth/%s' % pair, params=q)
 
     def trades(self, pair, limit=150):
         q = {'limit': limit}
-        return self.query('trades/%s' % pair, params=q)
+        return self.query('GET', 'trades/%s' % pair, params=q)
 
 
 

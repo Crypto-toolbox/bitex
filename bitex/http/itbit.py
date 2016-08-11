@@ -10,26 +10,25 @@ import logging
 
 # Import Homebrew
 from bitex.api.rest import ItbitREST
-from bitex.http.client import Client
 
 log = logging.getLogger(__name__)
 
 
-class ITBitHTTP(Client):
-    def __init__(self, key='', secret='', userId='', key_file=''):
-        api = ItbitREST(key, secret, userId)
+class ITBitHTTP(ItbitREST):
+    def __init__(self, userId='', key='', secret='', key_file=''):
+
+        super(ITBitHTTP, self).__init__(userId, key, secret)
         if key_file:
-            api.load_key(key_file)
-        super(ITBitHTTP, self).__init__(api, 'ITBit')
+            self.load_key(key_file)
 
     def ticker(self, pair):
         path = "/markets/%s/ticker" % (pair)
-        response = self.query(path)
+        response = self.query('GET', path)
         return response
 
     def order_book(self, pair):
         path = "/markets/%s/order_book" % (pair)
-        response = self.query(path)
+        response = self.query('GET', path)
         return response
 
     def trades(self, pair, since=None):
@@ -38,11 +37,11 @@ class ITBitHTTP(Client):
         else:
             q = {}
         path = '/markets/%s/trades' % pair
-        return self.query(path, params=q)
+        return self.query('GET', path, params=q)
 
     def balance(self, walletId, currency):
         path = "/wallets/%s/balances/%s" % (walletId, currency)
-        response = self._api._query("GET", path, {})
+        response = self._api._query('GET', path, {})
         return response
 
 
