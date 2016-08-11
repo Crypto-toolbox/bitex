@@ -15,12 +15,12 @@ from bitex.http.client import Client
 log = logging.getLogger(__name__)
 
 
-class KrakenHTTP(Client):
+class KrakenHTTP(KrakenREST):
     def __init__(self, key='', secret='', key_file=''):
-        api = KrakenREST(key, secret)
+
+        super(KrakenHTTP, self).__init__(key, secret)
         if key_file:
-            api.load_key(key_file)
-        super(KrakenHTTP, self).__init__(api, 'Kraken')
+            self.load_key(key_file)
 
     def order_book(self, pair, **kwargs):
         """

@@ -8,32 +8,32 @@ import logging
 
 # Import Homebrew
 from bitex.api.rest import BitstampREST
-from bitex.http.client import Client
+
 log = logging.getLogger(__name__)
 
 
-class BitstampHTTP(Client):
+class BitstampHTTP(BitstampREST):
     def __init__(self, key='', secret='', user_id='', key_file=''):
-        api = BitstampREST(user_id, key, secret)
+
+        super(BitstampHTTP, self).__init__(key, secret)
         if key_file:
-            api.load_key(key_file)
-        super(BitstampHTTP, self).__init__(api, 'Bitstamp')
+            self.load_key(key_file)
 
     def order_book(self, pair, count=0):
         q = {'pair': pair}
         if count:
             q['count'] = count
 
-        resp = self.query('v2/order_book/%s/' % pair)
+        resp = self.query('GET', 'v2/order_book/%s/' % pair)
 
         return resp
 
     def ticker(self, pair):
-        response = self.query('v2/ticker/%s/' % pair)
+        response = self.query('GET', 'v2/ticker/%s/' % pair)
         return response
 
     def trades(self, pair, t='hour'):
-        resp = self.query('v2/transactions/%s/' % pair, data={'time': t})
+        resp = self.query('GET', 'v2/transactions/%s/' % pair, data={'time': t})
         return resp
 
     def balance(self, **kwargs):
@@ -42,7 +42,7 @@ class BitstampHTTP(Client):
         :param kwargs:
         :return:
         """
-        return self.query('v2/balance/', req_type='POST', authenticate=True)
+        return self.query('POST', 'v2/balance/', authenticate=True)
 
     def orders(self, pair, *args, **kwargs):
         """
@@ -51,8 +51,8 @@ class BitstampHTTP(Client):
         :param kwargs:
         :return:
         """
-        return self.query('v2/open_orders/%s/' % pair, authenticate=True,
-                          req_type='POST')
+        return self.query('POST', 'v2/open_orders/%s/' % pair,
+                          authenticate=True)
 
     def add_order(self, price, vol, pair, ask_or_bid, order_type='limit',
                   **kwargs):
@@ -86,5 +86,5 @@ class BitstampHTTP(Client):
 if __name__ == '__main__':
     uix = BitstampHTTP()
     print(uix.ticker('btcusd').text)
-    print(uix.balance('btcusd').text)
+
 
