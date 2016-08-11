@@ -55,13 +55,22 @@ class APITests(unittest.TestCase):
 class OverlayTest(unittest.TestCase):
     """
     Tests that each client returns the expected data
+    Serves as BASE Class for all other REST Client tests.
     """
     def setUp(self):
-        self.exchange = KrakenHTTP()
+        """
+        Adjust this in child classes to load appropriate keys and pairs.
+        :return:
+        """
+
         self.pair = "XXBTZUSD"
+        self.key = ''
+        self.secret = ''
+        self.exchange = KrakenHTTP(key=self.key, secret=self.secret)
 
     def tearDown(self):
         self.exchange = None
+        self.pair = None
 
     def test_ticker_endpoint(self):
         """
@@ -95,9 +104,7 @@ class OverlayTest(unittest.TestCase):
         self.assertIsInstance(r, dict)
         self.assertCountEqual(['asks', 'bids'], list(r.keys()))
         for q in (r['asks'] + r['bids']):
-            self.assertIsInstance(q[0], str)
-            self.assertIsInstance(q[1], str)
-            self.assertIsInstance(q[2], (int, float))
+            [self.assertIsInstance(i, str) for i in q]
             try:
                 [dec.Decimal(i) for i in q]
             except dec.InvalidOperation:
@@ -106,35 +113,61 @@ class OverlayTest(unittest.TestCase):
     def test_trades_endpoint(self):
         """
         Calling the trades endpoint returns a dict with the following items:
-        filled bids [price, amount, time], filled asks [price, amount, time]
+        filled bids [price, amount, time, type], filled asks [price, amount, time, type]
 
         """
         r = self.exchange.trades(self.pair)
         self.assertIsInstance(r, dict)
         self.assertCountEqual(['asks', 'bids'], list(r.keys()))
         for q in (r['asks'] + r['bids']):
-            self.assertIsInstance(q[0], str)
-            self.assertIsInstance(q[1], str)
-            self.assertIsInstance(q[2], (int, float))
+            [self.assertIsInstance(i, str) for i in q]
             try:
-                [dec.Decimal(i) for i in q]
+                [dec.Decimal(i) for i in q[:3]]
             except dec.InvalidOperation:
                 self.fail("An element contains non-decimalable items! %s" % q)
 
     def test_balance_endpoint(self):
-        pass
+        """
+        Calling the balance method returns a dict of currently available funds
+        for each tradable asset pair at the exchange, regardless of funding.
+
+        """
+        r = self.exchange.balance()
+        self.assertIsInstance(r, dict)
+        self.assertTrue(r)
+        for i in r:
+            self.assertIsInstance(r[i], str)
+            try:
+                dec.Decimal(r[i])
+            except dec.InvalidOperation:
+                self.fail("A key contains a non-decimalable string! {%s: %s}" % i, r[i])
 
     def test_orders_endpoint(self):
-        pass
+        """
+        orders() method returns a dict of following layout:
+        {bids: [[id, price, vol, status, type, time], ..],
+         asks: [[id, price, vol, status, type, time], ..]}
 
-    def test_ledger_endpoint(self):
-        pass
+        """
+        r = self.exchange.orders()
+        self.assertIsInstance(r, dict)
+        a = ['asks', 'bids']
+        b = list(r.keys())
+        self.assertCountEqual(a, b)
+        for order in [r['asks'] + r['bids']]:
+            [self.assertIsInstance(i, str)for i in order]
 
     def test_add_order_method(self):
-        pass
+        """
+        add_order returns a dict of the following layout:
+        {tid: '', price: '', amount: '', side: '', type: ''}
+        :return:
+        """
+        r = self.exchange.add_order(self.pair, 0.0001, 10000, order_type='limit')
+        a = ['tid','price','amount','side', 'type']
+        b = list(r.keys())
+        self.assertCountEqual(a, b)
+        (self.assertIsInstance(r[i], str)for i in b)
 
     def test_cancel_order_method(self):
-        pass
-
-    def test_fees_method(self):
         pass
