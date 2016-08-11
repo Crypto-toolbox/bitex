@@ -12,7 +12,7 @@ import decimal as dec
 
 # Import Homebrew
 from bitex.api.api import RESTAPI
-from bitex.http import KrakenHTTP
+from bitex.http import KrakenHTTP, BitstampHTTP
 log = logging.getLogger(__name__)
 
 
@@ -171,3 +171,19 @@ class OverlayTest(unittest.TestCase):
 
     def test_cancel_order_method(self):
         pass
+
+
+class KrakenHTTPClientTest(OverlayTest):
+
+    def setUp(self):
+        self.pair = "XXBTZUSD"
+        self.key_file = '../../keys/kraken.key'
+        self.exchange = KrakenHTTP(key_file=self.key_file)
+
+
+class BitstampHTTPClientTest(OverlayTest):
+    def setUp(self):
+        self.pair = "XXBTZUSD"
+        self.key_file = '../../keys/bitstamp.key'
+        self.exchange = BitstampHTTP(key_file=self.key_file)
+
