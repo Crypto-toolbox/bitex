@@ -7,6 +7,8 @@ This project evolved out of the pure pleasure of writing clients for REST APIs, 
 
 ..be aware that it's still in pre-alpha-half-baked-work-in-progress-stage - many features and implementations may change rapidly and in ways you may not desire. Once I get to a point that I'm comfortable with, I will release a version on pypy, which will then serve as basis for further releases. So until then, nothing's final!
 
+For an up-to-date version (which is likely to have some very rough edges and terrible bugs and errors), check out the dev branch.
+
 # What is BitEx
 
 Bitex provides primarily REST-based clients for a variety of Crypto exchanges. It comes packaged with a publish-subscribe module, which allows easy polling and distribution of exchange data to, for example, an automated trading strategy.
