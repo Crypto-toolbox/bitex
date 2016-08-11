@@ -97,7 +97,7 @@ class OverlayTest(unittest.TestCase):
         for q in (r['asks'] + r['bids']):
             self.assertIsInstance(q[0], str)
             self.assertIsInstance(q[1], str)
-            self.assertIsInstance(q[2], str)
+            self.assertIsInstance(q[2], (int, float))
             try:
                 [dec.Decimal(i) for i in q]
             except dec.InvalidOperation:
@@ -115,7 +115,7 @@ class OverlayTest(unittest.TestCase):
         for q in (r['asks'] + r['bids']):
             self.assertIsInstance(q[0], str)
             self.assertIsInstance(q[1], str)
-            self.assertIsInstance(q[2], str)
+            self.assertIsInstance(q[2], (int, float))
             try:
                 [dec.Decimal(i) for i in q]
             except dec.InvalidOperation:

@@ -33,7 +33,10 @@ class KrakenHTTP(Client):
         if count:
             q['count'] = count
 
-        return self.query('public/Depth', params=q)
+        r = self.query('public/Depth', params=q).json()['result']
+        r = r[list(r.keys())[0]]
+
+        return {'asks': r['asks'], 'bids': r['bids']}
 
     def ticker(self, pair):
         """
@@ -61,7 +64,18 @@ class KrakenHTTP(Client):
         q = {'pair': pair}
         q.update(kwargs)
 
-        return self.query('public/Trades', params=q)
+        r = self.query('public/Trades', params=q).json()['result']
+        r.pop('last')
+        r = r[list(r.keys())[0]]
+        print(r)
+        data = {'asks': [], 'bids': []}
+        for quote in r:
+            print(quote)
+            if quote[3] == 'b':
+                data['bids'].append(quote[:3])
+            else:
+                data['asks'].append(quote[:3])
+        return data
 
     def balance(self, asset='ZUSD', aclass=None):
         """
