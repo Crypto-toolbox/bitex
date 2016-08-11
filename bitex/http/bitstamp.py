@@ -54,14 +54,6 @@ class BitstampHTTP(Client):
         return self.query('v2/open_orders/%s/' % pair, authenticate=True,
                           req_type='POST')
 
-    def ledger(self):
-        """
-        Ledger consists of recent trades, deposits, and withdrawals to and
-        from user's account.
-        :return:
-        """
-        pass
-
     def add_order(self, price, vol, pair, ask_or_bid, order_type='limit',
                   **kwargs):
         """
