@@ -80,19 +80,18 @@ class KrakenHTTP(Client):
                 data['asks'].append(q)
         return data
 
-    def balance(self, asset='ZUSD', aclass=None):
+    def balance(self, **kwargs):
         """
         Returns user's account balance.
         :param asset: Base asset used to determine balance (default ZUSD)
         :param aclass: asset class - default is currency.
         :return: dict
         """
-        q = {'asset': asset}
-        if aclass is not None:
-            q['aclass'] = aclass
+        q = kwargs
 
-        return self._api.query('private/TradeBalance', req_type='POST',
+        resp = self._api.query('private/TradeBalance', req_type='POST',
                                authenticate=True, params=q)
+        return resp
 
     def orders(self, trades=False, userref=None):
         """
@@ -136,8 +135,9 @@ class KrakenHTTP(Client):
                           params=q)
 
 if __name__ == '__main__':
-    test = KrakenHTTP()
-
+    test = KrakenHTTP(key_file='../../../keys/kraken.key')
+    r = test.balance()
+    print(r.request.body)
 
 
 
