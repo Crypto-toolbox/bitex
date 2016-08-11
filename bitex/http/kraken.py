@@ -22,7 +22,7 @@ class KrakenHTTP(Client):
             api.load_key(key_file)
         super(KrakenHTTP, self).__init__(api, 'Kraken')
 
-    def order_book(self, pair, count=0):
+    def order_book(self, pair, **kwargs):
         """
         Returns orderbook for passed asset pair.
         :param pair:
@@ -30,11 +30,15 @@ class KrakenHTTP(Client):
         :return:
         """
         q = {'pair': pair}
-        if count:
-            q['count'] = count
+        q.update(kwargs)
 
         r = self.query('public/Depth', params=q).json()['result']
         r = r[list(r.keys())[0]]
+        for i in range(len(r['asks'])):
+            r['asks'][i] = [str(i) for i in r['asks'][i]]
+
+        for i in range(len(r['bids'])):
+            r['bids'][i] = [str(i) for i in r['bids'][i]]
 
         return {'asks': r['asks'], 'bids': r['bids']}
 
@@ -67,14 +71,13 @@ class KrakenHTTP(Client):
         r = self.query('public/Trades', params=q).json()['result']
         r.pop('last')
         r = r[list(r.keys())[0]]
-        print(r)
         data = {'asks': [], 'bids': []}
         for quote in r:
-            print(quote)
+            q = [str(i) for i in (quote[:3] + [quote[4]])]
             if quote[3] == 'b':
-                data['bids'].append(quote[:3])
+                data['bids'].append(q)
             else:
-                data['asks'].append(quote[:3])
+                data['asks'].append(q)
         return data
 
     def balance(self, asset='ZUSD', aclass=None):
@@ -91,7 +94,7 @@ class KrakenHTTP(Client):
         return self._api.query('private/TradeBalance', req_type='POST',
                                authenticate=True, params=q)
 
-    def open_orders(self, trades=False, userref=None):
+    def orders(self, trades=False, userref=None):
         """
         Returns user account's open orders.
         :param trades:
