@@ -9,7 +9,7 @@ Bitex provides primarily REST-based clients for a variety of Crypto exchanges. I
 
 # State
 
-As of now, only REST APIs are supported, implementations of websockets and FIX connections are planned.
+As of now, only REST APIs are supported, implementations of websockets and FIX connections are being considered.
 
 The following exchanges are planned
 
@@ -23,44 +23,51 @@ HTTP:
 - BTC-E (backend done)
 - Bittrex (backend done)
 
-Websockets
-- GDAX (planned)
-- Bitstamp (planned)
-- Bitfinex (planned)
-- Poloniex (planned)
-
-FIX
-- GDAX (planned)
-- ITBit (planned)
-
 
 -`planned`: I'm currently designing base code for this exchange
 
--`backend done`: You're able to communicate with the API using the base class' functions
+-`backend done`: You're able to communicate with the API using its respective API class
 
 -`overlay funcs done`: I've added convenience methods which allow communication with the API, but not all arguments are integrated into the arguments list, and documenation may be missing.
 
--`fully implemented`: All API endpoints have a overlay method, which also features all applicable arguments as well as doc strings.
+-`fully implemented`: All API endpoints have a overlay method, which features all minimally required arguments, as well as additional kwargs.
 
 Additional clients will be added to (or removed from) this list, according to their liquidity and market volume.
 
 In their basic form, clients provide a simple connection to APIs - that is, they handle authentication and request construction for you. As soon the above list is completed to a point where most of the exchanges are implemented (or whenever I feel like it), I will add convenience layers to the clients; this layer will aim to make calling the api feel more like a function, instead of string construction (i.e. `kraken.ticker('XBTEUR')`, instead of typing `kraken.public_query({'pair': 'XBTEUR'})`). 
 
+# The `postoffice` module
 
-# Output Format
-All fully implemented `http` clients output Market data in the following format:
+This module, initially the core feature of this library, supplies a basic and easy-to-extend publish/subscribe functionality for all clients. It allows
+automation of API polls, and supplying data uniformly as a single, bundled stream.
 
-```
-sent | received | Symbol | Exchange | Endpoint Timestamp | Type | Value
-```
-meaning that a request sent at 5am Jan 1st, 2016 for a BTCUSD bid order from an orderbook of layout {price, vol, timestamp}, ie {400, 0.4, 1451624340} from Kraken, and its answer received at 5:01am Jan 1st 2016 would look like this:
-```
-1451624400, 1451624460, XBTUSD, Kraken, 1451624340, Bid Price, 400
-1451624400, 1451624460, XBTUSD, Kraken, 1451624340, Bid Vol, 0.4
-```
-If Endpoint timestamps arent available, `None` is returned in the `Endpoint Timestamp` instead.
+The module is currently on hold.
 
-Other Endpoints, such as `Balance` or `Fee` data, will be put out as is - the diversity of this output make it difficult to unify it under the above output. 
+# REST Clients for usage within your code
+
+If you do not want to use the `postoffice` module to poll data, you can also use the REST Clients directly. These clients have a unified interface, hence some 
+functionality does not have a method in the Overlay clients (i.e. all clients in the `bitex.http` module) - you can still access these endpoint by
+making use of the low-lvl API interface in `bitex.api`. 
+
+The base methods for all clients are defined as follows:
+
+Public Endpoints:
+- Client.ticker()
+- Client.order_book()
+- Client.trades()
+
+Private Endpoints:
+- Client.balance()
+- Client.orders()
+- Client.ledger()
+- Client.add_order()
+- Client.cancel_order()
+- Client.fees()
+
+Keep in mind that, in order to provide correct and unified data across all platforms, some of these methods may use more than one
+API call to the exchange to acquire all necessary data. This is usually documented in the method's docstring. 
+
+For further documentation, consult the source code.
 
 # Installation
 `python3 setup.py install`
@@ -71,7 +78,7 @@ Import any client from the `http` submodule.
 ```
 from bitex.http import KrakenHTTP
 uix = KrakenHTTP()
-uix.orderbook('XBTEUR')
+uix.order_book('XBTEUR')
 ```
 
 If you'd like to query a private endpoint, you'll have to either supply your secret & api keys like this:
