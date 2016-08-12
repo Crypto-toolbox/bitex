@@ -64,7 +64,7 @@ k = KrakenREST()
 k.load_key('kraken.key')
 
 k.query('public/Depth', params={'pair': 'XXBTZUSD'})
-k.query('private/AddOrder', authenticate=True, request_method=requests.post,
+k.query('GET', 'private/AddOrder', authenticate=True,
             params={'pair': 'XXBTZUSD', 'type': 'sell', 'ordertype': 'limit',
                     'price': 1000.0, 'volume': 0.01, 'validate': True})
 ```
