@@ -8,7 +8,6 @@ import logging
 
 # Import Homebrew
 from bitex.api.rest import BitfinexREST
-from bitex.http.client import Client
 
 
 log = logging.getLogger(__name__)
