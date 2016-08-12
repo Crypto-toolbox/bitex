@@ -1,11 +1,8 @@
 # BitEx
 BitEx is a collection of API Clients for Crypto Currency Exchanges.
 
-This project evolved out of the pure pleasure of writing clients for REST APIs, and a want and need for a single data stream to read from for my bitcoin bots. 
-
-# What is BitEx
-
-Bitex provides primarily REST-based clients for a variety of Crypto exchanges. It comes packaged with a publish-subscribe module, which allows easy polling and distribution of exchange data to, for example, an automated trading strategy.
+It provides primarily REST-based clients for a variety of Crypto exchanges. It handles authentication and requests to common endpoints via convenience methods, 
+as well as granting access to all other endpoint via the low level api interface.
 
 # State
 --------------------------------
@@ -13,8 +10,6 @@ Bitex provides primarily REST-based clients for a variety of Crypto exchanges. I
 **API** : **Completed**
 
 **Clients** : **WIP**
-
-**Post Office** : **On Hold**
 
 --------------------------------
 As of now, only REST APIs are supported, implementations of websockets and FIX connections are being considered.
@@ -68,9 +63,9 @@ k.query('private/AddOrder', authenticate=True, request_method=requests.post,
 
 # REST Clients for usage within your code
 
-If you do not want to use the `postoffice` module to poll data, you can also use the REST Clients directly. These clients have a unified interface, hence some 
-functionality does not have a method in the Overlay clients (i.e. all clients in the `bitex.http` module) - you can still access these endpoint by
-making use of the low-lvl API interface in `bitex.api`. 
+These clients have a unified interface, hence some functionality does not have a method in the Overlay clients 
+(i.e. all clients in the `bitex.http` module) - you can still access these endpoint by making use of the 
+low-lvl API interface in `bitex.api`. 
 
 The base methods for all clients are defined as follows:
 
@@ -90,13 +85,6 @@ Private Endpoints:
 Keep in mind that, in order to provide correct and unified data across all platforms, some of these methods may use more than one
 API call to the exchange to acquire all necessary data. This is usually documented in the method's docstring. 
 
-# The `postoffice` module
-
-This module, initially the core feature of this library, supplies a basic and easy-to-extend publish/subscribe functionality for all clients. It allows
-automation of API polls, and supplying data uniformly as a single, bundled stream.
-
-The module is currently on hold.
---------------------------------
 
 For further documentation, consult the source code.
 

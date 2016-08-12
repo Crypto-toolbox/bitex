@@ -1,1 +1,0 @@
-from bitex.decorators import generic
