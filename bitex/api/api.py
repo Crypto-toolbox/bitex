@@ -28,7 +28,9 @@ class RESTAPI:
         self.req_methods = {'POST': requests.post, 'PUT': requests.put,
                             'GET': requests.get, 'DELETE': requests.delete,
                             'PATCH': requests.patch}
-        print("URI is: ", uri)
+        log.debug("Initialized RESTAPI for URI: %s; "
+                  "Will request on API version: %s",
+                  (self.uri, self.apiversion))
 
     def load_key(self, path):
         """
@@ -64,19 +66,18 @@ class RESTAPI:
         else:
             endpoint_path = '/' + endpoint
 
-        print(endpoint, authenticate, request_method, args, kwargs)
-
         url = self.uri + endpoint_path
         if authenticate:  # sign off kwargs and url before sending request
             url, request_kwargs = self.sign(url, endpoint, endpoint_path,
                                             method_verb, *args, **kwargs)
         else:
             request_kwargs = kwargs
-
-        print(url)
-
+        log.debug("Making request to: %s, kwargs: %s", (url, request_kwargs))
         r = request_method(url, timeout=5, **request_kwargs)
-
+        log.debug("Made %s request made to %s, with headers %s and body %s. "
+                  "Status code %s",
+                  (r.request.method, r.request.url, r.request.headers,
+                   r.request.body, r.status_code))
         return r
 
 
