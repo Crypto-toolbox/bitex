@@ -295,5 +295,22 @@ class BTCERest(RESTAPI):
         super(BTCERest, self).__init__(url, api_version=api_version, key=key,
                                          secret=secret)
 
-    def sign(self, **kwargs):
-        pass
+    def sign(self, url, endpoint, endpoint_path, method_verb, *args, **kwargs):
+        nonce = self.nonce()
+        try:
+            params = kwargs['params']
+        except KeyError:
+            params = {}
+        post_params = params
+        post_params.update({'nonce': nonce, 'method': endpoint.split('/', 1)[1]})
+        post_params = urllib.parse.urlencode(post_params)
+
+        signature = hmac.new(self.secret.encode('utf-8'),
+                             post_params.encode('utf-8'), hashlib.sha512)
+        headers = {'Key': self.key, 'Sign': signature.hexdigest(),
+                   "Content-type": "application/x-www-form-urlencoded"}
+
+        # split by tapi str to gain clean url;
+        url = url.split('/tapi', 1)[0] + '/tapi'
+
+        return url, {'headers': headers, 'params': params}
