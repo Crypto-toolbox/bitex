@@ -36,11 +36,18 @@ class BTCEHTTP(BTCERest):
         return self.query('GET', 'trades/%s' % pair, params=q)
 
 
+    def orders(self):
+        return self.query('POST', 'tapi/getInfo', authenticate=True)
+
+
 
 
 if __name__ == '__main__':
-    uix = BTCEHTTP(key='a64db1b5779246fb9dd907ab9571acff', secret='c5011fe2731f40ccb52fa32ab76251ba')
+    logging.basicConfig(level=logging.DEBUG)
+    uix = BTCEHTTP(key_file='../../../keys/btce.key')
     print(uix.ticker('btc_usd', 'btc_rur').text)
     print(uix.order_book('btc_usd').text)
     print(uix.trades('btc_usd').text)
+    print(uix.orders().url)
+    print(uix.orders().text)
 
