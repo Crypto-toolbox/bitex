@@ -29,7 +29,7 @@ class RESTAPI:
                             'GET': requests.get, 'DELETE': requests.delete,
                             'PATCH': requests.patch}
         log.debug("Initialized RESTAPI for URI: %s; "
-                  "Will request on API version: %s",
+                  "Will request on API version: %s" %
                   (self.uri, self.apiversion))
 
     def load_key(self, path):
@@ -72,10 +72,10 @@ class RESTAPI:
                                             method_verb, *args, **kwargs)
         else:
             request_kwargs = kwargs
-        log.debug("Making request to: %s, kwargs: %s", (url, request_kwargs))
+        log.debug("Making request to: %s, kwargs: %s" % (url, request_kwargs))
         r = request_method(url, timeout=5, **request_kwargs)
         log.debug("Made %s request made to %s, with headers %s and body %s. "
-                  "Status code %s",
+                  "Status code %s" %
                   (r.request.method, r.request.url, r.request.headers,
                    r.request.body, r.status_code))
         return r

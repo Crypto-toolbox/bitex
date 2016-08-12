@@ -23,7 +23,7 @@ REST-based APIs:
 - Kraken (backend done)
 - Coincheck (backend done)
 - OKCoin (backend done)
-- BTC-E (backend done)
+- BTC-E (in progress)
 - Bittrex (backend done)
 
 
