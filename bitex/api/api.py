@@ -41,7 +41,7 @@ class RESTAPI:
     def nonce(self):
         return str(int(1000 * time.time()))
 
-    def sign(self, url=None, *args, **kwargs):
+    def sign(self, url, endpoint, endpoint_path, method_verb, *args, **kwargs):
         """
         Dummy Signature creation method. Override this in child.
         Returned dict must have keywords usable by requests.get or requests.post
@@ -52,38 +52,33 @@ class RESTAPI:
 
         return url, {'params': {'test_param': "authenticated_chimichanga"}}
 
-    def query(self, method, endpoint, authenticate=False,
+    def query(self, method_verb, endpoint, authenticate=False,
               *args, **kwargs):
         """
         Queries exchange using given data. Defaults to unauthenticated GET query.
         """
-        request_method = self.req_methods[method]
+        request_method = self.req_methods[method_verb]
 
         if self.apiversion:
-            urlpath = '/' + self.apiversion + '/' + endpoint
+            endpoint_path = '/' + self.apiversion + '/' + endpoint
         else:
-            urlpath = '/' + endpoint
+            endpoint_path = '/' + endpoint
 
         print(endpoint, authenticate, request_method, args, kwargs)
 
-        if authenticate:  # Pass all locally vars to sign(); Sorting left to children
-            kwargs['urlpath'] = urlpath
-            kwargs['request_method'] = request_method
-            url, request_kwargs = self.sign(endpoint, *args, **kwargs)
+        url = self.uri + endpoint_path
+        if authenticate:  # sign off kwargs and url before sending request
+            url, request_kwargs = self.sign(url, endpoint, endpoint_path,
+                                            method_verb, *args, **kwargs)
         else:
-            url = self.uri + urlpath
             request_kwargs = kwargs
 
         print(url)
+
         r = request_method(url, timeout=5, **request_kwargs)
 
         return r
 
-    def auth_query(self, endpoint):
-        pass
-
-    def public_query(self):
-        pass
 
 
 
