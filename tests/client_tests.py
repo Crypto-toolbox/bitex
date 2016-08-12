@@ -51,6 +51,11 @@ class APITests(unittest.TestCase):
         url = 'http://google.com/api/v1/testing/endpoint/?test_param=authenticated_chimichanga'
         self.assertTrue(r.request.url == url)
 
+    def test_sign_returns_tuple_of_str_and_dict(self):
+        r = self.api.sign()
+        self.assertIsInstance(r, tuple)
+        self.assertIsInstance(r[0], str)
+        self.assertIsInstance(r[1], dict)
 
 class OverlayTest(unittest.TestCase):
     """
