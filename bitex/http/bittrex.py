@@ -8,41 +8,39 @@ import logging
 
 # Import Homebrew
 from bitex.api.rest import BittrexREST
-from bitex.http.client import Client
 
 log = logging.getLogger(__name__)
 
 
-class BittrexHTTP(Client):
+class BittrexHTTP(BittrexREST):
     def __init__(self, key='', secret='', key_file=''):
-        api = BittrexREST(key, secret)
+        super(BittrexHTTP, self).__init__(key, secret)
         if key_file:
-            api.load_key(key_file)
-        super(BittrexHTTP, self).__init__(api, 'Bitstamp')
+            self.load_key(key_file)
 
     def markets(self):
-        return self.query('public/getmarkets')
+        return self.query('GET', 'public/getmarkets')
 
     def ticker(self, pair):
-        response = self.query('public/getticker', params={'market': pair})
+        response = self.query('GET', 'public/getticker', params={'market': pair})
         return response
 
     def currencies(self):
-        return self.query('public/getcurrencies')
+        return self.query('GET', 'public/getcurrencies')
 
     def market_summaries(self, pair=None):
         if pair is None:
-            return self.query('public/getmarketsummaries')
+            return self.query('GET', 'public/getmarketsummaries')
         else:
-            return self.query('public/getmarketsummary', params={'market': pair})
+            return self.query('GET', 'public/getmarketsummary', params={'market': pair})
 
     def order_book(self, pair, order_type='both', depth=20):
-        return self.query('public/getorderbook', params={'market': pair,
+        return self.query('GET', 'public/getorderbook', params={'market': pair,
                                                          'type': order_type,
                                                          'depth': depth})
 
     def trades(self, pair, count=20):
-        return self.query('public/getmarkethistory', params={'market': pair,
+        return self.query('GET', 'public/getmarkethistory', params={'market': pair,
                                                              'count': count})
 
     def add_order(self, price, vol, pair, side, order_type='limit'):
@@ -113,7 +111,7 @@ class BittrexHTTP(Client):
 
 if __name__ == '__main__':
     uix = BittrexHTTP(key='a64db1b5779246fb9dd907ab9571acff', secret='c5011fe2731f40ccb52fa32ab76251ba')
-    print(uix._api.key, uix._api.secret)
+
     print(uix.markets().json())
-    print(uix.ledger('BTC-LTC').text)
+
 
