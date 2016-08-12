@@ -70,15 +70,20 @@ class RESTAPI:
         if authenticate:  # Pass all locally vars to sign(); Sorting left to children
             kwargs['urlpath'] = urlpath
             kwargs['request_method'] = request_method
-            url, kwargs = self.sign(endpoint, *args, **kwargs)
+            url, request_kwargs = self.sign(endpoint, *args, **kwargs)
         else:
             url = self.uri + urlpath
+            request_kwargs = kwargs
 
         print(url)
-        r = request_method(url, timeout=5, **kwargs)
+        r = request_method(url, timeout=5, **request_kwargs)
 
         return r
 
+    def auth_query(self, endpoint):
+        pass
+
+    def public_query(self):
 
 
 
