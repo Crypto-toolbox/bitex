@@ -9,9 +9,13 @@ Bitex provides primarily REST-based clients for a variety of Crypto exchanges. I
 
 # State
 --------------------------------
+
 **API** : **Completed**
+
 **Clients** : **WIP**
+
 **Post Office** : **On Hold**
+
 --------------------------------
 As of now, only REST APIs are supported, implementations of websockets and FIX connections are being considered.
 
