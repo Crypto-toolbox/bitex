@@ -8,12 +8,16 @@ This project evolved out of the pure pleasure of writing clients for REST APIs, 
 Bitex provides primarily REST-based clients for a variety of Crypto exchanges. It comes packaged with a publish-subscribe module, which allows easy polling and distribution of exchange data to, for example, an automated trading strategy.
 
 # State
-
+--------------------------------
+**API** : **Completed**
+**Clients** : **WIP**
+**Post Office** : **On Hold**
+--------------------------------
 As of now, only REST APIs are supported, implementations of websockets and FIX connections are being considered.
 
-The following exchanges are planned
+The following exchanges are supported
 
-HTTP:
+REST-based APIs:
 - GDAX (backend done)
 - Bitfinex (backend done)
 - Bitstamp (backend done)
@@ -36,12 +40,27 @@ Additional clients will be added to (or removed from) this list, according to th
 
 In their basic form, clients provide a simple connection to APIs - that is, they handle authentication and request construction for you. As soon the above list is completed to a point where most of the exchanges are implemented (or whenever I feel like it), I will add convenience layers to the clients; this layer will aim to make calling the api feel more like a function, instead of string construction (i.e. `kraken.ticker('XBTEUR')`, instead of typing `kraken.public_query({'pair': 'XBTEUR'})`). 
 
-# The `postoffice` module
+# REST APIs
 
-This module, initially the core feature of this library, supplies a basic and easy-to-extend publish/subscribe functionality for all clients. It allows
-automation of API polls, and supplying data uniformly as a single, bundled stream.
+The above listed exchanges all have an implemented API class in `bitex.api`. These provide low-level access to the
+respective exchange's REST API, including handling of authentication. They do not feature convenience methods, so you will
+have to write some things yourself. 
 
-The module is currently on hold.
+At their core, they can be thought of as simple overlay methods for `requests.request()` methods, as all
+kwargs passed to query, are also passed to these methods as well. 
+
+An example:
+```
+from bitex.api.rest import KrakenREST, BitstampREST
+
+k = KrakenREST()
+k.load_key('kraken.key')
+
+k.query('public/Depth', params={'pair': 'XXBTZUSD'})
+k.query('private/AddOrder', authenticate=True, request_method=requests.post,
+            params={'pair': 'XXBTZUSD', 'type': 'sell', 'ordertype': 'limit',
+                    'price': 1000.0, 'volume': 0.01, 'validate': True})
+```
 
 # REST Clients for usage within your code
 
@@ -67,7 +86,16 @@ Private Endpoints:
 Keep in mind that, in order to provide correct and unified data across all platforms, some of these methods may use more than one
 API call to the exchange to acquire all necessary data. This is usually documented in the method's docstring. 
 
+# The `postoffice` module
+
+This module, initially the core feature of this library, supplies a basic and easy-to-extend publish/subscribe functionality for all clients. It allows
+automation of API polls, and supplying data uniformly as a single, bundled stream.
+
+The module is currently on hold.
+--------------------------------
+
 For further documentation, consult the source code.
+
 
 # Installation
 `python3 setup.py install`
