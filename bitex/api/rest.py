@@ -73,7 +73,7 @@ class BitstampREST(RESTAPI):
         signature = signature.hexdigest().upper()
 
         try:
-            req = kwargs['data']
+            req = kwargs['params']
         except KeyError:
             req = {}
         req['key'] = self.key
@@ -176,7 +176,7 @@ class GDAXRest(RESTAPI):
     def sign(self, url, endpoint, endpoint_path, method_verb, *args, **kwargs):
         auth = GdaxAuth(self.key, self.secret, self.passphrase)
         try:
-            js = kwargs['json']
+            js = kwargs['params']
         except KeyError:
             js = {}
 

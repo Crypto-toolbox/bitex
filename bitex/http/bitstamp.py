@@ -24,7 +24,7 @@ class BitstampHTTP(BitstampREST):
         if count:
             q['count'] = count
 
-        resp = self.query('GET', 'v2/order_book/%s/' % pair)
+        resp = self.query('GET', 'v2/order_book/%s/' % pair, params=q)
 
         return resp
 
@@ -33,7 +33,7 @@ class BitstampHTTP(BitstampREST):
         return response
 
     def trades(self, pair, t='hour'):
-        resp = self.query('GET', 'v2/transactions/%s/' % pair, data={'time': t})
+        resp = self.query('GET', 'v2/transactions/%s/' % pair, params={'time': t})
         return resp
 
     def balance(self, **kwargs):
