@@ -31,7 +31,7 @@ class KrakenHTTP(KrakenREST):
         q = {'pair': pair}
         q.update(kwargs)
 
-        r = self.query('public/Depth', params=q).json()['result']
+        r = self.query('GET', 'public/Depth', params=q).json()['result']
         r = r[list(r.keys())[0]]
         for i in range(len(r['asks'])):
             r['asks'][i] = [str(i) for i in r['asks'][i]]
@@ -49,7 +49,7 @@ class KrakenHTTP(KrakenREST):
         """
 
         q = {'pair': pair}
-        r = self.query('public/Ticker', params=q).json()
+        r = self.query('GET', 'public/Ticker', params=q).json()
 
         return {'last': r['result'][pair]['c'][0],
                 '24h Vol': r['result'][pair]['v'][1],
@@ -67,7 +67,7 @@ class KrakenHTTP(KrakenREST):
         q = {'pair': pair}
         q.update(kwargs)
 
-        r = self.query('public/Trades', params=q).json()['result']
+        r = self.query('GET', 'public/Trades', params=q).json()['result']
         r.pop('last')
         r = r[list(r.keys())[0]]
         data = {'asks': [], 'bids': []}
@@ -106,7 +106,7 @@ class KrakenHTTP(KrakenREST):
         if userref is not None:
             q['userref'] = userref
 
-        return self.query('private/OpenOrders', req_type='POST',
+        return self.query('POST', 'private/OpenOrders', req_type='POST',
                           authenticate=True, params=q)
 
     def add_order(self, pair, volume, price, order_type='limit', **kwargs):
@@ -119,7 +119,7 @@ class KrakenHTTP(KrakenREST):
 
         if kwargs:
             q.update(kwargs)
-        return self.query('private/AddOrder', req_type='POST',
+        return self.query('POST', 'private/AddOrder', req_type='POST',
                           authenticate=True, params=q)
 
     def cancel_order(self, txid):
@@ -130,12 +130,12 @@ class KrakenHTTP(KrakenREST):
         """
         q = {'txid': txid}
 
-        return self.query('CancelOrder', req_type='POST', authenticate=True,
+        return self.query('POST', 'CancelOrder', req_type='POST', authenticate=True,
                           params=q)
 
 if __name__ == '__main__':
     test = KrakenHTTP(key_file='../../../keys/kraken.key')
-    r = test.balance()
+    r = test.ticker('XXBTZUSD')
     print(r.request.body)
 
 
