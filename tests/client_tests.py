@@ -68,10 +68,10 @@ class OverlayTest(unittest.TestCase):
         :return:
         """
 
-        self.pair = "XXBTZUSD"
-        self.key = ''
-        self.secret = ''
-        self.exchange = KrakenHTTP(key=self.key, secret=self.secret)
+        self.pair = ""  # Pair
+        self.key = ''  # API Key
+        self.secret = ''  # API Secret
+        self.exchange = KrakenHTTP(key=self.key, secret=self.secret)  # API Object
 
     def tearDown(self):
         self.exchange = None
@@ -149,6 +149,8 @@ class OverlayTest(unittest.TestCase):
 
     def test_orders_endpoint(self):
         """
+        Returns a list of all open orders for the user's account.
+
         orders() method returns a dict of following layout:
         {bids: [[id, price, vol, status, type, time], ..],
          asks: [[id, price, vol, status, type, time], ..]}
@@ -169,6 +171,7 @@ class OverlayTest(unittest.TestCase):
         :return:
         """
         r = self.exchange.add_order(self.pair, 0.0001, 10000, order_type='limit')
+        self.assertIsInstance(r, dict)
         a = ['tid','price','amount','side', 'type']
         b = list(r.keys())
         self.assertCountEqual(a, b)
@@ -188,7 +191,7 @@ class KrakenHTTPClientTest(OverlayTest):
 
 class BitstampHTTPClientTest(OverlayTest):
     def setUp(self):
-        self.pair = "XXBTZUSD"
+        self.pair = "btceur"
         self.key_file = '../../keys/bitstamp.key'
         self.exchange = BitstampHTTP(key_file=self.key_file)
 
