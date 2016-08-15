@@ -88,8 +88,8 @@ class KrakenHTTP(KrakenREST):
         """
         q = kwargs
 
-        resp = self._api.query('private/TradeBalance', req_type='POST',
-                               authenticate=True, params=q)
+        resp = self.query('POST', 'private/TradeBalance', req_type='POST',
+                          authenticate=True, params=q)
         return resp
 
     def orders(self, trades=False, userref=None):
