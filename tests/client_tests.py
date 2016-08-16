@@ -118,7 +118,7 @@ class OverlayTest(unittest.TestCase):
     def test_trades_endpoint(self):
         """
         Calling the trades endpoint returns a dict with the following items:
-        filled bids [price, amount, time, type], filled asks [price, amount, time, type]
+        filled bids [tid, price, amount, time, type], filled asks [tid, price, amount, time, type]
 
         """
         r = self.exchange.trades(self.pair)
@@ -127,7 +127,7 @@ class OverlayTest(unittest.TestCase):
         for q in (r['asks'] + r['bids']):
             [self.assertIsInstance(i, str) for i in q]
             try:
-                [dec.Decimal(i) for i in q[:3]]
+                [dec.Decimal(i) for i in q[:4]]
             except dec.InvalidOperation:
                 self.fail("An element contains non-decimalable items! %s" % q)
 
