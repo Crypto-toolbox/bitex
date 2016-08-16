@@ -26,15 +26,40 @@ class BitstampHTTP(BitstampREST):
 
         resp = self.query('GET', 'v2/order_book/%s/' % pair, params=q)
 
-        return resp
+        ts = resp.json()['timestamp']
+        asks = resp.json()['asks']
+        bids = resp.json()['bids']
+        for order_index in range(len(asks)):
+            asks[order_index].append(ts)
+            asks[order_index] = [str(i) for i in asks[order_index]]
+
+        for order_index in range(len(bids)):
+            bids[order_index].append(ts)
+            bids[order_index] = [str(i) for i in bids[order_index]]
+
+        return {'asks': asks, 'bids': bids}
 
     def ticker(self, pair):
-        response = self.query('GET', 'v2/ticker/%s/' % pair)
-        return response
+        r = self.query('GET', 'v2/ticker/%s/' % pair).json()
+        return {'last': r['last'], '24h Vol': r['volume'], 'ask': r['ask'],
+                'bid': r['bid'], 'timestamp': r['timestamp']}
 
     def trades(self, pair, t='hour'):
-        resp = self.query('GET', 'v2/transactions/%s/' % pair, params={'time': t})
-        return resp
+        r = self.query('GET', 'v2/transactions/%s/' % pair, params={'time': t}).json()
+        asks = []
+        bids = []
+
+        for order in r:
+            book_side = order['type']
+            order = [order['tid'], order['price'], order['amount'], order['date'], 'NA']
+            if book_side == '1':  # ask
+                asks.append(order)
+            elif book_side == '0':  # bid
+                bids.append(order)
+            else:
+                print(book_side)
+                raise ValueError("something didnt work here.")
+        return {'asks': asks, 'bids': bids}
 
     def balance(self, **kwargs):
         """
@@ -44,7 +69,7 @@ class BitstampHTTP(BitstampREST):
         """
         return self.query('POST', 'v2/balance/', authenticate=True)
 
-    def orders(self, pair, *args, **kwargs):
+    def orders(self, *args, **kwargs):
         """
         Return open orders.
         :param pair:
@@ -85,6 +110,8 @@ class BitstampHTTP(BitstampREST):
 
 if __name__ == '__main__':
     uix = BitstampHTTP()
-    print(uix.ticker('btcusd').text)
+    print(uix.order_book('btcusd'))
+    print(uix.trades('btcusd'))
+    print(uix.ticker('btcusd'))
 
 
