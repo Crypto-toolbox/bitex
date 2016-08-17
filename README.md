@@ -70,14 +70,15 @@ low-lvl API interface in `bitex.api`.
 The base methods for all clients are defined as follows:
 
 Public Endpoints:
-- Client.ticker()
-- Client.order_book()
-- Client.trades()
+- Client.ticker() - Returns a dict with keys ['last', '24h Vol', 'ask', 'bid', 'timestamp']
+- Client.order_book() - Returns a dict with keys ['asks', 'bids'], orders being stored as 
+lists like so: 'asks': [[price, vol, ts], [price, vol, ts], ..]
+- Client.trades() - Returns a dict with keys ['asks', 'bids'], trades being stored as lists
+like so: 'asks': [[tid, price, amount, time, type], [tid, price, amount, time, type], ..]
 
 Private Endpoints:
 - Client.balance()
 - Client.orders()
-- Client.ledger()
 - Client.add_order()
 - Client.cancel_order()
 - Client.fees()
