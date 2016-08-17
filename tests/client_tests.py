@@ -12,7 +12,7 @@ import decimal as dec
 
 # Import Homebrew
 from bitex.api.api import RESTAPI
-from bitex.http import KrakenHTTP, BitstampHTTP
+from bitex.http import KrakenHTTP, BitstampHTTP, BitfinexHTTP
 log = logging.getLogger(__name__)
 
 
@@ -170,7 +170,7 @@ class OverlayTest(unittest.TestCase):
         {tid: '', price: '', amount: '', side: '', type: ''}
         :return:
         """
-        r = self.exchange.add_order(self.pair, 0.0001, 10000, order_type='limit')
+        r = self.exchange.add_order(0.0001, 10000, self.pair, 'ask', order_type='limit')
         self.assertIsInstance(r, dict)
         a = ['tid','price','amount','side', 'type']
         b = list(r.keys())
@@ -195,3 +195,9 @@ class BitstampHTTPClientTest(OverlayTest):
         self.key_file = '../../keys/bitstamp.key'
         self.exchange = BitstampHTTP(key_file=self.key_file)
 
+
+class BitfinexHTTPClientTest(OverlayTest):
+    def setUp(self):
+        self.pair = "btcusd"
+        self.key_file = '../../keys/bitfinex.key'
+        self.exchange = BitfinexHTTP(key_file=self.key_file)

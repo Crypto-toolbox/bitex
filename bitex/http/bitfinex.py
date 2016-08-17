@@ -20,20 +20,46 @@ class BitfinexHTTP(BitfinexREST):
         if key_file:
             self.load_key(key_file)
 
-    def order_book(self, pair, limit_orders=50, aggregrate=True):
-        q = {'limit_asks': limit_orders, 'limit_bids': limit_orders}
-        if not aggregrate:
-            q['group'] = 0
-        return self.query('GET', '/book/%s/' % pair, params=q)
+    def order_book(self, pair, **kwargs):
+        if kwargs:
+            q = kwargs
+        else:
+            q = {}
+
+        r = self.query('GET', '/book/%s/' % pair, params=q).json()
+        asks = [(str(order['price']), str(order['amount']), str(order['timestamp'])) for order in r['asks']]
+        bids = [(str(order['price']), str(order['amount']), str(order['timestamp'])) for order in r['bids']]
+        return {'asks': asks, 'bids': bids}
 
     def ticker(self, pair):
-        return self.query('GET', "pubticker/%s" % pair)
+        r = self.query('GET', "pubticker/%s" % pair).json()
+        return {'last': r['last_price'],
+                '24h Vol': r['volume'],
+                'ask': r['ask'],
+                'bid': r['bid'],
+                'timestamp': r['timestamp']}
 
-    def trades(self, pair, start_time=None, limit_trades=False):
-        q = {'limit_trades': limit_trades}
-        if start_time:
-            q['timestamp'] = start_time
-        return self.query('GET', 'trades/%s' % pair, params=q)
+    def trades(self, pair, **kwargs):
+        if kwargs:
+            q = kwargs
+        else:
+            q = {}
+        r = self.query('GET', 'trades/%s' % pair, params=q).json()
+        asks = []
+        bids = []
+        for order in r:
+            order_to_list = [order['tid'], order['price'], order['amount'],
+                             order['timestamp'], 'NA']
+            order_to_list = [str(item) for item in order_to_list]
+
+            if order['type'] == 'sell':
+                asks.append(order_to_list)
+            elif order['type'] == 'buy':
+                bids.append(order_to_list)
+            else:
+                raise ValueError("Unknown value in 'type'! %s" % order)
+
+            return {'asks': asks, 'bids': bids}
 
     def balance(self, **kwargs):
         """
@@ -94,4 +120,4 @@ class BitfinexHTTP(BitfinexREST):
 
 if __name__ == '__main__':
     uix = BitfinexHTTP()
-    print(uix.ticker('ltcbtc').text)
+    uix.order_book('btcusd')
