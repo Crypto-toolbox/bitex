@@ -12,7 +12,7 @@ import decimal as dec
 
 # Import Homebrew
 from bitex.api.api import RESTAPI
-from bitex.http import KrakenHTTP, BitstampHTTP, BitfinexHTTP
+from bitex.http import KrakenHTTP, BitstampHTTP, BitfinexHTTP, GdaxHTTP
 log = logging.getLogger(__name__)
 
 
@@ -201,3 +201,11 @@ class BitfinexHTTPClientTest(OverlayTest):
         self.pair = "btcusd"
         self.key_file = '../../keys/bitfinex.key'
         self.exchange = BitfinexHTTP(key_file=self.key_file)
+
+
+class GDAXHTTPClientTest(OverlayTest):
+    def setUp(self):
+        self.pair = "BTC-USD"
+        self.key_file = '../../keys/gdax.key'
+        self.exchange = GdaxHTTP(key_file=self.key_file)
+
