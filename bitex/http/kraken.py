@@ -72,7 +72,7 @@ class KrakenHTTP(KrakenREST):
         r = r[list(r.keys())[0]]
         data = {'asks': [], 'bids': []}
         for quote in r:
-            q = [str(i) for i in (quote[:3] + [quote[4]])]
+            q = [str(i) for i in ( ['NA'] + quote[:3] + [quote[4]])]
             if quote[3] == 'b':
                 data['bids'].append(q)
             else:
