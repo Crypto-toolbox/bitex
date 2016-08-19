@@ -122,14 +122,23 @@ class OverlayTest(unittest.TestCase):
 
         """
         r = self.exchange.trades(self.pair)
+
+        # returns a dict
         self.assertIsInstance(r, dict)
+
+        # has keys asks, bids
         self.assertCountEqual(['asks', 'bids'], list(r.keys()))
+
+        # All items of each quote are strings; indexes 1-3 are valid strings for
+        # the decimal.Decimal() constructor
         for q in (r['asks'] + r['bids']):
             [self.assertIsInstance(i, str) for i in q]
-            try:
-                [dec.Decimal(i) for i in q[:4]]
-            except dec.InvalidOperation:
-                self.fail("An element contains non-decimalable items! %s" % q)
+
+            for item in q[1:4]:
+                try:
+                    dec.Decimal(item)
+                except dec.InvalidOperation:
+                    self.fail("An element contains non-decimalable items! %s" % q)
 
     def test_balance_endpoint(self):
         """
