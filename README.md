@@ -23,8 +23,10 @@ REST-based APIs:
 - Kraken (backend done)
 - Coincheck (backend done)
 - OKCoin (backend done)
-- BTC-E (in progress)
+- BTC-E (DEPRECATED) - Too shitty support, pardon my french.
 - Bittrex (backend done)
+- C-CEX (planned)
+- Cryptoptia (planned)
 
 
 -`planned`: I'm currently designing base code for this exchange
