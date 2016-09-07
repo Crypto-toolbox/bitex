@@ -331,7 +331,7 @@ class CCEXRest(RESTAPI):
 
         api_key = ''
 
-        params['apikey'] = api_key
+        params['apikey'] = self.key
         parmas['nonce'] = nonce
         post_params = params
         post_params.update({'nonce': nonce, 'method': endpoint})
@@ -339,7 +339,7 @@ class CCEXRest(RESTAPI):
 
         url = uri.split('_pub')[0] + '.html?a=' + endpoint + post_params
 
-        sig = hmac.new(self.key, url, hashlib.sha512)
+        sig = hmac.new(url, self.secret, hashlib.sha512)
         headers = {'apisign': sig}
 
         return url, {'headers': headers}
