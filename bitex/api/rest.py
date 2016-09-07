@@ -314,3 +314,32 @@ class BTCERest(RESTAPI):
         url = url.split('/tapi', 1)[0] + '/tapi'
 
         return url, {'headers': headers, 'params': params}
+
+
+class CCEXRest(RESTAPI):
+    def __init__(self, key='', secret='', api_version='',
+                 url='https://c-cex.com/t/api_pub.html?a='):
+        super(CCEXRest, self).__init__(url, api_version=api_version, key=key,
+                                         secret=secret)
+
+    def sign(self, uri, endpoint, endpoint_path, method_verb, *args, **kwargs):
+        nonce = self.nonce()
+        try:
+            params = kwargs['params']
+        except KeyError:
+            params = {}
+
+        api_key = ''
+
+        params['apikey'] = api_key
+        parmas['nonce'] = nonce
+        post_params = params
+        post_params.update({'nonce': nonce, 'method': endpoint})
+        post_params = urllib.parse.urlencode(post_params)
+
+        url = uri.split('_pub')[0] + '.html?a=' + endpoint + post_params
+
+        sig = hmac.new(self.key, url, hashlib.sha512)
+        headers = {'apisign': sig}
+
+        return url, {'headers': headers}
