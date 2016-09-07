@@ -63,35 +63,6 @@ k.query('private/AddOrder', authenticate=True, request_method=requests.post,
                     'price': 1000.0, 'volume': 0.01, 'validate': True})
 ```
 
-# REST Clients for usage within your code
-
-These clients have a unified interface, hence some functionality does not have a method in the Overlay clients 
-(i.e. all clients in the `bitex.http` module) - you can still access these endpoint by making use of the 
-low-lvl API interface in `bitex.api`. 
-
-The base methods for all clients are defined as follows:
-
-Public Endpoints:
-- Client.ticker() - Returns a dict with keys ['last', '24h Vol', 'ask', 'bid', 'timestamp']
-- Client.order_book() - Returns a dict with keys ['asks', 'bids'], orders being stored as 
-lists like so: 'asks': [[price, vol, ts], [price, vol, ts], ..]
-- Client.trades() - Returns a dict with keys ['asks', 'bids'], trades being stored as lists
-like so: 'asks': [[tid, price, amount, time, type], [tid, price, amount, time, type], ..]
-
-Private Endpoints:
-- Client.balance()
-- Client.orders()
-- Client.add_order()
-- Client.cancel_order()
-- Client.fees()
-
-Keep in mind that, in order to provide correct and unified data across all platforms, some of these methods may use more than one
-API call to the exchange to acquire all necessary data. This is usually documented in the method's docstring. 
-
-
-For further documentation, consult the source code.
-
-
 # Installation
 `python3 setup.py install`
 
