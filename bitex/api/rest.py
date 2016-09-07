@@ -329,10 +329,8 @@ class CCEXRest(RESTAPI):
         except KeyError:
             params = {}
 
-        api_key = ''
-
         params['apikey'] = self.key
-        parmas['nonce'] = nonce
+        params['nonce'] = nonce
         post_params = params
         post_params.update({'nonce': nonce, 'method': endpoint})
         post_params = urllib.parse.urlencode(post_params)
@@ -343,3 +341,30 @@ class CCEXRest(RESTAPI):
         headers = {'apisign': sig}
 
         return url, {'headers': headers}
+
+
+class CryptopiaREST(RESTAPI):
+    def __init__(self, key='', secret='', api_version='',
+                 url='https://www.cryptopia.co.nz/api'):
+        super(CryptopiaREST, self).__init__(url, api_version=api_version, key=key,
+                                         secret=secret)
+
+    def sign(self, uri, endpoint, endpoint_path, method_verb, *args, **kwargs):
+        nonce = self.nonce()
+        try:
+            params = kwargs['params']
+        except KeyError:
+            params = {}
+
+        url = self.uri + endpoint
+        post_data = json.dumps(params)
+        md5 = base64.b64encode(hashlib.md5().updated(post_data).digest())
+
+        sig = self.key + 'POST' + urllib.quote_plus(url).lower() + nonce + md5
+        hmac_sig = base64.b64encode(hmac.new(base64.b64decode(self.secret),
+                                              sig, hashlib.sha256).digest())
+        header_data = 'amx' + self.key + ':' + hmac_sig + ':' + nonce
+        headers = {'Authorization': header_data,
+                   'Content-Type': 'application/json; charset=utf-8'}
+
+        return url, {'headers': headers, 'data': post_data}
