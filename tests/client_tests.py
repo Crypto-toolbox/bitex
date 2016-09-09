@@ -7,13 +7,14 @@ Do fancy shit.
 import logging
 import unittest
 import requests
-import decimal as dec
+import json
 # Import Third-Party
 
 # Import Homebrew
 from bitex.api.api import RESTAPI
-from bitex.http import KrakenHTTP, BitstampHTTP, BitfinexHTTP, GdaxHTTP
-from bitex.http import OKCoinHTTP
+from bitex.api.rest import KrakenREST, CryptopiaREST, CCEXRest, GeminiREST
+from bitex.api.rest import YunbiREST, RockTradingREST
+
 log = logging.getLogger(__name__)
 
 
@@ -58,169 +59,114 @@ class APITests(unittest.TestCase):
         self.assertIsInstance(r[0], str)
         self.assertIsInstance(r[1], dict)
 
-class OverlayTest(unittest.TestCase):
-    """
-    Tests that each client returns the expected data
-    Serves as BASE Class for all other REST Client tests.
-    """
+
+class KrakenAPITest(APITests):
     def setUp(self):
-        """
-        Adjust this in child classes to load appropriate keys and pairs.
-        :return:
-        """
+        self.api = KrakenREST()
+        self.api.load_key('kraken.key')
 
-        self.pair = ""  # Pair
-        self.key = ''  # API Key
-        self.secret = ''  # API Secret
-        self.exchange = KrakenHTTP(key=self.key, secret=self.secret)  # API Object
+    def test_public_query(self):
+        # query() returns a valid requests.Response object
+        r = self.api.query('GET', 'Time')
+        self.assertIsInstance(r, requests.Response)
 
-    def tearDown(self):
-        self.exchange = None
-        self.pair = None
+        # query() is succesful (No errors)
+        self.assertTrue(r.json()['error'] == [],
+                        "Error in Response: %s" % r.json()['error'])
 
-    def test_ticker_endpoint(self):
-        """
-        Calling the ticker endpoint returns a dictionary with the following
-        items:
-        Current Price, 24h vol, current ask price, current bid price, timestamp.
-        Each item contains a string represenation of a float or int.
-        """
-        r = self.exchange.ticker(self.pair)
-        self.assertIsInstance(r, dict)
-        a = ['last', '24h Vol', 'ask', 'bid', 'timestamp']
-        b = list(r.keys())
-        self.assertCountEqual(a, b)
-        for key in r:
-            self.assertIsInstance(r[key], str)
-            try:
-                dec.Decimal(r[key])
-            except ValueError:
-                self.fail("%s could not be converted to Decimal!" % r[key])
+    def test_private_query(self):
+        # API Key and secret are loaded?
+        self.assertTrue(self.api.key, 'API Key is empty!')
+        self.assertTrue(self.api.secret, 'Secret Key is empty!')
 
-    def test_orderbook_endpoint(self):
-        """
-        Calling the order book endpoint returns a dict with the following
-        items:
-        asks [price, vol, ts], bids [price, vol, ts]
+        # query() returns a valid request object
+        r = self.api.query('POST', 'private/OpenOrders', authenticate=True)
+        self.assertIsInstance(r, requests.Response)
 
-        If a timestamp for quotes is unavailable, it should be None. If there
-        is only a timestamp for the entire order book, use that instead.
-        """
-        r = self.exchange.order_book(self.pair)
-        self.assertIsInstance(r, dict)
-        self.assertCountEqual(['asks', 'bids'], list(r.keys()))
-        for q in (r['asks'] + r['bids']):
-            [self.assertIsInstance(i, str) for i in q]
-            try:
-                [dec.Decimal(i) for i in q]
-            except dec.InvalidOperation:
-                self.fail("An element contains non-decimalable items! %s" % q)
+        # query() with flag authenticate=True builds valid signature (No errors)
+        self.assertTrue(r.json()['error'] == [],
+                        "Error in Response: %s" % r.json()['error'])
 
-    def test_trades_endpoint(self):
-        """
-        Calling the trades endpoint returns a dict with the following items:
-        filled bids [tid, price, amount, time, type], filled asks [tid, price, amount, time, type]
 
-        """
-        r = self.exchange.trades(self.pair)
+class CryptopiaAPITest(APITests):
+    def setUp(self):
+        self.api = CryptopiaREST()
 
-        # returns a dict
-        self.assertIsInstance(r, dict)
+    def test_public_query(self):
+        # query() returns a valid requests.Response object
+        r = self.api.query('GET', 'GetMarketOrders/101')
+        self.assertIsInstance(r, requests.Response)
 
-        # has keys asks, bids
-        self.assertCountEqual(['asks', 'bids'], list(r.keys()))
+        # query() is succesful (No errors)
+        self.assertTrue(r.json()['Success'],
+                        "Error in Response: %s" % r.request.url)
 
-        # All items of each quote are strings; indexes 1-3 are valid strings for
-        # the decimal.Decimal() constructor
-        for q in (r['asks'] + r['bids']):
-            [self.assertIsInstance(i, str) for i in q]
-
-            for item in q[1:4]:
-                try:
-                    dec.Decimal(item)
-                except dec.InvalidOperation:
-                    self.fail("An element contains non-decimalable items! %s" % q)
-
-    def test_balance_endpoint(self):
-        """
-        Calling the balance method returns a dict of currently available funds
-        for each tradable asset pair at the exchange, regardless of funding.
-
-        """
-        r = self.exchange.balance()
-        self.assertIsInstance(r, dict)
-        self.assertTrue(r)
-        for i in r:
-            self.assertIsInstance(r[i], str)
-            try:
-                dec.Decimal(r[i])
-            except dec.InvalidOperation:
-                self.fail("A key contains a non-decimalable string! {%s: %s}" % i, r[i])
-
-    def test_orders_endpoint(self):
-        """
-        Returns a list of all open orders for the user's account.
-
-        orders() method returns a dict of following layout:
-        {bids: [[id, price, vol, status, type, time], ..],
-         asks: [[id, price, vol, status, type, time], ..]}
-
-        """
-        r = self.exchange.orders()
-        self.assertIsInstance(r, dict)
-        a = ['asks', 'bids']
-        b = list(r.keys())
-        self.assertCountEqual(a, b)
-        for order in [r['asks'] + r['bids']]:
-            [self.assertIsInstance(i, str)for i in order]
-
-    def test_add_order_method(self):
-        """
-        add_order returns a dict of the following layout:
-        {tid: '', price: '', amount: '', side: '', type: ''}
-        :return:
-        """
-        r = self.exchange.add_order(0.0001, 10000, self.pair, 'ask', order_type='limit')
-        self.assertIsInstance(r, dict)
-        a = ['tid','price','amount','side', 'type']
-        b = list(r.keys())
-        self.assertCountEqual(a, b)
-        (self.assertIsInstance(r[i], str)for i in b)
-
-    def test_cancel_order_method(self):
+    def test_private_query(self):
         pass
 
 
-class KrakenHTTPClientTest(OverlayTest):
-
+class CCEXAPITest(APITests):
     def setUp(self):
-        self.pair = "XXBTZUSD"
-        self.key_file = '../../keys/kraken.key'
-        self.exchange = KrakenHTTP(key_file=self.key_file)
+        self.api = CCEXRest()
+
+    def test_public_query(self):
+        # query() returns a valid requests.Response object
+        r = self.api.query('GET', 'api_pub.html?a=getorderbook',
+                           params={'market': 'ltc-btc', 'type': 'both'})
+        self.assertIsInstance(r, requests.Response)
+
+        # query() is succesful (No errors)
+        self.assertTrue(r.json()['success'],
+                        "Error in Response: %s" % r.request.url)
+
+    def test_private_query(self):
+        pass
 
 
-class BitstampHTTPClientTest(OverlayTest):
+class GeminiAPITest(APITests):
     def setUp(self):
-        self.pair = "btceur"
-        self.key_file = '../../keys/bitstamp.key'
-        self.exchange = BitstampHTTP(key_file=self.key_file)
+        self.api = GeminiREST()
+
+    def test_public_query(self):
+        # query() returns a valid requests.Response object
+        r = self.api.query('GET', 'book/ETHBTC')
+        self.assertIsInstance(r, requests.Response)
+
+        # query() is succesful (No error message)
+        self.assertNotIn('message', r.json(), "Error in Response: %s" % r.request.url)
+
+    def test_private_query(self):
+        pass
 
 
-class BitfinexHTTPClientTest(OverlayTest):
+class YunbiAPITest(APITests):
     def setUp(self):
-        self.pair = "btcusd"
-        self.key_file = '../../keys/bitfinex.key'
-        self.exchange = BitfinexHTTP(key_file=self.key_file)
+        self.api = YunbiREST()
+
+    def test_public_query(self):
+        # query() returns a valid requests.Response object
+        r = self.api.query('GET', 'markets.json')
+        self.assertIsInstance(r, requests.Response)
+
+        # query() is succesful (No error message)
+        self.assertNotIn('message', r.json())
+
+    def test_private_query(self):
+        pass
 
 
-class GDAXHTTPClientTest(OverlayTest):
+class TheRockTradingAPITest(APITests):
     def setUp(self):
-        self.pair = "BTC-USD"
-        self.key_file = '../../keys/gdax.key'
-        self.exchange = GdaxHTTP(key_file=self.key_file)
+        self.api = RockTradingREST()
 
+    def test_public_query(self):
+        # query() returns a valid requests.Response object
+        r = self.api.query('GET', 'funds/BTCEUR/orderbook')
+        self.assertIsInstance(r, requests.Response)
 
-class OKCoinHTTPClientTest(OverlayTest):
-    def setUp(self):
-        self.pair = "btc_usd"
-        self.exchange = OKCoinHTTP()
+        # query() is succesful (No error message)
+        self.assertNotIn('errors', r.json())
+
+    def test_private_query(self):
+        pass
+
