@@ -10,6 +10,7 @@ import hashlib
 import hmac
 import base64
 import time
+import urllib
 import urllib.parse
 from requests.auth import AuthBase
 
@@ -318,7 +319,7 @@ class BTCERest(RESTAPI):
 
 class CCEXRest(RESTAPI):
     def __init__(self, key='', secret='', api_version='',
-                 url='https://c-cex.com/t/api_pub.html?a='):
+                 url='https://c-cex.com/t'):
         super(CCEXRest, self).__init__(url, api_version=api_version, key=key,
                                          secret=secret)
 
@@ -335,7 +336,7 @@ class CCEXRest(RESTAPI):
         post_params.update({'nonce': nonce, 'method': endpoint})
         post_params = urllib.parse.urlencode(post_params)
 
-        url = uri.split('_pub')[0] + '.html?a=' + endpoint + post_params
+        url = uri + post_params
 
         sig = hmac.new(url, self.secret, hashlib.sha512)
         headers = {'apisign': sig}
@@ -356,15 +357,87 @@ class CryptopiaREST(RESTAPI):
         except KeyError:
             params = {}
 
-        url = self.uri + endpoint
+
         post_data = json.dumps(params)
         md5 = base64.b64encode(hashlib.md5().updated(post_data).digest())
 
-        sig = self.key + 'POST' + urllib.quote_plus(url).lower() + nonce + md5
+        sig = self.key + 'POST' + urllib.parse.quote_plus(uri).lower() + nonce + md5
         hmac_sig = base64.b64encode(hmac.new(base64.b64decode(self.secret),
                                               sig, hashlib.sha256).digest())
         header_data = 'amx' + self.key + ':' + hmac_sig + ':' + nonce
         headers = {'Authorization': header_data,
                    'Content-Type': 'application/json; charset=utf-8'}
 
-        return url, {'headers': headers, 'data': post_data}
+        return uri, {'headers': headers, 'data': post_data}
+
+
+class GeminiREST(RESTAPI):
+    def __init__(self, key='', secret='', api_version='v1',
+                 url='https://api.gemini.com'):
+        super(GeminiREST, self).__init__(url, api_version=api_version, key=key,
+                                         secret=secret)
+
+    def sign(self, uri, endpoint, endpoint_path, method_verb, *args, **kwargs):
+        nonce = self.nonce()
+        try:
+            params = kwargs['params']
+        except KeyError:
+            params = {}
+        payload = params
+        payload['nonce'] = nonce
+        payload['request'] = endpoint_path
+        payload = base64.b64encode(json.dumps(payload))
+        sig = hmac.new(self.secret, payload, hashlib.sha384).hexdigest()
+        headers = {'X-GEMINI-APIKEY': self.key,
+                   'X-GEMINI-PAYLOAD': payload,
+                   'X-GEMINI-SIGNATURE': sig}
+        return uri, {'headers': headers}
+
+
+class YunbiREST(RESTAPI):
+    def __init__(self, key='', secret='', api_version='v2',
+                 url='https://yunbi.com/api'):
+        super(YunbiREST, self).__init__(url, api_version=api_version, key=key,
+                                         secret=secret)
+
+    def sign(self, uri, endpoint, endpoint_path, method_verb, *args, **kwargs):
+        nonce = self.nonce()
+        try:
+            params = kwargs['params']
+        except KeyError:
+            params = {}
+        params['tonce'] = nonce
+        params['access_key'] = self.key
+        post_params = urllib.parse.urlencode(params)
+        msg = '%s|%s|%s' % (method_verb, endpoint_path, post_params)
+
+        sig = hmac.new(self.secret, msg, hashlib.sha256).hexdigest()
+        uri += post_params + '&signature=' + sig
+
+        return uri, {}
+
+
+class RockTradingREST(RESTAPI):
+    def __init__(self, key='', secret='', api_version='v1',
+                 url='https://api.therocktrading.com'):
+        super(RockTradingREST, self).__init__(url, api_version=api_version,
+                                        key=key,
+                                        secret=secret)
+
+    def sign(self, uri, endpoint, endpoint_path, method_verb, *args, **kwargs):
+        nonce = self.nonce()
+        try:
+            params = kwargs['params']
+        except KeyError:
+            params = {}
+        payload = params
+        payload['nonce'] = nonce
+        payload['request'] = endpoint_path
+        msg = nonce + base64.b64encode(json.dumps(payload))
+        sig = hmac.new(self.secret, msg, hashlib.sha384).hexdigest()
+        headers = {'X-TRT-APIKEY': self.key,
+                   'X-TRT-Nonce': nonce,
+                   'X-TRT-SIGNATURE': sig}
+        return uri, {'headers': headers}
+
+
