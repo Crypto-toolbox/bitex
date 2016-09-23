@@ -42,4 +42,6 @@ class Bitstamp(BitstampREST):
     def eurusd_rate(self):
         return self.public_query('eur_usd').json()
 
+    def pairs(self):
+        return ['btcusd', 'btceur', 'eurusd']
 
