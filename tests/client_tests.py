@@ -70,7 +70,7 @@ class KrakenAPITest(APITests):
         r = self.api.query('GET', 'Time')
         self.assertIsInstance(r, requests.Response)
 
-        # query() is succesful (No errors)
+        # query() is successful (No errors)
         self.assertTrue(r.json()['error'] == [],
                         "Error in Response: %s" % r.json()['error'])
 
@@ -97,7 +97,7 @@ class CryptopiaAPITest(APITests):
         r = self.api.query('GET', 'GetMarketOrders/101')
         self.assertIsInstance(r, requests.Response)
 
-        # query() is succesful (No errors)
+        # query() is successful (No errors)
         self.assertTrue(r.json()['Success'],
                         "Error in Response: %s" % r.request.url)
 
@@ -115,7 +115,7 @@ class CCEXAPITest(APITests):
                            params={'market': 'ltc-btc', 'type': 'both'})
         self.assertIsInstance(r, requests.Response)
 
-        # query() is succesful (No errors)
+        # query() is successful (No errors)
         self.assertTrue(r.json()['success'],
                         "Error in Response: %s" % r.request.url)
 
@@ -132,7 +132,7 @@ class GeminiAPITest(APITests):
         r = self.api.query('GET', 'book/ETHBTC')
         self.assertIsInstance(r, requests.Response)
 
-        # query() is succesful (No error message)
+        # query() is successful (No error message)
         self.assertNotIn('message', r.json(), "Error in Response: %s" % r.request.url)
 
     def test_private_query(self):
@@ -148,7 +148,7 @@ class YunbiAPITest(APITests):
         r = self.api.query('GET', 'markets.json')
         self.assertIsInstance(r, requests.Response)
 
-        # query() is succesful (No error message)
+        # query() is successful (No error message)
         self.assertNotIn('message', r.json())
 
     def test_private_query(self):
@@ -164,7 +164,7 @@ class TheRockTradingAPITest(APITests):
         r = self.api.query('GET', 'funds/BTCEUR/orderbook')
         self.assertIsInstance(r, requests.Response)
 
-        # query() is succesful (No error message)
+        # query() is successful (No error message)
         self.assertNotIn('errors', r.json())
 
     def test_private_query(self):
