@@ -113,6 +113,9 @@ my_fancy_api_secret
 # Installation
 `python3 setup.py install`
 
+or via pip
+`pip install BitEx`
+
 
 
 
