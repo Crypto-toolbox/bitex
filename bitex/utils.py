@@ -24,6 +24,9 @@ def return_json(func):
     def wrapper(*args, **kwargs):
         try:
             r = func(*args, **kwargs)
+        except Exception as e:
+            log.error("return_json(): %s" % e)
+
         if r.status_code != 200:
             log.error("return_json: Error while querying %s" % r.request.url)
             raise ConnectionError("Returned Status Code was %s" % r.status_code)
