@@ -10,7 +10,7 @@ import logging
 
 # Import Homebrew
 from bitex.api.rest import KrakenREST
-
+from bitex.utils import return_json
 # Init Logging Facilities
 log = logging.getLogger(__name__)
 
@@ -34,33 +34,41 @@ class Kraken(KrakenREST):
         path = 'private/' + endpoint
         return self.query('POST', path, authenticate=True, **kwargs)
 
+    @return_json
     def time(self):
-        return self.public_query('Time').json()
+        return self.public_query('Time')
 
+    @return_json
     def assets(self, **kwargs):
-        return self.public_query('Assets', params=kwargs).json()
+        return self.public_query('Assets', params=kwargs)
 
+    @return_json
     def pairs(self, **kwargs):
-        return self.public_query('AssetPairs', params=kwargs).json()
+        return self.public_query('AssetPairs', params=kwargs)
 
+    @return_json
     def ticker(self, *pairs):
         q = self.make_params(*pairs)
-        return self.public_query('Ticker', params=q).json()
+        return self.public_query('Ticker', params=q)
 
+    @return_json
     def ohlc(self, pair, **kwargs):
         q = self.make_params(pair, **kwargs)
-        return self.public_query('OHLC', params=q).json()
+        return self.public_query('OHLC', params=q)
 
+    @return_json
     def order_book(self, pair, **kwargs):
         q = self.make_params(pair, **kwargs)
-        self.public_query('Depth', params=q).json()
+        self.public_query('Depth', params=q)
 
+    @return_json
     def trades(self, pair, **kwargs):
         q = self.make_params(pair, **kwargs)
-        self.public_query('Trades', params=q).json()
+        self.public_query('Trades', params=q)
 
+    @return_json
     def spread(self, pair, **kwargs):
         q = self.make_params(pair, **kwargs)
-        self.public_query('Spread', params=q).json()
+        self.public_query('Spread', params=q)
 
 
