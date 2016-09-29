@@ -57,9 +57,3 @@ class Bitfinex(BitfinexREST):
             return self.public_query('symbols_details')
         else:
             return self.public_query('symbols')
-
-
-
-
-print(Bitfinex().ticker('btcusd'))
-print(Bitfinex().funding_book('btc', limit_bids=1, limit_asks=1))
