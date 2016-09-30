@@ -13,7 +13,6 @@ from bitex.api.rest import CoincheckREST
 from bitex.utils import return_json
 
 # Init Logging Facilities
-#logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger(__name__)
 
 
