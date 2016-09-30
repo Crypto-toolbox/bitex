@@ -25,7 +25,7 @@ def return_json(func):
         try:
             r = func(*args, **kwargs)
         except Exception as e:
-            log.error("return_json(): Error during call to %s(%s, %s) %s" % (func.__name__, args, kwargs, e)
+            log.error("return_json(): Error during call to %s(%s, %s) %s" % (func.__name__, args, kwargs, e))
             raise
 
         if r.status_code != 200:
