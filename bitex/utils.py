@@ -25,7 +25,8 @@ def return_json(func):
         try:
             r = func(*args, **kwargs)
         except Exception as e:
-            log.error("return_json(): %s" % e)
+            log.error("return_json(): Error during call to %s(%s, %s) %s" % (func.__name__, args, kwargs, e)
+            raise
 
         if r.status_code != 200:
             log.error("return_json: Error while querying %s" % r.request.url)
@@ -36,5 +37,7 @@ def return_json(func):
         except json.JSONDecodeError:
             log.error('return_json: Error while parsing json. '
                       'Request url was: %s, result is: %s' % (r.request.url, r.text))
-            raise
+            return None
+        except Exception as e:
+            log.error(log.error("return_json(): Unexpected error while parsing json from %s: %s" % (r.request.url, e))
     return wrapper
