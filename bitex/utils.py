@@ -39,5 +39,5 @@ def return_json(func):
                       'Request url was: %s, result is: %s' % (r.request.url, r.text))
             return None
         except Exception as e:
-            log.error(log.error("return_json(): Unexpected error while parsing json from %s: %s" % (r.request.url, e))
+            log.error("return_json(): Unexpected error while parsing json from %s: %s" % (r.request.url, e))
     return wrapper
