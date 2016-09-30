@@ -418,8 +418,8 @@ class YunbiREST(RESTAPI):
 
 
 class RockTradingREST(RESTAPI):
-    def __init__(self, key='', secret='', api_version='v1',
-                 url='https://api.therocktrading.com'):
+    def __init__(self, key='', secret='', api_version='',
+                 url='https://www.therocktrading.com/api'):
         super(RockTradingREST, self).__init__(url, api_version=api_version,
                                         key=key,
                                         secret=secret)
