@@ -59,16 +59,17 @@ class Kraken(KrakenREST):
     @return_json
     def order_book(self, pair, **kwargs):
         q = self.make_params(pair, **kwargs)
-        self.public_query('Depth', params=q)
+        return self.public_query('Depth', params=q)
 
     @return_json
     def trades(self, pair, **kwargs):
         q = self.make_params(pair, **kwargs)
-        self.public_query('Trades', params=q)
+        return self.public_query('Trades', params=q)
 
     @return_json
     def spread(self, pair, **kwargs):
         q = self.make_params(pair, **kwargs)
-        self.public_query('Spread', params=q)
+        return self.public_query('Spread', params=q)
 
 
+print(Kraken().order_book('XXBTXLTC'))
