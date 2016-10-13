@@ -29,26 +29,32 @@ class Bittrex(BittrexREST):
     def private_query(self, endpoint, **kwargs):
         return self.query('POST', endpoint, authenticate=True, **kwargs)
 
+    @return_json
     def pairs(self):
         return self.public_query('getmarkets')
 
+    @return_json
     def currencies(self):
         return self.public_query('getcurrencies')
 
+    @return_json
     def ticker(self, pair):
         return self.public_query('getticker', params={'market': pair})
 
+    @return_json
     def statistics(self, pair=None):
         if pair:
             return self.public_query('getmarketsummary', params={'market': pair})
         else:
             return self.public_query('getmarketsummaries')
 
+    @return_json
     def order_book(self, pair, side='both', **kwargs):
         q = {'market': pair, 'type': side}
         q.update(kwargs)
         return self.public_query('getorderbook', params=q)
 
+    @return_json
     def trades(self, pair, **kwargs):
         q = {'market': pair}
         q.update(kwargs)
