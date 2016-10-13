@@ -70,6 +70,3 @@ class Kraken(KrakenREST):
     def spread(self, pair, **kwargs):
         q = self.make_params(pair, **kwargs)
         return self.public_query('Spread', params=q)
-
-
-print(Kraken().order_book('XXBTXLTC'))
