@@ -38,6 +38,6 @@ class Coincheck(CoincheckREST):
 
     @return_json
     def order_book(self, pair):
-        return self.public_query('order_book', params={'pair': pair})
+        return self.public_query('order_books', params={'pair': pair})
 
 
