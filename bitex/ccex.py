@@ -54,9 +54,9 @@ class CCEX(CCEXRest):
 
     @return_json
     def trades(self, pair, **kwargs):
-        q = {'pair': pair}
+        q = {'market': pair}
         q.update(kwargs)
-        return self.public_query('api_pub.html?a=getmarkethistory' % pair,
+        return self.public_query('api_pub.html?a=getmarkethistory',
                                  params=q)
 
     @return_json
@@ -65,8 +65,8 @@ class CCEX(CCEXRest):
             return self.public_query('api_pub.html?a=getmarketsummaries')
 
     @return_json
-    def order_book(self, pair, **kwargs):
-        q = {'pair': pair}
+    def order_book(self, pair, type='both', **kwargs):
+        q = {'market': pair, 'type': type}
         q.update(kwargs)
         return self.public_query('api_pub.html?a=getorderbook', params=q)
 
@@ -74,5 +74,4 @@ class CCEX(CCEXRest):
     def balance_distribution(self, currency):
         return self.public_query('api_pub.html?a=getbalancedistribution',
                                  params={'currencyname': currency})
-
 
