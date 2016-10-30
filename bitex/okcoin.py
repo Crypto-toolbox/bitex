@@ -1,8 +1,6 @@
 """
-Task:
-Descripion of script here.
+https://www.okcoin.com/about/rest_api.do
 """
-
 # Import Built-Ins
 import logging
 

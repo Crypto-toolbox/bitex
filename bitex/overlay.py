@@ -1,8 +1,3 @@
-"""
-Task:
-Descripion of script here.
-"""
-
 # Import Built-Ins
 import logging
 

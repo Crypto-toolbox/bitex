@@ -1,9 +1,7 @@
 """
 Task:
 Do fancy shit.
-"""
-
-# Import Built-ins
+"""# Import Built-Ins
 import logging
 import json
 import hashlib

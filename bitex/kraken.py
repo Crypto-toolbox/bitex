@@ -1,8 +1,6 @@
 """
-Task:
-Descripion of script here.
+https://www.kraken.com/help/api
 """
-
 # Import Built-Ins
 import logging
 
