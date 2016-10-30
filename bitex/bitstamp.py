@@ -1,6 +1,5 @@
 """
-Task:
-Descripion of script here.
+https://www.bitstamp.net/api/
 """
 
 # Import Built-Ins

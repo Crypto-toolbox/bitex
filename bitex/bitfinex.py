@@ -1,6 +1,5 @@
 """
-Task:
-Descripion of script here.
+http://docs.bitfinex.com/
 """
 
 # Import Built-Ins

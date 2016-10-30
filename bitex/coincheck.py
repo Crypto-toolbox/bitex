@@ -1,6 +1,5 @@
 """
-Task:
-Descripion of script here.
+https://coincheck.com/documents/exchange/api
 """
 
 # Import Built-Ins
