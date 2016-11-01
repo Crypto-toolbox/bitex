@@ -5,6 +5,7 @@
 - Changelog (Yay!)
 - Overlay Funcs for Public Endpoints
 - Pip install support
+- Poloniex RESTAPI and interface
 
 ### Changed
 
