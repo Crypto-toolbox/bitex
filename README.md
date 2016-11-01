@@ -34,6 +34,7 @@ REST-based APIs:
 - Yunbi (public endpoint communication done)
 - Gemini (public endpoint communication done)
 - TheRockTradingLTD (public endpoint communication done)
+- Poloniex (public endpoint communication done)
 
 
 -`planned`: I'm currently designing base code for this exchange
