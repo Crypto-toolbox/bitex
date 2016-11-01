@@ -436,3 +436,21 @@ class RockTradingREST(RESTAPI):
         return uri, {'headers': headers}
 
 
+class PoloniexREST(RESTAPI):
+    def __init__(self, key='', secret='', api_version='',
+                 url='https://www.therocktrading.com/api'):
+        super(PoloniexREST, self).__init__(url, api_version=api_version,
+                                           key=key, secret=secret)
+
+    def sign(self, uri, endpoint, endpoint_path, method_verb, *args, **kwargs):
+        try:
+            params = kwargs['params']
+        except KeyError:
+            params = {}
+        params['nonce'] = self.nonce()
+        payload = params
+
+        msg = urllib.parse.urlencode(payload).encode('utf-8')
+        sig = hmac.new(self.secret.encode('utf-8'), msg, hashlib.sha512).hexdigest()
+        headers = {'Key': self.key, 'Sign': sig}
+        return uri, {'headers': headers, 'params': params}
