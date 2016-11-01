@@ -115,3 +115,7 @@ class Poloniex(PoloniexREST):
         q.update(kwargs)
         return self.private_query('tradingApi', params=q)
 
+    @return_json
+    def fees(self):
+        return self.private_query('tradingApi',
+                                  params={'command': 'returnFeeInfo'})
