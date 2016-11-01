@@ -69,3 +69,54 @@ class Kraken(KrakenREST):
     def spread(self, pair, **kwargs):
         q = self.make_params(pair, **kwargs)
         return self.public_query('Spread', params=q)
+
+    @return_json
+    def balance(self, **kwargs):
+        return self.private_query('Balance')
+
+    @return_json
+    def orders(self, **kwargs):
+        q = kwargs
+        return self.private_query('OpenOrders', params=q)
+
+    @return_json
+    def closed_orders(self, **kwargs):
+        q = kwargs
+        return self.private_query('ClosedOrders', params=q)
+
+    @return_json
+    def trade_history(self, **kwargs):
+        q = kwargs
+        return self.private_query('TradesHistory', params=q)
+
+    @return_json
+    def order_info(self, *txids, **kwargs):
+        if len(txids) > 1:
+            q = {'txid': txids}
+        elif txids:
+            txid, *_ = txids
+            q = {'txid': txid}
+        else:
+            q = {}
+        q.update(kwargs)
+
+        return self.private_query('QueryOrders', params=q)
+
+    def _add_order(self, pair, side, **kwargs):
+        q = {'pair': pair, 'type': side}
+        q.update(kwargs)
+        return self.private_query('AddOrder', params=q)
+
+    @return_json
+    def bid(self, pair, **kwargs):
+        return self._add_order(pair, 'buy', **kwargs)
+
+    @return_json
+    def ask(self, pair, **kwargs):
+        return self._add_order(pair, 'sell', **kwargs)
+
+    @return_json
+    def cancel_order(self, order_id, **kwargs):
+        q = {'txid': order_id}
+        q.update(kwargs)
+        return self.private_query('CancelOrder', params=q)
