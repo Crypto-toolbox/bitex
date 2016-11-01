@@ -438,7 +438,7 @@ class RockTradingREST(RESTAPI):
 
 class PoloniexREST(RESTAPI):
     def __init__(self, key='', secret='', api_version='',
-                 url='https://www.therocktrading.com/api'):
+                 url='https://poloniex.com'):
         super(PoloniexREST, self).__init__(url, api_version=api_version,
                                            key=key, secret=secret)
 
@@ -451,6 +451,7 @@ class PoloniexREST(RESTAPI):
         payload = params
 
         msg = urllib.parse.urlencode(payload).encode('utf-8')
+        print(msg)
         sig = hmac.new(self.secret.encode('utf-8'), msg, hashlib.sha512).hexdigest()
         headers = {'Key': self.key, 'Sign': sig}
-        return uri, {'headers': headers, 'params': params}
+        return uri, {'headers': headers, 'data': params}
