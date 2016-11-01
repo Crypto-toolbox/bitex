@@ -1,6 +1,5 @@
 """
-Task:
-Descripion of script here.
+https://bittrex.com/Home/Api
 """
 
 # Import Built-Ins

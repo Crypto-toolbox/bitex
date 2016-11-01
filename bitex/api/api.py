@@ -1,8 +1,3 @@
-"""
-Task:
-Do fancy shit.
-"""
-
 # Import Built-Ins
 import logging
 import requests
