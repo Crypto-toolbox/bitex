@@ -110,7 +110,7 @@ class Bitfinex(BitfinexREST):
         return self.private_query('order/status', params=q)
 
     @return_json
-    def balances(self):
+    def balance(self):
         return self.private_query('balances')
 
     @return_json
