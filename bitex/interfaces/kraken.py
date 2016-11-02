@@ -102,18 +102,19 @@ class Kraken(KrakenREST):
 
         return self.private_query('QueryOrders', params=q)
 
-    def _add_order(self, pair, side, **kwargs):
-        q = {'pair': pair, 'type': side}
+    def _add_order(self, pair, side, price, amount, **kwargs):
+        q = {'pair': pair, 'type': side, 'price': price,
+             'ordertype': 'limit', 'volume': amount}
         q.update(kwargs)
         return self.private_query('AddOrder', params=q)
 
     @return_json
-    def bid(self, pair, **kwargs):
-        return self._add_order(pair, 'buy', **kwargs)
+    def bid(self, pair, price, amount, **kwargs):
+        return self._add_order(pair, 'buy', price, amount, **kwargs)
 
     @return_json
-    def ask(self, pair, **kwargs):
-        return self._add_order(pair, 'sell', **kwargs)
+    def ask(self, pair, price, amount, **kwargs):
+        return self._add_order(pair, 'sell', price, amount, **kwargs)
 
     @return_json
     def cancel_order(self, order_id, **kwargs):

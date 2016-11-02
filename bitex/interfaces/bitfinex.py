@@ -76,12 +76,12 @@ class Bitfinex(BitfinexREST):
             return self.private_query('order/new', params=q)
 
     @return_json
-    def bid(self, pair, amount, price, replace=False, **kwargs):
+    def bid(self, pair, price, amount, replace=False, **kwargs):
         return self._place_order(pair, amount, price, 'buy', replace=replace,
                                  **kwargs)
 
     @return_json
-    def ask(self, pair, amount, price, replace=False, **kwargs):
+    def ask(self, pair, price, amount, replace=False, **kwargs):
         return self._place_order(pair, amount, price, 'buy', replace=replace,
                                  **kwargs)
 
