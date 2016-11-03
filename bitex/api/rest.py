@@ -451,7 +451,6 @@ class PoloniexREST(RESTAPI):
         payload = params
 
         msg = urllib.parse.urlencode(payload).encode('utf-8')
-        print(msg)
         sig = hmac.new(self.secret.encode('utf-8'), msg, hashlib.sha512).hexdigest()
         headers = {'Key': self.key, 'Sign': sig}
         return uri, {'headers': headers, 'data': params}
