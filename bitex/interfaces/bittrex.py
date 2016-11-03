@@ -59,3 +59,28 @@ class Bittrex(BittrexREST):
         q.update(kwargs)
         return self.public_query('getmarkethistory', params=q)
 
+    @return_json
+    def bid(self, pair, price, vol, market=False, **kwargs):
+        q = {'market': pair, 'rate': price, 'quantity': vol}
+        q.update(kwargs)
+        if market:
+            # send market order
+            return self.private_query('market/buymarket', params=q)
+        else:
+            # send limit order
+            return self.private_query('market/buylimit', params=q)
+
+    @return_json
+    def ask(self, pair, price, vol, market=False, **kwargs):
+        q = {'market': pair, 'rate': price, 'quantity': vol}
+        q.update(kwargs)
+        if market:
+            # send market order
+            return self.private_query('market/sellmarket', params=q)
+        else:
+            # send limit order
+            return self.private_query('market/selllimit', params=q)
+
+    @return_json
+    def balance(self):
+        return self.private_query('account/getbalances')
