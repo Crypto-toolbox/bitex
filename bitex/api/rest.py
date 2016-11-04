@@ -95,12 +95,11 @@ class BittrexREST(RESTAPI):
 
         req_string = endpoint_path + '?apikey=' + self.key + "&nonce=" + nonce + '&'
         req_string += urllib.parse.urlencode(params)
-
         headers = {"apisign": hmac.new(self.secret.encode('utf-8'),
-                                       req_string.encode('utf-8'),
+                                       (self.uri + req_string).encode('utf-8'),
                                        hashlib.sha512).hexdigest()}
 
-        return req_string, {'headers': headers, 'params': {}}
+        return self.uri + req_string, {'headers': headers, 'params': {}}
 
 
 class CoincheckREST(RESTAPI):
