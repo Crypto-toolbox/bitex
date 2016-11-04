@@ -67,7 +67,7 @@ class Bitfinex(BitfinexREST):
         q.update(kwargs)
         return self.private_query('deposit/new', params=q)
 
-    def _place_order(self,pair, amount, price, side, replace, **kwargs):
+    def _place_order(self, pair, amount, price, side, replace, **kwargs):
         q = {'symbol': pair, 'amount': amount, 'price': price, 'side': side}
         q.update(kwargs)
         if replace:
@@ -82,7 +82,7 @@ class Bitfinex(BitfinexREST):
 
     @return_json
     def ask(self, pair, price, amount, replace=False, **kwargs):
-        return self._place_order(pair, amount, price, 'buy', replace=replace,
+        return self._place_order(pair, amount, price, 'sell', replace=replace,
                                  **kwargs)
 
     @return_json
