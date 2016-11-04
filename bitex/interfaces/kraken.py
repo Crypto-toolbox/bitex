@@ -104,7 +104,8 @@ class Kraken(KrakenREST):
 
     def _add_order(self, pair, side, price, amount, **kwargs):
         q = {'pair': pair, 'type': side, 'price': price,
-             'ordertype': 'limit', 'volume': amount}
+             'ordertype': 'limit', 'volume': amount,
+             'trading_agreement': 'agree'}
         q.update(kwargs)
         return self.private_query('AddOrder', params=q)
 
