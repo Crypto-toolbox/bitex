@@ -26,7 +26,7 @@ class Bittrex(BittrexREST):
         return self.query('GET', 'public/' + endpoint, **kwargs)
 
     def private_query(self, endpoint, **kwargs):
-        return self.query('POST', endpoint, authenticate=True, **kwargs)
+        return self.query('GET', endpoint, authenticate=True, **kwargs)
 
     @return_json
     def pairs(self):
@@ -84,3 +84,8 @@ class Bittrex(BittrexREST):
     @return_json
     def balance(self):
         return self.private_query('account/getbalances')
+
+    @return_json
+    def cancel_order(self, txid):
+        q = {'uuid': txid}
+        return self.private_query('market/cacnel', params=q)
