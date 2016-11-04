@@ -92,7 +92,7 @@ class Poloniex(PoloniexREST):
 
     @return_json
     def ask(self, pair, rate, amount, **kwargs):
-        q = {'command': 'buy', 'currencyPair': pair, 'amount': amount,
+        q = {'command': 'sell', 'currencyPair': pair, 'amount': amount,
              'rate':    rate}
         q.update(kwargs)
         return self.private_query('tradingApi', params=q)
