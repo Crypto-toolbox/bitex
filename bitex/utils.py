@@ -41,7 +41,7 @@ def return_json(formatter=None):
 
             # Apply formatter and return
             if formatter is not None:
-                return formatter(data)
+                return formatter(data, *args, **kwargs)
             else:
                 return data
         return wrapper
