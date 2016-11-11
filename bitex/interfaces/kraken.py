@@ -10,6 +10,7 @@ import logging
 # Import Homebrew
 from bitex.api.rest import KrakenREST
 from bitex.utils import return_json
+from bitex.formatters.kraken import cancel, trade
 # Init Logging Facilities
 log = logging.getLogger(__name__)
 
@@ -109,16 +110,25 @@ class Kraken(KrakenREST):
         q.update(kwargs)
         return self.private_query('AddOrder', params=q)
 
-    @return_json
+    @return_json(trade)
     def bid(self, pair, price, amount, **kwargs):
         return self._add_order(pair, 'buy', price, amount, **kwargs)
 
-    @return_json
+    @return_json(trade)
     def ask(self, pair, price, amount, **kwargs):
         return self._add_order(pair, 'sell', price, amount, **kwargs)
 
-    @return_json
+    @return_json(cancel)
     def cancel_order(self, order_id, **kwargs):
         q = {'txid': order_id}
         q.update(kwargs)
         return self.private_query('CancelOrder', params=q)
+
+    @return_json
+    def fees(self, pair=None):
+        q = {'fee-info': True}
+
+        if pair:
+            q['pair'] = pair
+
+        return self.private_query('TradeVolume', params=q)
