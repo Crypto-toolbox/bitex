@@ -16,7 +16,8 @@ def return_json(formatter=None):
             try:
                 r = func(*args, **kwargs)
             except Exception as e:
-                log.error("return_json(): Error during call to %s(%s, %s) %s" % (func.__name__, args, kwargs, e))
+                log.error("return_json(): Error during call to "
+                          "%s(%s, %s) %s" % (func.__name__, args, kwargs, e))
                 raise
 
             try:
@@ -27,17 +28,19 @@ def return_json(formatter=None):
                 return None
 
             try:
-                data = formatter(r.json())
+                data = r.json()
             except json.JSONDecodeError:
                 log.error('return_json: Error while parsing json. '
-                          'Request url was: %s, result is: %s' % (r.request.url, r.text))
+                          'Request url was: %s, result is: '
+                          '%s' % (r.request.url, r.text))
                 return None
             except Exception as e:
-                log.error("return_json(): Unexpected error while parsing json from %s: %s" % (r.request.url, e))
+                log.error("return_json(): Unexpected error while parsing json "
+                          "from %s: %s" % (r.request.url, e))
                 return None
 
             # Apply formatter and return
-            if formatter not None:
+            if formatter is not None:
                 return formatter(data)
             else:
                 return data
