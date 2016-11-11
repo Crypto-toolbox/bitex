@@ -29,40 +29,40 @@ class Yunbi(YunbiREST):
     def private_query(self, endpoint, **kwargs):
         return self.query('POST', endpoint, authenticate=True, **kwargs)
 
-    @return_json
+    @return_json(None)
     def pairs(self):
         return self.public_query('symbols')
 
-    @return_json
+    @return_json(None)
     def ticker(self, pair=None):
         if pair:
             return self.public_query('tickers/%s' % pair)
         else:
             return self.public_query('tickers')
 
-    @return_json
+    @return_json(None)
     def ohlc(self, pair, **kwargs):
         q = {'market': pair}
         q.update(kwargs)
         return self.public_query('k', params=q)
 
-    @return_json
+    @return_json(None)
     def order_book(self, pair, **kwargs):
         q = {'market': pair}
         q.update(kwargs)
         return self.public_query('order_book', params=q)
 
-    @return_json
+    @return_json(None)
     def trades(self, pair, **kwargs):
         q = {'market': pair}
         q.update(kwargs)
         return self.public_query('trades', params=q)
 
-    @return_json
+    @return_json(None)
     def auction(self, pair):
         return self.public_query('auction/%s' % pair)
 
-    @return_json
+    @return_json(None)
     def auction_history(self, pair, **kwargs):
         return self.public_query('auction/%s/history' % pair, params=kwargs)
 

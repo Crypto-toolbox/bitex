@@ -34,24 +34,24 @@ class Kraken(KrakenREST):
         path = 'private/' + endpoint
         return self.query('POST', path, authenticate=True, **kwargs)
 
-    @return_json
+    @return_json(None)
     def time(self):
         return self.public_query('Time')
 
-    @return_json
+    @return_json(None)
     def assets(self, **kwargs):
         return self.public_query('Assets', params=kwargs)
 
-    @return_json
+    @return_json(None)
     def pairs(self, **kwargs):
         return self.public_query('AssetPairs', params=kwargs)
 
-    @return_json
+    @return_json(None)
     def ticker(self, *pairs):
         q = self.make_params(*pairs)
         return self.public_query('Ticker', params=q)
 
-    @return_json
+    @return_json(None)
     def ohlc(self, pair, **kwargs):
         q = self.make_params(pair, **kwargs)
         return self.public_query('OHLC', params=q)
@@ -61,36 +61,36 @@ class Kraken(KrakenREST):
         q = self.make_params(pair, **kwargs)
         return self.public_query('Depth', params=q)
 
-    @return_json
+    @return_json(None)
     def trades(self, pair, **kwargs):
         q = self.make_params(pair, **kwargs)
         return self.public_query('Trades', params=q)
 
-    @return_json
+    @return_json(None)
     def spread(self, pair, **kwargs):
         q = self.make_params(pair, **kwargs)
         return self.public_query('Spread', params=q)
 
-    @return_json
+    @return_json(None)
     def balance(self, **kwargs):
         return self.private_query('Balance')
 
-    @return_json
+    @return_json(None)
     def orders(self, **kwargs):
         q = kwargs
         return self.private_query('OpenOrders', params=q)
 
-    @return_json
+    @return_json(None)
     def closed_orders(self, **kwargs):
         q = kwargs
         return self.private_query('ClosedOrders', params=q)
 
-    @return_json
+    @return_json(None)
     def trade_history(self, **kwargs):
         q = kwargs
         return self.private_query('TradesHistory', params=q)
 
-    @return_json
+    @return_json(None)
     def order_info(self, *txids, **kwargs):
         if len(txids) > 1:
             q = {'txid': txids}
@@ -124,7 +124,7 @@ class Kraken(KrakenREST):
         q.update(kwargs)
         return self.private_query('CancelOrder', params=q)
 
-    @return_json
+    @return_json(None)
     def fees(self, pair=None):
         q = {'fee-info': True}
 
@@ -134,4 +134,4 @@ class Kraken(KrakenREST):
         return self.private_query('TradeVolume', params=q)
 
 k = Kraken()
-print(k.order_book('XBTEUR'))
+print(k.trades('XBTEUR'))

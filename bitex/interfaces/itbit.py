@@ -27,16 +27,16 @@ class ItBit(ItbitREST):
     def private_query(self, endpoint, **kwargs):
         return self.query('POST', endpoint, authenticate=True, **kwargs)
 
-    @return_json
+    @return_json(None)
     def ticker(self, pair):
         return self.public_query('%s/ticker' % pair, params={'pair': pair})
 
-    @return_json
+    @return_json(None)
     def trades(self, pair, **kwargs):
         q = {'pair': pair}
         q.update(kwargs)
         return self.public_query('%s/trades' % pair, params=q)
 
-    @return_json
+    @return_json(None)
     def order_book(self, pair):
         return self.public_query('%s/order_book' % pair, params={'pair': pair})

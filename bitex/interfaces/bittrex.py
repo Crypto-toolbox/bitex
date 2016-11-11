@@ -28,38 +28,38 @@ class Bittrex(BittrexREST):
     def private_query(self, endpoint, **kwargs):
         return self.query('GET', endpoint, authenticate=True, **kwargs)
 
-    @return_json
+    @return_json(None)
     def pairs(self):
         return self.public_query('getmarkets')
 
-    @return_json
+    @return_json(None)
     def currencies(self):
         return self.public_query('getcurrencies')
 
-    @return_json
+    @return_json(None)
     def ticker(self, pair):
         return self.public_query('getticker', params={'market': pair})
 
-    @return_json
+    @return_json(None)
     def statistics(self, pair=None):
         if pair:
             return self.public_query('getmarketsummary', params={'market': pair})
         else:
             return self.public_query('getmarketsummaries')
 
-    @return_json
+    @return_json(None)
     def order_book(self, pair, side='both', **kwargs):
         q = {'market': pair, 'type': side}
         q.update(kwargs)
         return self.public_query('getorderbook', params=q)
 
-    @return_json
+    @return_json(None)
     def trades(self, pair, **kwargs):
         q = {'market': pair}
         q.update(kwargs)
         return self.public_query('getmarkethistory', params=q)
 
-    @return_json
+    @return_json(None)
     def bid(self, pair, price, vol, market=False, **kwargs):
         q = {'market': pair, 'rate': price, 'quantity': vol}
         q.update(kwargs)
@@ -70,7 +70,7 @@ class Bittrex(BittrexREST):
             # send limit order
             return self.private_query('market/buylimit', params=q)
 
-    @return_json
+    @return_json(None)
     def ask(self, pair, price, vol, market=False, **kwargs):
         q = {'market': pair, 'rate': price, 'quantity': vol}
         q.update(kwargs)
@@ -81,11 +81,11 @@ class Bittrex(BittrexREST):
             # send limit order
             return self.private_query('market/selllimit', params=q)
 
-    @return_json
+    @return_json(None)
     def balance(self):
         return self.private_query('account/getbalances')
 
-    @return_json
+    @return_json(None)
     def cancel_order(self, txid):
         q = {'uuid': txid}
         return self.private_query('market/cacnel', params=q)

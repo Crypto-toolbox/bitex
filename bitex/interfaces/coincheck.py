@@ -27,15 +27,15 @@ class Coincheck(CoincheckREST):
     def private_query(self, endpoint, **kwargs):
         return self.query('POST', endpoint, authenticate=True, **kwargs)
 
-    @return_json
+    @return_json(None)
     def ticker(self, pair):
         return self.public_query('ticker', params={'pair': pair})
 
-    @return_json
+    @return_json(None)
     def trades(self, pair):
         return self.public_query('trades', params={'pair': pair})
 
-    @return_json
+    @return_json(None)
     def order_book(self, pair):
         return self.public_query('order_books', params={'pair': pair})
 

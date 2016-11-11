@@ -29,36 +29,36 @@ class Cryptopia(CryptopiaREST):
     def private_query(self, endpoint, **kwargs):
         return self.query('POST', endpoint, authenticate=True, **kwargs)
 
-    @return_json
+    @return_json(None)
     def currencies(self):
         return self.public_query('GetCurrency')
 
-    @return_json
+    @return_json(None)
     def pairs(self):
         return self.public_query('GetTradePairs')
 
-    @return_json
+    @return_json(None)
     def markets(self, **kwargs):
         endpoint = 'GetMarkets'
         for k in kwargs:
             endpoint += '/' + kwargs[k]
         return self.public_query(endpoint, params=kwargs)
 
-    @return_json
+    @return_json(None)
     def ticker(self, pair, **kwargs):
         endpoint = 'GetMarket/%s' % pair
         for k in kwargs:
             endpoint += '/' + kwargs[k]
         return self.public_query(endpoint, params=kwargs)
 
-    @return_json
+    @return_json(None)
     def trades(self, pair, **kwargs):
         endpoint = 'GetMarkets/%s' % pair
         for k in kwargs:
             endpoint += '/' + kwargs[k]
         return self.public_query(endpoint, params=kwargs)
 
-    @return_json
+    @return_json(None)
     def order_book(self, pair, **kwargs):
         endpoint = 'GetMarketOrders/%s' % pair
         for k in kwargs:

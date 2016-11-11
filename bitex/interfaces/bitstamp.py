@@ -27,23 +27,23 @@ class Bitstamp(BitstampREST):
     def private_query(self, endpoint, **kwargs):
         return self.query('POST', endpoint, authenticate=True, **kwargs)
 
-    @return_json
+    @return_json(None)
     def ticker(self, pair):
         return self.public_query('v2/ticker/%s/' % pair)
 
-    @return_json
+    @return_json(None)
     def hourly_ticker(self, pair):
         return self.public_query('v2/ticker_hour/%s' % pair)
 
-    @return_json
+    @return_json(None)
     def order_book(self, pair):
         return self.public_query('v2/order_book/%s' % pair)
 
-    @return_json
+    @return_json(None)
     def trades(self, pair, **kwargs):
         return self.public_query('v2/transactions/%s' % pair, params=kwargs)
 
-    @return_json
+    @return_json(None)
     def eurusd_rate(self):
         return self.public_query('eur_usd')
 

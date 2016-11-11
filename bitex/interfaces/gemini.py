@@ -29,27 +29,27 @@ class Gemini(GeminiREST):
     def private_query(self, endpoint, **kwargs):
         return self.query('POST', endpoint, authenticate=True, **kwargs)
 
-    @return_json
+    @return_json(None)
     def pairs(self):
         return self.public_query('symbols')
 
-    @return_json
+    @return_json(None)
     def ticker(self, pair):
         return self.public_query('pubticker/%s' % pair)
 
-    @return_json
+    @return_json(None)
     def order_book(self, pair, **kwargs):
         return self.public_query('book/%s' % pair, params=kwargs)
 
-    @return_json
+    @return_json(None)
     def trades(self, pair, **kwargs):
         return self.public_query('trades/%s' % pair, params=kwargs)
 
-    @return_json
+    @return_json(None)
     def auction(self, pair):
         return self.public_query('auction/%s' % pair)
 
-    @return_json
+    @return_json(None)
     def auction_history(self, pair, **kwargs):
         return self.public_query('auction/%s/history' % pair, params=kwargs)
 

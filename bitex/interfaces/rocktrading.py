@@ -29,22 +29,22 @@ class RockTradingLtd(RockTradingREST):
     def private_query(self, endpoint, **kwargs):
         return self.query('POST', endpoint, authenticate=True, **kwargs)
 
-    @return_json
+    @return_json(None)
     def ticker(self, pair):
         return self.public_query('ticker/%s' % pair)
 
-    @return_json
+    @return_json(None)
     def tickers(self, currency=None):
         if currency:
             return self.public_query('tickers/%s' % currency)
         else:
             return self.public_query('tickers')
 
-    @return_json
+    @return_json(None)
     def order_book(self, pair):
         return self.public_query('orderbook/%s' % pair)
 
-    @return_json
+    @return_json(None)
     def trades(self, pair):
         return self.public_query('trades/%s' % pair)
 

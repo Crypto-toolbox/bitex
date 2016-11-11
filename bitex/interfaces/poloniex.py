@@ -10,6 +10,7 @@ import logging
 # Import Homebrew
 from bitex.api.rest import PoloniexREST
 from bitex.utils import return_json
+from bitex.formatters.poloniex import trade, cancel
 # Init Logging Facilities
 log = logging.getLogger(__name__)
 
@@ -27,30 +28,30 @@ class Poloniex(PoloniexREST):
         return self.query('POST', endpoint,
                           authenticate=True, **kwargs)
 
-    @return_json
+    @return_json(None)
     def ticker(self):
         return self.public_query('returnTicker')
 
-    @return_json
+    @return_json(None)
     def order_book(self, pair, **kwargs):
         kwargs['currencyPair'] = pair
         return self.public_query('returnOrderBook', params=kwargs)
 
-    @return_json
+    @return_json(None)
     def trades(self, pair, **kwargs):
         kwargs['currencyPair'] = pair
         return self.public_query('returnTradeHistory', params=kwargs)
 
-    @return_json
+    @return_json(None)
     def currencies(self):
         return self.public_query('returnCurrencies')
 
-    @return_json
+    @return_json(None)
     def hloc(self, pair, **kwargs):
         kwargs['currencyPair'] = pair
         return self.public_query('returnChartData')
 
-    @return_json
+    @return_json(None)
     def balance(self, detailed=False):
         q = {}
         if detailed:
@@ -60,62 +61,62 @@ class Poloniex(PoloniexREST):
             q['command'] = 'returnBalances'
             return self.private_query('tradingApi', params=q)
 
-    @return_json
+    @return_json(None)
     def addresses(self):
         q = {'command': 'returnDepositAddresses'}
         return self.private_query('tradingApi', params=q)
 
-    @return_json
+    @return_json(None)
     def balance_history(self, **kwargs):
         q = {'command': 'returnDepositsWithdrawals'}
         q.update(kwargs)
         return self.private_query('tradingApi', params=q)
 
-    @return_json
+    @return_json(None)
     def orders(self, pair='all', **kwargs):
         q = {'command': 'returnOpenOrders', 'currencyPair': pair}
         q.update(kwargs)
         return self.private_query('tradingApi', params=q)
 
-    @return_json
+    @return_json(None)
     def trade_history(self, pair='all', **kwargs):
         q = {'currencyPair': pair, 'command': 'returnTradeHistory'}
         q.update(kwargs)
         return self.private_query('tradingApi', params=q)
 
-    @return_json
+    @return_json(trade)
     def bid(self, pair, amount, rate, **kwargs):
         q = {'command': 'buy', 'currencyPair': pair, 'amount': amount,
              'rate': rate}
         q.update(kwargs)
         return self.private_query('tradingApi', params=q)
 
-    @return_json
+    @return_json(trade)
     def ask(self, pair, rate, amount, **kwargs):
         q = {'command': 'sell', 'currencyPair': pair, 'amount': amount,
              'rate':    rate}
         q.update(kwargs)
         return self.private_query('tradingApi', params=q)
 
-    @return_json
+    @return_json(cancel)
     def cancel_order(self, txid, **kwargs):
         q = {'orderNumber': txid, 'command': 'cancelOrder'}
         q.update(kwargs)
         return self.private_query('tradingApi', params=q)
 
-    @return_json
+    @return_json(None)
     def update_order(self, txid, rate, **kwargs):
         q = {'command': 'moveOrder', 'rate': rate, 'orderNumber': txid}
         q.update(kwargs)
         return self.query('tradingApi', params=q)
 
-    @return_json
+    @return_json(None)
     def withdraw(self, currency, amount, address, **kwargs):
         q = {'currency': currency, 'amount': amount, 'address': address}
         q.update(kwargs)
         return self.private_query('tradingApi', params=q)
 
-    @return_json
+    @return_json(None)
     def fees(self):
         return self.private_query('tradingApi',
                                   params={'command': 'returnFeeInfo'})
