@@ -1,6 +1,7 @@
 # Import Built-Ins
 import logging
 import json
+import requests
 # Import Third-Party
 
 # Import Homebrew
@@ -20,7 +21,8 @@ def return_json(func):
         try:
             r = func(*args, **kwargs)
         except Exception as e:
-            log.error("return_json(): Error during call to %s(%s, %s) %s" % (func.__name__, args, kwargs, e))
+            log.error("return_json(): Error during call to %s(%s, %s) "
+                      "%s" % (func.__name__, args, kwargs, e))
             raise
 
         if r.status_code != 200:
@@ -34,31 +36,8 @@ def return_json(func):
                       'Request url was: %s, result is: %s' % (r.request.url, r.text))
             return None
         except Exception as e:
-            log.error("return_json(): Unexpected error while parsing json from %s: %s" % (r.request.url, e))
+            log.error("return_json(): Unexpected error while "
+                      "parsing json from %s: %s" % (r.request.url, e))
     return wrapper
 
-
-def return_json_args(formatter):
-    def decorator(func):
-        def wrapper(*args, **kwargs):
-            try:
-                r = func(*args, **kwargs)
-            except Exception as e:
-                log.error("return_json(): Error during call to %s(%s, %s) %s" % (func.__name__, args, kwargs, e))
-                raise
-
-            if r.status_code != 200:
-                log.error("return_json: Error while querying %s" % r.request.url)
-                raise ConnectionError("Returned Status Code was %s" % r.status_code)
-
-            try:
-                return formatter(r.json())
-            except json.JSONDecodeError:
-                log.error('return_json: Error while parsing json. '
-                          'Request url was: %s, result is: %s' % (r.request.url, r.text))
-                return None
-            except Exception as e:
-                log.error("return_json(): Unexpected error while parsing json from %s: %s" % (r.request.url, e))
-        return wrapper
-    return decorator
 
