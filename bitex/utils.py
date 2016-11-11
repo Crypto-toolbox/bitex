@@ -10,7 +10,7 @@ import requests
 log = logging.getLogger(__name__)
 
 
-def return_json(formatter):
+def return_json(formatter=None):
     def decorator(func):
         def wrapper(*args, **kwargs):
             try:
@@ -37,7 +37,10 @@ def return_json(formatter):
                 return None
 
             # Apply formatter and return
-            return formatter(data)
+            if formatter not None:
+                return formatter(data)
+            else:
+                return data
         return wrapper
     return decorator
 
