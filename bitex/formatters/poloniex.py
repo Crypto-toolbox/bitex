@@ -16,5 +16,6 @@ log = logging.getLogger(__name__)
 def trade(data):
     return data['orderNumber']
 
+
 def cancel(data):
     return True if data['success'] else False
