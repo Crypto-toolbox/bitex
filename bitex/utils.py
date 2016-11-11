@@ -10,34 +10,34 @@ import requests
 log = logging.getLogger(__name__)
 
 
-def return_json(func):
-    """
-    Wrapper to add additional debugging information to response objects.
+def return_json(formatter):
+    def decorator(func):
+        def wrapper(*args, **kwargs):
+            try:
+                r = func(*args, **kwargs)
+            except Exception as e:
+                log.error("return_json(): Error during call to %s(%s, %s) %s" % (func.__name__, args, kwargs, e))
+                raise
 
-    :param func:
-    :return:
-    """
-    def wrapper(*args, **kwargs):
-        try:
-            r = func(*args, **kwargs)
-        except Exception as e:
-            log.error("return_json(): Error during call to %s(%s, %s) "
-                      "%s" % (func.__name__, args, kwargs, e))
-            raise
+            try:
+                r.raise_for_status()
+            except requests.HTTPError as e:
+                log.error("return_json: HTTPError for url %s: "
+                          "%s" % (r.request.url, e))
+                return None
 
-        if r.status_code != 200:
-            log.error("return_json: Error while querying %s" % r.request.url)
-            raise ConnectionError("Returned Status Code was %s" % r.status_code)
+            try:
+                data = formatter(r.json())
+            except json.JSONDecodeError:
+                log.error('return_json: Error while parsing json. '
+                          'Request url was: %s, result is: %s' % (r.request.url, r.text))
+                return None
+            except Exception as e:
+                log.error("return_json(): Unexpected error while parsing json from %s: %s" % (r.request.url, e))
+                return None
 
-        try:
-            return r.json()
-        except json.JSONDecodeError:
-            log.error('return_json: Error while parsing json. '
-                      'Request url was: %s, result is: %s' % (r.request.url, r.text))
-            return None
-        except Exception as e:
-            log.error("return_json(): Unexpected error while "
-                      "parsing json from %s: %s" % (r.request.url, e))
-    return wrapper
-
+            # Apply formatter and return
+            return formatter(data)
+        return wrapper
+    return decorator
 
