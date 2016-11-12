@@ -132,6 +132,3 @@ class Kraken(KrakenREST):
             q['pair'] = pair
 
         return self.private_query('TradeVolume', params=q)
-
-k = Kraken()
-print(k.trades('XBTEUR'))
