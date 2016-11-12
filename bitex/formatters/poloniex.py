@@ -14,7 +14,10 @@ log = logging.getLogger(__name__)
 
 
 def trade(data):
-    return data['orderNumber']
+    try:
+        return data['orderNumber']
+    except KeyError:
+        return False
 
 
 def cancel(data):

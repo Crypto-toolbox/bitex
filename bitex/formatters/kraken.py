@@ -14,7 +14,10 @@ log = logging.getLogger(__name__)
 
 
 def trade(data):
-    return data['result']['txid']
+    if not data['error']:
+        return data['result']['txid']
+    else:
+        return False
 
 
 def order_book(data, *args, **kwargs):
