@@ -10,6 +10,7 @@ import logging
 # Import Homebrew
 from bitex.api.rest import BitfinexREST
 from bitex.utils import return_json
+from bitex.formatters.bitfinex import trade, cancel, order_status
 # Init Logging Facilities
 log = logging.getLogger(__name__)
 
@@ -68,34 +69,30 @@ class Bitfinex(BitfinexREST):
         return self.private_query('deposit/new', params=q)
 
     def _place_order(self, pair, amount, price, side, replace, **kwargs):
-        q = {'symbol': pair, 'amount': amount, 'price': price, 'side': side}
+        q = {'symbol': pair, 'amount': amount, 'price': price, 'side': side,
+             'type': 'exchange limit'}
         q.update(kwargs)
         if replace:
             return self.private_query('order/cancel/replace', params=q)
         else:
             return self.private_query('order/new', params=q)
 
-    @return_json(None)
+    @return_json(trade)
     def bid(self, pair, price, amount, replace=False, **kwargs):
         return self._place_order(pair, amount, price, 'buy', replace=replace,
                                  **kwargs)
 
-    @return_json(None)
+    @return_json(trade)
     def ask(self, pair, price, amount, replace=False, **kwargs):
-        return self._place_order(pair, amount, price, 'sell', replace=replace,
-                                 **kwargs)
+        return self._place_order(pair, str(amount), str(price), 'sell',
+                                 replace=replace, **kwargs)
 
-    @return_json(None)
-    def cancel_order(self, *order_id, all=False):
+    @return_json(cancel)
+    def cancel_order(self, order_id, all=False):
 
-        if order_id and not len(order_id) > 1:
-            order_id, *_ = order_id
-
-        q = {'order_id': list(order_id)}
+        q = {'order_id': int(order_id)}
         if not all:
-            endpoint = ('order/cancel/multi' if isinstance(order_id, tuple)
-                        else 'order/cancel')
-            return self.private_query(endpoint, params=q)
+            return self.private_query('order/cancel', params=q)
         else:
             endpoint = 'order/cancel/all'
             return self.private_query(endpoint)
@@ -104,7 +101,7 @@ class Bitfinex(BitfinexREST):
     def orders(self):
         return self.private_query('orders')
 
-    @return_json(None)
+    @return_json(order_status)
     def order(self, order_id):
         q = {'order_id': order_id}
         return self.private_query('order/status', params=q)
@@ -131,4 +128,3 @@ class Bitfinex(BitfinexREST):
              'amount': amount, 'address': tar_addr}
         q.update(kwargs)
         return self.private_query('withdraw', params=q)
-
