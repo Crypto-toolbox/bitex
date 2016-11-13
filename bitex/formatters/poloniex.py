@@ -13,12 +13,12 @@ import logging
 log = logging.getLogger(__name__)
 
 
-def trade(data):
+def trade(data, *args, **kwargs):
     try:
         return data['orderNumber']
     except KeyError:
         return False
 
 
-def cancel(data):
+def cancel(data, *args, **kwargs):
     return True if data['success'] else False
