@@ -13,7 +13,7 @@ import logging
 log = logging.getLogger(__name__)
 
 
-def trade(data):
+def trade(data, *args, **kwargs):
     if not data['error']:
         return data['result']['txid']
     else:
@@ -40,7 +40,7 @@ def order_book(data, *args, **kwargs):
         return data['result'][pair]
 
 
-def cancel(data):
+def cancel(data, *args, **kwargs):
     if int(data['result']['count']) == 1:
         return True
     else:
