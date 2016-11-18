@@ -26,8 +26,8 @@ class RockTradingLtd(RockTradingREST):
     def public_query(self, endpoint, **kwargs):
         return self.query('GET', endpoint, **kwargs)
 
-    def private_query(self, endpoint, **kwargs):
-        return self.query('POST', endpoint, authenticate=True, **kwargs)
+    def private_query(self, endpoint, method='GET', **kwargs):
+        return self.query(method, endpoint, authenticate=True, **kwargs)
 
     @return_json(None)
     def ticker(self, pair):
@@ -48,6 +48,29 @@ class RockTradingLtd(RockTradingREST):
     def trades(self, pair):
         return self.public_query('trades/%s' % pair)
 
+    @return_json(None)
+    def balance(self):
+        return self.private_query('balances')
+
+    @return_json(None)
+    def cancel_order(self, id, market):
+        return self.private_query('funds/%s/orders/%s' % (market, id), method='DELETE')
+
+    def _place_order(self, side, pair, price, size, **kwargs):
+        q = {'fund_id': pair, 'side': side, 'amount': size, 'price': price}
+        q.update(kwargs)
+        return self.private_query('funds/%s/orders' % pair, method='POST', params=q)
+
+    @return_json(None)
+    def bid(self, pair, price, size, **kwargs):
+        return self._place_order('buy', pair, price, size)
+
+    @return_json
+    def ask(self, *, pair, price, size, **kwargs):
+        return self._place_order('sell', pair, price, size, **kwargs)
 
 
+k = RockTradingLtd(key_file='/home/nils/git/spab/spab/keys/rock.key')
+r = k.balance()
+print(r.json())
 
