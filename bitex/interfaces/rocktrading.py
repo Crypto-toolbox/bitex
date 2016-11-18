@@ -68,9 +68,3 @@ class RockTradingLtd(RockTradingREST):
     @return_json
     def ask(self, *, pair, price, size, **kwargs):
         return self._place_order('sell', pair, price, size, **kwargs)
-
-
-k = RockTradingLtd(key_file='/home/nils/git/spab/spab/keys/rock.key')
-r = k.balance()
-print(r.json())
-
