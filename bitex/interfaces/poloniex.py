@@ -85,7 +85,7 @@ class Poloniex(PoloniexREST):
         return self.private_query('tradingApi', params=q)
 
     @return_json(trade)
-    def bid(self, pair, amount, rate, **kwargs):
+    def bid(self, pair, rate, amount, **kwargs):
         q = {'command': 'buy', 'currencyPair': pair, 'amount': amount,
              'rate': rate}
         q.update(kwargs)
