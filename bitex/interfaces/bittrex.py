@@ -10,7 +10,7 @@ import logging
 # Import Homebrew
 from bitex.api.rest import BittrexREST
 from bitex.utils import return_json
-from bitex.formatters.bittrex import trade, cancel
+from bitex.formatters.bittrex import trade, cancel, order_book
 # Init Logging Facilities
 #logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger(__name__)
@@ -47,7 +47,7 @@ class Bittrex(BittrexREST):
         else:
             return self.public_query('getmarketsummaries')
 
-    @return_json(None)
+    @return_json(order_book)
     def order_book(self, pair, side='both', **kwargs):
         q = {'market': pair, 'type': side}
         q.update(kwargs)
