@@ -20,5 +20,12 @@ def trade(data, *args, **kwargs):
         return False
 
 
+def order_book(data, *args, **kwargs):
+    if data['success']:
+        return data['result']
+    else:
+        return None
+
+
 def cancel(data, *args, **kwargs):
     return True if data['success'] else False

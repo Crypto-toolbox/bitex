@@ -13,6 +13,10 @@ import logging
 log = logging.getLogger(__name__)
 
 
+def order_book(data, *args, **kwargs):
+    return data
+
+
 def trade(data, *args, **kwargs):
     try:
         return data['orderNumber']
