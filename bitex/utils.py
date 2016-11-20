@@ -25,7 +25,7 @@ def return_json(formatter=None):
             except requests.HTTPError as e:
                 log.error("return_json: HTTPError for url %s: "
                           "%s" % (r.request.url, e))
-                return None
+                return None, r
 
             try:
                 data = r.json()
@@ -33,17 +33,17 @@ def return_json(formatter=None):
                 log.error('return_json: Error while parsing json. '
                           'Request url was: %s, result is: '
                           '%s' % (r.request.url, r.text))
-                return None
+                return None, r
             except Exception as e:
                 log.error("return_json(): Unexpected error while parsing json "
                           "from %s: %s" % (r.request.url, e))
-                return None
+                raise
 
             # Apply formatter and return
             if formatter is not None:
-                return formatter(data, *args, **kwargs)
+                return formatter(data, *args, **kwargs), r
             else:
-                return data
+                return data, r
         return wrapper
     return decorator
 
