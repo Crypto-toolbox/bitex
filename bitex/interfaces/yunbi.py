@@ -21,7 +21,6 @@ class Yunbi(YunbiREST):
         super(Yunbi, self).__init__(key, secret)
         if key_file:
             self.load_key(key_file)
-        print(self.uri)
 
     def public_query(self, endpoint, **kwargs):
         return self.query('GET', endpoint + '.json', **kwargs)

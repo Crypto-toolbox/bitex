@@ -12,7 +12,6 @@ from bitex.api.rest import BittrexREST
 from bitex.utils import return_json
 from bitex.formatters.bittrex import trade, cancel, order_book
 # Init Logging Facilities
-#logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger(__name__)
 
 

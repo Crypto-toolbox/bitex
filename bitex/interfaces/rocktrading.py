@@ -12,7 +12,6 @@ from bitex.api.rest import RockTradingREST
 from bitex.utils import return_json
 
 # Init Logging Facilities
-logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger(__name__)
 
 
@@ -21,7 +20,6 @@ class RockTradingLtd(RockTradingREST):
         super(RockTradingLtd, self).__init__(key, secret)
         if key_file:
             self.load_key(key_file)
-        print(self.uri)
 
     def public_query(self, endpoint, **kwargs):
         return self.query('GET', endpoint, **kwargs)
@@ -34,9 +32,9 @@ class RockTradingLtd(RockTradingREST):
         return self.public_query('ticker/%s' % pair)
 
     @return_json(None)
-    def tickers(self, currency=None):
-        if currency:
-            return self.public_query('funds/%s/ticker' % currency)
+    def tickers(self, pair=None):
+        if pair:
+            return self.public_query('funds/%s/ticker' % pair)
         else:
             return self.public_query('tickers')
 
