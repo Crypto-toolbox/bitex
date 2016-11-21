@@ -36,17 +36,17 @@ class RockTradingLtd(RockTradingREST):
     @return_json(None)
     def tickers(self, currency=None):
         if currency:
-            return self.public_query('tickers/%s' % currency)
+            return self.public_query('funds/%s/ticker' % currency)
         else:
             return self.public_query('tickers')
 
     @return_json(None)
     def order_book(self, pair):
-        return self.public_query('orderbook/%s' % pair)
+        return self.public_query('funds/%s/orderbook' % pair)
 
     @return_json(None)
     def trades(self, pair):
-        return self.public_query('trades/%s' % pair)
+        return self.public_query('funds/%s/trades' % pair)
 
     @return_json(None)
     def balance(self):
