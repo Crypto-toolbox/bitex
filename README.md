@@ -24,6 +24,7 @@ REST-based APIs:
 - Bitfinex (implemented)
 - Bitstamp (implemented)
 - Kraken (implemented)
+- itBit (public endpoint communication done)
 - Coincheck (public endpoint communication done)
 - OKCoin (public endpoint communication done)
 - BTC-E (public endpoint communication done) [DEPRECATED]
