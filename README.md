@@ -26,8 +26,7 @@ REST-based APIs:
 - Kraken (implemented)
 - Coincheck (public endpoint communication done)
 - OKCoin (public endpoint communication done)
-- BTC-E (public endpoint communication done) [DEPRECATED] - Too shitty 
-                                            support, pardon my french.
+- BTC-E (public endpoint communication done) [DEPRECATED]
 - Bittrex (public endpoint communication done)
 - C-CEX (public endpoint communication done)
 - Cryptoptia (public endpoint communication done)
@@ -51,13 +50,18 @@ Additional clients will be added to (or removed from) this list,
 according to their liquidity and market volume.
 
 In their basic form, clients provide a simple connection to APIs - that 
-is, they handle authentication and request construction for you. As soon 
-the above list is completed to a point where most of the exchanges are 
-implemented (or whenever I feel like it), I will add convenience layers 
-to the clients; this layer will aim to make calling the api feel more 
-like a function, instead of string construction 
-(i.e. `kraken.ticker('XBTEUR')`, instead of typing 
-`kraken.public_query({'pair': 'XBTEUR'})`). 
+is, they handle authentication and request construction for you. The 
+classes in `bitex.interfaces` provide additional convenience methods.
+They offer unified methods across all exchanges (i.e. order_book(), 
+ticker(), trades(), among others), and parse returned data sensibly.
+
+All methods return a tuple of parsed data and the original 
+response object.
+
+For example, the return values for 
+`bitex.interfaces.Kraken.ask(*args, **kwargs)` is a tuple of 
+`(<transaction_id>, <response object>)`.
+
 
 # REST APIs
 
@@ -67,10 +71,9 @@ respective exchange's REST API, including handling of authentication.
 They do not feature convenience methods, so you will
 have to write some things yourself. 
 
-At their core, they can be thought of as simple overlay methods for 
-`requests.request()` methods, as all
-kwargs passed to query, are also passed to these methods as well. They 
-simply handle the exchange's authentication protocols as well.
+At their core, they can be thought of as simple wrapper methods for 
+`requests.request()` methods which additionally handle the bits and pieces
+of the exchanges authentication protocol as well.
 
 An example:
 ```
@@ -79,17 +82,15 @@ from bitex.api.rest import KrakenREST
 k = KrakenREST()
 k.load_key('kraken.key')  # loads key and secret from given file;
 
-<<<<<<< HEAD
-k.query('public/Depth', params={'pair': 'XXBTZUSD'})
-k.query('GET', 'private/AddOrder', authenticate=True,
-            params={'pair': 'XXBTZUSD', 'type': 'sell', 'ordertype': 'limit',
-                    'price': 1000.0, 'volume': 0.01, 'validate': True})
-=======
-k.query('GET','public/Depth', params={'pair': 'XXBTZUSD'})
-k.query('POST','private/AddOrder', authenticate=True,
-        params={'pair': 'XXBTZUSD', 'type': 'sell', 'ordertype': 'limit',
-                'price': 1000.0, 'volume': 0.01, 'validate': True})
->>>>>>> dev
+# Poll order book for XBTUSD
+q = {'pair': 'XXBTZUSD'}
+k.query('GET','public/Depth', params=q)  # without auth
+
+# Place ask order (requires authentication
+q = {'pair': 'XXBTZUSD', 'type': 'sell', 'ordertype': 'limit',
+     'price': 1000.0, 'volume': 0.01, 'validate': True}
+k.query('POST','private/AddOrder', authenticate=True, params=q) 
+
 ```
 
 Example `.key` file:
