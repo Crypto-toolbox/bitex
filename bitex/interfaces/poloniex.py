@@ -29,7 +29,7 @@ class Poloniex(PoloniexREST):
                           authenticate=True, **kwargs)
 
     @return_json(None)
-    def ticker(self):
+    def ticker(self, pair, **kwargs):
         return self.public_query('returnTicker')
 
     @return_json(None)

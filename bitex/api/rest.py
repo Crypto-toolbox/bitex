@@ -412,8 +412,8 @@ class YunbiREST(RESTAPI):
 
 
 class RockTradingREST(RESTAPI):
-    def __init__(self, key='', secret='', api_version='',
-                 url='https://www.therocktrading.com/api'):
+    def __init__(self, key='', secret='', api_version='v1',
+                 url='https://api.therocktrading.com'):
         super(RockTradingREST, self).__init__(url, api_version=api_version,
                                         key=key,
                                         secret=secret)
@@ -425,13 +425,14 @@ class RockTradingREST(RESTAPI):
         except KeyError:
             params = {}
         payload = params
-        payload['nonce'] = nonce
+        payload['nonce'] = int(nonce)
         payload['request'] = endpoint_path
-        msg = nonce + base64.b64encode(json.dumps(payload))
-        sig = hmac.new(self.secret, msg, hashlib.sha384).hexdigest()
+
+        msg = nonce + uri
+        sig = hmac.new(self.secret.encode(), msg.encode(), hashlib.sha384).hexdigest()
         headers = {'X-TRT-APIKEY': self.key,
                    'X-TRT-Nonce': nonce,
-                   'X-TRT-SIGNATURE': sig}
+                   'X-TRT-SIGNATURE': sig, 'Content-Type': 'application/json'}
         return uri, {'headers': headers}
 
 
