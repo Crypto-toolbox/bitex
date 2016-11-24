@@ -28,9 +28,9 @@ class Yunbi(YunbiREST):
     def private_query(self, endpoint, **kwargs):
         return self.query('POST', endpoint, authenticate=True, **kwargs)
 
-    @return_json(None)
-    def pairs(self):
-        return self.public_query('symbols')
+    """
+    BitEx Standardized Methods
+    """
 
     @return_json(None)
     def ticker(self, pair=None):
@@ -38,12 +38,6 @@ class Yunbi(YunbiREST):
             return self.public_query('tickers/%s' % pair)
         else:
             return self.public_query('tickers')
-
-    @return_json(None)
-    def ohlc(self, pair, **kwargs):
-        q = {'market': pair}
-        q.update(kwargs)
-        return self.public_query('k', params=q)
 
     @return_json(None)
     def order_book(self, pair, **kwargs):
@@ -56,6 +50,48 @@ class Yunbi(YunbiREST):
         q = {'market': pair}
         q.update(kwargs)
         return self.public_query('trades', params=q)
+
+    @return_json(None)
+    def bid(self, pair, price, amount, **kwargs):
+        raise NotImplementedError()
+
+    @return_json(None)
+    def ask(self, pair, price, amount, **kwargs):
+        raise NotImplementedError()
+
+    @return_json(None)
+    def cancel_order(self, order_id, all=False, **kwargs):
+        raise NotImplementedError()
+
+    @return_json(None)
+    def order(self, order_id, **kwargs):
+        raise NotImplementedError()
+
+    @return_json(None)
+    def balance(self, **kwargs):
+        raise NotImplementedError()
+
+    @return_json(None)
+    def withdraw(self, _type, source_wallet, amount, tar_addr, **kwargs):
+        raise NotImplementedError()
+
+    @return_json(None)
+    def deposit_address(self, **kwargs):
+        raise NotImplementedError()
+
+    """
+    Exchange Specific Methods
+    """
+
+    @return_json(None)
+    def pairs(self):
+        return self.public_query('symbols')
+
+    @return_json(None)
+    def ohlc(self, pair, **kwargs):
+        q = {'market': pair}
+        q.update(kwargs)
+        return self.public_query('k', params=q)
 
     @return_json(None)
     def auction(self, pair):

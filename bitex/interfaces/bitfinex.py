@@ -90,10 +90,10 @@ class Bitfinex(BitfinexREST):
         return self.private_query('withdraw', params=q)
 
     @return_json(None)
-    def deposit_address(self, currency, target_wallet, **kwargs):
+    def deposit_address(self, **kwargs):
         q = {'method': currency, 'wallet_name': target_wallet}
         q.update(kwargs)
-        return self.private_query('deposit/new', params=q)
+        return self.private_query('deposit/new', params=kwargs)
 
     """
     Exchange Specific Methods

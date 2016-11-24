@@ -27,24 +27,13 @@ class Bittrex(BittrexREST):
     def private_query(self, endpoint, **kwargs):
         return self.query('GET', endpoint, authenticate=True, **kwargs)
 
-    @return_json(None)
-    def pairs(self):
-        return self.public_query('getmarkets')
-
-    @return_json(None)
-    def currencies(self):
-        return self.public_query('getcurrencies')
+    """
+    BitEx Standardized Methods
+    """
 
     @return_json(None)
     def ticker(self, pair):
         return self.public_query('getticker', params={'market': pair})
-
-    @return_json(None)
-    def statistics(self, pair=None):
-        if pair:
-            return self.public_query('getmarketsummary', params={'market': pair})
-        else:
-            return self.public_query('getmarketsummaries')
 
     @return_json(order_book)
     def order_book(self, pair, side='both', **kwargs):
@@ -80,11 +69,49 @@ class Bittrex(BittrexREST):
             # send limit order
             return self.private_query('market/selllimit', params=q)
 
-    @return_json(None)
-    def balance(self):
-        return self.private_query('account/getbalances')
-
     @return_json(cancel)
     def cancel_order(self, txid):
         q = {'uuid': txid}
         return self.private_query('market/cancel', params=q)
+
+    @return_json(None)
+    def order(self, order_id, **kwargs):
+        raise NotImplementedError()
+
+    @return_json(None)
+    def balance(self):
+        return self.private_query('account/getbalances')
+
+    @return_json(None)
+    def withdraw(self, _type, source_wallet, amount, tar_addr, **kwargs):
+        raise NotImplementedError()
+
+    @return_json(None)
+    def deposit_address(self, **kwargs):
+        raise NotImplementedError()
+
+
+    """
+    Exchange Specific Methods
+    """
+
+    @return_json(None)
+    def pairs(self):
+        return self.public_query('getmarkets')
+
+    @return_json(None)
+    def currencies(self):
+        return self.public_query('getcurrencies')
+
+    @return_json(None)
+    def statistics(self, pair=None):
+        if pair:
+            return self.public_query('getmarketsummary', params={'market': pair})
+        else:
+            return self.public_query('getmarketsummaries')
+
+
+
+
+
+

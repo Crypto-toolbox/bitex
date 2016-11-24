@@ -27,6 +27,10 @@ class Coincheck(CoincheckREST):
     def private_query(self, endpoint, **kwargs):
         return self.query('POST', endpoint, authenticate=True, **kwargs)
 
+    """
+    BitEx Standardized Methods
+    """
+
     @return_json(None)
     def ticker(self, pair):
         return self.public_query('ticker', params={'pair': pair})
@@ -39,4 +43,35 @@ class Coincheck(CoincheckREST):
     def order_book(self, pair):
         return self.public_query('order_books', params={'pair': pair})
 
+    @return_json(None)
+    def bid(self, pair, price, amount, **kwargs):
+        raise NotImplementedError()
+
+    @return_json(None)
+    def ask(self, pair, price, amount, **kwargs):
+        raise NotImplementedError()
+
+    @return_json(None)
+    def cancel_order(self, order_id, all=False, **kwargs):
+        raise NotImplementedError()
+
+    @return_json(None)
+    def order(self, order_id, **kwargs):
+        raise NotImplementedError()
+
+    @return_json(None)
+    def balance(self, **kwargs):
+        raise NotImplementedError()
+
+    @return_json(None)
+    def withdraw(self, _type, source_wallet, amount, tar_addr, **kwargs):
+        raise NotImplementedError()
+
+    @return_json(None)
+    def deposit_address(self, **kwargs):
+        raise NotImplementedError()
+
+    """
+    Exchange Specific Methods
+    """
 

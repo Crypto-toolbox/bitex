@@ -27,6 +27,54 @@ class GDAX(GDAXRest):
     def private_query(self, endpoint, **kwargs):
         return self.query('POST', endpoint, authenticate=True, **kwargs)
 
+    """
+    BitEx Standardized Methods
+    """
+
+    @return_json(None)
+    def ticker(self, pair, **kwargs):
+        return self.public_query('products/%s/ticker' % pair, params=kwargs)
+
+    @return_json(None)
+    def order_book(self, pair, **kwargs):
+        return self.public_query('products/%s/book' % pair, params=kwargs)
+
+    @return_json(None)
+    def trades(self, pair, **kwargs):
+        return self.public_query('products/%s/trades' % pair, params=kwargs)
+
+    @return_json(None)
+    def bid(self, pair, price, amount, **kwargs):
+        raise NotImplementedError()
+
+    @return_json(None)
+    def ask(self, pair, price, amount, **kwargs):
+        raise NotImplementedError()
+
+    @return_json(None)
+    def cancel_order(self, order_id, all=False, **kwargs):
+        raise NotImplementedError()
+
+    @return_json(None)
+    def order(self, order_id, **kwargs):
+        raise NotImplementedError()
+
+    @return_json(None)
+    def balance(self, **kwargs):
+        raise NotImplementedError()
+
+    @return_json(None)
+    def withdraw(self, _type, source_wallet, amount, tar_addr, **kwargs):
+        raise NotImplementedError()
+
+    @return_json(None)
+    def deposit_address(self, **kwargs):
+        raise NotImplementedError()
+
+    """
+    Exchange Specific Methods
+    """
+
     @return_json
     def time(self):
         return self.public_query('time')
@@ -38,18 +86,6 @@ class GDAX(GDAXRest):
     @return_json(None)
     def pairs(self):
         return self.public_query('products')
-
-    @return_json(None)
-    def order_book(self, pair, **kwargs):
-        return self.public_query('products/%s/book' % pair, params=kwargs)
-
-    @return_json(None)
-    def ticker(self, pair, **kwargs):
-        return self.public_query('products/%s/ticker' % pair, params=kwargs)
-
-    @return_json(None)
-    def trades(self, pair, **kwargs):
-        return self.public_query('products/%s/trades' % pair, params=kwargs)
 
     @return_json(None)
     def ohlc(self, pair, **kwargs):

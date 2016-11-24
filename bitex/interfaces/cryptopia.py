@@ -29,6 +29,63 @@ class Cryptopia(CryptopiaREST):
     def private_query(self, endpoint, **kwargs):
         return self.query('POST', endpoint, authenticate=True, **kwargs)
 
+    """
+    BitEx Standardized Methods
+    """
+
+    @return_json(None)
+    def ticker(self, pair, **kwargs):
+        endpoint = 'GetMarket/%s' % pair
+        for k in kwargs:
+            endpoint += '/' + kwargs[k]
+        return self.public_query(endpoint, params=kwargs)
+
+    @return_json(None)
+    def order_book(self, pair, **kwargs):
+        endpoint = 'GetMarketOrders/%s' % pair
+        for k in kwargs:
+            endpoint += '/' + kwargs[k]
+        return self.public_query(endpoint, params=kwargs)
+
+    @return_json(None)
+    def trades(self, pair, **kwargs):
+        endpoint = 'GetMarkets/%s' % pair
+        for k in kwargs:
+            endpoint += '/' + kwargs[k]
+        return self.public_query(endpoint, params=kwargs)
+
+    @return_json(None)
+    def bid(self, pair, price, amount, **kwargs):
+        raise NotImplementedError()
+
+    @return_json(None)
+    def ask(self, pair, price, amount, **kwargs):
+        raise NotImplementedError()
+
+    @return_json(None)
+    def cancel_order(self, order_id, all=False, **kwargs):
+        raise NotImplementedError()
+
+    @return_json(None)
+    def order(self, order_id, **kwargs):
+        raise NotImplementedError()
+
+    @return_json(None)
+    def balance(self, **kwargs):
+        raise NotImplementedError()
+
+    @return_json(None)
+    def withdraw(self, _type, source_wallet, amount, tar_addr, **kwargs):
+        raise NotImplementedError()
+
+    @return_json(None)
+    def deposit_address(self, **kwargs):
+        raise NotImplementedError()
+
+    """
+    Exchange Specific Methods
+    """
+
     @return_json(None)
     def currencies(self):
         return self.public_query('GetCurrency')
@@ -44,23 +101,4 @@ class Cryptopia(CryptopiaREST):
             endpoint += '/' + kwargs[k]
         return self.public_query(endpoint, params=kwargs)
 
-    @return_json(None)
-    def ticker(self, pair, **kwargs):
-        endpoint = 'GetMarket/%s' % pair
-        for k in kwargs:
-            endpoint += '/' + kwargs[k]
-        return self.public_query(endpoint, params=kwargs)
 
-    @return_json(None)
-    def trades(self, pair, **kwargs):
-        endpoint = 'GetMarkets/%s' % pair
-        for k in kwargs:
-            endpoint += '/' + kwargs[k]
-        return self.public_query(endpoint, params=kwargs)
-
-    @return_json(None)
-    def order_book(self, pair, **kwargs):
-        endpoint = 'GetMarketOrders/%s' % pair
-        for k in kwargs:
-            endpoint += '/' + kwargs[k]
-        return self.public_query(endpoint, params=kwargs)

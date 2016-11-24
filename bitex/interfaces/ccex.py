@@ -29,9 +29,58 @@ class CCEX(CCEXRest):
     def private_query(self, endpoint, **kwargs):
         return self.query('POST', endpoint, authenticate=True, **kwargs)
 
+    """
+    BitEx Standardized Methods
+    """
+
     @return_json(None)
     def ticker(self, pair):
         return self.public_query('%s.json' % pair)
+
+    @return_json(None)
+    def order_book(self, pair, type='both', **kwargs):
+        q = {'market': pair, 'type': type}
+        q.update(kwargs)
+        return self.public_query('api_pub.html?a=getorderbook', params=q)
+
+    @return_json(None)
+    def trades(self, pair, **kwargs):
+        q = {'market': pair}
+        q.update(kwargs)
+        return self.public_query('api_pub.html?a=getmarkethistory',
+                                 params=q)
+
+    @return_json(None)
+    def bid(self, pair, price, amount, **kwargs):
+        raise NotImplementedError()
+
+    @return_json(None)
+    def ask(self, pair, price, amount, **kwargs):
+        raise NotImplementedError()
+
+    @return_json(None)
+    def cancel_order(self, order_id, all=False, **kwargs):
+        raise NotImplementedError()
+
+    @return_json(None)
+    def order(self, order_id, **kwargs):
+        raise NotImplementedError()
+
+    @return_json(None)
+    def balance(self, **kwargs):
+        raise NotImplementedError()
+
+    @return_json(None)
+    def withdraw(self, _type, source_wallet, amount, tar_addr, **kwargs):
+        raise NotImplementedError()
+
+    @return_json(None)
+    def deposit_address(self, **kwargs):
+        raise NotImplementedError()
+
+    """
+    Exchange Specific Methods
+    """
 
     @return_json(None)
     def pairs(self, names_only=True):
@@ -52,23 +101,13 @@ class CCEX(CCEXRest):
     def volume(self, pair):
         return self.public_query('volume_%s.json' % pair)
 
-    @return_json(None)
-    def trades(self, pair, **kwargs):
-        q = {'market': pair}
-        q.update(kwargs)
-        return self.public_query('api_pub.html?a=getmarkethistory',
-                                 params=q)
+
 
     @return_json(None)
     def statistics(self, all=True):
         if all:
             return self.public_query('api_pub.html?a=getmarketsummaries')
 
-    @return_json(None)
-    def order_book(self, pair, type='both', **kwargs):
-        q = {'market': pair, 'type': type}
-        q.update(kwargs)
-        return self.public_query('api_pub.html?a=getorderbook', params=q)
 
     @return_json(None)
     def balance_distribution(self, currency):

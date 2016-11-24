@@ -34,27 +34,14 @@ class Kraken(KrakenREST):
         path = 'private/' + endpoint
         return self.query('POST', path, authenticate=True, **kwargs)
 
-    @return_json(None)
-    def time(self):
-        return self.public_query('Time')
-
-    @return_json(None)
-    def assets(self, **kwargs):
-        return self.public_query('Assets', params=kwargs)
-
-    @return_json(None)
-    def pairs(self, **kwargs):
-        return self.public_query('AssetPairs', params=kwargs)
+    """
+    BitEx Standardized Methods
+    """
 
     @return_json(None)
     def ticker(self, *pairs):
         q = self.make_params(*pairs)
         return self.public_query('Ticker', params=q)
-
-    @return_json(None)
-    def ohlc(self, pair, **kwargs):
-        q = self.make_params(pair, **kwargs)
-        return self.public_query('OHLC', params=q)
 
     @return_json(order_book)
     def order_book(self, pair, **kwargs):
@@ -65,43 +52,6 @@ class Kraken(KrakenREST):
     def trades(self, pair, **kwargs):
         q = self.make_params(pair, **kwargs)
         return self.public_query('Trades', params=q)
-
-    @return_json(None)
-    def spread(self, pair, **kwargs):
-        q = self.make_params(pair, **kwargs)
-        return self.public_query('Spread', params=q)
-
-    @return_json(None)
-    def balance(self, **kwargs):
-        return self.private_query('Balance')
-
-    @return_json(None)
-    def orders(self, **kwargs):
-        q = kwargs
-        return self.private_query('OpenOrders', params=q)
-
-    @return_json(None)
-    def closed_orders(self, **kwargs):
-        q = kwargs
-        return self.private_query('ClosedOrders', params=q)
-
-    @return_json(None)
-    def trade_history(self, **kwargs):
-        q = kwargs
-        return self.private_query('TradesHistory', params=q)
-
-    @return_json(None)
-    def order_info(self, *txids, **kwargs):
-        if len(txids) > 1:
-            q = {'txid': txids}
-        elif txids:
-            txid, *_ = txids
-            q = {'txid': txid}
-        else:
-            q = {}
-        q.update(kwargs)
-
-        return self.private_query('QueryOrders', params=q)
 
     def _add_order(self, pair, side, price, amount, **kwargs):
         q = {'pair': pair, 'type': side, 'price': price,
@@ -123,6 +73,71 @@ class Kraken(KrakenREST):
         q = {'txid': order_id}
         q.update(kwargs)
         return self.private_query('CancelOrder', params=q)
+
+    @return_json(None)
+    def order_info(self, *txids, **kwargs):
+        if len(txids) > 1:
+            q = {'txid': txids}
+        elif txids:
+            txid, *_ = txids
+            q = {'txid': txid}
+        else:
+            q = {}
+        q.update(kwargs)
+        return self.private_query('QueryOrders', params=q)
+
+    @return_json(None)
+    def balance(self, **kwargs):
+        return self.private_query('Balance')
+
+    @return_json(None)
+    def withdraw(self, _type, source_wallet, amount, tar_addr, **kwargs):
+        raise NotImplementedError()
+
+    @return_json(None)
+    def deposit_address(self, **kwargs):
+        raise NotImplementedError()
+
+    """
+    Exchange Specific Methods
+    """
+
+    @return_json(None)
+    def time(self):
+        return self.public_query('Time')
+
+    @return_json(None)
+    def assets(self, **kwargs):
+        return self.public_query('Assets', params=kwargs)
+
+    @return_json(None)
+    def pairs(self, **kwargs):
+        return self.public_query('AssetPairs', params=kwargs)
+
+    @return_json(None)
+    def ohlc(self, pair, **kwargs):
+        q = self.make_params(pair, **kwargs)
+        return self.public_query('OHLC', params=q)
+
+    @return_json(None)
+    def spread(self, pair, **kwargs):
+        q = self.make_params(pair, **kwargs)
+        return self.public_query('Spread', params=q)
+
+    @return_json(None)
+    def orders(self, **kwargs):
+        q = kwargs
+        return self.private_query('OpenOrders', params=q)
+
+    @return_json(None)
+    def closed_orders(self, **kwargs):
+        q = kwargs
+        return self.private_query('ClosedOrders', params=q)
+
+    @return_json(None)
+    def trade_history(self, **kwargs):
+        q = kwargs
+        return self.private_query('TradesHistory', params=q)
 
     @return_json(None)
     def fees(self, pair=None):

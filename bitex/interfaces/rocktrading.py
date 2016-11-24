@@ -27,32 +27,24 @@ class RockTradingLtd(RockTradingREST):
     def private_query(self, endpoint, method='GET', **kwargs):
         return self.query(method, endpoint, authenticate=True, **kwargs)
 
-    @return_json(None)
-    def ticker(self, pair):
-        return self.public_query('ticker/%s' % pair)
+    """
+    BitEx Standardized Methods
+    """
 
     @return_json(None)
-    def tickers(self, pair=None):
+    def tickers(self, pair=None, **kwargs):
         if pair:
-            return self.public_query('funds/%s/ticker' % pair)
+            return self.public_query('funds/%s/ticker' % pair, params=kwargs)
         else:
             return self.public_query('tickers')
 
     @return_json(None)
-    def order_book(self, pair):
-        return self.public_query('funds/%s/orderbook' % pair)
+    def order_book(self, pair, **kwargs):
+        return self.public_query('funds/%s/orderbook' % pair, params=kwargs)
 
     @return_json(None)
-    def trades(self, pair):
-        return self.public_query('funds/%s/trades' % pair)
-
-    @return_json(None)
-    def balance(self):
-        return self.private_query('balances')
-
-    @return_json(None)
-    def cancel_order(self, id, market):
-        return self.private_query('funds/%s/orders/%s' % (market, id), method='DELETE')
+    def trades(self, pair, **kwargs):
+        return self.public_query('funds/%s/trades' % pair, params=kwargs)
 
     def _place_order(self, side, pair, price, size, **kwargs):
         q = {'fund_id': pair, 'side': side, 'amount': size, 'price': price}
@@ -61,8 +53,40 @@ class RockTradingLtd(RockTradingREST):
 
     @return_json(None)
     def bid(self, pair, price, size, **kwargs):
-        return self._place_order('buy', pair, price, size)
+        return self._place_order('buy', pair, price, size, **kwargs)
 
     @return_json
     def ask(self, *, pair, price, size, **kwargs):
         return self._place_order('sell', pair, price, size, **kwargs)
+
+    @return_json(None)
+    def cancel_order(self, id, market, **kwargs):
+        return self.private_query('funds/%s/orders/%s' % (market, id),
+                                  method='DELETE', params=kwargs)
+
+    @return_json(None)
+    def order(self, order_id, **kwargs):
+        raise NotImplementedError()
+
+    @return_json(None)
+    def balance(self, **kwargs):
+        return self.private_query('balances', params=kwargs)
+
+    @return_json(None)
+    def withdraw(self, _type, source_wallet, amount, tar_addr, **kwargs):
+        raise NotImplementedError()
+
+    @return_json(None)
+    def deposit_address(self, **kwargs):
+        raise NotImplementedError()
+
+    """
+    Exchange Specific Methods
+    """
+
+
+
+
+
+
+
