@@ -27,46 +27,20 @@ class Bitfinex(BitfinexREST):
     def private_query(self, endpoint, **kwargs):
         return self.query('POST', endpoint, authenticate=True, **kwargs)
 
-    @return_json(None)
-    def ticker(self, pair):
-        return self.public_query('pubticker/%s' % pair)
-
-    @return_json(None)
-    def statistics(self, pair):
-        return self.public_query('stats/%s' % pair)
-
-    @return_json(None)
-    def funding_book(self, currency, **kwargs):
-        return self.public_query('lendbook/%s' % currency, params=kwargs)
-
+    """
+    BitEx Standardized Methods
+    """
     @return_json(None)
     def order_book(self, pair, **kwargs):
         return self.public_query('book/%s' % pair, params=kwargs)
 
     @return_json(None)
+    def ticker(self, pair, **kwargs):
+        return self.public_query('pubticker/%s' % pair, params=kwargs)
+
+    @return_json(None)
     def trades(self, pair, **kwargs):
         return self.public_query('trades/%s' % pair, params=kwargs)
-
-    @return_json(None)
-    def lends(self, currency, **kwargs):
-        return self.public_query('lends/%s' % currency, params=kwargs)
-
-    @return_json(None)
-    def pairs(self, details=False):
-        if details:
-            return self.public_query('symbols_details')
-        else:
-            return self.public_query('symbols')
-
-    @return_json(None)
-    def fees(self):
-        return self.private_query('account_infos')
-
-    @return_json(None)
-    def deposit_address(self, currency, target_wallet, **kwargs):
-        q = {'method': currency, 'wallet_name': target_wallet}
-        q.update(kwargs)
-        return self.private_query('deposit/new', params=q)
 
     def _place_order(self, pair, amount, price, side, replace, **kwargs):
         q = {'symbol': pair, 'amount': amount, 'price': price, 'side': side,
@@ -88,27 +62,69 @@ class Bitfinex(BitfinexREST):
                                  replace=replace, **kwargs)
 
     @return_json(cancel)
-    def cancel_order(self, order_id, all=False):
+    def cancel_order(self, order_id, all=False, **kwargs):
 
         q = {'order_id': int(order_id)}
+        q.update(kwargs)
         if not all:
             return self.private_query('order/cancel', params=q)
         else:
             endpoint = 'order/cancel/all'
             return self.private_query(endpoint)
 
-    @return_json(None)
-    def orders(self):
-        return self.private_query('orders')
-
     @return_json(order_status)
-    def order(self, order_id):
+    def order(self, order_id, **kwargs):
         q = {'order_id': order_id}
+        q.update(kwargs)
         return self.private_query('order/status', params=q)
 
     @return_json(None)
-    def balance(self):
-        return self.private_query('balances')
+    def balance(self, **kwargs):
+        return self.private_query('balances', params=kwargs)
+
+    @return_json(None)
+    def withdraw(self, _type, source_wallet, amount, tar_addr, **kwargs):
+        q = {'withdraw_type': _type, 'walletselected': source_wallet,
+             'amount': amount, 'address': tar_addr}
+        q.update(kwargs)
+        return self.private_query('withdraw', params=q)
+
+    @return_json(None)
+    def deposit_address(self, currency, target_wallet, **kwargs):
+        q = {'method': currency, 'wallet_name': target_wallet}
+        q.update(kwargs)
+        return self.private_query('deposit/new', params=q)
+
+    """
+    Exchange Specific Methods
+    """
+
+    @return_json(None)
+    def statistics(self, pair):
+        return self.public_query('stats/%s' % pair)
+
+    @return_json(None)
+    def funding_book(self, currency, **kwargs):
+        return self.public_query('lendbook/%s' % currency, params=kwargs)
+
+    @return_json(None)
+    def lends(self, currency, **kwargs):
+        return self.public_query('lends/%s' % currency, params=kwargs)
+
+    @return_json(None)
+    def pairs(self, details=False):
+        if details:
+            return self.public_query('symbols_details')
+        else:
+            return self.public_query('symbols')
+
+    @return_json(None)
+    def fees(self):
+        return self.private_query('account_infos')
+
+    @return_json(None)
+    def orders(self):
+        return self.private_query('orders')
 
     @return_json(None)
     def balance_history(self, currency, **kwargs):
@@ -122,9 +138,4 @@ class Bitfinex(BitfinexREST):
         q.update(kwargs)
         return self.private_query('mytrades', params=q)
 
-    @return_json(None)
-    def withdraw(self, _type, source_wallet, amount, tar_addr, **kwargs):
-        q = {'withdraw_type': _type, 'walletselected': source_wallet,
-             'amount': amount, 'address': tar_addr}
-        q.update(kwargs)
-        return self.private_query('withdraw', params=q)
+
