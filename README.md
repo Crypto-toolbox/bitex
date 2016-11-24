@@ -1,9 +1,9 @@
 # BitEx
 BitEx is a collection of API Clients for Crypto Currency Exchanges.
 
-It provides API classes for various REST-based APIs for a variety of 
-crypto exchanges. It handles authentication as well as granting access to 
-all endpoints via the low level api interface.
+It comes with two main parts - `bitex.api` represents the base level API
+interfaces, on top of which the second part - `bitex.interfaces` - builds upon.
+`bitex.api` classes can be used without making use of the interface classes.
 
 
 # State
@@ -11,45 +11,35 @@ all endpoints via the low level api interface.
 
 **API** : **Completed**
 
-**Clients** : **WIP**
+**Interfaces** : **WIP**
 
 --------------------------------
-As of now, only REST APIs are supported, implementations of websockets 
-and FIX connections are being considered.
-
-The following exchanges are supported
-
-REST-based APIs:
-- GDAX (implemented)
-- Bitfinex (implemented)
-- Bitstamp (implemented)
-- Kraken (implemented)
-- itBit (public endpoint communication done)
-- Coincheck (public endpoint communication done)
-- OKCoin (public endpoint communication done)
-- BTC-E (public endpoint communication done) [DEPRECATED]
-- Bittrex (public endpoint communication done)
-- C-CEX (public endpoint communication done)
-- Cryptoptia (public endpoint communication done)
-- Yunbi (public endpoint communication done)
-- Gemini (public endpoint communication done)
-- TheRockTradingLTD (public endpoint communication done)
-- Poloniex (public endpoint communication done)
 
 
--`planned`: I'm currently designing base code for this exchange
+# Supported Exchanges
 
--`public endpoint communication done`: You're able to communicate with 
-the API using its respective API class with `public` endpoints only.
-
--`implemented`: Authentication protocols have been implemented and the 
-class' `query()` method supports the `authenticate=True` flag
-
+| Exchange       | API  | Authentication | Public Endpoints | Private Endpoints | Formatters | Tests |
+|----------------|------|----------------|------------------|-------------------|------------|-------|
+| Bitfinex       | Done | Done           | Done             | Done              | WIP        | WIP   |
+| Bitstamp       | Done | Done           | Done             | Done              | WIP        | WIP   |
+| Bittrex        | Done | Done           | Done             | Done              | WIP        | WIP   |
+| C-Cex          | Done | WIP            | Done             | Planned           | Planned    | WIP   |
+| CoinCheck      | Done | Done           | Done             | Planned           | Planned    | WIP   |
+| Cryptopia      | Done | WIP            | Done             | Planned           | Planned    | WIP   |
+| GDAX           | Done | WIP            | Done             | Planned           | Planned    | WIP   |
+| Gemini         | Done | Planned        | Done             | Planned           | Planned    | WIP   |
+| itBit          | Done | Planned        | Done             | Planned           | Planned    | WIP   |
+| Kraken         | Done | Done           | Done             | Done              | WIP        | WIP   |
+| OkCoin         | Done | Planned        | Done             | Planned           | Planned    | WIP   |
+| Poloniex       | Done | Done           | Done             | Done              | WIP        | WIP   |
+| TheRockTrading | Done | Planned        | Done             | Planned           | Planned    | WIP   |
+| Yunbi          | Done | Planned        | Done             | Planned           | Planned    | WIP   |
 
 
 Additional clients will be added to (or removed from) this list, 
 according to their liquidity and market volume.
 
+<<<<<<< HEAD
 In their basic form, clients provide a simple connection to APIs - that 
 is, they handle authentication and request construction for you. The 
 classes in `bitex.interfaces` provide additional convenience methods.
@@ -63,18 +53,13 @@ For example, the return values for
 `bitex.interfaces.Kraken.ask(*args, **kwargs)` is a tuple of 
 `(<transaction_id>, <response object>)`.
 
+=======
+# bitex.api
+>>>>>>> da9d9e9fa1ffc4970f45ea994640f354a1b357e4
 
-# REST APIs
-
-The above listed exchanges all have an implemented API class in 
-`bitex.api`. These provide low-level access to the
-respective exchange's REST API, including handling of authentication. 
-They do not feature convenience methods, so you will
-have to write some things yourself. 
-
-At their core, they can be thought of as simple wrapper methods for 
-`requests.request()` methods which additionally handle the bits and pieces
-of the exchanges authentication protocol as well.
+Classes found in `bitex.api` provide wrapper classes and methods for Python's
+`requests` module, including handling of each exchange's specific authentication
+procedure.
 
 An example:
 ```
@@ -83,6 +68,7 @@ from bitex.api.rest import KrakenREST
 k = KrakenREST()
 k.load_key('kraken.key')  # loads key and secret from given file;
 
+<<<<<<< HEAD
 # Poll order book for XBTUSD
 q = {'pair': 'XXBTZUSD'}
 k.query('GET','public/Depth', params=q)  # without auth
@@ -91,6 +77,15 @@ k.query('GET','public/Depth', params=q)  # without auth
 q = {'pair': 'XXBTZUSD', 'type': 'sell', 'ordertype': 'limit',
      'price': 1000.0, 'volume': 0.01, 'validate': True}
 k.query('POST','private/AddOrder', authenticate=True, params=q) 
+=======
+# Query a public endpoint
+k.query('GET','public/Depth', params={'pair': 'XXBTZUSD'})
+
+# Query a private (authenticated endpoint)
+q = {'pair': 'XXBTZUSD', 'type': 'sell', 'ordertype': 'limit', 'price': 1000.0,
+     'volume': 0.01, 'validate': True}
+k.query('POST','private/AddOrder', authenticate=True, params=q)
+>>>>>>> da9d9e9fa1ffc4970f45ea994640f354a1b357e4
 
 ```
 
@@ -102,7 +97,8 @@ my_fancy_api_secret
 ```
 
 If the api requires further details, for example a userid or account 
-number (for example for bitstamp), this needs to go before the api key 
+number (for example for bitstamp), you should check the class method's doc string,
+although usually this information needs to go before the api key
 and secret, on a separate line each.
 ```
 >>>dummy2.key
@@ -112,11 +108,37 @@ my_api_key
 my_fancy_api_secret
 ```
 
+# bitex.interfaces
+
+Built on top of `bitex.api`'s api classes are the slightly more sophisticated
+exchange interfaces in `bitex.interfaces`. These have been written to unify
+the diverse REST APIs of the implemented exchanges, by providing the same methods and method parameters
+across all of them.
+
+For example, querying tickers looks the same on all exchanges, as well as
+placing an order, using `bitex.interface`:
+
+```
+from bitex import Kraken, Bitstamp, Gemini
+k = Kraken(key_file='krkn.key')
+b = Bitstamp(key_file='btst.key')
+g = Gemini(key_file='gmni.key')
+
+k.ticker('XBTUSD')
+b.ticker('btceur')
+g.ticker('BTC-USD')
+
+k.ask(pair, price, size)
+b.ask(pair, price, size)
+g.ask(pair, price, size)
+```
+
 
 # Installation
 `python3 setup.py install`
 
 or via pip
+
 `pip install BitEx`
 
 

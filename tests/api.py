@@ -102,7 +102,7 @@ class CryptopiaAPITest(APITests):
                         "Error in Response: %s" % r.request.url)
 
     def test_private_query(self):
-        pass
+        self.fail("Test not implemented!")
 
 
 class CCEXAPITest(APITests):
@@ -120,7 +120,7 @@ class CCEXAPITest(APITests):
                         "Error in Response: %s" % r.request.url)
 
     def test_private_query(self):
-        pass
+        self.fail("Test not implemented!")
 
 
 class GeminiAPITest(APITests):
@@ -136,7 +136,7 @@ class GeminiAPITest(APITests):
         self.assertNotIn('message', r.json(), "Error in Response: %s" % r.request.url)
 
     def test_private_query(self):
-        pass
+        self.fail("Test not implemented!")
 
 
 class YunbiAPITest(APITests):
@@ -152,7 +152,7 @@ class YunbiAPITest(APITests):
         self.assertNotIn('message', r.json())
 
     def test_private_query(self):
-        pass
+        self.fail("Test not implemented!")
 
 
 class TheRockTradingAPITest(APITests):
@@ -168,5 +168,5 @@ class TheRockTradingAPITest(APITests):
         self.assertNotIn('errors', r.json())
 
     def test_private_query(self):
-        pass
+        self.fail("Test not implemented!")
 

@@ -41,7 +41,6 @@ class RESTAPI:
     def sign(self, url, endpoint, endpoint_path, method_verb, *args, **kwargs):
         """
         Dummy Signature creation method. Override this in child.
-        Returned dict must have keywords usable by requests.get or requests.post
         URL is required to be returned, as some Signatures use the url for
         sig generation, and api calls made must match the address exactly.
         """
@@ -52,7 +51,7 @@ class RESTAPI:
     def query(self, method_verb, endpoint, authenticate=False,
               *args, **kwargs):
         """
-        Queries exchange using given data. Defaults to unauthenticated GET query.
+        Queries exchange using given data. Defaults to unauthenticated query.
         """
         request_method = self.req_methods[method_verb]
 
