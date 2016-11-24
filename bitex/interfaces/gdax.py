@@ -1,5 +1,5 @@
 """
-http://docs.bitfinex.com/
+https://docs.gdax.com/
 """
 
 # Import Built-Ins
