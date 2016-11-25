@@ -23,17 +23,17 @@ interfaces, on top of which the second part - `bitex.interfaces` - builds upon.
 | Bitfinex       | Done | Done           | Done             | Done              | WIP        | WIP   |
 | Bitstamp       | Done | Done           | Done             | Done              | WIP        | WIP   |
 | Bittrex        | Done | Done           | Done             | Done              | WIP        | WIP   |
-| C-Cex          | Done | WIP            | Done             | Done              | Planned    | WIP   |
+| C-Cex          | Done | BETA           | Done             | Done              | Planned    | WIP   |
 | CoinCheck      | Done | Done           | Done             | Done              | Planned    | WIP   |
-| Cryptopia      | Done | WIP            | Done             | Done              | Planned    | WIP   |
-| GDAX           | Done | WIP            | Done             | Planned           | Planned    | WIP   |
-| Gemini         | Done | Planned        | Done             | Planned           | Planned    | WIP   |
-| itBit          | Done | Planned        | Done             | Planned           | Planned    | WIP   |
+| Cryptopia      | Done | BETA           | Done             | Done              | Planned    | WIP   |
+| GDAX           | Done | BETA           | Done             | Done              | Planned    | WIP   |
+| Gemini         | Done | BETA           | Done             | Planned           | Planned    | WIP   |
+| itBit          | Done | BETA           | Done             | Planned           | Planned    | WIP   |
 | Kraken         | Done | Done           | Done             | Done              | WIP        | WIP   |
-| OkCoin         | Done | Planned        | Done             | Planned           | Planned    | WIP   |
+| OkCoin         | Done | BETA           | Done             | Planned           | Planned    | WIP   |
 | Poloniex       | Done | Done           | Done             | Done              | WIP        | WIP   |
-| TheRockTrading | Done | Planned        | Done             | Planned           | Planned    | WIP   |
-| Yunbi          | Done | Planned        | Done             | Planned           | Planned    | WIP   |
+| TheRockTrading | Done | BETA           | Done             | Planned           | Planned    | WIP   |
+| Yunbi          | Done | BETA           | Done             | Planned           | Planned    | WIP   |
 
 
 Additional clients will be added to (or removed from) this list, 

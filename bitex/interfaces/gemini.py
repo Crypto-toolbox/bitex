@@ -26,8 +26,8 @@ class Gemini(GeminiREST):
     def public_query(self, endpoint, **kwargs):
         return self.query('GET', endpoint, **kwargs)
 
-    def private_query(self, endpoint, **kwargs):
-        return self.query('POST', endpoint, authenticate=True, **kwargs)
+    def private_query(self, endpoint, method_verb='POST', **kwargs):
+        return self.query(method_verb, endpoint, authenticate=True, **kwargs)
 
     """
     BitEx Standardized Methods
@@ -46,24 +46,32 @@ class Gemini(GeminiREST):
         return self.public_query('trades/%s' % pair, params=kwargs)
 
     @return_json(None)
-    def bid(self, pair, price, amount, **kwargs):
-        raise NotImplementedError()
+    def bid(self, pair, price, size, **kwargs):
+        q = {'symbol': pair, 'amount': size, 'price': price, 'side': 'buy'}
+        q.update(kwargs)
+        return self.private_query('order/new', params=q)
 
     @return_json(None)
-    def ask(self, pair, price, amount, **kwargs):
-        raise NotImplementedError()
+    def ask(self, pair, price, size, **kwargs):
+        q = {'symbol': pair, 'amount': size, 'price': price, 'side': 'sell'}
+        q.update(kwargs)
+        return self.private_query('order/new', params=q)
 
     @return_json(None)
-    def cancel_order(self, order_id, all=False, **kwargs):
-        raise NotImplementedError()
+    def cancel_order(self, order_id, **kwargs):
+        q = {'order_id': order_id}
+        q.update(kwargs)
+        return self.private_query('order/cancel', params=q)
 
     @return_json(None)
     def order(self, order_id, **kwargs):
-        raise NotImplementedError()
+        q = {'order_id': order_id}
+        q.update(kwargs)
+        return self.private_query('order/status', params=q)
 
     @return_json(None)
     def balance(self, **kwargs):
-        raise NotImplementedError()
+        return self.private_query('balances', params=kwargs)
 
     @return_json(None)
     def withdraw(self, _type, source_wallet, amount, tar_addr, **kwargs):
