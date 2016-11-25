@@ -24,10 +24,10 @@ class CCEX(CCEXRest):
         print(self.uri)
 
     def public_query(self, endpoint, **kwargs):
-        return self.query('GET', endpoint, **kwargs)
+        return self.query('GET', 'api_pub.html?a=' + endpoint, **kwargs)
 
     def private_query(self, endpoint, **kwargs):
-        return self.query('POST', endpoint, authenticate=True, **kwargs)
+        return self.query('POST', 'api.html?a=' + endpoint, authenticate=True, **kwargs)
 
     """
     BitEx Standardized Methods
@@ -41,34 +41,42 @@ class CCEX(CCEXRest):
     def order_book(self, pair, type='both', **kwargs):
         q = {'market': pair, 'type': type}
         q.update(kwargs)
-        return self.public_query('api_pub.html?a=getorderbook', params=q)
+        return self.public_query('getorderbook', params=q)
 
     @return_json(None)
     def trades(self, pair, **kwargs):
         q = {'market': pair}
         q.update(kwargs)
-        return self.public_query('api_pub.html?a=getmarkethistory',
+        return self.public_query('getmarkethistory',
                                  params=q)
 
     @return_json(None)
-    def bid(self, pair, price, amount, **kwargs):
-        raise NotImplementedError()
+    def bid(self, pair, price, size, **kwargs):
+        q = {'market': pair, 'rate': price, 'quantity': size}
+        q.update(kwargs)
+        return self.private_query('buylimit', params=q)
 
     @return_json(None)
-    def ask(self, pair, price, amount, **kwargs):
-        raise NotImplementedError()
+    def ask(self, pair, price, size, **kwargs):
+        q = {'market': pair, 'rate': price, 'quantity': size}
+        q.update(kwargs)
+        return self.private_query('buylimit', params=q)
 
     @return_json(None)
-    def cancel_order(self, order_id, all=False, **kwargs):
-        raise NotImplementedError()
+    def cancel_order(self, order_id, **kwargs):
+        q = {'uuid': order_id}
+        q.update(kwargs)
+        return self.private_query('cancel', params=q)
 
     @return_json(None)
     def order(self, order_id, **kwargs):
-        raise NotImplementedError()
+        q = {'uuid': order_id}
+        q.update(kwargs)
+        return self.private_query('getorder', params=q)
 
     @return_json(None)
     def balance(self, **kwargs):
-        raise NotImplementedError()
+        return self.private_query('getbalance', params=kwargs)
 
     @return_json(None)
     def withdraw(self, _type, source_wallet, amount, tar_addr, **kwargs):
