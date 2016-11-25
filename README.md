@@ -30,10 +30,10 @@ interfaces, on top of which the second part - `bitex.interfaces` - builds upon.
 | Gemini         | Done | BETA           | Done             | Done              | Planned    | WIP   |
 | itBit          | Done | BETA           | Done             | Done              | Planned    | WIP   |
 | Kraken         | Done | Done           | Done             | Done              | WIP        | WIP   |
-| OkCoin         | Done | BETA           | Done             | Planned           | Planned    | WIP   |
+| OkCoin         | Done | BETA           | Done             | Done              | Planned    | WIP   |
 | Poloniex       | Done | Done           | Done             | Done              | WIP        | WIP   |
-| TheRockTrading | Done | BETA           | Done             | Planned           | Planned    | WIP   |
-| Yunbi          | Done | BETA           | Done             | Planned           | Planned    | WIP   |
+| TheRockTrading | Done | BETA           | Done             | Done              | Planned    | WIP   |
+| Yunbi          | Done | BETA           | Done             | Done              | Planned    | WIP   |
 
 
 Additional clients will be added to (or removed from) this list, 
