@@ -39,21 +39,6 @@ interfaces, on top of which the second part - `bitex.interfaces` - builds upon.
 Additional clients will be added to (or removed from) this list, 
 according to their liquidity and market volume.
 
-<<<<<<< HEAD
-In their basic form, clients provide a simple connection to APIs - that 
-is, they handle authentication and request construction for you. The 
-classes in `bitex.interfaces` provide additional convenience methods.
-They offer unified methods across all exchanges (i.e. order_book(), 
-ticker(), trades(), among others), and parse returned data sensibly.
-
-All methods return a tuple of parsed data and the original 
-response object.
-
-For example, the return values for 
-`bitex.interfaces.Kraken.ask(*args, **kwargs)` is a tuple of 
-`(<transaction_id>, <response object>)`.
-
-=======
 # bitex.api
 >>>>>>> da9d9e9fa1ffc4970f45ea994640f354a1b357e4
 
@@ -68,16 +53,6 @@ from bitex.api.rest import KrakenREST
 k = KrakenREST()
 k.load_key('kraken.key')  # loads key and secret from given file;
 
-<<<<<<< HEAD
-# Poll order book for XBTUSD
-q = {'pair': 'XXBTZUSD'}
-k.query('GET','public/Depth', params=q)  # without auth
-
-# Place ask order (requires authentication
-q = {'pair': 'XXBTZUSD', 'type': 'sell', 'ordertype': 'limit',
-     'price': 1000.0, 'volume': 0.01, 'validate': True}
-k.query('POST','private/AddOrder', authenticate=True, params=q) 
-=======
 # Query a public endpoint
 k.query('GET','public/Depth', params={'pair': 'XXBTZUSD'})
 
