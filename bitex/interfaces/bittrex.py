@@ -76,19 +76,23 @@ class Bittrex(BittrexREST):
 
     @return_json(None)
     def order(self, order_id, **kwargs):
-        raise NotImplementedError()
+        q = {'uuid': order_id}
+        q.update(kwargs)
+        return self.private_query('account/getorder', params=q)
 
     @return_json(None)
     def balance(self):
         return self.private_query('account/getbalances')
 
     @return_json(None)
-    def withdraw(self, _type, source_wallet, amount, tar_addr, **kwargs):
-        raise NotImplementedError()
+    def withdraw(self, amount, tar_addr, **kwargs):
+        q = {'quantity': amount, 'address': tar_addr}
+        q.update(kwargs)
+        return self.private_query('account/withdraw', params=q)
 
     @return_json(None)
     def deposit_address(self, **kwargs):
-        raise NotImplementedError()
+        return self.private_query('account/getdepositaddress')
 
 
     """
