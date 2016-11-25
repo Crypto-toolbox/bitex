@@ -7,6 +7,7 @@ General:
 - Pip install support
 - Semantic Versioning now employed.
 - Added folder for Sphinx doc files, for hosting at ReadTheDocs
+- Added folder for Unittests; so far only tests for API classes exist
 
 Exchanges:
 - Poloniex RESTAPI and interface
