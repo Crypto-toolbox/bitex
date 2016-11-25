@@ -40,7 +40,6 @@ Additional clients will be added to (or removed from) this list,
 according to their liquidity and market volume.
 
 # bitex.api
->>>>>>> da9d9e9fa1ffc4970f45ea994640f354a1b357e4
 
 Classes found in `bitex.api` provide wrapper classes and methods for Python's
 `requests` module, including handling of each exchange's specific authentication
@@ -60,7 +59,6 @@ k.query('GET','public/Depth', params={'pair': 'XXBTZUSD'})
 q = {'pair': 'XXBTZUSD', 'type': 'sell', 'ordertype': 'limit', 'price': 1000.0,
      'volume': 0.01, 'validate': True}
 k.query('POST','private/AddOrder', authenticate=True, params=q)
->>>>>>> da9d9e9fa1ffc4970f45ea994640f354a1b357e4
 
 ```
 
