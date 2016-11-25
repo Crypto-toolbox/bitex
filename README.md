@@ -23,8 +23,8 @@ interfaces, on top of which the second part - `bitex.interfaces` - builds upon.
 | Bitfinex       | Done | Done           | Done             | Done              | WIP        | WIP   |
 | Bitstamp       | Done | Done           | Done             | Done              | WIP        | WIP   |
 | Bittrex        | Done | Done           | Done             | Done              | WIP        | WIP   |
-| C-Cex          | Done | WIP            | Done             | Planned           | Planned    | WIP   |
-| CoinCheck      | Done | Done           | Done             | Planned           | Planned    | WIP   |
+| C-Cex          | Done | WIP            | Done             | Done              | Planned    | WIP   |
+| CoinCheck      | Done | Done           | Done             | Done              | Planned    | WIP   |
 | Cryptopia      | Done | WIP            | Done             | Planned           | Planned    | WIP   |
 | GDAX           | Done | WIP            | Done             | Planned           | Planned    | WIP   |
 | Gemini         | Done | Planned        | Done             | Planned           | Planned    | WIP   |

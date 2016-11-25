@@ -34,37 +34,43 @@ class Cryptopia(CryptopiaREST):
     """
 
     @return_json(None)
-    def ticker(self, pair, **kwargs):
+    def ticker(self, pair, *args, **kwargs):
         endpoint = 'GetMarket/%s' % pair
-        for k in kwargs:
-            endpoint += '/' + kwargs[k]
+        for k in args:
+            endpoint += '/' + k
         return self.public_query(endpoint, params=kwargs)
 
     @return_json(None)
-    def order_book(self, pair, **kwargs):
+    def order_book(self, pair, *args, **kwargs):
         endpoint = 'GetMarketOrders/%s' % pair
-        for k in kwargs:
-            endpoint += '/' + kwargs[k]
+        for k in args:
+            endpoint += '/' + k
         return self.public_query(endpoint, params=kwargs)
 
     @return_json(None)
-    def trades(self, pair, **kwargs):
+    def trades(self, pair, *args, **kwargs):
         endpoint = 'GetMarkets/%s' % pair
-        for k in kwargs:
-            endpoint += '/' + kwargs[k]
+        for k in args:
+            endpoint += '/' + k
         return self.public_query(endpoint, params=kwargs)
 
     @return_json(None)
-    def bid(self, pair, price, amount, **kwargs):
-        raise NotImplementedError()
+    def bid(self, pair, price, size, **kwargs):
+        q = {'Market': pair, 'Type': 'Buy', 'Rate': price, 'Amount': size}
+        q.update(kwargs)
+        return self.private_query('SubmitTrade', params=q)
 
     @return_json(None)
     def ask(self, pair, price, amount, **kwargs):
-        raise NotImplementedError()
+        q = {'Market': pair, 'Type': 'Sell', 'Rate': price, 'Amount': size}
+        q.update(kwargs)
+        return self.private_query('SubmitTrade', params=q)
 
     @return_json(None)
-    def cancel_order(self, order_id, all=False, **kwargs):
-        raise NotImplementedError()
+    def cancel_order(self, order_id, **kwargs):
+        q = {'OrderId': order_id}
+        q.update(kwargs)
+        return self.private_query('CancelTrade', params=q)
 
     @return_json(None)
     def order(self, order_id, **kwargs):
@@ -72,15 +78,17 @@ class Cryptopia(CryptopiaREST):
 
     @return_json(None)
     def balance(self, **kwargs):
-        raise NotImplementedError()
+        return self.private_query('GetBalance', params=kwargs)
 
     @return_json(None)
-    def withdraw(self, _type, source_wallet, amount, tar_addr, **kwargs):
-        raise NotImplementedError()
+    def withdraw(self, amount, tar_addr, **kwargs):
+        q = {'Amount': amount, 'Address': tar_addr}
+        q.update(kwargs)
+        return self.private_query('SubmitWithdraw', params=q)
 
     @return_json(None)
     def deposit_address(self, **kwargs):
-        raise NotImplementedError()
+        return self.private_query('GetDepositAddress', params=kwargs)
 
     """
     Exchange Specific Methods
