@@ -27,8 +27,8 @@ interfaces, on top of which the second part - `bitex.interfaces` - builds upon.
 | CoinCheck      | Done | Done           | Done             | Done              | Planned    | WIP   |
 | Cryptopia      | Done | BETA           | Done             | Done              | Planned    | WIP   |
 | GDAX           | Done | BETA           | Done             | Done              | Planned    | WIP   |
-| Gemini         | Done | BETA           | Done             | Planned           | Planned    | WIP   |
-| itBit          | Done | BETA           | Done             | Planned           | Planned    | WIP   |
+| Gemini         | Done | BETA           | Done             | Done              | Planned    | WIP   |
+| itBit          | Done | BETA           | Done             | Done              | Planned    | WIP   |
 | Kraken         | Done | Done           | Done             | Done              | WIP        | WIP   |
 | OkCoin         | Done | BETA           | Done             | Planned           | Planned    | WIP   |
 | Poloniex       | Done | Done           | Done             | Done              | WIP        | WIP   |
