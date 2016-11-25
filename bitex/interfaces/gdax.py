@@ -24,8 +24,8 @@ class GDAX(GDAXRest):
     def public_query(self, endpoint, **kwargs):
         return self.query('GET', endpoint, **kwargs)
 
-    def private_query(self, endpoint, **kwargs):
-        return self.query('POST', endpoint, authenticate=True, **kwargs)
+    def private_query(self, endpoint, method_verb='POST', **kwargs):
+        return self.query(method_verb, endpoint, authenticate=True, **kwargs)
 
     """
     BitEx Standardized Methods
@@ -44,24 +44,37 @@ class GDAX(GDAXRest):
         return self.public_query('products/%s/trades' % pair, params=kwargs)
 
     @return_json(None)
-    def bid(self, pair, price, amount, **kwargs):
-        raise NotImplementedError()
+    def bid(self, pair, price, size, **kwargs):
+        q = {'side': 'buy', 'type': 'market', 'product_id': pair,
+             'price': price, 'size': size}
+        q.update(kwargs)
+        return self.private_query('orders', params=q)
 
     @return_json(None)
     def ask(self, pair, price, amount, **kwargs):
-        raise NotImplementedError()
+        q = {'side': 'sell', 'type': 'market', 'product_id': pair,
+             'price': price, 'size': size}
+        q.update(kwargs)
+        return self.private_query('orders', params=q)
 
     @return_json(None)
     def cancel_order(self, order_id, all=False, **kwargs):
-        raise NotImplementedError()
+
+        if not all:
+            return self.private_query('orders/%s' % order_id,
+                                      method_verb='DELETE', params=kwargs)
+        else:
+            return self.private_query('orders', method_verb='DELETE',
+                                      params=kwargs)
 
     @return_json(None)
     def order(self, order_id, **kwargs):
-        raise NotImplementedError()
+        return self.private_query('orders/%s' % order_id, method_verb='GET',
+                                  params=kwargs)
 
     @return_json(None)
     def balance(self, **kwargs):
-        raise NotImplementedError()
+        return self.private_query('accounts', method_verb='GET', params=kwargs)
 
     @return_json(None)
     def withdraw(self, _type, source_wallet, amount, tar_addr, **kwargs):

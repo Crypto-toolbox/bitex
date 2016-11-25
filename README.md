@@ -25,7 +25,7 @@ interfaces, on top of which the second part - `bitex.interfaces` - builds upon.
 | Bittrex        | Done | Done           | Done             | Done              | WIP        | WIP   |
 | C-Cex          | Done | WIP            | Done             | Done              | Planned    | WIP   |
 | CoinCheck      | Done | Done           | Done             | Done              | Planned    | WIP   |
-| Cryptopia      | Done | WIP            | Done             | Planned           | Planned    | WIP   |
+| Cryptopia      | Done | WIP            | Done             | Done              | Planned    | WIP   |
 | GDAX           | Done | WIP            | Done             | Planned           | Planned    | WIP   |
 | Gemini         | Done | Planned        | Done             | Planned           | Planned    | WIP   |
 | itBit          | Done | Planned        | Done             | Planned           | Planned    | WIP   |
