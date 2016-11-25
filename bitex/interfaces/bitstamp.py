@@ -44,12 +44,16 @@ class Bitstamp(BitstampREST):
         return self.public_query('v2/transactions/%s' % pair, params=kwargs)
 
     @return_json(None)
-    def bid(self, pair, price, amount, **kwargs):
-        raise NotImplementedError()
+    def bid(self, pair, price, size, **kwargs):
+        q = {'amount': size, 'price': price}
+        q.update(kwargs)
+        return self.private_query('v2/buy/%s/' % pair, params=q)
 
     @return_json(None)
-    def ask(self, pair, price, amount, **kwargs):
-        raise NotImplementedError()
+    def ask(self, pair, price, size, **kwargs):
+        q = {'amount': size, 'price': price}
+        q.update(kwargs)
+        return self.private_query('v2/sell/%s/' % pair, params=q)
 
     @return_json(None)
     def cancel_order(self, order_id, all=False, **kwargs):
@@ -57,19 +61,23 @@ class Bitstamp(BitstampREST):
 
     @return_json(None)
     def order(self, order_id, **kwargs):
-        raise NotImplementedError()
+        q = {'id': order_id}
+        q.update(kwargs)
+        return self.private_query('order_status/', params=q)
 
     @return_json(None)
     def balance(self, **kwargs):
-        raise NotImplementedError()
+        return self.private_query('v2/balance/')
 
     @return_json(None)
-    def withdraw(self, _type, source_wallet, amount, tar_addr, **kwargs):
-        raise NotImplementedError()
+    def withdraw(self, amount, receiver, **kwargs):
+        q = {'amount': amount, 'address': receiver}
+        q.update(kwargs)
+        return self.private_query('bitcoin_withdrawal/', params=q)
 
     @return_json(None)
     def deposit_address(self, **kwargs):
-        raise NotImplementedError()
+        return self.private_query('bitcoin_deposit_address/')
 
     """
     Exchange Specific Methods
@@ -85,4 +93,3 @@ class Bitstamp(BitstampREST):
 
     def pairs(self):
         return ['btcusd', 'btceur', 'eurusd']
-
