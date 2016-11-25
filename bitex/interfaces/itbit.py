@@ -46,12 +46,20 @@ class ItBit(ItbitREST):
         return self.public_query('%s/trades' % pair, params=q)
 
     @return_json(None)
-    def bid(self, pair, price, amount, **kwargs):
-        raise NotImplementedError()
+    def bid(self, pair, price, size, **kwargs):
+        wallet_id = kwargs.pop('wallet')
+        q = {'side': 'buy', 'type': 'limit', 'amount': size, 'price': price,
+             'instrument': pair}
+        q.update(kwargs)
+        return self.private_query('wallets/%s/orders' % wallet_id, params=q)
 
     @return_json(None)
-    def ask(self, pair, price, amount, **kwargs):
-        raise NotImplementedError()
+    def ask(self, pair, price, size, **kwargs):
+        wallet_id = kwargs.pop('wallet')
+        q = {'side': 'buy', 'type': 'limit', 'amount': size, 'price': price,
+             'instrument': pair}
+        q.update(kwargs)
+        return self.private_query('wallets/%s/orders' % wallet_id, params=q)
 
     @return_json(None)
     def cancel_order(self, order_id, all=False, **kwargs):
@@ -59,19 +67,26 @@ class ItBit(ItbitREST):
 
     @return_json(None)
     def order(self, order_id, **kwargs):
-        raise NotImplementedError()
+        wallet_id = kwargs.pop('wallet_id')
+        return self.private_query('wallets/%s/orders/%s' % (wallet_id, order_id),
+                                  params=kwargs)
 
     @return_json(None)
     def balance(self, **kwargs):
         raise NotImplementedError()
 
     @return_json(None)
-    def withdraw(self, _type, source_wallet, amount, tar_addr, **kwargs):
-        raise NotImplementedError()
+    def withdraw(self, amount, tar_addr, **kwargs):
+        wallet_id = kwargs.pop('wallet_id')
+        q = {'address': tar_addr, 'amount': amount}
+        return self.private_query('wallets/%s/cryptocurrency_withdrawals' % wallet_id,
+                                  params=q)
 
     @return_json(None)
     def deposit_address(self, **kwargs):
-        raise NotImplementedError()
+        wallet_id = kwargs.pop('wallet_id')
+        return self.private_query('wallets/%s/cryptocurrency_deposits' % wallet_id,
+                                  params=kwargs)
 
     """
     Exchange Specific Methods
