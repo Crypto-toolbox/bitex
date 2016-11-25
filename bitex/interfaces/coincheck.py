@@ -44,16 +44,22 @@ class Coincheck(CoincheckREST):
         return self.public_query('order_books', params={'pair': pair})
 
     @return_json(None)
-    def bid(self, pair, price, amount, **kwargs):
-        raise NotImplementedError()
+    def bid(self, pair, price, size, **kwargs):
+        q = {'rate': price, 'amount': size, 'pair': pair,
+             'order_type': 'buy'}
+        q.update(kwargs)
+        return self.private_query('orders', params=q)
 
     @return_json(None)
-    def ask(self, pair, price, amount, **kwargs):
-        raise NotImplementedError()
+    def ask(self, pair, price, size, **kwargs):
+        q = {'rate': price, 'amount': size, 'pair': pair,
+             'order_type': 'sell'}
+        q.update(kwargs)
+        return self.private_query('orders', params=q)
 
     @return_json(None)
-    def cancel_order(self, order_id, all=False, **kwargs):
-        raise NotImplementedError()
+    def cancel_order(self, order_id, **kwargs):
+        return self.private_query('exchange/orders/%s' % order_id, params=kwargs)
 
     @return_json(None)
     def order(self, order_id, **kwargs):
@@ -61,11 +67,13 @@ class Coincheck(CoincheckREST):
 
     @return_json(None)
     def balance(self, **kwargs):
-        raise NotImplementedError()
+        return self.private_query('accounts/balance')
 
     @return_json(None)
-    def withdraw(self, _type, source_wallet, amount, tar_addr, **kwargs):
-        raise NotImplementedError()
+    def withdraw(self, amount, tar_addr, **kwargs):
+        q = {'address': tar_addr, 'amount': amount}
+        q.update(kwargs)
+        return self.private_query('send_money', params=q)
 
     @return_json(None)
     def deposit_address(self, **kwargs):
