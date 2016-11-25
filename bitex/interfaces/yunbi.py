@@ -25,8 +25,8 @@ class Yunbi(YunbiREST):
     def public_query(self, endpoint, **kwargs):
         return self.query('GET', endpoint + '.json', **kwargs)
 
-    def private_query(self, endpoint, **kwargs):
-        return self.query('POST', endpoint, authenticate=True, **kwargs)
+    def private_query(self, endpoint, method_verb='POST', **kwargs):
+        return self.query(method_verb, endpoint, authenticate=True, **kwargs)
 
     """
     BitEx Standardized Methods
@@ -52,24 +52,32 @@ class Yunbi(YunbiREST):
         return self.public_query('trades', params=q)
 
     @return_json(None)
-    def bid(self, pair, price, amount, **kwargs):
-        raise NotImplementedError()
+    def bid(self, pair, price, size, **kwargs):
+        q = {'market': pair, 'side': 'buy', 'volume': size, 'price': price}
+        q.update(kwargs)
+        return self.private_query('orders.json', params=q)
 
     @return_json(None)
-    def ask(self, pair, price, amount, **kwargs):
-        raise NotImplementedError()
+    def ask(self, pair, price, size, **kwargs):
+        q = {'market': pair, 'side': 'sell', 'volume': size, 'price': price}
+        q.update(kwargs)
+        return self.private_query('orders.json', params=q)
 
     @return_json(None)
-    def cancel_order(self, order_id, all=False, **kwargs):
-        raise NotImplementedError()
+    def cancel_order(self, order_id, **kwargs):
+        q = {'id': order_id}
+        q.update(kwargs)
+        return self.private_query('delete.json', params=q)
 
     @return_json(None)
     def order(self, order_id, **kwargs):
-        raise NotImplementedError()
+        q = {'id': order_id}
+        q.update(kwargs)
+        return self.private_query('delete.json', method_verb='GET', params=q)
 
     @return_json(None)
     def balance(self, **kwargs):
-        raise NotImplementedError()
+        return self.private_query('members/me.json', params=kwargs)
 
     @return_json(None)
     def withdraw(self, _type, source_wallet, amount, tar_addr, **kwargs):
@@ -77,7 +85,8 @@ class Yunbi(YunbiREST):
 
     @return_json(None)
     def deposit_address(self, **kwargs):
-        raise NotImplementedError()
+        return self.private_query('deposit_addres.json', method_verb='GET',
+                                  params=kwargs)
 
     """
     Exchange Specific Methods
