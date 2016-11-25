@@ -49,7 +49,8 @@ class RockTradingLtd(RockTradingREST):
     def _place_order(self, side, pair, price, size, **kwargs):
         q = {'fund_id': pair, 'side': side, 'amount': size, 'price': price}
         q.update(kwargs)
-        return self.private_query('funds/%s/orders' % pair, method='POST', params=q)
+        return self.private_query('funds/%s/orders' % pair, method='POST',
+                                  params=q)
 
     @return_json(None)
     def bid(self, pair, price, size, **kwargs):
@@ -66,15 +67,23 @@ class RockTradingLtd(RockTradingREST):
 
     @return_json(None)
     def order(self, order_id, **kwargs):
-        raise NotImplementedError()
+        try:
+            fund_id = kwargs.pop('fund_id')
+        except KeyError:
+            raise
+
+        return self.private_query('funds/%s/orders/%s' % (fund_id, order_id),
+                                  params=kwargs)
 
     @return_json(None)
     def balance(self, **kwargs):
         return self.private_query('balances', params=kwargs)
 
     @return_json(None)
-    def withdraw(self, _type, source_wallet, amount, tar_addr, **kwargs):
-        raise NotImplementedError()
+    def withdraw(self, amount, tar_addr, **kwargs):
+        q = {'destination_address': tar_addr, 'amount': amount}
+        q.update(kwargs)
+        return self.private_query('atms/withdraw', params=q)
 
     @return_json(None)
     def deposit_address(self, **kwargs):
