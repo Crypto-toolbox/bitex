@@ -96,8 +96,3 @@ class Gemini(GeminiREST):
     @return_json(None)
     def auction_history(self, pair, **kwargs):
         return self.public_query('auction/%s/history' % pair, params=kwargs)
-
-
-
-
-

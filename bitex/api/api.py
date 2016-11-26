@@ -73,10 +73,3 @@ class RESTAPI:
                   (r.request.method, r.request.url, r.request.headers,
                    r.request.body, r.status_code))
         return r
-
-
-
-
-
-
-

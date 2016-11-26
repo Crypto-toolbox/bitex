@@ -108,5 +108,3 @@ class Cryptopia(CryptopiaREST):
         for k in kwargs:
             endpoint += '/' + kwargs[k]
         return self.public_query(endpoint, params=kwargs)
-
-

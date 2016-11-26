@@ -113,9 +113,3 @@ class Bittrex(BittrexREST):
             return self.public_query('getmarketsummary', params={'market': pair})
         else:
             return self.public_query('getmarketsummaries')
-
-
-
-
-
-

@@ -107,5 +107,3 @@ class GDAX(GDAXRest):
     @return_json(None)
     def stats(self, pair, **kwargs):
         return self.public_query('products/%s/stats' % pair, params=kwargs)
-
-

@@ -120,16 +120,11 @@ class Poloniex(PoloniexREST):
         q.update(kwargs)
         return self.private_query('tradingApi', params=q)
 
-
-
-
-
     @return_json(None)
     def update_order(self, txid, rate, **kwargs):
         q = {'command': 'moveOrder', 'rate': rate, 'orderNumber': txid}
         q.update(kwargs)
         return self.query('tradingApi', params=q)
-
 
     @return_json(None)
     def fees(self):

@@ -137,5 +137,3 @@ class Bitfinex(BitfinexREST):
         q = {'symbol': pair, 'timestamp': since}
         q.update(kwargs)
         return self.private_query('mytrades', params=q)
-
-

@@ -109,16 +109,12 @@ class CCEX(CCEXRest):
     def volume(self, pair):
         return self.public_query('volume_%s.json' % pair)
 
-
-
     @return_json(None)
     def statistics(self, all=True):
         if all:
             return self.public_query('api_pub.html?a=getmarketsummaries')
 
-
     @return_json(None)
     def balance_distribution(self, currency):
         return self.public_query('api_pub.html?a=getbalancedistribution',
                                  params={'currencyname': currency})
-
