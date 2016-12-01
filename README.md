@@ -1,7 +1,7 @@
 # BitEx
 BitEx is a collection of API Clients for Crypto Currency Exchanges.
 
-It comes with two main parts - `bitex.api` represents the base level API
+It comes with two parts - `bitex.api` represents the base level API
 interfaces, on top of which the second part - `bitex.interfaces` - builds upon.
 `bitex.api` classes can be used without making use of the interface classes.
 
@@ -55,7 +55,7 @@ k.load_key('kraken.key')  # loads key and secret from given file;
 # Query a public endpoint
 k.query('GET','public/Depth', params={'pair': 'XXBTZUSD'})
 
-# Query a private (authenticated endpoint)
+# Query a private (authenticated) endpoint
 q = {'pair': 'XXBTZUSD', 'type': 'sell', 'ordertype': 'limit', 'price': 1000.0,
      'volume': 0.01, 'validate': True}
 k.query('POST','private/AddOrder', authenticate=True, params=q)
@@ -108,17 +108,12 @@ g.ask(pair, price, size)
 
 
 # Installation
+
+Manually, using the supplied `setup.py` file:
+
 `python3 setup.py install`
 
 or via pip
 
 `pip install BitEx`
-
-
-
-
-
-
-
-
 
