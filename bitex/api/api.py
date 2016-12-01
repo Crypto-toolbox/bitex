@@ -43,6 +43,11 @@ class RESTAPI:
         Dummy Signature creation method. Override this in child.
         URL is required to be returned, as some Signatures use the url for
         sig generation, and api calls made must match the address exactly.
+        param url: self.uri + self.apiversion + endpoint (i.e https://api.kraken/0/Depth)
+        param endpoint: api endpoint to call (i.e. 'Depth')
+        param endpoint_path: self.apiversion + endpoint (i.e. '0/Depth')
+        param method_verb: 
+        param return:
         """
         url = self.uri
 
