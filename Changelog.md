@@ -15,7 +15,7 @@ Exchanges:
 - Interfaces feature standardized methods with identical method headers
 
 Formatters:
-- The submodule `bitex.formatters` has been added, which provides formatter functions for exhange interfaces.
+- The submodule `bitex.formatters` has been added, which provides formatter functions for exchange interfaces.
 
 ### Changed
 General:
