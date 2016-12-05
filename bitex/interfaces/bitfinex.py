@@ -92,7 +92,7 @@ class Bitfinex(BitfinexREST):
 
     @return_json(None)
     def deposit_address(self, **kwargs):
-        q = {'method': currency, 'wallet_name': target_wallet}
+        q = {}
         q.update(kwargs)
         return self.private_query('deposit/new', params=kwargs)
 
