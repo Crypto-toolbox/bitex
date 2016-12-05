@@ -83,8 +83,9 @@ class Bitfinex(BitfinexREST):
         return self.private_query('balances', params=kwargs)
 
     @return_json(None)
-    def withdraw(self, _type, source_wallet, amount, tar_addr, **kwargs):
-        q = {'withdraw_type': _type, 'walletselected': source_wallet,
+    def withdraw(self, amount, tar_addr, **kwargs):
+        q = {'withdraw_type': kwargs.pop('withdraw_type'),
+             'walletselected': kwargs.pop('walletselected'),
              'amount': amount, 'address': tar_addr}
         q.update(kwargs)
         return self.private_query('withdraw', params=q)
