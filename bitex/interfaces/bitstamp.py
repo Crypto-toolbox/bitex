@@ -57,7 +57,7 @@ class Bitstamp(BitstampREST):
 
     @return_json(None)
     def cancel_order(self, order_id, all=False, **kwargs):
-        raise NotImplementedError()
+        return self.private_query('cancel_order/', params={'id': order_id})
 
     @return_json(None)
     def order(self, order_id, **kwargs):
