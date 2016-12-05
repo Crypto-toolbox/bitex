@@ -91,7 +91,7 @@ class Kraken(KrakenREST):
         return self.private_query('Balance')
 
     @return_json(None)
-    def withdraw(self, _type, source_wallet, amount, tar_addr, **kwargs):
+    def withdraw(self, amount, tar_addr, **kwargs):
         raise NotImplementedError()
 
     @return_json(None)

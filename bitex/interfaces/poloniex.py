@@ -76,8 +76,8 @@ class Poloniex(PoloniexREST):
             return self.private_query('tradingApi', params=kwargs)
 
     @return_json(None)
-    def withdraw(self, currency, amount, address, **kwargs):
-        q = {'currency': currency, 'amount': amount, 'address': address}
+    def withdraw(self, amount, tar_addr, **kwargs):
+        q = {'currency': kwargs.pop('currency'), 'amount': amount, 'address': tar_addr}
         q.update(kwargs)
         return self.private_query('tradingApi', params=q)
 

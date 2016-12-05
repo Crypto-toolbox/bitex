@@ -80,7 +80,7 @@ class Yunbi(YunbiREST):
         return self.private_query('members/me.json', params=kwargs)
 
     @return_json(None)
-    def withdraw(self, _type, source_wallet, amount, tar_addr, **kwargs):
+    def withdraw(self, amount, tar_addr, **kwargs):
         raise NotImplementedError()
 
     @return_json(None)
