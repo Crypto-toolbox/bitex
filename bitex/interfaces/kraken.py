@@ -10,7 +10,7 @@ import logging
 # Import Homebrew
 from bitex.api.rest import KrakenREST
 from bitex.utils import return_json
-from bitex.formatters.kraken import cancel, order, order_book
+from bitex.formatters.kraken import KrknFormatter as fmt
 # Init Logging Facilities
 log = logging.getLogger(__name__)
 
@@ -38,17 +38,17 @@ class Kraken(KrakenREST):
     BitEx Standardized Methods
     """
 
-    @return_json(None)
+    @return_json(fmt.ticker)
     def ticker(self, *pairs):
         q = self.make_params(*pairs)
         return self.public_query('Ticker', params=q)
 
-    @return_json(order_book)
+    @return_json(fmt.order_book)
     def order_book(self, pair, **kwargs):
         q = self.make_params(pair, **kwargs)
         return self.public_query('Depth', params=q)
 
-    @return_json(None)
+    @return_json(fmt.trades)
     def trades(self, pair, **kwargs):
         q = self.make_params(pair, **kwargs)
         return self.public_query('Trades', params=q)
@@ -60,22 +60,22 @@ class Kraken(KrakenREST):
         q.update(kwargs)
         return self.private_query('AddOrder', params=q)
 
-    @return_json(order)
+    @return_json(fmt.order)
     def bid(self, pair, price, amount, **kwargs):
         return self._add_order(pair, 'buy', price, amount, **kwargs)
 
-    @return_json(order)
+    @return_json(fmt.order)
     def ask(self, pair, price, amount, **kwargs):
         return self._add_order(pair, 'sell', price, amount, **kwargs)
 
-    @return_json(cancel)
+    @return_json(fmt.cancel)
     def cancel_order(self, order_id, **kwargs):
         q = {'txid': order_id}
         q.update(kwargs)
         return self.private_query('CancelOrder', params=q)
 
-    @return_json(None)
-    def order_info(self, *txids, **kwargs):
+    @return_json(fmt.order_status)
+    def order(self, *txids, **kwargs):
         if len(txids) > 1:
             q = {'txid': txids}
         elif txids:
@@ -86,15 +86,15 @@ class Kraken(KrakenREST):
         q.update(kwargs)
         return self.private_query('QueryOrders', params=q)
 
-    @return_json(None)
+    @return_json(fmt.balance)
     def balance(self, **kwargs):
         return self.private_query('Balance')
 
-    @return_json(None)
+    @return_json(fmt.withdraw)
     def withdraw(self, amount, tar_addr, **kwargs):
         raise NotImplementedError()
 
-    @return_json(None)
+    @return_json(fmt.deposit)
     def deposit_address(self, **kwargs):
         raise NotImplementedError()
 

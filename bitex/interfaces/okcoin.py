@@ -10,6 +10,7 @@ import logging
 # Import Homebrew
 from bitex.api.rest import OKCoinREST
 from bitex.utils import return_json
+from bitex.formatters.okcoin import OkcnFormatter as fmt
 
 # Init Logging Facilities
 log = logging.getLogger(__name__)
@@ -30,53 +31,53 @@ class OKCoin(OKCoinREST):
     """
     BitEx Standardized Methods
     """
-    @return_json(None)
+    @return_json(fmt.ticker)
     def ticker(self, pair):
         return self.public_query('ticker.do', params={'pair': pair})
 
-    @return_json(None)
+    @return_json(fmt.order_book)
     def order_book(self, pair):
         return self.public_query('depth.do', params={'pair': pair})
 
-    @return_json(None)
+    @return_json(fmt.trades)
     def trades(self, pair):
         return self.public_query('trades.do', params={'pair': pair})
 
-    @return_json(None)
+    @return_json(fmt.order)
     def bid(self, pair, price, amount, **kwargs):
         q = {'symbol': pair, 'price': price, 'amount': amount, 'type': 'buy'}
         q.update(kwargs)
         return self.private_query('trade.do', params=q)
 
-    @return_json(None)
+    @return_json(fmt.order)
     def ask(self, pair, price, amount, **kwargs):
         q = {'symbol': pair, 'price': price, 'amount': amount, 'type': 'sell'}
         q.update(kwargs)
         return self.private_query('trade.do', params=q)
 
-    @return_json(None)
+    @return_json(fmt.cancel)
     def cancel_order(self, order_id, **kwargs):
         q = {'order_id': order_id}
         q.update(kwargs)
         return self.private_query('cancel_order.do', params=q)
 
-    @return_json(None)
+    @return_json(fmt.order_status)
     def order(self, order_id, **kwargs):
         q = {'order_id': order_id}
         q.update(kwargs)
         return self.private_query('orders.info', params=q)
 
-    @return_json(None)
+    @return_json(fmt.balance)
     def balance(self, **kwargs):
         return self.private_query('userinfo.do', params=kwargs)
 
-    @return_json(None)
+    @return_json(fmt.withdraw)
     def withdraw(self, amount, tar_addr, **kwargs):
         q = {'withdraw_address': tar_addr, 'withdraw_amount': amount}
         q.update(kwargs)
         return self.private_query('withdraw.do', params=q)
 
-    @return_json(None)
+    @return_json(fmt.deposit)
     def deposit_address(self, **kwargs):
         raise NotImplementedError()
 

@@ -10,6 +10,7 @@ import logging
 # Import Homebrew
 from bitex.api.rest import GeminiREST
 from bitex.utils import return_json
+from bitex.formatters.gemini import GmniFormatter as fmt
 
 # Init Logging Facilities
 logging.basicConfig(level=logging.DEBUG)
@@ -33,51 +34,51 @@ class Gemini(GeminiREST):
     BitEx Standardized Methods
     """
 
-    @return_json(None)
+    @return_json(fmt.ticker)
     def ticker(self, pair):
         return self.public_query('pubticker/%s' % pair)
 
-    @return_json(None)
+    @return_json(fmt.order_book)
     def order_book(self, pair, **kwargs):
         return self.public_query('book/%s' % pair, params=kwargs)
 
-    @return_json(None)
+    @return_json(fmt.trades)
     def trades(self, pair, **kwargs):
         return self.public_query('trades/%s' % pair, params=kwargs)
 
-    @return_json(None)
+    @return_json(fmt.order)
     def bid(self, pair, price, size, **kwargs):
         q = {'symbol': pair, 'amount': size, 'price': price, 'side': 'buy'}
         q.update(kwargs)
         return self.private_query('order/new', params=q)
 
-    @return_json(None)
+    @return_json(fmt.order)
     def ask(self, pair, price, size, **kwargs):
         q = {'symbol': pair, 'amount': size, 'price': price, 'side': 'sell'}
         q.update(kwargs)
         return self.private_query('order/new', params=q)
 
-    @return_json(None)
+    @return_json(fmt.cancel)
     def cancel_order(self, order_id, **kwargs):
         q = {'order_id': order_id}
         q.update(kwargs)
         return self.private_query('order/cancel', params=q)
 
-    @return_json(None)
+    @return_json(fmt.order_status)
     def order(self, order_id, **kwargs):
         q = {'order_id': order_id}
         q.update(kwargs)
         return self.private_query('order/status', params=q)
 
-    @return_json(None)
+    @return_json(fmt.balance)
     def balance(self, **kwargs):
         return self.private_query('balances', params=kwargs)
 
-    @return_json(None)
+    @return_json(fmt.withdraw)
     def withdraw(self, amount, tar_addr, **kwargs):
         raise NotImplementedError()
 
-    @return_json(None)
+    @return_json(fmt.deposit)
     def deposit_address(self, **kwargs):
         raise NotImplementedError()
 

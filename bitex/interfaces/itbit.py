@@ -10,6 +10,7 @@ import logging
 # Import Homebrew
 from bitex.api.rest import ItbitREST
 from bitex.utils import return_json
+from bitex.formatters.itbit import itbtFormatter as fmt
 
 # Init Logging Facilities
 log = logging.getLogger(__name__)
@@ -31,21 +32,21 @@ class ItBit(ItbitREST):
     BitEx Standardized Methods
     """
 
-    @return_json(None)
+    @return_json(fmt.ticker)
     def ticker(self, pair):
         return self.public_query('%s/ticker' % pair, params={'pair': pair})
 
-    @return_json(None)
+    @return_json(fmt.order_book)
     def order_book(self, pair):
         return self.public_query('%s/order_book' % pair, params={'pair': pair})
 
-    @return_json(None)
+    @return_json(fmt.trades)
     def trades(self, pair, **kwargs):
         q = {'pair': pair}
         q.update(kwargs)
         return self.public_query('%s/trades' % pair, params=q)
 
-    @return_json(None)
+    @return_json(fmt.order)
     def bid(self, pair, price, size, **kwargs):
         wallet_id = kwargs.pop('wallet')
         q = {'side': 'buy', 'type': 'limit', 'amount': size, 'price': price,
@@ -53,7 +54,7 @@ class ItBit(ItbitREST):
         q.update(kwargs)
         return self.private_query('wallets/%s/orders' % wallet_id, params=q)
 
-    @return_json(None)
+    @return_json(fmt.order)
     def ask(self, pair, price, size, **kwargs):
         wallet_id = kwargs.pop('wallet')
         q = {'side': 'buy', 'type': 'limit', 'amount': size, 'price': price,
@@ -61,28 +62,28 @@ class ItBit(ItbitREST):
         q.update(kwargs)
         return self.private_query('wallets/%s/orders' % wallet_id, params=q)
 
-    @return_json(None)
+    @return_json(fmt.cancel)
     def cancel_order(self, order_id, all=False, **kwargs):
         raise NotImplementedError()
 
-    @return_json(None)
+    @return_json(fmt.order_status)
     def order(self, order_id, **kwargs):
         wallet_id = kwargs.pop('wallet_id')
         return self.private_query('wallets/%s/orders/%s' % (wallet_id, order_id),
                                   params=kwargs)
 
-    @return_json(None)
+    @return_json(fmt.balance)
     def balance(self, **kwargs):
         raise NotImplementedError()
 
-    @return_json(None)
+    @return_json(fmt.withdraw)
     def withdraw(self, amount, tar_addr, **kwargs):
         wallet_id = kwargs.pop('wallet_id')
         q = {'address': tar_addr, 'amount': amount}
         return self.private_query('wallets/%s/cryptocurrency_withdrawals' % wallet_id,
                                   params=q)
 
-    @return_json(None)
+    @return_json(fmt.deposit)
     def deposit_address(self, **kwargs):
         wallet_id = kwargs.pop('wallet_id')
         return self.private_query('wallets/%s/cryptocurrency_deposits' % wallet_id,

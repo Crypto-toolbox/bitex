@@ -10,6 +10,7 @@ import logging
 # Import Homebrew
 from bitex.api.rest import GDAXRest
 from bitex.utils import return_json
+from bitex.formatters.gdax import GdaxFormatter as fmt
 
 # Init Logging Facilities
 log = logging.getLogger(__name__)
@@ -31,33 +32,33 @@ class GDAX(GDAXRest):
     BitEx Standardized Methods
     """
 
-    @return_json(None)
+    @return_json(fmt.ticker)
     def ticker(self, pair, **kwargs):
         return self.public_query('products/%s/ticker' % pair, params=kwargs)
 
-    @return_json(None)
+    @return_json(fmt.order_book)
     def order_book(self, pair, **kwargs):
         return self.public_query('products/%s/book' % pair, params=kwargs)
 
-    @return_json(None)
+    @return_json(fmt.trades)
     def trades(self, pair, **kwargs):
         return self.public_query('products/%s/trades' % pair, params=kwargs)
 
-    @return_json(None)
+    @return_json(fmt.order)
     def bid(self, pair, price, size, **kwargs):
         q = {'side': 'buy', 'type': 'market', 'product_id': pair,
              'price': price, 'size': size}
         q.update(kwargs)
         return self.private_query('orders', params=q)
 
-    @return_json(None)
+    @return_json(fmt.order)
     def ask(self, pair, price, amount, **kwargs):
         q = {'side': 'sell', 'type': 'market', 'product_id': pair,
              'price': price, 'size': size}
         q.update(kwargs)
         return self.private_query('orders', params=q)
 
-    @return_json(None)
+    @return_json(fmt.cancel)
     def cancel_order(self, order_id, all=False, **kwargs):
 
         if not all:
@@ -67,20 +68,20 @@ class GDAX(GDAXRest):
             return self.private_query('orders', method_verb='DELETE',
                                       params=kwargs)
 
-    @return_json(None)
+    @return_json(fmt.order_status)
     def order(self, order_id, **kwargs):
         return self.private_query('orders/%s' % order_id, method_verb='GET',
                                   params=kwargs)
 
-    @return_json(None)
+    @return_json(fmt.balance)
     def balance(self, **kwargs):
         return self.private_query('accounts', method_verb='GET', params=kwargs)
 
-    @return_json(None)
+    @return_json(fmt.withdraw)
     def withdraw(self, amount, tar_addr, **kwargs):
         raise NotImplementedError()
 
-    @return_json(None)
+    @return_json(fmt.deposit)
     def deposit_address(self, **kwargs):
         raise NotImplementedError()
 
