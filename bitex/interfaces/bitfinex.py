@@ -10,7 +10,7 @@ import logging
 # Import Homebrew
 from bitex.api.rest import BitfinexREST
 from bitex.utils import return_json
-from bitex.formatters.bitfinex import trade, cancel, order_status
+from bitex.formatters.bitfinex import order, cancel, order_status
 # Init Logging Facilities
 log = logging.getLogger(__name__)
 
@@ -51,12 +51,12 @@ class Bitfinex(BitfinexREST):
         else:
             return self.private_query('order/new', params=q)
 
-    @return_json(trade)
+    @return_json(order)
     def bid(self, pair, price, amount, replace=False, **kwargs):
         return self._place_order(pair, amount, price, 'buy', replace=replace,
                                  **kwargs)
 
-    @return_json(trade)
+    @return_json(order)
     def ask(self, pair, price, amount, replace=False, **kwargs):
         return self._place_order(pair, str(amount), str(price), 'sell',
                                  replace=replace, **kwargs)

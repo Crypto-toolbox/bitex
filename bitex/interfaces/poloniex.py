@@ -10,7 +10,7 @@ import logging
 # Import Homebrew
 from bitex.api.rest import PoloniexREST
 from bitex.utils import return_json
-from bitex.formatters.poloniex import trade, cancel
+from bitex.formatters.poloniex import order, cancel
 # Init Logging Facilities
 log = logging.getLogger(__name__)
 
@@ -46,14 +46,14 @@ class Poloniex(PoloniexREST):
         kwargs['currencyPair'] = pair
         return self.public_query('returnTradeHistory', params=kwargs)
 
-    @return_json(trade)
+    @return_json(order)
     def bid(self, pair, rate, amount, **kwargs):
         q = {'command': 'buy', 'currencyPair': pair, 'amount': amount,
              'rate': rate}
         q.update(kwargs)
         return self.private_query('tradingApi', params=q)
 
-    @return_json(trade)
+    @return_json(order)
     def ask(self, pair, rate, amount, **kwargs):
         q = {'command': 'sell', 'currencyPair': pair, 'amount': amount,
              'rate':    rate}

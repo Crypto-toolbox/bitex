@@ -22,7 +22,7 @@ trades(data):
         [['1480941692', '0.014', '10', 'sell'], ['1480941690', '0.013', '0.66', 'buy'],
          ['1480941688', '0.012', '3', 'buy']]
 
-bid / ask(data):
+order:
     Returns the order id as str if successful, else False
 
 order_status(data):
@@ -62,7 +62,7 @@ def order_book(data, *args, **kwargs):
     return data
 
 
-def trade(data, *args, **kwargs):
+def order(data, *args, **kwargs):
     try:
         return data['orderNumber']
     except KeyError:

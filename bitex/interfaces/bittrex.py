@@ -10,7 +10,7 @@ import logging
 # Import Homebrew
 from bitex.api.rest import BittrexREST
 from bitex.utils import return_json
-from bitex.formatters.bittrex import trade, cancel, order_book
+from bitex.formatters.bittrex import order, cancel, order_book
 # Init Logging Facilities
 log = logging.getLogger(__name__)
 
@@ -47,7 +47,7 @@ class Bittrex(BittrexREST):
         q.update(kwargs)
         return self.public_query('getmarkethistory', params=q)
 
-    @return_json(trade)
+    @return_json(order)
     def bid(self, pair, price, vol, market=False, **kwargs):
         q = {'market': pair, 'rate': price, 'quantity': vol}
         q.update(kwargs)
@@ -58,7 +58,7 @@ class Bittrex(BittrexREST):
             # send limit order
             return self.private_query('market/buylimit', params=q)
 
-    @return_json(trade)
+    @return_json(order)
     def ask(self, pair, price, vol, market=False, **kwargs):
         q = {'market': pair, 'rate': price, 'quantity': vol}
         q.update(kwargs)

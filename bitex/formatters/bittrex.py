@@ -22,7 +22,7 @@ trades(data):
         [['1480941692', '0.014', '10', 'sell'], ['1480941690', '0.013', '0.66', 'buy'],
          ['1480941688', '0.012', '3', 'buy']]
 
-bid / ask(data):
+order:
     Returns the order id as str if successful, else False
 
 order_status(data):
@@ -58,7 +58,7 @@ import logging
 log = logging.getLogger(__name__)
 
 
-def trade(data, *args, **kwargs):
+def order(data, *args, **kwargs):
     if data['success']:
         return data['result']['uuid']
     else:
