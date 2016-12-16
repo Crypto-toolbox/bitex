@@ -4,20 +4,21 @@ import logging
 # Import Third-Party
 
 # Import Homebrew
+from bitex.formatters.base import Formatter
+
 
 log = logging.getLogger(__name__)
 
 
-def order_book(data, *args, **kwargs):
-    return data
+class PlnxFormatter(Formatter):
 
+    @staticmethod
+    def order(data, *args, **kwargs):
+        try:
+            return data['orderNumber']
+        except KeyError:
+            return False
 
-def order(data, *args, **kwargs):
-    try:
-        return data['orderNumber']
-    except KeyError:
-        return False
-
-
-def cancel(data, *args, **kwargs):
-    return True if data['success'] else False
+    @staticmethod
+    def cancel(data, *args, **kwargs):
+        return True if data['success'] else False
