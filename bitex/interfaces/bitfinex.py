@@ -10,7 +10,7 @@ import logging
 # Import Homebrew
 from bitex.api.rest import BitfinexREST
 from bitex.utils import return_json
-from bitex.formatters.bitfinex import order, cancel, order_status
+from bitex.formatters.bitfinex import BtfxFormatter as fmt
 # Init Logging Facilities
 log = logging.getLogger(__name__)
 
@@ -30,15 +30,15 @@ class Bitfinex(BitfinexREST):
     """
     BitEx Standardized Methods
     """
-    @return_json(None)
+    @return_json(fmt.order_book)
     def order_book(self, pair, **kwargs):
         return self.public_query('book/%s' % pair, params=kwargs)
 
-    @return_json(None)
+    @return_json(fmt.ticker)
     def ticker(self, pair, **kwargs):
         return self.public_query('pubticker/%s' % pair, params=kwargs)
 
-    @return_json(None)
+    @return_json(fmt.trades)
     def trades(self, pair, **kwargs):
         return self.public_query('trades/%s' % pair, params=kwargs)
 
@@ -51,17 +51,17 @@ class Bitfinex(BitfinexREST):
         else:
             return self.private_query('order/new', params=q)
 
-    @return_json(order)
+    @return_json(fmt.order)
     def bid(self, pair, price, amount, replace=False, **kwargs):
         return self._place_order(pair, amount, price, 'buy', replace=replace,
                                  **kwargs)
 
-    @return_json(order)
+    @return_json(fmt.order)
     def ask(self, pair, price, amount, replace=False, **kwargs):
         return self._place_order(pair, str(amount), str(price), 'sell',
                                  replace=replace, **kwargs)
 
-    @return_json(cancel)
+    @return_json(fmt.cancel)
     def cancel_order(self, order_id, all=False, **kwargs):
 
         q = {'order_id': int(order_id)}
@@ -72,17 +72,17 @@ class Bitfinex(BitfinexREST):
             endpoint = 'order/cancel/all'
             return self.private_query(endpoint)
 
-    @return_json(order_status)
+    @return_json(fmt.order_status)
     def order(self, order_id, **kwargs):
         q = {'order_id': order_id}
         q.update(kwargs)
         return self.private_query('order/status', params=q)
 
-    @return_json(None)
+    @return_json(fmt.balance)
     def balance(self, **kwargs):
         return self.private_query('balances', params=kwargs)
 
-    @return_json(None)
+    @return_json(fmt.withdraw)
     def withdraw(self, amount, tar_addr, **kwargs):
         q = {'withdraw_type': kwargs.pop('withdraw_type'),
              'walletselected': kwargs.pop('walletselected'),
@@ -90,7 +90,7 @@ class Bitfinex(BitfinexREST):
         q.update(kwargs)
         return self.private_query('withdraw', params=q)
 
-    @return_json(None)
+    @return_json(fmt.deposit)
     def deposit_address(self, **kwargs):
         q = {}
         q.update(kwargs)
