@@ -10,6 +10,13 @@ import urllib.parse
 from requests.auth import AuthBase
 
 # Import Third-Party
+try:
+    import pyjwt as jwt
+    jwt = True
+except ImportError:
+    logging.getLogger().error("Could not find PYJWT! Please download from "
+                              "https://github.com/jpadilla/pyjwt/ or via pip!")
+    jwt = False
 
 # Import Homebrew
 from bitex.api.api import RESTAPI
@@ -454,3 +461,30 @@ class PoloniexREST(RESTAPI):
         sig = hmac.new(self.secret.encode('utf-8'), msg, hashlib.sha512).hexdigest()
         headers = {'Key': self.key, 'Sign': sig}
         return uri, {'headers': headers, 'data': params}
+
+
+class QuoineREST(RESTAPI):
+    """
+    The Quoine Api requires the API version to be designated in each requests's
+    header as {'X-Quoine-API-Version': 2}
+    """
+    def __init__(self, key='', secret='', api_version='',
+                 url='https://api.quoine.com/'):
+        if not jwt:
+            raise SystemError("No JWT Installed! Quoine API Unavailable!")
+        super(QuoineREST, self).__init__(url, api_version=api_version,
+                                         key=key, secret=secret)
+
+    def sign(self, uri, endpoint, endpoint_path, method_verb, *args, **kwargs):
+        try:
+            params = kwargs['params']
+        except KeyError:
+            params = {}
+
+        path = endpoint_path + urllib.parse.urlencode(params)
+        msg = {'path': path, 'nonce': self.nonce(), 'token_id': self.key}
+
+        signature = jwt.encode(msg, self.secret, algorithm='HS256')
+        headers = {'X-Quoine-API-Version': '2', 'X-Quoine-Auth': signature,
+                   'Content-Type': 'application/json'}
+        return self.uri+path, {'headers': headers}
