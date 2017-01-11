@@ -18,27 +18,29 @@ interfaces, on top of which the second part - `bitex.interfaces` - builds upon.
 
 # Supported Exchanges
 
-| Exchange       | API  | Authentication | Public Endpoints | Private Endpoints | Formatters | Tests |
-|----------------|------|----------------|------------------|-------------------|------------|-------|
-| Bitfinex       | Done | Done           | Done             | Done              | WIP        | WIP   |
-| Bitstamp       | Done | Done           | Done             | Done              | WIP        | WIP   |
-| Bittrex        | Done | Done           | Done             | Done              | WIP        | WIP   |
-| C-Cex          | Done | BETA           | Done             | Done              | Planned    | WIP   |
-| CoinCheck      | Done | Done           | Done             | Done              | Planned    | WIP   |
-| Cryptopia      | Done | BETA           | Done             | Done              | Planned    | WIP   |
-| GDAX           | Done | BETA           | Done             | Done              | Planned    | WIP   |
-| Gemini         | Done | BETA           | Done             | Done              | Planned    | WIP   |
-| itBit          | Done | BETA           | Done             | Done              | Planned    | WIP   |
-| Kraken         | Done | Done           | Done             | Done              | WIP        | WIP   |
-| OkCoin         | Done | BETA           | Done             | Done              | Planned    | WIP   |
-| Poloniex       | Done | Done           | Done             | Done              | WIP        | WIP   |
-| TheRockTrading | Done | BETA           | Done             | Done              | Planned    | WIP   |
-| Yunbi          | Done | BETA           | Done             | Done              | Planned    | WIP   |
-| Quoine         | Done | BETA           | Done             | Done              | Planned    | WIP   |
-| QuadrigaCX     | Done | BETA           | Done             | Done              | Planned    | WIP   |
+| Exchange       | API  | Authentication | Public Endpoints*[^1] | Private Endpoints[^1] | Formatters | Tests |
+|----------------|------|----------------|-------------------|--------------------|------------|-------|
+| Bitfinex       | Done | Done           | Done              | Done               | WIP        | WIP   |
+| Bitstamp       | Done | Done           | Done              | Done               | WIP        | WIP   |
+| Bittrex        | Done | Done           | Done              | Done               | WIP        | WIP   |
+| C-Cex          | Done | BETA           | Done              | Done               | Planned    | WIP   |
+| CoinCheck      | Done | Done           | Done              | Done               | Planned    | WIP   |
+| Cryptopia      | Done | BETA           | Done              | Done               | Planned    | WIP   |
+| GDAX           | Done | BETA           | Done              | Done               | Planned    | WIP   |
+| Gemini         | Done | BETA           | Done              | Done               | Planned    | WIP   |
+| itBit          | Done | BETA           | Done              | Done               | Planned    | WIP   |
+| Kraken         | Done | Done           | Done              | Done               | WIP        | WIP   |
+| OkCoin         | Done | BETA           | Done              | Done               | Planned    | WIP   |
+| Poloniex       | Done | Done           | Done              | Done               | WIP        | WIP   |
+| TheRockTrading | Done | BETA           | Done              | Done               | Planned    | WIP   |
+| Yunbi          | Done | BETA           | Done              | Done               | Planned    | WIP   |
+| Quoine         | Done | BETA           | Done              | Done               | Planned    | WIP   |
+| QuadrigaCX     | Done | BETA           | Done              | Done               | Planned    | WIP   |
 
 Additional clients will be added to (or removed from) this list, 
 according to their liquidity and market volume.
+
+[^1]: This table considers standardized methods only, when describing the state. See section `Standardized Methods` for more
 
 # bitex.api
 
@@ -87,7 +89,7 @@ my_fancy_api_secret
 Built on top of `bitex.api`'s api classes are the slightly more sophisticated
 exchange interfaces in `bitex.interfaces`. These have been written to unify
 the diverse REST APIs of the implemented exchanges, by providing the same methods and method parameters
-across all of them.
+across all of them (see next section, `Standardized Methods`, for more information).
 
 For example, querying tickers looks the same on all exchanges, as well as
 placing an order, using `bitex.interface`:
@@ -107,6 +109,14 @@ b.ask(pair, price, size)
 g.ask(pair, price, size)
 ```
 
+# Standardzied Methods
+
+As explained in the previous section, __standardized methods__ refer to the methods of each interface,
+which have been deemed as part of the set of minimal methods and functions required, to trade
+at an exchange via its API. They feature the following characteristics:
+
+- Each method has an identical method header across all interfaces
+- Its output is identical across all interfaces
 
 # Installation
 
