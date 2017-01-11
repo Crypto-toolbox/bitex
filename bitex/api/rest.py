@@ -14,8 +14,6 @@ try:
     import pyjwt as jwt
     jwt = True
 except ImportError:
-    logging.getLogger().error("Could not find PYJWT! Please download from "
-                              "https://github.com/jpadilla/pyjwt/ or via pip!")
     jwt = False
 
 # Import Homebrew
