@@ -61,9 +61,9 @@ class BitstampREST(RESTAPI):
         Load key and secret from file.
         """
         with open(path, 'r') as f:
-            self.id = f.readline().strip()
             self.key = f.readline().strip()
             self.secret = f.readline().strip()
+            self.id = f.readline().strip()
 
     def sign(self, url, endpoint, endpoint_path, method_verb, *args, **kwargs):
         nonce = self.nonce()
@@ -169,9 +169,9 @@ class GDAXRest(RESTAPI):
         Load key and secret from file.
         """
         with open(path, 'r') as f:
-            self.passphrase = f.readline().strip()
             self.key = f.readline().strip()
             self.secret = f.readline().strip()
+            self.passphrase = f.readline().strip()
 
     def sign(self, url, endpoint, endpoint_path, method_verb, *args, **kwargs):
         auth = GdaxAuth(self.key, self.secret, self.passphrase)
@@ -227,9 +227,9 @@ class ItbitREST(RESTAPI):
         Load user id, key and secret from file.
         """
         with open(path, 'r') as f:
-            self.userId = f.readline().strip()
-            self.clientKey = f.readline().strip()
+            self.key = f.readline().strip()
             self.secret = f.readline().strip()
+            self.userId = f.readline().strip()
 
     def sign(self, url, endpoint, endpoint_path, method_verb, *args, **kwargs):
         try:
