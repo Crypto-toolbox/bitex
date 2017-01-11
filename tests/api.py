@@ -69,6 +69,7 @@ class KrakenAPITest(APITests):
         # query() returns a valid requests.Response object
         r = self.api.query('GET', 'Time')
         self.assertIsInstance(r, requests.Response)
+        self.assertEqual(r.status_code, 200)
 
         # query() is successful (No errors)
         self.assertTrue(r.json()['error'] == [],
@@ -96,6 +97,7 @@ class CryptopiaAPITest(APITests):
         # query() returns a valid requests.Response object
         r = self.api.query('GET', 'GetMarketOrders/101')
         self.assertIsInstance(r, requests.Response)
+        self.assertEqual(r.status_code, 200)
 
         # query() is successful (No errors)
         self.assertTrue(r.json()['Success'],
@@ -114,6 +116,7 @@ class CCEXAPITest(APITests):
         r = self.api.query('GET', 'api_pub.html?a=getorderbook',
                            params={'market': 'ltc-btc', 'type': 'both'})
         self.assertIsInstance(r, requests.Response)
+        self.assertEqual(r.status_code, 200)
 
         # query() is successful (No errors)
         self.assertTrue(r.json()['success'],
@@ -131,6 +134,7 @@ class GeminiAPITest(APITests):
         # query() returns a valid requests.Response object
         r = self.api.query('GET', 'book/ETHBTC')
         self.assertIsInstance(r, requests.Response)
+        self.assertEqual(r.status_code, 200)
 
         # query() is successful (No error message)
         self.assertNotIn('message', r.json(), "Error in Response: %s" % r.request.url)
@@ -147,6 +151,7 @@ class YunbiAPITest(APITests):
         # query() returns a valid requests.Response object
         r = self.api.query('GET', 'markets.json')
         self.assertIsInstance(r, requests.Response)
+        self.assertEqual(r.status_code, 200)
 
         # query() is successful (No error message)
         self.assertNotIn('message', r.json())
@@ -163,6 +168,7 @@ class TheRockTradingAPITest(APITests):
         # query() returns a valid requests.Response object
         r = self.api.query('GET', 'funds/BTCEUR/orderbook')
         self.assertIsInstance(r, requests.Response)
+        self.assertEqual(r.status_code, 200)
 
         # query() is successful (No error message)
         self.assertNotIn('errors', r.json())
