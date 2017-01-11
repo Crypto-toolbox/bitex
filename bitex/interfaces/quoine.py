@@ -1,5 +1,5 @@
 """
-https://www.bitstamp.net/api/
+https://developers.quoine.com/
 """
 
 # Import Built-Ins
