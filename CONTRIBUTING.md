@@ -29,5 +29,5 @@ PR Merge Criteria
 For a PR to be merged, the following statements must hold true:
 
 -  PEP8 has been enforced
--  All commits of hte PR are atomic
+-  All commits of the PR are atomic
 -  The pull request was approved by a core maintainer
