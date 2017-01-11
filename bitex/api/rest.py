@@ -486,3 +486,40 @@ class QuoineREST(RESTAPI):
         headers = {'X-Quoine-API-Version': '2', 'X-Quoine-Auth': signature,
                    'Content-Type': 'application/json'}
         return self.uri+path, {'headers': headers}
+
+
+class QuadrigaCXREST(RESTAPI):
+    """
+    The Quoine Api requires the API version to be designated in each requests's
+    header as {'X-Quoine-API-Version': 2}
+    """
+    def __init__(self, key='', secret='', client_id='', api_version='v2',
+                 url='https://api.quoine.com/'):
+        if not jwt:
+            raise SystemError("No JWT Installed! Quoine API Unavailable!")
+        self.client_id = client_id
+        super(QuadrigaCXREST, self).__init__(url, api_version=api_version,
+                                             key=key, secret=secret)
+
+    def load_key(self, path):
+        """
+        Load key and secret from file.
+        """
+        with open(path, 'r') as f:
+            self.key = f.readline().strip()
+            self.secret = f.readline().strip()
+            self.client_id = f.readline().strip()
+
+    def sign(self, uri, endpoint, endpoint_path, method_verb, *args, **kwargs):
+        try:
+            params = kwargs['params']
+        except KeyError:
+            params = {}
+        nonce = self.nonce()
+        msg = nonce + self.client_id + self.key
+
+        signature = hmac.new(self.secret.encode(encoding='utf-8'),
+                             msg.encode(encoding='utf-8'), hashlib.sha256)
+        headers = {'key': self.key, 'signature': signature,
+                   'nonce': nonce}
+        return self.uri, {'headers': headers, 'data': params}
