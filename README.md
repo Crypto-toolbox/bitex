@@ -35,6 +35,7 @@ interfaces, on top of which the second part - `bitex.interfaces` - builds upon.
 | TheRockTrading | Done | BETA           | Done             | Done              | Planned    | WIP   |
 | Yunbi          | Done | BETA           | Done             | Done              | Planned    | WIP   |
 | Quoine         | Done | BETA           | Done             | Done              | Planned    | WIP   |
+| QuadrigaCX     | Done | BETA           | Done             | Done              | Planned    | WIP   |
 
 Additional clients will be added to (or removed from) this list, 
 according to their liquidity and market volume.
