@@ -11,8 +11,10 @@ General:
 
 Exchanges:
 - Poloniex RESTAPI and interface
-- Interfaces added for all RESTAPIs currently implemented
-- Interfaces feature standardized methods with identical method headers
+- Interfaces for all RESTAPIs currently implemented
+- Standardized methods with identical method headers for all interfaces
+- Quoine RESTAPI and interface
+- QuadrigaCX RESTAPI and interface
 
 Formatters:
 - The submodule `bitex.formatters` has been added, which provides formatter functions for exchange interfaces.
@@ -23,6 +25,7 @@ General:
 
 Exchanges:
 - All calls to interface methods now return a tuple consisting of formatted query data, as well as the raw response object
+- Bitstamp's `tickers` method hat its surplus `s` removed.
 
 ### Deprecated
 - btc-e API is no longer supported actively.
