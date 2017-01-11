@@ -71,7 +71,7 @@ my_fancy_api_secret
 
 If the api requires further details, for example a userid or account 
 number (for example for bitstamp), you should check the class method's doc string,
-although usually this information needs to go before the api key
+although usually this information needs to go after the api key
 and secret, on a separate line each.
 ```
 >>>dummy2.key
