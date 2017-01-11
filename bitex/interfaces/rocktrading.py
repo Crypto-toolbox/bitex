@@ -33,7 +33,7 @@ class RockTradingLtd(RockTradingREST):
     """
 
     @return_json(fmt.ticker)
-    def tickers(self, pair=None, **kwargs):
+    def ticker(self, pair=None, **kwargs):
         if pair:
             return self.public_query('funds/%s/ticker' % pair, params=kwargs)
         else:
