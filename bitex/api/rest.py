@@ -30,9 +30,10 @@ log = logging.getLogger(__name__)
 
 class BitfinexREST(APIClient):
     def __init__(self, key=None, secret=None, api_version='v1',
-                 url='https://api.bitfinex.com'):
+                 url='https://api.bitfinex.com', timeout=5):
         super(BitfinexREST, self).__init__(url, api_version=api_version,
-                                           key=key, secret=secret)
+                                           key=key, secret=secret,
+                                           timeout=timeout)
 
     def sign(self, url, endpoint, endpoint_path, method_verb, *args, **kwargs):
         try:
@@ -56,10 +57,11 @@ class BitfinexREST(APIClient):
 
 class BitstampREST(APIClient):
     def __init__(self, user_id='', key=None, secret=None, api_version=None,
-                 url='https://www.bitstamp.net/api'):
+                 url='https://www.bitstamp.net/api', timeout=5):
         self.id = user_id
         super(BitstampREST, self).__init__(url, api_version=api_version,
-                                           key=key, secret=secret)
+                                           key=key, secret=secret,
+                                           timeout=timeout)
 
     def load_key(self, path):
         """
@@ -90,9 +92,9 @@ class BitstampREST(APIClient):
 
 class BittrexREST(APIClient):
     def __init__(self, key=None, secret=None, api_version='v1.1',
-                 url='https://bittrex.com/api'):
+                 url='https://bittrex.com/api', timeout=5):
         super(BittrexREST, self).__init__(url, api_version=api_version, key=key,
-                                          secret=secret)
+                                          secret=secret, timeout=timeout)
 
     def sign(self, url, endpoint, endpoint_path, method_verb, *args, **kwargs):
 
@@ -114,9 +116,10 @@ class BittrexREST(APIClient):
 
 class CoincheckREST(APIClient):
     def __init__(self, key=None, secret=None, api_version='api',
-                 url='https://coincheck.com'):
+                 url='https://coincheck.com', timeout=5):
         super(CoincheckREST, self).__init__(url, api_version=api_version,
-                                            key=key, secret=secret)
+                                            key=key, secret=secret,
+                                            timeout=timeout)
 
     def sign(self, url, endpoint, endpoint_path, method_verb, *args, **kwargs):
 
@@ -164,10 +167,10 @@ class GdaxAuth(AuthBase):
 
 class GDAXRest(APIClient):
     def __init__(self, passphrase='', key=None, secret=None, api_version=None,
-                 url='https://api.gdax.com'):
+                 url='https://api.gdax.com', timeout=5):
         self.passphrase = passphrase
         super(GDAXRest, self).__init__(url, api_version=api_version, key=key,
-                                       secret=secret)
+                                       secret=secret, timeout=timeout)
 
     def load_key(self, path):
         """
@@ -190,9 +193,9 @@ class GDAXRest(APIClient):
 
 class KrakenREST(APIClient):
     def __init__(self, key=None, secret=None, api_version='0',
-                 url='https://api.kraken.com'):
+                 url='https://api.kraken.com', timeout=5):
         super(KrakenREST, self).__init__(url, api_version=api_version,
-                                         key=key, secret=secret)
+                                         key=key, secret=secret, timeout=timeout)
 
     def sign(self, url, endpoint, endpoint_path, method_verb, *args, **kwargs):
         try:
@@ -222,10 +225,10 @@ class KrakenREST(APIClient):
 
 class ItbitREST(APIClient):
     def __init__(self, user_id = '', key=None, secret=None, api_version='v1',
-                 url='https://api.itbit.com'):
+                 url='https://api.itbit.com', timeout=5):
         self.userId = user_id
         super(ItbitREST, self).__init__(url, api_version=api_version,
-                                 key=key, secret=secret)
+                                 key=key, secret=secret, timeout=timeout)
 
     def load_key(self, path):
         """
@@ -274,10 +277,10 @@ class ItbitREST(APIClient):
 
 class OKCoinREST(APIClient):
     def __init__(self, key=None, secret=None, api_version='v1',
-                 url='https://www.okcoin.com/api'):
+                 url='https://www.okcoin.com/api', timeout=5):
         super(OKCoinREST, self).__init__(url, api_version=api_version,
-                                         key=key,
-                                         secret=secret)
+                                         key=key, secret=secret,
+                                         timeout=timeout)
 
     def sign(self,url, endpoint, endpoint_path, method_verb, *args, **kwargs):
         nonce = self.nonce()
@@ -296,9 +299,9 @@ class OKCoinREST(APIClient):
 
 class BTCERest(APIClient):
     def __init__(self, key=None, secret=None, api_version='3',
-                 url='https://btc-e.com/api'):
+                 url='https://btc-e.com/api', timeout=5):
         super(BTCERest, self).__init__(url, api_version=api_version, key=key,
-                                         secret=secret)
+                                         secret=secret, timeout=timeout)
 
     def sign(self, url, endpoint, endpoint_path, method_verb, *args, **kwargs):
         nonce = self.nonce()
@@ -323,9 +326,9 @@ class BTCERest(APIClient):
 
 class CCEXRest(APIClient):
     def __init__(self, key=None, secret=None, api_version=None,
-                 url='https://c-cex.com/t'):
+                 url='https://c-cex.com/t', timeout=5):
         super(CCEXRest, self).__init__(url, api_version=api_version, key=key,
-                                         secret=secret)
+                                         secret=secret, timeout=timeout)
 
     def sign(self, uri, endpoint, endpoint_path, method_verb, *args, **kwargs):
         nonce = self.nonce()
@@ -350,9 +353,9 @@ class CCEXRest(APIClient):
 
 class CryptopiaREST(APIClient):
     def __init__(self, key=None, secret=None, api_version=None,
-                 url='https://www.cryptopia.co.nz/api'):
+                 url='https://www.cryptopia.co.nz/api', timeout=5):
         super(CryptopiaREST, self).__init__(url, api_version=api_version, key=key,
-                                         secret=secret)
+                                         secret=secret, timeout=timeout)
 
     def sign(self, uri, endpoint, endpoint_path, method_verb, *args, **kwargs):
         nonce = self.nonce()
@@ -377,9 +380,9 @@ class CryptopiaREST(APIClient):
 
 class GeminiREST(APIClient):
     def __init__(self, key=None, secret=None, api_version='v1',
-                 url='https://api.gemini.com'):
+                 url='https://api.gemini.com', timeout=5):
         super(GeminiREST, self).__init__(url, api_version=api_version, key=key,
-                                         secret=secret)
+                                         secret=secret, timeout=timeout)
 
     def sign(self, uri, endpoint, endpoint_path, method_verb, *args, **kwargs):
         nonce = self.nonce()
@@ -400,9 +403,9 @@ class GeminiREST(APIClient):
 
 class YunbiREST(APIClient):
     def __init__(self, key=None, secret=None, api_version='v2',
-                 url='https://yunbi.com/api'):
+                 url='https://yunbi.com/api', timeout=5):
         super(YunbiREST, self).__init__(url, api_version=api_version, key=key,
-                                         secret=secret)
+                                         secret=secret, timeout=timeout)
 
     def sign(self, uri, endpoint, endpoint_path, method_verb, *args, **kwargs):
         nonce = self.nonce()
@@ -423,10 +426,10 @@ class YunbiREST(APIClient):
 
 class RockTradingREST(APIClient):
     def __init__(self, key=None, secret=None, api_version='v1',
-                 url='https://api.therocktrading.com'):
+                 url='https://api.therocktrading.com', timeout=5):
         super(RockTradingREST, self).__init__(url, api_version=api_version,
-                                        key=key,
-                                        secret=secret)
+                                              key=key, secret=secret,
+                                              timeout=timeout)
 
     def sign(self, uri, endpoint, endpoint_path, method_verb, *args, **kwargs):
         nonce = self.nonce()
@@ -448,9 +451,10 @@ class RockTradingREST(APIClient):
 
 class PoloniexREST(APIClient):
     def __init__(self, key=None, secret=None, api_version=None,
-                 url='https://poloniex.com'):
+                 url='https://poloniex.com', timeout=5):
         super(PoloniexREST, self).__init__(url, api_version=api_version,
-                                           key=key, secret=secret)
+                                           key=key, secret=secret,
+                                           timeout=timeout)
 
     def sign(self, uri, endpoint, endpoint_path, method_verb, *args, **kwargs):
         try:
@@ -472,11 +476,11 @@ class QuoineREST(APIClient):
     header as {'X-Quoine-API-Version': 2}
     """
     def __init__(self, key=None, secret=None, api_version=None,
-                 url='https://api.quoine.com/'):
+                 url='https://api.quoine.com/', timeout=5):
         if not jwt:
             raise SystemError("No JWT Installed! Quoine API Unavailable!")
         super(QuoineREST, self).__init__(url, api_version=api_version,
-                                         key=key, secret=secret)
+                                         key=key, secret=secret, timeout=timeout)
 
     def sign(self, uri, endpoint, endpoint_path, method_verb, *args, **kwargs):
         try:
@@ -499,12 +503,13 @@ class QuadrigaCXREST(APIClient):
     header as {'X-Quoine-API-Version': 2}
     """
     def __init__(self, key=None, secret=None, client_id='', api_version='v2',
-                 url='https://api.quoine.com/'):
+                 url='https://api.quoine.com/', timeout=5):
         if not jwt:
             raise SystemError("No JWT Installed! Quoine API Unavailable!")
         self.client_id = client_id
         super(QuadrigaCXREST, self).__init__(url, api_version=api_version,
-                                             key=key, secret=secret)
+                                             key=key, secret=secret,
+                                             timeout=timeout)
 
     def load_key(self, path):
         """

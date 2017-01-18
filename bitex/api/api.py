@@ -4,7 +4,7 @@
 # Import Built-Ins
 import logging
 import time
-
+from abc import ABCMeta, abstractmethod
 # Import Third-Party
 import requests
 
@@ -14,14 +14,14 @@ import requests
 log = logging.getLogger(__name__)
 
 
-class APIClient:
+class APIClient(metaclass=ABCMeta):
     """
     Base Class for API ojects. Provides basic methods to interact
     with exchange APIs, such as sending queries and signing messages to pass
     authentication.
     """
 
-    def __init__(self, uri, api_version=None, key=None, secret=None):
+    def __init__(self, uri, api_version=None, key=None, secret=None, timeout=5):
         """
         Create API Client object.
         :param uri: string address for api (i.e. https://api.kraken.com/
@@ -33,7 +33,7 @@ class APIClient:
         self.secret = secret
         self.uri = uri
         self.version = api_version if api_version else ''
-
+        self.timeout = timeout
         log.debug("Initialized API Client for URI: %s; "
                   "Will request on API version: %s" %
                   (self.uri, self.version))
@@ -54,6 +54,7 @@ class APIClient:
         """
         return str(int(1000 * time.time()))
 
+    @abstractmethod
     def sign(self, url, endpoint, endpoint_path, method_verb, *args, **kwargs):
         """
         Dummy Signature creation method. Override this in child.
@@ -94,7 +95,8 @@ class APIClient:
         else:
             request_kwargs = kwargs
         log.debug("Making request to: %s, kwargs: %s", url, request_kwargs)
-        r = requests.request(method_verb, url, timeout=5, **request_kwargs)
+        r = requests.request(method_verb, url, timeout=self.timeout,
+                             **request_kwargs)
         log.debug("Made %s request made to %s, with headers %s and body %s. "
                   "Status code %s", r.request.method, r.request.url,
                   r.request.headers, r.request.body, r.status_code)
