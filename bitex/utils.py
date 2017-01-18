@@ -6,9 +6,10 @@ Provides utility functions, used across more than one module or sub module.
 # Import Built-Ins
 import logging
 import json
-import requests
 from functools import wraps
+
 # Import Third-Party
+import requests
 
 # Import Homebrew
 
