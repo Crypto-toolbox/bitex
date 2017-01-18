@@ -1,8 +1,12 @@
+"""
+
+"""
 # Import Built-Ins
 import logging
-import requests
 import time
+
 # Import Third-Party
+import requests
 
 # Import Homebrew
 
@@ -10,32 +14,44 @@ import time
 log = logging.getLogger(__name__)
 
 
-class RESTAPI:
+class APIClient:
+    """
+    Base Class for API ojects. Provides basic methods to interact
+    with exchange APIs, such as sending queries and signing messages to pass
+    authentication.
+    """
 
-    def __init__(self, uri, api_version='', key='', secret=''):
+    def __init__(self, uri, api_version=None, key=None, secret=None):
         """
-        Base Class for REST API connections.
+        Create API Client object.
+        :param uri: string address for api (i.e. https://api.kraken.com/
+        :param api_version: version, as required to query an endpoint
+        :param key: API access key
+        :param secret: API secret
         """
         self.key = key
         self.secret = secret
         self.uri = uri
-        self.apiversion = api_version
-        self.req_methods = {'POST': requests.post, 'PUT': requests.put,
-                            'GET': requests.get, 'DELETE': requests.delete,
-                            'PATCH': requests.patch}
-        log.debug("Initialized RESTAPI for URI: %s; "
+        self.version = api_version if api_version else ''
+
+        log.debug("Initialized API Client for URI: %s; "
                   "Will request on API version: %s" %
-                  (self.uri, self.apiversion))
+                  (self.uri, self.version))
 
     def load_key(self, path):
         """
         Load key and secret from file.
+        :param path: path to file with first two lines are key, secret respectively
         """
         with open(path, 'r') as f:
             self.key = f.readline().strip()
             self.secret = f.readline().strip()
 
     def nonce(self):
+        """
+        Creates a Nonce value for signature generation
+        :return:
+        """
         return str(int(1000 * time.time()))
 
     def sign(self, url, endpoint, endpoint_path, method_verb, *args, **kwargs):
@@ -43,10 +59,10 @@ class RESTAPI:
         Dummy Signature creation method. Override this in child.
         URL is required to be returned, as some Signatures use the url for
         sig generation, and api calls made must match the address exactly.
-        param url: self.uri + self.apiversion + endpoint (i.e https://api.kraken/0/Depth)
+        param url: self.uri + self.version + endpoint (i.e https://api.kraken/0/Depth)
         param endpoint: api endpoint to call (i.e. 'Depth')
-        param endpoint_path: self.apiversion + endpoint (i.e. '0/Depth')
-        param method_verb: 
+        param endpoint_path: self.version + endpoint (i.e. '0/Depth')
+        param method_verb: valid request type (PUT, GET, POST etc)
         param return:
         """
         url = self.uri
@@ -57,11 +73,17 @@ class RESTAPI:
               *args, **kwargs):
         """
         Queries exchange using given data. Defaults to unauthenticated query.
+        :param method_verb: valid request type (PUT, GET, POST etc)
+        :param endpoint: endpoint path for the resource to query, sans the url &
+                         API version (i.e. '/btcusd/ticker/').
+        :param authenticate: Bool to determine whether or not a signature is
+                             required.
+        :param args: Optional args for requests.request()
+        :param kwargs: Optional Kwargs for self.sign() and requests.request()
+        :return: request.response() obj
         """
-        request_method = self.req_methods[method_verb]
-
-        if self.apiversion:
-            endpoint_path = '/' + self.apiversion + '/' + endpoint
+        if self.version:
+            endpoint_path = '/' + self.version + '/' + endpoint
         else:
             endpoint_path = '/' + endpoint
 
@@ -71,10 +93,9 @@ class RESTAPI:
                                             method_verb, *args, **kwargs)
         else:
             request_kwargs = kwargs
-        log.debug("Making request to: %s, kwargs: %s" % (url, request_kwargs))
-        r = request_method(url, timeout=5, **request_kwargs)
+        log.debug("Making request to: %s, kwargs: %s", url, request_kwargs)
+        r = requests.request(method_verb, url, timeout=5, **request_kwargs)
         log.debug("Made %s request made to %s, with headers %s and body %s. "
-                  "Status code %s" %
-                  (r.request.method, r.request.url, r.request.headers,
-                   r.request.body, r.status_code))
+                  "Status code %s", r.request.method, r.request.url,
+                  r.request.headers, r.request.body, r.status_code)
         return r

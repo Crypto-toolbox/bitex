@@ -1,3 +1,7 @@
+"""
+Contains all API Client sub-classes, which store exchange specific details
+and feature the respective exchanges authentication method (sign()).
+"""
 # Import Built-ins
 import logging
 import json
@@ -7,9 +11,10 @@ import base64
 import time
 import urllib
 import urllib.parse
-from requests.auth import AuthBase
 
 # Import Third-Party
+from requests.auth import AuthBase
+
 try:
     import pyjwt as jwt
     jwt = True
@@ -17,14 +22,14 @@ except ImportError:
     jwt = False
 
 # Import Homebrew
-from bitex.api.api import RESTAPI
+from bitex.api.api import APIClient
 
 
 log = logging.getLogger(__name__)
 
 
-class BitfinexREST(RESTAPI):
-    def __init__(self, key='', secret='', api_version='v1',
+class BitfinexREST(APIClient):
+    def __init__(self, key=None, secret=None, api_version='v1',
                  url='https://api.bitfinex.com'):
         super(BitfinexREST, self).__init__(url, api_version=api_version,
                                            key=key, secret=secret)
@@ -49,8 +54,8 @@ class BitfinexREST(RESTAPI):
         return url, {'headers': headers}
 
 
-class BitstampREST(RESTAPI):
-    def __init__(self, user_id='', key='', secret='', api_version='',
+class BitstampREST(APIClient):
+    def __init__(self, user_id='', key=None, secret=None, api_version=None,
                  url='https://www.bitstamp.net/api'):
         self.id = user_id
         super(BitstampREST, self).__init__(url, api_version=api_version,
@@ -83,8 +88,8 @@ class BitstampREST(RESTAPI):
         return url, {'data': req}
 
 
-class BittrexREST(RESTAPI):
-    def __init__(self, key='', secret='', api_version='v1.1',
+class BittrexREST(APIClient):
+    def __init__(self, key=None, secret=None, api_version='v1.1',
                  url='https://bittrex.com/api'):
         super(BittrexREST, self).__init__(url, api_version=api_version, key=key,
                                           secret=secret)
@@ -107,8 +112,8 @@ class BittrexREST(RESTAPI):
         return self.uri + req_string, {'headers': headers, 'params': {}}
 
 
-class CoincheckREST(RESTAPI):
-    def __init__(self, key='', secret='', api_version='api',
+class CoincheckREST(APIClient):
+    def __init__(self, key=None, secret=None, api_version='api',
                  url='https://coincheck.com'):
         super(CoincheckREST, self).__init__(url, api_version=api_version,
                                             key=key, secret=secret)
@@ -157,8 +162,8 @@ class GdaxAuth(AuthBase):
         return request
 
 
-class GDAXRest(RESTAPI):
-    def __init__(self, passphrase='', key='', secret='', api_version='',
+class GDAXRest(APIClient):
+    def __init__(self, passphrase='', key=None, secret=None, api_version=None,
                  url='https://api.gdax.com'):
         self.passphrase = passphrase
         super(GDAXRest, self).__init__(url, api_version=api_version, key=key,
@@ -183,8 +188,8 @@ class GDAXRest(RESTAPI):
         return url, {'json': js, 'auth': auth}
 
 
-class KrakenREST(RESTAPI):
-    def __init__(self, key='', secret='', api_version='0',
+class KrakenREST(APIClient):
+    def __init__(self, key=None, secret=None, api_version='0',
                  url='https://api.kraken.com'):
         super(KrakenREST, self).__init__(url, api_version=api_version,
                                          key=key, secret=secret)
@@ -215,8 +220,8 @@ class KrakenREST(RESTAPI):
         return url, {'data': req, 'headers': headers}
 
 
-class ItbitREST(RESTAPI):
-    def __init__(self, user_id = '', key='', secret='', api_version='v1',
+class ItbitREST(APIClient):
+    def __init__(self, user_id = '', key=None, secret=None, api_version='v1',
                  url='https://api.itbit.com'):
         self.userId = user_id
         super(ItbitREST, self).__init__(url, api_version=api_version,
@@ -267,8 +272,8 @@ class ItbitREST(RESTAPI):
         return url, {'headers': auth_headers}
 
 
-class OKCoinREST(RESTAPI):
-    def __init__(self, key='', secret='', api_version='v1',
+class OKCoinREST(APIClient):
+    def __init__(self, key=None, secret=None, api_version='v1',
                  url='https://www.okcoin.com/api'):
         super(OKCoinREST, self).__init__(url, api_version=api_version,
                                          key=key,
@@ -289,8 +294,8 @@ class OKCoinREST(RESTAPI):
         return url, {'headers': headers}
 
 
-class BTCERest(RESTAPI):
-    def __init__(self, key='', secret='', api_version='3',
+class BTCERest(APIClient):
+    def __init__(self, key=None, secret=None, api_version='3',
                  url='https://btc-e.com/api'):
         super(BTCERest, self).__init__(url, api_version=api_version, key=key,
                                          secret=secret)
@@ -316,8 +321,8 @@ class BTCERest(RESTAPI):
         return url, {'headers': headers, 'params': params}
 
 
-class CCEXRest(RESTAPI):
-    def __init__(self, key='', secret='', api_version='',
+class CCEXRest(APIClient):
+    def __init__(self, key=None, secret=None, api_version=None,
                  url='https://c-cex.com/t'):
         super(CCEXRest, self).__init__(url, api_version=api_version, key=key,
                                          secret=secret)
@@ -343,8 +348,8 @@ class CCEXRest(RESTAPI):
         return url, {'headers': headers}
 
 
-class CryptopiaREST(RESTAPI):
-    def __init__(self, key='', secret='', api_version='',
+class CryptopiaREST(APIClient):
+    def __init__(self, key=None, secret=None, api_version=None,
                  url='https://www.cryptopia.co.nz/api'):
         super(CryptopiaREST, self).__init__(url, api_version=api_version, key=key,
                                          secret=secret)
@@ -370,8 +375,8 @@ class CryptopiaREST(RESTAPI):
         return uri, {'headers': headers, 'data': post_data}
 
 
-class GeminiREST(RESTAPI):
-    def __init__(self, key='', secret='', api_version='v1',
+class GeminiREST(APIClient):
+    def __init__(self, key=None, secret=None, api_version='v1',
                  url='https://api.gemini.com'):
         super(GeminiREST, self).__init__(url, api_version=api_version, key=key,
                                          secret=secret)
@@ -393,8 +398,8 @@ class GeminiREST(RESTAPI):
         return uri, {'headers': headers}
 
 
-class YunbiREST(RESTAPI):
-    def __init__(self, key='', secret='', api_version='v2',
+class YunbiREST(APIClient):
+    def __init__(self, key=None, secret=None, api_version='v2',
                  url='https://yunbi.com/api'):
         super(YunbiREST, self).__init__(url, api_version=api_version, key=key,
                                          secret=secret)
@@ -416,8 +421,8 @@ class YunbiREST(RESTAPI):
         return uri, {}
 
 
-class RockTradingREST(RESTAPI):
-    def __init__(self, key='', secret='', api_version='v1',
+class RockTradingREST(APIClient):
+    def __init__(self, key=None, secret=None, api_version='v1',
                  url='https://api.therocktrading.com'):
         super(RockTradingREST, self).__init__(url, api_version=api_version,
                                         key=key,
@@ -441,8 +446,8 @@ class RockTradingREST(RESTAPI):
         return uri, {'headers': headers}
 
 
-class PoloniexREST(RESTAPI):
-    def __init__(self, key='', secret='', api_version='',
+class PoloniexREST(APIClient):
+    def __init__(self, key=None, secret=None, api_version=None,
                  url='https://poloniex.com'):
         super(PoloniexREST, self).__init__(url, api_version=api_version,
                                            key=key, secret=secret)
@@ -461,12 +466,12 @@ class PoloniexREST(RESTAPI):
         return uri, {'headers': headers, 'data': params}
 
 
-class QuoineREST(RESTAPI):
+class QuoineREST(APIClient):
     """
     The Quoine Api requires the API version to be designated in each requests's
     header as {'X-Quoine-API-Version': 2}
     """
-    def __init__(self, key='', secret='', api_version='',
+    def __init__(self, key=None, secret=None, api_version=None,
                  url='https://api.quoine.com/'):
         if not jwt:
             raise SystemError("No JWT Installed! Quoine API Unavailable!")
@@ -488,12 +493,12 @@ class QuoineREST(RESTAPI):
         return self.uri+path, {'headers': headers}
 
 
-class QuadrigaCXREST(RESTAPI):
+class QuadrigaCXREST(APIClient):
     """
     The Quoine Api requires the API version to be designated in each requests's
     header as {'X-Quoine-API-Version': 2}
     """
-    def __init__(self, key='', secret='', client_id='', api_version='v2',
+    def __init__(self, key=None, secret=None, client_id='', api_version='v2',
                  url='https://api.quoine.com/'):
         if not jwt:
             raise SystemError("No JWT Installed! Quoine API Unavailable!")
