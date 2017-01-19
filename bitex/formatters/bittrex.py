@@ -8,6 +8,7 @@ from bitex.formatters.base import Formatter
 
 log = logging.getLogger(__name__)
 
+
 class BtrxFormatter(Formatter):
     @staticmethod
     def order(data, *args, **kwargs):

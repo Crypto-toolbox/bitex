@@ -9,5 +9,6 @@ from bitex.formatters.base import Formatter
 # Init Logging Facilities
 log = logging.getLogger(__name__)
 
+
 class YnbiFormatter(Formatter):
     pass
