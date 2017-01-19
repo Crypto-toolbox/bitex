@@ -5,27 +5,33 @@
 General:
 - Changelog (Yay!)
 - Pip install support
-- Semantic Versioning now employed.
+- Semantic versioning now employed.
 - Added folder for Sphinx doc files, for hosting at ReadTheDocs
 - Added folder for Unittests; so far only tests for API classes exist
 
 Exchanges:
-- Poloniex RESTAPI and interface
-- Interfaces for all RESTAPIs currently implemented
+- Poloniex  API Client and interface
+- Interfaces for all API Client currently implemented
 - Standardized methods with identical method headers for all interfaces
-- Quoine RESTAPI and interface
-- QuadrigaCX RESTAPI and interface
+- Quoine API Client and interface
+- QuadrigaCX API Client and interface
 
 Formatters:
-- The submodule `bitex.formatters` has been added, which provides formatter functions for exchange interfaces.
+- The sub-module `bitex.formatters` has been added, which provides formatter functions for exchange interfaces.
 
 ### Changed
 General:
-- Restructured project to store interfaces in `bitex.interfaces` submodule
+- Restructured project to store interfaces in `bitex.interfaces` sub-module
+
+API Clients
+- The base class `RESTAPI` has been renamed to `APIClient` to better reflect its purpose
+- The class `APIClient` is now an ABC
+- The attribute `request_methods` has been removed and its logic and purpose
+replaced by using `requests.request()` instead.
 
 Exchanges:
 - All calls to interface methods now return a tuple consisting of formatted query data, as well as the raw response object
-- Bitstamp's `tickers` method hat its surplus `s` removed.
+- Bitstamp's `tickers` method had its surplus `s` removed.
 
 ### Deprecated
 - btc-e API is no longer supported actively.
