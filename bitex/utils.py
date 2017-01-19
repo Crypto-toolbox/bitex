@@ -1,5 +1,5 @@
 """
-Provides utility functions, used across more than one module or sub module.
+Provides utility functions used across more than one module or sub module.
 
 """
 

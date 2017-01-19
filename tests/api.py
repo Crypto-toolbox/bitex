@@ -39,7 +39,7 @@ class APITests(unittest.TestCase):
         self.assertTrue(n.strip().isdigit())
 
     def test_restapi_query(self):
-        # Test that the unathenticated request is built correctly
+        # Test that the unauthenticated request is built correctly
         r = self.api.query('testing/endpoint/', authenticate=False,
                        request_method=requests.get,
                        params={'test_param': "chimichanga"})
