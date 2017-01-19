@@ -5,7 +5,7 @@ Children should implement formatters as necessary
 
 # Import Built-Ins
 import logging
-
+from abc import ABCMeta, abstractmethod
 # Import Third-Party
 
 # Import Homebrew
@@ -14,7 +14,7 @@ import logging
 log = logging.getLogger(__name__)
 
 
-class Formatter:
+class Formatter(metaclass=ABCMeta):
     def __init__(self):
         pass
 
@@ -23,6 +23,7 @@ class Formatter:
         return data
 
     @staticmethod
+    @abstractmethod
     def order_book(data, *args, **kwargs):
         """
         Returns dict of lists of lists of quotes in format [ts, price, size]
@@ -33,7 +34,7 @@ class Formatter:
              'asks': [['1480941691', '0.015', '1'],
                       ['1480941650', '0.016', '0.67'],
                       ['1480941678', '0.017', '23']]}
-        :param data:
+        :param data: requests.response() obj
         :param args:
         :param kwargs:
         :return:
@@ -41,6 +42,7 @@ class Formatter:
         return data
 
     @staticmethod
+    @abstractmethod
     def trades(data, *args, **kwargs):
         """
         Returns list of trades in format [ts, price, size, side]
@@ -48,7 +50,7 @@ class Formatter:
             [['1480941692', '0.014', '10', 'sell'],
             ['1480941690', '0.013', '0.66', 'buy'],
             ['1480941688', '0.012', '3', 'buy']]
-        :param data:
+        :param data: requests.response() obj
         :param args:
         :param kwargs:
         :return:
@@ -56,10 +58,11 @@ class Formatter:
         return data
 
     @staticmethod
+    @abstractmethod
     def order(data, *args, **kwargs):
         """
         Returns the order id as str if successful, else False
-        :param data:
+        :param data: requests.response() obj
         :param args:
         :param kwargs:
         :return:
@@ -67,10 +70,11 @@ class Formatter:
         return data
 
     @staticmethod
+    @abstractmethod
     def order_status(data, *args, **kwargs):
         """
         Returns True if it exists, False if it doesn't exist
-        :param data:
+        :param data: requests.response() obj
         :param args:
         :param kwargs:
         :return:
@@ -78,10 +82,11 @@ class Formatter:
         return data
 
     @staticmethod
+    @abstractmethod
     def cancel(data, *args, **kwargs):
         """
         returns True if it was cancelled successfully, else False
-        :param data:
+        :param data: requests.response() obj
         :param args:
         :param kwargs:
         :return:
@@ -89,13 +94,14 @@ class Formatter:
         return data
 
     @staticmethod
+    @abstractmethod
     def balance(data, *args, **kwargs):
         """
         Returns dict of available balances, with currency names as keys - this ignores
         any amount already involved in a trade (i.e. margin)
         ex.:
             {'BTC': '12.04', 'LTC': '444.12'}
-        :param data:
+        :param data: requests.response() obj
         :param args:
         :param kwargs:
         :return:
@@ -103,6 +109,7 @@ class Formatter:
         return data
 
     @staticmethod
+    @abstractmethod
     def withdraw(data, *args, **kwargs):
         """
         Returns a list giving details of success and transaction details, or failure
@@ -110,7 +117,7 @@ class Formatter:
         ex.:
             [True, currency, amount, target_address, txid]
             [False, 'Reason for failure/ error message']
-        :param data:
+        :param data: requests.response() obj
         :param args:
         :param kwargs:
         :return:
@@ -118,10 +125,11 @@ class Formatter:
         return data
 
     @staticmethod
+    @abstractmethod
     def deposit(data, *args, **kwargs):
         """
         Returns deposit address as str
-        :param data:
+        :param data: requests.response() obj
         :param args:
         :param kwargs:
         :return:
