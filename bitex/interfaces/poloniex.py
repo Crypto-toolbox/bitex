@@ -72,12 +72,13 @@ class Poloniex(PoloniexREST):
 
     @return_json(fmt.balance)
     def balance(self, detailed=False, **kwargs):
+        q = {}
         if detailed:
             q['command'] = 'returnCompleteBalances'
-            return self.private_query('tradingApi', params=kwargs)
         else:
             q['command'] = 'returnBalances'
-            return self.private_query('tradingApi', params=kwargs)
+        q.update(kwargs)
+        return self.private_query('tradingApi', params=q)
 
     @return_json(fmt.withdraw)
     def withdraw(self, amount, tar_addr, **kwargs):
