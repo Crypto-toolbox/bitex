@@ -11,6 +11,10 @@ log = logging.getLogger(__name__)
 
 
 class BtstFormatter(Formatter):
-    pass
+
+    @staticmethod
+    def ticker(data, *args, **kwargs):
+        return (data['bid'], data['ask'], data['high'], data['low'], data['open'],
+                None, data['last'], data['volume'], data['timestamp'])
 
 

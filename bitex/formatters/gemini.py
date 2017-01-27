@@ -11,4 +11,8 @@ log = logging.getLogger(__name__)
 
 
 class GmniFormatter(Formatter):
-    pass
+
+    @staticmethod
+    def ticker(data, *args, **kwargs):
+        return (data['bid'], data['ask'], None, None, None, None, data['last'],
+                data['volume'][args[0][:3].upper()], data['volume']['time'])

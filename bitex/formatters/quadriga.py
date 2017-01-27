@@ -11,6 +11,12 @@ log = logging.getLogger(__name__)
 
 
 class QuadrigaCXFormatter(Formatter):
+
+    @staticmethod
+    def ticker(data, *args, **kwargs):
+        return (data['bid'], data['ask'], data['high'], data['low'],
+                None, None, data['last'], data['volume'], None)
+
     @staticmethod
     def order(data, *args, **kwargs):
         return data

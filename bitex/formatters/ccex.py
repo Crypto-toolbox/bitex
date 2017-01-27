@@ -11,4 +11,8 @@ log = logging.getLogger(__name__)
 
 
 class CcexFormatter(Formatter):
-    pass
+
+    @staticmethod
+    def ticker(data, *args, **kwargs):
+        return (data['buy'], data['sell'], data['high'], data['low'], None,
+                None, data['lastprice'], None, data['updated'])

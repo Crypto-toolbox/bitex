@@ -11,6 +11,19 @@ log = logging.getLogger(__name__)
 
 
 class KrknFormatter(Formatter):
+
+    @staticmethod
+    def ticker(data, *args, **kwargs):
+        tickers = []
+        for k in data['result']:
+            d = data['result'][k]
+            tickers.append((d['b'][0], d['a'][0], d['h'][1], d['l'][1], d['o'],
+                           None, d['c'][0], d['v'][1], d['TimeStamp']))
+        if len(tickers) > 1:
+            return tickers
+        else:
+            return tickers[0]
+
     @staticmethod
     def order(data, *args, **kwargs):
         if not data['error']:

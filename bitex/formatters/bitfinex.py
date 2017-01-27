@@ -11,6 +11,12 @@ log = logging.getLogger(__name__)
 
 
 class BtfxFormatter(Formatter):
+
+    @staticmethod
+    def ticker(data, *args, **kwargs):
+        return (data['bid'], data['ask'], data['high'], data['low'],None, None,
+                data['last_price'], data['volume'], data['timestamp'])
+
     @staticmethod
     def order(data, *args, **kwargs):
         try:

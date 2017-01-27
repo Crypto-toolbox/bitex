@@ -10,6 +10,13 @@ log = logging.getLogger(__name__)
 
 
 class BtrxFormatter(Formatter):
+
+    @staticmethod
+    def ticker(data, *args, **kwargs):
+        data = data['result'][0]
+        return (data['Bid'], data['Ask'], data['High'], data['Low'], None, None,
+                data['Last'], data['Volume'], data['TimeStamp'])
+
     @staticmethod
     def order(data, *args, **kwargs):
         if data['success']:

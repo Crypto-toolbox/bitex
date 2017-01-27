@@ -11,4 +11,8 @@ log = logging.getLogger(__name__)
 
 
 class GdaxFormatter(Formatter):
-    pass
+
+    @staticmethod
+    def ticker(data, *args, **kwargs):
+        return (data['bid'], data['ask'], None, None, None, None, data['price'],
+                data['volume'], data['time'])

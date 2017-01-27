@@ -11,4 +11,9 @@ log = logging.getLogger(__name__)
 
 
 class RockFormatter(Formatter):
-    pass
+
+    @staticmethod
+    def ticker(data, *args, **kwargs):
+        return (data['bid'], data['ask'], data['high'], data['low'],
+                data['open'], data['close'], data['last'],
+                data['volume_traded'], data['date'])

@@ -11,4 +11,8 @@ log = logging.getLogger(__name__)
 
 
 class CrptFormatter(Formatter):
-    pass
+
+    @staticmethod
+    def ticker(data, *args, **kwargs):
+        return (data['BidPrice'], data['AskPrice'], data['High'], data['Low'],
+                None, None, data['LastPrice'], None, data['timestamp'])

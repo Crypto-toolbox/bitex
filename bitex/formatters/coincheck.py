@@ -11,4 +11,8 @@ log = logging.getLogger(__name__)
 
 
 class CnckFormatter(Formatter):
-    pass
+
+    @staticmethod
+    def ticker(data, *args, **kwargs):
+        return (data['bid'], data['ask'], data['high'], data['low'], None, None,
+                data['last'], data['volume'], data['timestamp'])
