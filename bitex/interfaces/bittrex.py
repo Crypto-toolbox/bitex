@@ -32,8 +32,10 @@ class Bittrex(BittrexREST):
     """
 
     @return_json(fmt.ticker)
-    def ticker(self, pair):
-        return self.public_query('getticker', params={'market': pair})
+    def ticker(self, pair, **kwargs):
+        q = {'market': pair}
+        q.update(kwargs)
+        return self.public_query('getticker', params=q)
 
     @return_json(fmt.order_book)
     def order_book(self, pair, side='both', **kwargs):

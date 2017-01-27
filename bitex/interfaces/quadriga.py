@@ -33,8 +33,9 @@ class QuadrigaCX(QuadrigaCXREST):
     """
 
     @return_json(fmt.ticker)
-    def ticker(self, pair):
+    def ticker(self, pair, **kwargs):
         q = {'book': pair}
+        q.update(kwargs)
         return self.public_query('ticker', params=q)
 
     @return_json(fmt.order_book)
@@ -96,4 +97,3 @@ class QuadrigaCX(QuadrigaCXREST):
     """
     Exchange Specific Methods
     """
-

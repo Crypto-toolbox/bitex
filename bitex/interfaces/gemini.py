@@ -35,8 +35,8 @@ class Gemini(GeminiREST):
     """
 
     @return_json(fmt.ticker)
-    def ticker(self, pair):
-        return self.public_query('pubticker/%s' % pair)
+    def ticker(self, pair, **kwargs):
+        return self.public_query('pubticker/%s' % pair, params=kwargs)
 
     @return_json(fmt.order_book)
     def order_book(self, pair, **kwargs):

@@ -32,16 +32,22 @@ class OKCoin(OKCoinREST):
     BitEx Standardized Methods
     """
     @return_json(fmt.ticker)
-    def ticker(self, pair):
-        return self.public_query('ticker.do', params={'pair': pair})
+    def ticker(self, pair, **kwargs):
+        q = {'pair': pair}
+        q.update(kwargs)
+        return self.public_query('ticker.do', params=q)
 
     @return_json(fmt.order_book)
-    def order_book(self, pair):
-        return self.public_query('depth.do', params={'pair': pair})
+    def order_book(self, pair, **kwargs):
+        q = {'pair': pair}
+        q.update(kwargs)
+        return self.public_query('depth.do', params=q)
 
     @return_json(fmt.trades)
-    def trades(self, pair):
-        return self.public_query('trades.do', params={'pair': pair})
+    def trades(self, pair, **kwargs):
+        q = {'pair': pair}
+        q.update(kwargs)
+        return self.public_query('trades.do', params=q)
 
     @return_json(fmt.order)
     def bid(self, pair, price, amount, **kwargs):

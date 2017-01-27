@@ -34,11 +34,11 @@ class Yunbi(YunbiREST):
     """
 
     @return_json(fmt.ticker)
-    def ticker(self, pair=None):
+    def ticker(self, pair=None, **kwargs):
         if pair:
-            return self.public_query('tickers/%s' % pair)
+            return self.public_query('tickers/%s' % pair, param=kwargs)
         else:
-            return self.public_query('tickers')
+            return self.public_query('tickers', param=kwargs)
 
     @return_json(fmt.order_book)
     def order_book(self, pair, **kwargs):

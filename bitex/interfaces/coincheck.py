@@ -33,15 +33,21 @@ class Coincheck(CoincheckREST):
     """
 
     @return_json(fmt.ticker)
-    def ticker(self, pair):
-        return self.public_query('ticker', params={'pair': pair})
+    def ticker(self, pair, **kwargs):
+        q = {'pair': pair}
+        q.update(kwargs)
+        return self.public_query('ticker', params=q)
 
     @return_json(fmt.trades)
-    def trades(self, pair):
-        return self.public_query('trades', params={'pair': pair})
+    def trades(self, pair, **kwargs):
+        q = {'pair': pair}
+        q.update(kwargs)
+        return self.public_query('trades', params=q)
 
     @return_json(fmt.order_book)
-    def order_book(self, pair):
+    def order_book(self, pair, **kwargs):
+        q = {'pair': pair}
+        q.update(kwargs)
         return self.public_query('order_books', params={'pair': pair})
 
     @return_json(fmt.order)
@@ -83,4 +89,3 @@ class Coincheck(CoincheckREST):
     """
     Exchange Specific Methods
     """
-

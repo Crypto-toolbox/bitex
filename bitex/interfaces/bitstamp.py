@@ -33,12 +33,12 @@ class Bitstamp(BitstampREST):
     """
 
     @return_json(fmt.ticker)
-    def ticker(self, pair):
-        return self.public_query('v2/ticker/%s/' % pair)
+    def ticker(self, pair, **kwargs):
+        return self.public_query('v2/ticker/%s/' % pair, params=kwargs)
 
     @return_json(fmt.order_book)
-    def order_book(self, pair):
-        return self.public_query('v2/order_book/%s' % pair)
+    def order_book(self, pair, **kwargs):
+        return self.public_query('v2/order_book/%s' % pair, params=kwargs)
 
     @return_json(fmt.trades)
     def trades(self, pair, **kwargs):

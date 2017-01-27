@@ -35,9 +35,9 @@ class Quoine(QuoineREST):
     """
 
     @return_json(fmt.ticker)
-    def ticker(self, pair):
+    def ticker(self, pair, **kwargs):
         pair = self.pairs[pair]
-        return self.public_query('products/%s' % pair)
+        return self.public_query('products/%s' % pair, params=kwargs)
 
     @return_json(fmt.order_book)
     def order_book(self, pair, **kwargs):
@@ -90,4 +90,3 @@ class Quoine(QuoineREST):
     """
     Exchange Specific Methods
     """
-

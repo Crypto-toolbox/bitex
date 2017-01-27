@@ -39,8 +39,8 @@ class Kraken(KrakenREST):
     """
 
     @return_json(fmt.ticker)
-    def ticker(self, *pairs):
-        q = self.make_params(*pairs)
+    def ticker(self, *pairs, **kwargs):
+        q = self.make_params(*pairs, **kwargs)
         return self.public_query('Ticker', params=q)
 
     @return_json(fmt.order_book)

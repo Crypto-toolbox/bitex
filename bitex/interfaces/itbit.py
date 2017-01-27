@@ -33,12 +33,16 @@ class ItBit(ItbitREST):
     """
 
     @return_json(fmt.ticker)
-    def ticker(self, pair):
-        return self.public_query('%s/ticker' % pair, params={'pair': pair})
+    def ticker(self, pair, **kwargs):
+        q = {'pair': pair}
+        q.update(kwargs)
+        return self.public_query('%s/ticker' % pair, params=q)
 
     @return_json(fmt.order_book)
-    def order_book(self, pair):
-        return self.public_query('%s/order_book' % pair, params={'pair': pair})
+    def order_book(self, pair, **kwargs):
+        q = {'pair': pair}
+        q.update(kwargs)
+        return self.public_query('%s/order_book' % pair, params=q)
 
     @return_json(fmt.trades)
     def trades(self, pair, **kwargs):
