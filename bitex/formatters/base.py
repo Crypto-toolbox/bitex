@@ -14,7 +14,7 @@ from abc import ABCMeta, abstractmethod
 log = logging.getLogger(__name__)
 
 
-class Formatter(metaclass=ABCMeta):
+class Formatter:
     """
     ABC Class to provide formatters for `bitex.utils.return_json()`.
     """
@@ -25,7 +25,7 @@ class Formatter(metaclass=ABCMeta):
     def ticker(data, *args, **kwargs):
         """
         Returns list of ticker data in following format:
-            [bid_price, ask_price, 24h_vol]
+            [bid_price, ask_price, high, low, open, close, last, 24h_vol, ts]
         :param data: requests.response() obj
         :param args:
         :param kwargs:
@@ -34,7 +34,6 @@ class Formatter(metaclass=ABCMeta):
         return data
 
     @staticmethod
-    @abstractmethod
     def order_book(data, *args, **kwargs):
         """
         Returns dict of lists of lists of quotes in format [ts, price, size]
@@ -53,7 +52,6 @@ class Formatter(metaclass=ABCMeta):
         return data
 
     @staticmethod
-    @abstractmethod
     def trades(data, *args, **kwargs):
         """
         Returns list of trades in format [ts, price, size, side]
@@ -69,7 +67,6 @@ class Formatter(metaclass=ABCMeta):
         return data
 
     @staticmethod
-    @abstractmethod
     def order(data, *args, **kwargs):
         """
         Returns the order id as str if successful, else ""
@@ -81,7 +78,6 @@ class Formatter(metaclass=ABCMeta):
         return data
 
     @staticmethod
-    @abstractmethod
     def order_status(data, *args, **kwargs):
         """
         Returns True if it exists, False if it doesn't exist
@@ -93,7 +89,6 @@ class Formatter(metaclass=ABCMeta):
         return data
 
     @staticmethod
-    @abstractmethod
     def cancel(data, *args, **kwargs):
         """
         returns True if it was cancelled successfully, else False
@@ -105,7 +100,6 @@ class Formatter(metaclass=ABCMeta):
         return data
 
     @staticmethod
-    @abstractmethod
     def balance(data, *args, **kwargs):
         """
         Returns dict of available balances, with currency names as keys - this ignores
@@ -120,7 +114,6 @@ class Formatter(metaclass=ABCMeta):
         return data
 
     @staticmethod
-    @abstractmethod
     def withdraw(data, *args, **kwargs):
         """
         Returns a list giving details of success and transaction details, or failure
@@ -136,7 +129,6 @@ class Formatter(metaclass=ABCMeta):
         return data
 
     @staticmethod
-    @abstractmethod
     def deposit(data, *args, **kwargs):
         """
         Returns deposit address as str
