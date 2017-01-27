@@ -23,7 +23,7 @@ def return_json(formatter=None):
     (expects requests.response object). If `formatter` is `None`, returns the
     json of the response.
     :param formatter: bitex.formatters.Formatter() obj
-    :return: json_data, raw if formatter is None, else formatted_json, raw
+    :return: (json_data, raw) if formatter is None, else (formatted_json, raw)
     :return type: requests.response.json(), requests.response() obj ||
                   formatted_json, requests.response() obj
     """
@@ -37,6 +37,7 @@ def return_json(formatter=None):
                               func.__name__, args, kwargs)
                 raise
 
+            #  Check status
             try:
                 r.raise_for_status()
             except requests.HTTPError:
@@ -44,6 +45,7 @@ def return_json(formatter=None):
                               r.request.url)
                 return None, r
 
+            #  load json data
             try:
                 data = r.json()
             except json.JSONDecodeError:
@@ -63,4 +65,3 @@ def return_json(formatter=None):
                 return data, r
         return wrapper
     return decorator
-
