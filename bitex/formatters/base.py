@@ -15,11 +15,22 @@ log = logging.getLogger(__name__)
 
 
 class Formatter(metaclass=ABCMeta):
+    """
+    ABC Class to provide formatters for `bitex.utils.return_json()`.
+    """
     def __init__(self):
         pass
 
     @staticmethod
     def ticker(data, *args, **kwargs):
+        """
+        Returns list of ticker data in following format:
+            [bid_price, ask_price, 24h_vol]
+        :param data: requests.response() obj
+        :param args:
+        :param kwargs:
+        :return: list
+        """
         return data
 
     @staticmethod
@@ -37,7 +48,7 @@ class Formatter(metaclass=ABCMeta):
         :param data: requests.response() obj
         :param args:
         :param kwargs:
-        :return:
+        :return: dict
         """
         return data
 
@@ -53,7 +64,7 @@ class Formatter(metaclass=ABCMeta):
         :param data: requests.response() obj
         :param args:
         :param kwargs:
-        :return:
+        :return: list
         """
         return data
 
@@ -61,11 +72,11 @@ class Formatter(metaclass=ABCMeta):
     @abstractmethod
     def order(data, *args, **kwargs):
         """
-        Returns the order id as str if successful, else False
+        Returns the order id as str if successful, else ""
         :param data: requests.response() obj
         :param args:
         :param kwargs:
-        :return:
+        :return: str
         """
         return data
 
@@ -77,7 +88,7 @@ class Formatter(metaclass=ABCMeta):
         :param data: requests.response() obj
         :param args:
         :param kwargs:
-        :return:
+        :return: bool
         """
         return data
 
@@ -89,7 +100,7 @@ class Formatter(metaclass=ABCMeta):
         :param data: requests.response() obj
         :param args:
         :param kwargs:
-        :return:
+        :return: bool
         """
         return data
 
@@ -104,7 +115,7 @@ class Formatter(metaclass=ABCMeta):
         :param data: requests.response() obj
         :param args:
         :param kwargs:
-        :return:
+        :return: dict
         """
         return data
 
@@ -120,7 +131,7 @@ class Formatter(metaclass=ABCMeta):
         :param data: requests.response() obj
         :param args:
         :param kwargs:
-        :return:
+        :return: list
         """
         return data
 
@@ -132,7 +143,6 @@ class Formatter(metaclass=ABCMeta):
         :param data: requests.response() obj
         :param args:
         :param kwargs:
-        :return:
+        :return: str
         """
         return data
-
