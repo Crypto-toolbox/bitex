@@ -120,7 +120,9 @@ at an exchange via its API. They feature the following characteristics:
 - Each method returns a tuple of (data, `requests.response()` object) where data is:
 
       a) a formatted json response, if a formatter is present
+      
       or
+      
       b) the raw json data contained as returned by `requests.response().json()` 
 
 # bitex.formatters
