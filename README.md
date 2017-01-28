@@ -108,6 +108,20 @@ k.ask(pair, price, size)
 b.ask(pair, price, size)
 g.ask(pair, price, size)
 ```
+
+# Standardzied Methods
+
+As explained in the previous section, __standardized methods__ refer to the methods of each interface,
+which have been deemed as part of the set of minimal methods and functions required, to trade
+at an exchange via its API. They feature the following characteristics:
+
+- Each method has an identical method header across all interfaces
+- Its output is identical across all interfaces
+- Each method returns a tuple of (data, `requests.response()` object) where data is:
+     a) a formatted json response, if a formatter is present
+     or
+     b) the raw json data contained as returned by `requests.response().json()` 
+
 # bitex.formatters
 
 This module provide formatters for the standardized methods, formatting their json output into a uniform layout. They are a work in progress feature.
@@ -143,14 +157,6 @@ The following is a table of all formatters currently implemented - any method no
 | TheRockTradingLTD | Done       | Planned      | Planned  | Planned     | Planned | Planned        | Planned   | Planned    | Planned   |
 | Yunbi             | Done       | Planned      | Planned  | Planned     | Planned | Planned        | Planned   | Planned    | Planned   |
 
-# Standardzied Methods
-
-As explained in the previous section, __standardized methods__ refer to the methods of each interface,
-which have been deemed as part of the set of minimal methods and functions required, to trade
-at an exchange via its API. They feature the following characteristics:
-
-- Each method has an identical method header across all interfaces
-- Its output is identical across all interfaces
 
 # Installation
 
