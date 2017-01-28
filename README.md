@@ -23,19 +23,19 @@ interfaces, on top of which the second part - `bitex.interfaces` - builds upon.
 | Bitfinex       | Done | Done           | Done              | Done               | WIP        | WIP   |
 | Bitstamp       | Done | Done           | Done              | Done               | WIP        | WIP   |
 | Bittrex        | Done | Done           | Done              | Done               | WIP        | WIP   |
-| C-Cex          | Done | BETA           | Done              | Done               | Planned    | WIP   |
-| CoinCheck      | Done | Done           | Done              | Done               | Planned    | WIP   |
-| Cryptopia      | Done | BETA           | Done              | Done               | Planned    | WIP   |
-| GDAX           | Done | BETA           | Done              | Done               | Planned    | WIP   |
-| Gemini         | Done | BETA           | Done              | Done               | Planned    | WIP   |
-| itBit          | Done | BETA           | Done              | Done               | Planned    | WIP   |
+| C-Cex          | Done | BETA           | Done              | Done               | WIP        | WIP   |
+| CoinCheck      | Done | Done           | Done              | Done               | WIP        | WIP   |
+| Cryptopia      | Done | BETA           | Done              | Done               | WIP        | WIP   |
+| GDAX           | Done | BETA           | Done              | Done               | WIP        | WIP   |
+| Gemini         | Done | BETA           | Done              | Done               | WIP        | WIP   |
+| itBit          | Done | BETA           | Done              | Done               | WIP        | WIP   |
 | Kraken         | Done | Done           | Done              | Done               | WIP        | WIP   |
-| OkCoin         | Done | BETA           | Done              | Done               | Planned    | WIP   |
+| OkCoin         | Done | BETA           | Done              | Done               | WIP        | WIP   |
 | Poloniex       | Done | Done           | Done              | Done               | WIP        | WIP   |
-| TheRockTrading | Done | BETA           | Done              | Done               | Planned    | WIP   |
-| Yunbi          | Done | BETA           | Done              | Done               | Planned    | WIP   |
-| Quoine         | Done | BETA           | Done              | Done               | Planned    | WIP   |
-| QuadrigaCX     | Done | BETA           | Done              | Done               | Planned    | WIP   |
+| TheRockTrading | Done | BETA           | Done              | Done               | WIP        | WIP   |
+| Yunbi          | Done | BETA           | Done              | Done               | WIP        | WIP   |
+| Quoine         | Done | BETA           | Done              | Done               | WIP        | WIP   |
+| QuadrigaCX     | Done | BETA           | Done              | Done               | WIP        | WIP   |
 
 Additional clients will be added to (or removed from) this list, 
 according to their liquidity and market volume.
@@ -108,6 +108,40 @@ k.ask(pair, price, size)
 b.ask(pair, price, size)
 g.ask(pair, price, size)
 ```
+# bitex.formatters
+
+This module provide formatters for the standardized methods, formatting their json output into a uniform layout. They are a work in progress feature.
+
+Be mindful that, in order to provide a unified output format, some fields have been dropped in the formatted output! If you rely on one of these dropped fields, be sure to use the returned `requests.response()` object, and parse the json yourself:
+
+```
+from bitex import Kraken
+k = Kraken()
+formatted_output, requests_response_object = k.ticker()
+print(formatted_output)  # drops bid/ask sizes, vwap and other data
+print(requests.response_object.json())  # Returns all data
+```
+
+The following is a table of all formatters currently implemented - any method not marked as `Done` will not do any formatting, and simply return `requests.response.json()` if data contains valid json - else `None` is returned instead.
+
+| Exchange          | `ticker()` | order_book() | trades() | bid()/ask() | order() | cancel_order() | balance() | withdraw() | deposit() |
+|-------------------|------------|--------------|----------|-------------|---------|----------------|-----------|------------|-----------|
+| Bitfinex          | Done       | Planned      | Planned  | Planned     | Planned | Planned        | Planned   | Planned    | Planned   |
+| Bitstamp          | Done       | Planned      | Planned  | Planned     | Planned | Planned        | Planned   | Planned    | Planned   |
+| Bittrex           | Done       | Planned      | Planned  | Planned     | Planned | Planned        | Planned   | Planned    | Planned   |
+| C-Cex             | Done       | Planned      | Planned  | Planned     | Planned | Planned        | Planned   | Planned    | Planned   |
+| Coincheck         | Done       | Planned      | Planned  | Planned     | Planned | Planned        | Planned   | Planned    | Planned   |
+| Cryptopia         | Done       | Planned      | Planned  | Planned     | Planned | Planned        | Planned   | Planned    | Planned   |
+| GDAX              | Done       | Planned      | Planned  | Planned     | Planned | Planned        | Planned   | Planned    | Planned   |
+| Gemini            | Done       | Planned      | Planned  | Planned     | Planned | Planned        | Planned   | Planned    | Planned   |
+| itBit             | Done       | Planned      | Planned  | Planned     | Planned | Planned        | Planned   | Planned    | Planned   |
+| Kraken            | Done       | Planned      | Planned  | Planned     | Planned | Planned        | Planned   | Planned    | Planned   |
+| OKCoin            | Done       | Planned      | Planned  | Planned     | Planned | Planned        | Planned   | Planned    | Planned   |
+| Poloniex          | Done       | Planned      | Planned  | Planned     | Planned | Planned        | Planned   | Planned    | Planned   |
+| QuadrigaCX        | Done       | Planned      | Planned  | Planned     | Planned | Planned        | Planned   | Planned    | Planned   |
+| Quoine            | Done       | Planned      | Planned  | Planned     | Planned | Planned        | Planned   | Planned    | Planned   |
+| TheRockTradingLTD | Done       | Planned      | Planned  | Planned     | Planned | Planned        | Planned   | Planned    | Planned   |
+| Yunbi             | Done       | Planned      | Planned  | Planned     | Planned | Planned        | Planned   | Planned    | Planned   |
 
 # Standardzied Methods
 
