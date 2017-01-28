@@ -17,20 +17,24 @@ Exchanges:
 - QuadrigaCX API Client and interface
 
 Formatters:
-- The sub-module `bitex.formatters` has been added, which provides formatter functions for exchange interfaces.
+- The sub-module `bitex.formatters` has been added, which provides formatter
+functions for exchange interfaces.
 
 ### Changed
 General:
 - Restructured project to store interfaces in `bitex.interfaces` sub-module
 
 API Clients
-- The base class `RESTAPI` has been renamed to `APIClient` to better reflect its purpose
+- The base class `RESTAPI` has been renamed to `APIClient` to better reflect
+its purpose
 - The class `APIClient` is now an ABC
 - The attribute `request_methods` has been removed and its logic and purpose
 replaced by using `requests.request()` instead.
 
 Exchanges:
-- All calls to interface methods now return a tuple consisting of formatted query data, as well as the raw response object
+- All calls to interface methods now return an `APIResponse()` object; this is a
+subclass of `requests.Response` and adds an attribute `formatted` - which
+contains formatted json data, if available.
 - Bitstamp's `tickers` method had its surplus `s` removed.
 
 ### Deprecated
