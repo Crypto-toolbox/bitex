@@ -12,6 +12,7 @@ from functools import wraps
 import requests
 
 # Import Homebrew
+from bitex.api import APIResponse
 
 # Init Logging Facilities
 log = logging.getLogger(__name__)
@@ -43,7 +44,7 @@ def return_api_response(formatter=None):
             except requests.HTTPError:
                 log.exception("return_api_response: HTTPError for url %s",
                               r.request.url)
-                return None, r
+                return APIResponse(None, r)
 
             #  load json data
             try:
@@ -52,7 +53,7 @@ def return_api_response(formatter=None):
                 log.exception('return_api_response: Error while parsing json. '
                               'Request url was: %s, result is: '
                               '%s', r.request.url, r.text)
-                return None, r
+                return APIResponse(None, r)
             except Exception:
                 log.exception("return_api_response(): Unexpected error while parsing "
                               "json from %s", r.request.url)
@@ -60,8 +61,8 @@ def return_api_response(formatter=None):
 
             # Apply formatter and return
             if formatter is not None:
-                return formatter(data, *args, **kwargs), r
+                return APIResponse(formatter(data, *args, **kwargs), r)
             else:
-                return data, r
+                return APIResponse(data, r)
         return wrapper
     return decorator
