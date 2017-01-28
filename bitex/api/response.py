@@ -27,7 +27,6 @@ class APIResponse(Response):
 if __name__ == '__main__':
     from bitex import Kraken
     k = Kraken()
-    _, resp = k.ticker('XXBTZEUR')
-    x = APIResponse(_, resp)
-    print(x())
-    print(x.json())
+    resp = k.ticker('XXBTZEUR')
+    print(resp.formatted)
+    print(resp.json())
