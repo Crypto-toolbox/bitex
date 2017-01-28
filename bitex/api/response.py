@@ -5,7 +5,7 @@ from requests import Response
 class APIResponse(Response):
     __attrs__ = ['_content', 'status_code', 'headers', 'url', 'history',
                  'encoding', 'reason', 'cookies', 'elapsed', 'request',
-                 'formatted']
+                 '_formatted']
 
     def __init__(self, formatted_json, req_response):
         self._content = req_response._content
@@ -18,10 +18,11 @@ class APIResponse(Response):
         self.cookies = req_response.cookies
         self.elapsed = req_response.elapsed
         self.request = req_response.request
-        self.formatted = formatted_json
+        self._formatted = formatted_json
 
-    def __call__(self, *args, **kwargs):
-        return self.formatted
+    @property
+    def formatted(self):
+        return self._formatted
 
 if __name__ == '__main__':
     from bitex import Kraken
