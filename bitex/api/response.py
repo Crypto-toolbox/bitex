@@ -1,21 +1,32 @@
-"""
-Task:
-Do fancy shit.
-"""
-
-# Import Built-Ins
-import logging
-
 # Import Third-Party
+from requests import Response
 
-# Import Homebrew
 
+class APIResponse(Response):
+    __attrs__ = ['_content', 'status_code', 'headers', 'url', 'history',
+                 'encoding', 'reason', 'cookies', 'elapsed', 'request',
+                 'formatted']
 
-logging.basicConfig(level=logging.DEBUG, datefmt='%m-%d %H:%M',
-                    filename='{}.log'.format(__name__), filemode='w+')
-console = logging.StreamHandler()
-console.setLevel(logging.INFO)
-formatter = logging.Formatter(
-    '%(asctime)s %(name)-4s: %(levelname)-4s %(message)s')
-console.setFormatter(formatter)
-log = logging.getLogger().addHandler(console)
+    def __init__(self, formatted_json, req_response):
+        self._content = req_response._content
+        self.status_code = req_response.status_code
+        self.headers = req_response.headers
+        self.url = req_response.url
+        self.history = req_response.history
+        self.encoding = req_response.encoding
+        self.reason = req_response.reason
+        self.cookies = req_response.cookies
+        self.elapsed = req_response.elapsed
+        self.request = req_response.request
+        self.formatted = formatted_json
+
+    def __call__(self, *args, **kwargs):
+        return self.formatted
+
+if __name__ == '__main__':
+    from bitex import Kraken
+    k = Kraken()
+    _, resp = k.ticker('XXBTZEUR')
+    x = APIResponse(_, resp)
+    print(x())
+    print(x.json())
