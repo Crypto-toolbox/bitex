@@ -17,7 +17,7 @@ import requests
 log = logging.getLogger(__name__)
 
 
-def return_json(formatter=None):
+def return_api_response(formatter=None):
     """
     Decorator, which Applies the referenced formatter to the function output
     (expects requests.response object). If `formatter` is `None`, returns the
@@ -33,7 +33,7 @@ def return_json(formatter=None):
             try:
                 r = func(*args, **kwargs)
             except Exception:
-                log.exception("return_json(): Error during call to %s(%s, %s)",
+                log.exception("return_api_response(): Error during call to %s(%s, %s)",
                               func.__name__, args, kwargs)
                 raise
 
@@ -41,7 +41,7 @@ def return_json(formatter=None):
             try:
                 r.raise_for_status()
             except requests.HTTPError:
-                log.exception("return_json: HTTPError for url %s",
+                log.exception("return_api_response: HTTPError for url %s",
                               r.request.url)
                 return None, r
 
@@ -49,12 +49,12 @@ def return_json(formatter=None):
             try:
                 data = r.json()
             except json.JSONDecodeError:
-                log.exception('return_json: Error while parsing json. '
+                log.exception('return_api_response: Error while parsing json. '
                               'Request url was: %s, result is: '
                               '%s', r.request.url, r.text)
                 return None, r
             except Exception:
-                log.exception("return_json(): Unexpected error while parsing "
+                log.exception("return_api_response(): Unexpected error while parsing "
                               "json from %s", r.request.url)
                 raise
 

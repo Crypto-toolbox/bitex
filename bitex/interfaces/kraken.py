@@ -9,7 +9,7 @@ import logging
 
 # Import Homebrew
 from bitex.api.rest import KrakenREST
-from bitex.utils import return_json
+from bitex.utils import return_api_response
 from bitex.formatters.kraken import KrknFormatter as fmt
 # Init Logging Facilities
 log = logging.getLogger(__name__)
@@ -38,17 +38,17 @@ class Kraken(KrakenREST):
     BitEx Standardized Methods
     """
 
-    @return_json(fmt.ticker)
+    @return_api_response(fmt.ticker)
     def ticker(self, *pairs, **kwargs):
         q = self.make_params(*pairs, **kwargs)
         return self.public_query('Ticker', params=q)
 
-    @return_json(fmt.order_book)
+    @return_api_response(fmt.order_book)
     def order_book(self, pair, **kwargs):
         q = self.make_params(pair, **kwargs)
         return self.public_query('Depth', params=q)
 
-    @return_json(fmt.trades)
+    @return_api_response(fmt.trades)
     def trades(self, pair, **kwargs):
         q = self.make_params(pair, **kwargs)
         return self.public_query('Trades', params=q)
@@ -60,21 +60,21 @@ class Kraken(KrakenREST):
         q.update(kwargs)
         return self.private_query('AddOrder', params=q)
 
-    @return_json(fmt.order)
+    @return_api_response(fmt.order)
     def bid(self, pair, price, amount, **kwargs):
         return self._add_order(pair, 'buy', price, amount, **kwargs)
 
-    @return_json(fmt.order)
+    @return_api_response(fmt.order)
     def ask(self, pair, price, amount, **kwargs):
         return self._add_order(pair, 'sell', price, amount, **kwargs)
 
-    @return_json(fmt.cancel)
+    @return_api_response(fmt.cancel)
     def cancel_order(self, order_id, **kwargs):
         q = {'txid': order_id}
         q.update(kwargs)
         return self.private_query('CancelOrder', params=q)
 
-    @return_json(fmt.order_status)
+    @return_api_response(fmt.order_status)
     def order(self, *txids, **kwargs):
         if len(txids) > 1:
             q = {'txid': txids}
@@ -86,15 +86,15 @@ class Kraken(KrakenREST):
         q.update(kwargs)
         return self.private_query('QueryOrders', params=q)
 
-    @return_json(fmt.balance)
+    @return_api_response(fmt.balance)
     def balance(self, **kwargs):
         return self.private_query('Balance')
 
-    @return_json(fmt.withdraw)
+    @return_api_response(fmt.withdraw)
     def withdraw(self, amount, tar_addr, **kwargs):
         raise NotImplementedError()
 
-    @return_json(fmt.deposit)
+    @return_api_response(fmt.deposit)
     def deposit_address(self, **kwargs):
         raise NotImplementedError()
 
@@ -102,44 +102,44 @@ class Kraken(KrakenREST):
     Exchange Specific Methods
     """
 
-    @return_json(None)
+    @return_api_response(None)
     def time(self):
         return self.public_query('Time')
 
-    @return_json(None)
+    @return_api_response(None)
     def assets(self, **kwargs):
         return self.public_query('Assets', params=kwargs)
 
-    @return_json(None)
+    @return_api_response(None)
     def pairs(self, **kwargs):
         return self.public_query('AssetPairs', params=kwargs)
 
-    @return_json(None)
+    @return_api_response(None)
     def ohlc(self, pair, **kwargs):
         q = self.make_params(pair, **kwargs)
         return self.public_query('OHLC', params=q)
 
-    @return_json(None)
+    @return_api_response(None)
     def spread(self, pair, **kwargs):
         q = self.make_params(pair, **kwargs)
         return self.public_query('Spread', params=q)
 
-    @return_json(None)
+    @return_api_response(None)
     def orders(self, **kwargs):
         q = kwargs
         return self.private_query('OpenOrders', params=q)
 
-    @return_json(None)
+    @return_api_response(None)
     def closed_orders(self, **kwargs):
         q = kwargs
         return self.private_query('ClosedOrders', params=q)
 
-    @return_json(None)
+    @return_api_response(None)
     def trade_history(self, **kwargs):
         q = kwargs
         return self.private_query('TradesHistory', params=q)
 
-    @return_json(None)
+    @return_api_response(None)
     def fees(self, pair=None):
         q = {'fee-info': True}
 
