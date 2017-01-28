@@ -9,7 +9,7 @@ import logging
 
 # Import Homebrew
 from bitex.api.rest import BittrexREST
-from bitex.utils import return_json
+from bitex.utils import return_api_response
 from bitex.formatters.bittrex import BtrxFormatter as fmt
 # Init Logging Facilities
 log = logging.getLogger(__name__)
@@ -31,25 +31,25 @@ class Bittrex(BittrexREST):
     BitEx Standardized Methods
     """
 
-    @return_json(fmt.ticker)
+    @return_api_response(fmt.ticker)
     def ticker(self, pair, **kwargs):
         q = {'market': pair}
         q.update(kwargs)
         return self.public_query('getmarketsummary', params=q)
 
-    @return_json(fmt.order_book)
+    @return_api_response(fmt.order_book)
     def order_book(self, pair, side='both', **kwargs):
         q = {'market': pair, 'type': side}
         q.update(kwargs)
         return self.public_query('getorderbook', params=q)
 
-    @return_json(fmt.trades)
+    @return_api_response(fmt.trades)
     def trades(self, pair, **kwargs):
         q = {'market': pair}
         q.update(kwargs)
         return self.public_query('getmarkethistory', params=q)
 
-    @return_json(fmt.order)
+    @return_api_response(fmt.order)
     def bid(self, pair, price, vol, market=False, **kwargs):
         q = {'market': pair, 'rate': price, 'quantity': vol}
         q.update(kwargs)
@@ -60,7 +60,7 @@ class Bittrex(BittrexREST):
             # send limit order
             return self.private_query('market/buylimit', params=q)
 
-    @return_json(fmt.order)
+    @return_api_response(fmt.order)
     def ask(self, pair, price, vol, market=False, **kwargs):
         q = {'market': pair, 'rate': price, 'quantity': vol}
         q.update(kwargs)
@@ -71,28 +71,28 @@ class Bittrex(BittrexREST):
             # send limit order
             return self.private_query('market/selllimit', params=q)
 
-    @return_json(fmt.cancel)
+    @return_api_response(fmt.cancel)
     def cancel_order(self, txid):
         q = {'uuid': txid}
         return self.private_query('market/cancel', params=q)
 
-    @return_json(fmt.order_status)
+    @return_api_response(fmt.order_status)
     def order(self, order_id, **kwargs):
         q = {'uuid': order_id}
         q.update(kwargs)
         return self.private_query('account/getorder', params=q)
 
-    @return_json(fmt.balance)
+    @return_api_response(fmt.balance)
     def balance(self):
         return self.private_query('account/getbalances')
 
-    @return_json(fmt.withdraw)
+    @return_api_response(fmt.withdraw)
     def withdraw(self, amount, tar_addr, **kwargs):
         q = {'quantity': amount, 'address': tar_addr}
         q.update(kwargs)
         return self.private_query('account/withdraw', params=q)
 
-    @return_json(fmt.deposit)
+    @return_api_response(fmt.deposit)
     def deposit_address(self, **kwargs):
         return self.private_query('account/getdepositaddress')
 
@@ -100,15 +100,15 @@ class Bittrex(BittrexREST):
     Exchange Specific Methods
     """
 
-    @return_json(None)
+    @return_api_response(None)
     def pairs(self):
         return self.public_query('getmarkets')
 
-    @return_json(None)
+    @return_api_response(None)
     def currencies(self):
         return self.public_query('getcurrencies')
 
-    @return_json(None)
+    @return_api_response(None)
     def statistics(self, pair=None):
         if pair:
             return self.public_query('getmarketsummary', params={'market': pair})

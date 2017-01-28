@@ -9,7 +9,7 @@ import logging
 
 # Import Homebrew
 from bitex.api.rest import BitfinexREST
-from bitex.utils import return_json
+from bitex.utils import return_api_response
 from bitex.formatters.bitfinex import BtfxFormatter as fmt
 # Init Logging Facilities
 log = logging.getLogger(__name__)
@@ -30,15 +30,15 @@ class Bitfinex(BitfinexREST):
     """
     BitEx Standardized Methods
     """
-    @return_json(fmt.order_book)
+    @return_api_response(fmt.order_book)
     def order_book(self, pair, **kwargs):
         return self.public_query('book/%s' % pair, params=kwargs)
 
-    @return_json(fmt.ticker)
+    @return_api_response(fmt.ticker)
     def ticker(self, pair, **kwargs):
         return self.public_query('pubticker/%s' % pair, params=kwargs)
 
-    @return_json(fmt.trades)
+    @return_api_response(fmt.trades)
     def trades(self, pair, **kwargs):
         return self.public_query('trades/%s' % pair, params=kwargs)
 
@@ -51,17 +51,17 @@ class Bitfinex(BitfinexREST):
         else:
             return self.private_query('order/new', params=q)
 
-    @return_json(fmt.order)
+    @return_api_response(fmt.order)
     def bid(self, pair, price, amount, replace=False, **kwargs):
         return self._place_order(pair, amount, price, 'buy', replace=replace,
                                  **kwargs)
 
-    @return_json(fmt.order)
+    @return_api_response(fmt.order)
     def ask(self, pair, price, amount, replace=False, **kwargs):
         return self._place_order(pair, str(amount), str(price), 'sell',
                                  replace=replace, **kwargs)
 
-    @return_json(fmt.cancel)
+    @return_api_response(fmt.cancel)
     def cancel_order(self, order_id, all=False, **kwargs):
 
         q = {'order_id': int(order_id)}
@@ -72,17 +72,17 @@ class Bitfinex(BitfinexREST):
             endpoint = 'order/cancel/all'
             return self.private_query(endpoint)
 
-    @return_json(fmt.order_status)
+    @return_api_response(fmt.order_status)
     def order(self, order_id, **kwargs):
         q = {'order_id': order_id}
         q.update(kwargs)
         return self.private_query('order/status', params=q)
 
-    @return_json(fmt.balance)
+    @return_api_response(fmt.balance)
     def balance(self, **kwargs):
         return self.private_query('balances', params=kwargs)
 
-    @return_json(fmt.withdraw)
+    @return_api_response(fmt.withdraw)
     def withdraw(self, amount, tar_addr, **kwargs):
         q = {'withdraw_type': kwargs.pop('withdraw_type'),
              'walletselected': kwargs.pop('walletselected'),
@@ -90,7 +90,7 @@ class Bitfinex(BitfinexREST):
         q.update(kwargs)
         return self.private_query('withdraw', params=q)
 
-    @return_json(fmt.deposit)
+    @return_api_response(fmt.deposit)
     def deposit_address(self, **kwargs):
         q = {}
         q.update(kwargs)
@@ -100,40 +100,40 @@ class Bitfinex(BitfinexREST):
     Exchange Specific Methods
     """
 
-    @return_json(None)
+    @return_api_response(None)
     def statistics(self, pair):
         return self.public_query('stats/%s' % pair)
 
-    @return_json(None)
+    @return_api_response(None)
     def funding_book(self, currency, **kwargs):
         return self.public_query('lendbook/%s' % currency, params=kwargs)
 
-    @return_json(None)
+    @return_api_response(None)
     def lends(self, currency, **kwargs):
         return self.public_query('lends/%s' % currency, params=kwargs)
 
-    @return_json(None)
+    @return_api_response(None)
     def pairs(self, details=False):
         if details:
             return self.public_query('symbols_details')
         else:
             return self.public_query('symbols')
 
-    @return_json(None)
+    @return_api_response(None)
     def fees(self):
         return self.private_query('account_infos')
 
-    @return_json(None)
+    @return_api_response(None)
     def orders(self):
         return self.private_query('orders')
 
-    @return_json(None)
+    @return_api_response(None)
     def balance_history(self, currency, **kwargs):
         q = {'currency': currency}
         q.update(kwargs)
         return self.private_query('history/movements', params=q)
 
-    @return_json(None)
+    @return_api_response(None)
     def trade_history(self, pair, since, **kwargs):
         q = {'symbol': pair, 'timestamp': since}
         q.update(kwargs)

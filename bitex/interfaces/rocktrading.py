@@ -9,7 +9,7 @@ import logging
 
 # Import Homebrew
 from bitex.api.rest import RockTradingREST
-from bitex.utils import return_json
+from bitex.utils import return_api_response
 from bitex.formatters.rocktrading import RockFormatter as fmt
 
 # Init Logging Facilities
@@ -32,18 +32,18 @@ class RockTradingLtd(RockTradingREST):
     BitEx Standardized Methods
     """
 
-    @return_json(fmt.ticker)
+    @return_api_response(fmt.ticker)
     def ticker(self, pair=None, **kwargs):
         if pair:
             return self.public_query('funds/%s/ticker' % pair, params=kwargs)
         else:
             return self.public_query('tickers')
 
-    @return_json(fmt.order_book)
+    @return_api_response(fmt.order_book)
     def order_book(self, pair, **kwargs):
         return self.public_query('funds/%s/orderbook' % pair, params=kwargs)
 
-    @return_json(fmt.trades)
+    @return_api_response(fmt.trades)
     def trades(self, pair, **kwargs):
         return self.public_query('funds/%s/trades' % pair, params=kwargs)
 
@@ -53,20 +53,20 @@ class RockTradingLtd(RockTradingREST):
         return self.private_query('funds/%s/orders' % pair, method='POST',
                                   params=q)
 
-    @return_json(fmt.order)
+    @return_api_response(fmt.order)
     def bid(self, pair, price, size, **kwargs):
         return self._place_order('buy', pair, price, size, **kwargs)
 
-    @return_json(fmt.order)
+    @return_api_response(fmt.order)
     def ask(self, *, pair, price, size, **kwargs):
         return self._place_order('sell', pair, price, size, **kwargs)
 
-    @return_json(fmt.cancel)
+    @return_api_response(fmt.cancel)
     def cancel_order(self, id, market, **kwargs):
         return self.private_query('funds/%s/orders/%s' % (market, id),
                                   method='DELETE', params=kwargs)
 
-    @return_json(fmt.order_status)
+    @return_api_response(fmt.order_status)
     def order(self, order_id, **kwargs):
         try:
             fund_id = kwargs.pop('fund_id')
@@ -76,17 +76,17 @@ class RockTradingLtd(RockTradingREST):
         return self.private_query('funds/%s/orders/%s' % (fund_id, order_id),
                                   params=kwargs)
 
-    @return_json(fmt.balance)
+    @return_api_response(fmt.balance)
     def balance(self, **kwargs):
         return self.private_query('balances', params=kwargs)
 
-    @return_json(fmt.withdraw)
+    @return_api_response(fmt.withdraw)
     def withdraw(self, amount, tar_addr, **kwargs):
         q = {'destination_address': tar_addr, 'amount': amount}
         q.update(kwargs)
         return self.private_query('atms/withdraw', params=q)
 
-    @return_json(fmt.deposit)
+    @return_api_response(fmt.deposit)
     def deposit_address(self, **kwargs):
         raise NotImplementedError()
 

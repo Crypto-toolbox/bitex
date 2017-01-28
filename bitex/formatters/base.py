@@ -16,7 +16,7 @@ log = logging.getLogger(__name__)
 
 class Formatter:
     """
-    ABC Class to provide formatters for `bitex.utils.return_json()`.
+    ABC Class to provide formatters for `bitex.utils.return_api_response()`.
     """
     def __init__(self):
         pass

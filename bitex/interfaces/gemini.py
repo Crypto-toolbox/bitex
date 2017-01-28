@@ -9,7 +9,7 @@ import logging
 
 # Import Homebrew
 from bitex.api.rest import GeminiREST
-from bitex.utils import return_json
+from bitex.utils import return_api_response
 from bitex.formatters.gemini import GmniFormatter as fmt
 
 # Init Logging Facilities
@@ -34,51 +34,51 @@ class Gemini(GeminiREST):
     BitEx Standardized Methods
     """
 
-    @return_json(fmt.ticker)
+    @return_api_response(fmt.ticker)
     def ticker(self, pair, **kwargs):
         return self.public_query('pubticker/%s' % pair, params=kwargs)
 
-    @return_json(fmt.order_book)
+    @return_api_response(fmt.order_book)
     def order_book(self, pair, **kwargs):
         return self.public_query('book/%s' % pair, params=kwargs)
 
-    @return_json(fmt.trades)
+    @return_api_response(fmt.trades)
     def trades(self, pair, **kwargs):
         return self.public_query('trades/%s' % pair, params=kwargs)
 
-    @return_json(fmt.order)
+    @return_api_response(fmt.order)
     def bid(self, pair, price, size, **kwargs):
         q = {'symbol': pair, 'amount': size, 'price': price, 'side': 'buy'}
         q.update(kwargs)
         return self.private_query('order/new', params=q)
 
-    @return_json(fmt.order)
+    @return_api_response(fmt.order)
     def ask(self, pair, price, size, **kwargs):
         q = {'symbol': pair, 'amount': size, 'price': price, 'side': 'sell'}
         q.update(kwargs)
         return self.private_query('order/new', params=q)
 
-    @return_json(fmt.cancel)
+    @return_api_response(fmt.cancel)
     def cancel_order(self, order_id, **kwargs):
         q = {'order_id': order_id}
         q.update(kwargs)
         return self.private_query('order/cancel', params=q)
 
-    @return_json(fmt.order_status)
+    @return_api_response(fmt.order_status)
     def order(self, order_id, **kwargs):
         q = {'order_id': order_id}
         q.update(kwargs)
         return self.private_query('order/status', params=q)
 
-    @return_json(fmt.balance)
+    @return_api_response(fmt.balance)
     def balance(self, **kwargs):
         return self.private_query('balances', params=kwargs)
 
-    @return_json(fmt.withdraw)
+    @return_api_response(fmt.withdraw)
     def withdraw(self, amount, tar_addr, **kwargs):
         raise NotImplementedError()
 
-    @return_json(fmt.deposit)
+    @return_api_response(fmt.deposit)
     def deposit_address(self, **kwargs):
         raise NotImplementedError()
 
@@ -86,14 +86,14 @@ class Gemini(GeminiREST):
     Exchange Specific Methods
     """
 
-    @return_json(None)
+    @return_api_response(None)
     def pairs(self):
         return self.public_query('symbols')
 
-    @return_json(None)
+    @return_api_response(None)
     def auction(self, pair):
         return self.public_query('auction/%s' % pair)
 
-    @return_json(None)
+    @return_api_response(None)
     def auction_history(self, pair, **kwargs):
         return self.public_query('auction/%s/history' % pair, params=kwargs)

@@ -9,7 +9,7 @@ import logging
 
 # Import Homebrew
 from bitex.api.rest import ItbitREST
-from bitex.utils import return_json
+from bitex.utils import return_api_response
 from bitex.formatters.itbit import itbtFormatter as fmt
 
 # Init Logging Facilities
@@ -32,25 +32,25 @@ class ItBit(ItbitREST):
     BitEx Standardized Methods
     """
 
-    @return_json(fmt.ticker)
+    @return_api_response(fmt.ticker)
     def ticker(self, pair, **kwargs):
         q = {'pair': pair}
         q.update(kwargs)
         return self.public_query('%s/ticker' % pair, params=q)
 
-    @return_json(fmt.order_book)
+    @return_api_response(fmt.order_book)
     def order_book(self, pair, **kwargs):
         q = {'pair': pair}
         q.update(kwargs)
         return self.public_query('%s/order_book' % pair, params=q)
 
-    @return_json(fmt.trades)
+    @return_api_response(fmt.trades)
     def trades(self, pair, **kwargs):
         q = {'pair': pair}
         q.update(kwargs)
         return self.public_query('%s/trades' % pair, params=q)
 
-    @return_json(fmt.order)
+    @return_api_response(fmt.order)
     def bid(self, pair, price, size, **kwargs):
         wallet_id = kwargs.pop('wallet')
         q = {'side': 'buy', 'type': 'limit', 'amount': size, 'price': price,
@@ -58,7 +58,7 @@ class ItBit(ItbitREST):
         q.update(kwargs)
         return self.private_query('wallets/%s/orders' % wallet_id, params=q)
 
-    @return_json(fmt.order)
+    @return_api_response(fmt.order)
     def ask(self, pair, price, size, **kwargs):
         wallet_id = kwargs.pop('wallet')
         q = {'side': 'buy', 'type': 'limit', 'amount': size, 'price': price,
@@ -66,28 +66,28 @@ class ItBit(ItbitREST):
         q.update(kwargs)
         return self.private_query('wallets/%s/orders' % wallet_id, params=q)
 
-    @return_json(fmt.cancel)
+    @return_api_response(fmt.cancel)
     def cancel_order(self, order_id, all=False, **kwargs):
         raise NotImplementedError()
 
-    @return_json(fmt.order_status)
+    @return_api_response(fmt.order_status)
     def order(self, order_id, **kwargs):
         wallet_id = kwargs.pop('wallet_id')
         return self.private_query('wallets/%s/orders/%s' % (wallet_id, order_id),
                                   params=kwargs)
 
-    @return_json(fmt.balance)
+    @return_api_response(fmt.balance)
     def balance(self, **kwargs):
         raise NotImplementedError()
 
-    @return_json(fmt.withdraw)
+    @return_api_response(fmt.withdraw)
     def withdraw(self, amount, tar_addr, **kwargs):
         wallet_id = kwargs.pop('wallet_id')
         q = {'address': tar_addr, 'amount': amount}
         return self.private_query('wallets/%s/cryptocurrency_withdrawals' % wallet_id,
                                   params=q)
 
-    @return_json(fmt.deposit)
+    @return_api_response(fmt.deposit)
     def deposit_address(self, **kwargs):
         wallet_id = kwargs.pop('wallet_id')
         return self.private_query('wallets/%s/cryptocurrency_deposits' % wallet_id,
