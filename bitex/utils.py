@@ -38,31 +38,31 @@ def return_api_response(formatter=None):
                               func.__name__, args, kwargs)
                 raise
 
-            #  Check status
+            # Check Status
             try:
                 r.raise_for_status()
             except requests.HTTPError:
                 log.exception("return_api_response: HTTPError for url %s",
                               r.request.url)
-                return APIResponse(None, r)
 
-            #  load json data
+            #  Verify json data
             try:
                 data = r.json()
             except json.JSONDecodeError:
-                log.exception('return_api_response: Error while parsing json. '
-                              'Request url was: %s, result is: '
-                              '%s', r.request.url, r.text)
-                return APIResponse(None, r)
+                log.error('return_api_response: Error while parsing json. '
+                          'Request url was: %s, result is: '
+                          '%s', r.request.url, r.text)
+                data = None
             except Exception:
                 log.exception("return_api_response(): Unexpected error while parsing "
                               "json from %s", r.request.url)
                 raise
 
-            # Apply formatter and return
-            if formatter is not None:
-                return APIResponse(formatter(data, *args, **kwargs), r)
-            else:
-                return APIResponse(data, r)
+            # Format, if available
+            if formatter is not None and data:
+                data = formatter(data, *args, **kwargs)
+
+            return APIResponse(data, r)
+
         return wrapper
     return decorator
