@@ -1,6 +1,13 @@
 # Changelog
 
-## [Unreleased] V 1.0
+## [Unreleased] V 1.1
+### Added
+### Changed
+### Deprecated
+### Removed
+### Fixed
+
+## V 1.0
 ### Added
 General:
 - Changelog (Yay!)
