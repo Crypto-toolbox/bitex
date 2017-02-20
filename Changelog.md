@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased] V 1.0
+## V 1.0
 ### Added
 General:
 - Changelog (Yay!)
