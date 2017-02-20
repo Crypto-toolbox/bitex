@@ -78,10 +78,10 @@ although usually this information needs to go after the api key
 and secret, on a separate line each.
 ```
 >>>dummy2.key
-Userid
-accountname
 my_api_key
 my_fancy_api_secret
+Userid
+accountname
 ```
 
 # bitex.interfaces
