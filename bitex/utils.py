@@ -60,7 +60,10 @@ def return_api_response(formatter=None):
 
             # Format, if available
             if formatter is not None and data:
-                data = formatter(data, *args, **kwargs)
+                try:
+                    data = formatter(data, *args, **kwargs)
+                except Exception:
+                    log.exception("Error while applying formatter!")
 
             return APIResponse(data, r)
 

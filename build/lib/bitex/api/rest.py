@@ -498,14 +498,8 @@ class QuoineREST(APIClient):
 
 
 class QuadrigaCXREST(APIClient):
-    """
-    The Quoine Api requires the API version to be designated in each requests's
-    header as {'X-Quoine-API-Version': 2}
-    """
     def __init__(self, key=None, secret=None, client_id='', api_version='v2',
                  url='https://api.quoine.com/', timeout=5):
-        if not jwt:
-            raise SystemError("No JWT Installed! Quoine API Unavailable!")
         self.client_id = client_id
         super(QuadrigaCXREST, self).__init__(url, api_version=api_version,
                                              key=key, secret=secret,
