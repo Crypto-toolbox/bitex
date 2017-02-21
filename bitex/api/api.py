@@ -111,6 +111,7 @@ class APIClient(metaclass=ABCMeta):
         r = self.api_request(method_verb, url, timeout=self.timeout,
                              **request_kwargs)
         log.debug("Made %s request made to %s, with headers %s and body %s. "
-                  "Status code %s", r.request.method, r.request.url,
-                  r.request.headers, r.request.body, r.status_code)
+                  "Status code %s", r.request.method,
+                  r.request.url, r.request.headers,
+                  r.request.body, r.status_code)
         return r
