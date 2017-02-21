@@ -7,8 +7,9 @@ class APIResponse(Response):
                  'encoding', 'reason', 'cookies', 'elapsed', 'request',
                  '_formatted']
 
-    def __init__(self, formatted_json, req_response):
+    def __init__(self, req_response, formatted_json=None):
         self._content = req_response._content
+        self._content_consumed = req_response._content_consumed
         self.status_code = req_response.status_code
         self.headers = req_response.headers
         self.url = req_response.url
@@ -24,8 +25,14 @@ class APIResponse(Response):
     def formatted(self):
         return self._formatted
 
+    @formatted.setter
+    def formatted(self, val):
+        self._formatted = val
+
+
 if __name__ == '__main__':
     from bitex import Kraken
+
     k = Kraken()
     resp = k.ticker('XXBTZEUR')
     print(resp.formatted)

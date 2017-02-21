@@ -20,13 +20,11 @@ log = logging.getLogger(__name__)
 
 def return_api_response(formatter=None):
     """
-    Decorator, which Applies the referenced formatter to the function output
-    (expects requests.response object). If `formatter` is `None`, returns the
-    json of the response.
+    Decorator, which Applies the referenced formatter (if available) to the
+    function output and adds it to the APIResponse Object's `formatted`
+    attribute.
     :param formatter: bitex.formatters.Formatter() obj
-    :return: (json_data, raw) if formatter is None, else (formatted_json, raw)
-    :return type: requests.response.json(), requests.response() obj ||
-                  formatted_json, requests.response() obj
+    :return: bitex.api.response.APIResponse()
     """
     def decorator(func):
         @wraps(func)
@@ -61,11 +59,11 @@ def return_api_response(formatter=None):
             # Format, if available
             if formatter is not None and data:
                 try:
-                    data = formatter(data, *args, **kwargs)
+                    r.formatted = formatter(data, *args, **kwargs)
                 except Exception:
                     log.exception("Error while applying formatter!")
 
-            return APIResponse(data, r)
+            return r
 
         return wrapper
     return decorator
