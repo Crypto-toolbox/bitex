@@ -10,7 +10,7 @@ from abc import ABCMeta, abstractmethod
 import requests
 
 # Import Homebrew
-
+from bitex.api.response import APIResponse
 
 log = logging.getLogger(__name__)
 
@@ -55,6 +55,18 @@ class APIClient(metaclass=ABCMeta):
         """
         return str(int(1000 * time.time()))
 
+    @staticmethod
+    def api_request(*args, **kwargs):
+        """
+        Wrapper which converts a requests.Response into our custom APIResponse
+        object
+        :param args:
+        :param kwargs:
+        :return:
+        """
+        r = requests.request(*args, **kwargs)
+        return APIResponse(r)
+
     @abstractmethod
     def sign(self, url, endpoint, endpoint_path, method_verb, *args, **kwargs):
         """
@@ -96,7 +108,7 @@ class APIClient(metaclass=ABCMeta):
         else:
             request_kwargs = kwargs
         log.debug("Making request to: %s, kwargs: %s", url, request_kwargs)
-        r = requests.request(method_verb, url, timeout=self.timeout,
+        r = self.api_request(method_verb, url, timeout=self.timeout,
                              **request_kwargs)
         log.debug("Made %s request made to %s, with headers %s and body %s. "
                   "Status code %s", r.request.method, r.request.url,
