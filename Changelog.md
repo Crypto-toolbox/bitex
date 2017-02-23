@@ -2,6 +2,9 @@
 
 ## [Unreleased] V 1.1
 ### Added
+Exchanges:
+- HitBTC API Client
+
 ### Changed
 ### Deprecated
 ### Removed
