@@ -530,8 +530,9 @@ class QuadrigaCXREST(APIClient):
 
 
 class HitBTCREST(APIClient):
-    def __init__(self, key=None, secret=None, api_version='',
+    def __init__(self, key=None, secret=None, api_version=None,
                  url='http://api.hitbtc.com', timeout=5):
+        api_version = '' if not api_version else api_version
         super(HitBTCREST, self).__init__(url, api_version=api_version,
                                          key=key, secret=secret,
                                          timeout=timeout)
