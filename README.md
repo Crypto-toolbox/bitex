@@ -117,26 +117,23 @@ at an exchange via its API. They feature the following characteristics:
 
 - Each method has an identical method header across all interfaces
 - Its output is identical across all interfaces
-- Each method returns a tuple of (data, `requests.response()` object) where data is:
+- Each method returns a `bitex.api.response.APIResponse` object; these behave like `requests.Request` objects, with the addition
+of a new attribute, `formatted`, which stores a standardized representation of the data queried.
 
-      a) a formatted json response, if a formatter is present
-      
-      or
-      
-      b) the raw json data contained as returned by `requests.response().json()` 
+
 
 # bitex.formatters
 
 This module provide formatters for the standardized methods, formatting their json output into a uniform layout. They are a work in progress feature.
 
-Be mindful that, in order to provide a unified output format, some fields have been dropped in the formatted output! If you rely on one of these dropped fields, be sure to use the returned `requests.response()` object, and parse the json yourself:
+Be mindful that, in order to provide a unified output format, some fields have been dropped in the formatted output! If you rely on one of these dropped fields, be sure to use the `APIResponse`'s `json` attribute instead, and parse the json yourself:
 
 ```
 from bitex import Kraken
 k = Kraken()
-formatted_output, requests_response_object = k.ticker()
-print(formatted_output)  # drops bid/ask sizes, vwap and other data
-print(requests.response_object.json())  # Returns all data
+response = k.ticker()
+print(response.formatted)  # show formatted data
+print(response.json())  # Returns all json data
 ```
 
 The following is a table of all formatters currently implemented - any method not marked as `Done` will not do any formatting, and simply return `requests.response.json()` if data contains valid json - else `None` is returned instead.
