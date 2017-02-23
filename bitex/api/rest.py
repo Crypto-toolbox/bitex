@@ -530,11 +530,11 @@ class QuadrigaCXREST(APIClient):
 
 
 class HitBTCREST(APIClient):
-    def __init__(self, key=None, secret=None, api_version='v2',
+    def __init__(self, key=None, secret=None, api_version='',
                  url='http://api.hitbtc.com', timeout=5):
         super(HitBTCREST, self).__init__(url, api_version=api_version,
-                                             key=key, secret=secret,
-                                             timeout=timeout)
+                                         key=key, secret=secret,
+                                         timeout=timeout)
 
     def sign(self, uri, endpoint, endpoint_path, method_verb, *args, **kwargs):
         try:
