@@ -527,3 +527,26 @@ class QuadrigaCXREST(APIClient):
         headers = {'key': self.key, 'signature': signature,
                    'nonce': nonce}
         return self.uri, {'headers': headers, 'data': params}
+
+
+class HitBTCREST(APIClient):
+    def __init__(self, key=None, secret=None, api_version='v2',
+                 url='http://api.hitbtc.com', timeout=5):
+        super(HitBTCREST, self).__init__(url, api_version=api_version,
+                                             key=key, secret=secret,
+                                             timeout=timeout)
+
+    def sign(self, uri, endpoint, endpoint_path, method_verb, *args, **kwargs):
+        try:
+            params = kwargs['params']
+        except KeyError:
+            params = {}
+        nonce = self.nonce()
+        kwargs['nonce'] = nonce
+        kwargs['apikey'] = self.key
+        msg = endpoint_path + urllib.parse.urlencode(params)
+
+        signature = hmac.new(self.secret.encode(encoding='utf-8'),
+                             msg.encode(encoding='utf-8'), hashlib.sha512)
+        headers = {'Api-signature': signature}
+        return self.uri + msg, {'headers': headers, 'data': params}
