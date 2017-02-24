@@ -4,7 +4,7 @@ https://hitbtc.com/api
 
 # Import Built-Ins
 import logging
-
+import time
 # Import Third-Party
 
 # Import Homebrew
@@ -28,53 +28,78 @@ class HitBtc(HitBTCREST):
         endpoint = 'public/' + endpoint
         return self.query(method_verb, endpoint, **kwargs)
 
+    def private_query(self, endpoint, method_verb=None, **kwargs):
+        if not method_verb:
+            method_verb = 'GET'
+        return self.query(method_verb, endpoint, authenticate=True, **kwargs)
+
     """
     BitEx Standardized Methods
     """
 
     @return_api_response(fmt.order_book)
     def order_book(self, pair, **kwargs):
-        raise NotImplementedError
+        q = kwargs
+        return self.public_query('%s/orderbook' % pair, params=q)
 
     @return_api_response(fmt.ticker)
     def ticker(self, pair, **kwargs):
         q = kwargs
-        return self.public_query('%s/ticker' % pair, params=q)
+        if pair == 'all':
+            return self.public_query('ticker', params=q)
+        else:
+            return self.public_query('%s/ticker' % pair, params=q)
 
     @return_api_response(fmt.trades)
     def trades(self, pair, **kwargs):
-        raise NotImplementedError
+        q = kwargs
+        return self.public_query('%s/trades' % pair, params=q)
 
-    def _place_order(self, pair, amount, price, side, replace, **kwargs):
-        raise NotImplementedError
+    def _place_order(self, pair, amount, price, side, order_id, **kwargs):
+        q = {'symbol': pair, 'price': price, 'quantity': amount, 'side': side,
+             'clientOrderId': order_id}
+        q.update(kwargs)
+        return self.private_query('trading/new_order', method_verb='POST', params=q)
 
     @return_api_response(fmt.order)
-    def bid(self, pair, price, amount, replace=False, **kwargs):
-        raise NotImplementedError
+    def bid(self, pair, price, amount, order_id=None, **kwargs):
+        order_id = order_id if order_id else str(time.time())
+        self._place_order(pair, amount, price, 'buy', order_id, **kwargs)
 
     @return_api_response(fmt.order)
-    def ask(self, pair, price, amount, replace=False, **kwargs):
-        raise NotImplementedError
+    def ask(self, pair, price, amount, order_id=None, **kwargs):
+        order_id = order_id if order_id else str(time.time())
+        self._place_order(pair, amount, price, 'sell', order_id, **kwargs)
 
     @return_api_response(fmt.cancel)
     def cancel_order(self, order_id, all=False, **kwargs):
-        raise NotImplementedError
+        q = {'clientOrderId': order_id}
+        q.update(kwargs)
+        if all:
+            return self.private_query('trading/cancel_orders', params=kwargs)
+        else:
+            return self.private_query('trading/cancel_order', params=q)
 
     @return_api_response(fmt.order_status)
     def order(self, order_id, **kwargs):
-        raise NotImplementedError
+        q = {'clientOrderId': order_id}
+        q.update(kwargs)
+        return self.private_query('order', params=q)
 
     @return_api_response(fmt.balance)
     def balance(self, **kwargs):
-        raise NotImplementedError
+        return self.private_query('trading/balance', params=kwargs)
 
     @return_api_response(fmt.withdraw)
-    def withdraw(self, amount, tar_addr, **kwargs):
-        raise NotImplementedError
+    def withdraw(self, amount, tar_addr, currency=None, **kwargs):
+        currency = 'BTC' if not currency else currency
+        q = {'amount': amount, 'currency_code': currency, 'address': tar_addr}
+        q.update(kwargs)
+        return self.private_query('payment/payout', params=q)
 
     @return_api_response(fmt.deposit)
-    def deposit_address(self, **kwargs):
-        raise NotImplementedError
+    def deposit_address(self, currency=None, **kwargs):
+        return self.private_query('payment/address/%s' % currency, params=kwargs)
 
 if __name__ == ' __main__':
     k = HitBtc()
