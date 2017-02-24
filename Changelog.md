@@ -3,7 +3,9 @@
 ## [Unreleased] V 1.1
 ### Added
 Exchanges:
-- HitBTC API Client
+- HitBTC API Client & Interface
+- Bter API Client & Interface
+- Vaultoro API Client & Interface
 
 ### Changed
 ### Deprecated
