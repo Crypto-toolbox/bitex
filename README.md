@@ -23,19 +23,23 @@ interfaces, on top of which the second part - `bitex.interfaces` - builds upon.
 | Bitfinex       | Done | Done           | Done              | Done               | WIP        | WIP   |
 | Bitstamp       | Done | Done           | Done              | Done               | WIP        | WIP   |
 | Bittrex        | Done | Done           | Done              | Done               | WIP        | WIP   |
+| Bter           | Done | Done           | Done              | Done               | WIP        | WIP   |
 | C-Cex          | Done | BETA           | Done              | Done               | WIP        | WIP   |
 | CoinCheck      | Done | Done           | Done              | Done               | WIP        | WIP   |
 | Cryptopia      | Done | BETA           | Done              | Done               | WIP        | WIP   |
 | GDAX           | Done | BETA           | Done              | Done               | WIP        | WIP   |
 | Gemini         | Done | BETA           | Done              | Done               | WIP        | WIP   |
+| HitBtc         | Done | BETA           | Done              | Done               | WIP        | WIP   |
 | itBit          | Done | BETA           | Done              | Done               | WIP        | WIP   |
 | Kraken         | Done | Done           | Done              | Done               | WIP        | WIP   |
 | OkCoin         | Done | BETA           | Done              | Done               | WIP        | WIP   |
 | Poloniex       | Done | Done           | Done              | Done               | WIP        | WIP   |
-| TheRockTrading | Done | BETA           | Done              | Done               | WIP        | WIP   |
-| Yunbi          | Done | BETA           | Done              | Done               | WIP        | WIP   |
 | Quoine         | Done | BETA           | Done              | Done               | WIP        | WIP   |
 | QuadrigaCX     | Done | BETA           | Done              | Done               | WIP        | WIP   |
+| TheRockTrading | Done | BETA           | Done              | Done               | WIP        | WIP   |
+| Yunbi          | Done | BETA           | Done              | Done               | WIP        | WIP   |
+| Vaultoro       | Done | BETA           | Done              | Done               | WIP        | WIP   |
+
 
 Additional clients will be added to (or removed from) this list, 
 according to their liquidity and market volume.
@@ -136,18 +140,20 @@ print(response.formatted)  # show formatted data
 print(response.json())  # Returns all json data
 ```
 
-The following is a table of all formatters currently implemented - any method not marked as `Done` will not do any formatting, and simply return `requests.response.json()` if data contains valid json - else `None` is returned instead.
+The following is a table of all formatters currently implemented - any method not marked as `Done` will not do any formatting.
 
 | Exchange          | `ticker()` | order_book() | trades() | bid()/ask() | order() | cancel_order() | balance() | withdraw() | deposit() |
 |-------------------|------------|--------------|----------|-------------|---------|----------------|-----------|------------|-----------|
 | Bitfinex          | Done       | Planned      | Planned  | Planned     | Planned | Planned        | Planned   | Planned    | Planned   |
 | Bitstamp          | Done       | Planned      | Planned  | Planned     | Planned | Planned        | Planned   | Planned    | Planned   |
 | Bittrex           | Done       | Planned      | Planned  | Planned     | Planned | Planned        | Planned   | Planned    | Planned   |
+| Bter              | WIP        | WIP          | WIP      | WIP         | WIP     | WIP            | WIP       | WIP        | WIP       |
 | C-Cex             | Done       | Planned      | Planned  | Planned     | Planned | Planned        | Planned   | Planned    | Planned   |
 | Coincheck         | Done       | Planned      | Planned  | Planned     | Planned | Planned        | Planned   | Planned    | Planned   |
 | Cryptopia         | Done       | Planned      | Planned  | Planned     | Planned | Planned        | Planned   | Planned    | Planned   |
 | GDAX              | Done       | Planned      | Planned  | Planned     | Planned | Planned        | Planned   | Planned    | Planned   |
 | Gemini            | Done       | Planned      | Planned  | Planned     | Planned | Planned        | Planned   | Planned    | Planned   |
+| HitBtc            | WIP        | WIP          | WIP      | WIP         | WIP     | WIP            | WIP       | WIP        | WIP       |
 | itBit             | Done       | Planned      | Planned  | Planned     | Planned | Planned        | Planned   | Planned    | Planned   |
 | Kraken            | Done       | Planned      | Planned  | Planned     | Planned | Planned        | Planned   | Planned    | Planned   |
 | OKCoin            | Done       | Planned      | Planned  | Planned     | Planned | Planned        | Planned   | Planned    | Planned   |
@@ -155,6 +161,7 @@ The following is a table of all formatters currently implemented - any method no
 | QuadrigaCX        | Done       | Planned      | Planned  | Planned     | Planned | Planned        | Planned   | Planned    | Planned   |
 | Quoine            | Done       | Planned      | Planned  | Planned     | Planned | Planned        | Planned   | Planned    | Planned   |
 | TheRockTradingLTD | Done       | Planned      | Planned  | Planned     | Planned | Planned        | Planned   | Planned    | Planned   |
+| Vaultoro          | WIP        | WIP          | WIP      | WIP         | WIP     | WIP            | WIP       | WIP        | WIP       |
 | Yunbi             | Done       | Planned      | Planned  | Planned     | Planned | Planned        | Planned   | Planned    | Planned   |
 
 
