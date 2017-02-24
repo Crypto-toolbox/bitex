@@ -22,44 +22,62 @@ class Bter(BterREST):
         if key_file:
             self.load_key(key_file)
 
+    def public_query(self, endpoint, **kwargs):
+        return self.query('GET', endpoint, **kwargs)
+
+    def private_query(self, endpoint, method_verb=None, **kwargs):
+        if not method_verb:
+            method_verb = 'POST'
+        endpoint = 'private/' + endpoint
+        return self.query(method_verb, endpoint, authenticate=True, **kwargs)
+
     """
     BitEx Standardized Methods
     """
 
     @return_api_response(fmt.order_book)
     def order_book(self, pair, **kwargs):
-        raise NotImplementedError
+        return self.public_query('depth/%s' % pair, params=kwargs)
 
     @return_api_response(fmt.ticker)
     def ticker(self, pair, **kwargs):
-        raise NotImplementedError
+        if pair == 'all':
+            return self.public_query('tickers', params=kwargs)
+        else:
+            return self.public_query('ticker/%s' % pair, params=kwargs)
 
     @return_api_response(fmt.trades)
     def trades(self, pair, **kwargs):
-        raise NotImplementedError
+        return self.public_query('trade/%s' % pair, params=kwargs)
 
-    def _place_order(self, pair, amount, price, side, replace, **kwargs):
-        raise NotImplementedError
-
-    @return_api_response(fmt.order)
-    def bid(self, pair, price, amount, replace=False, **kwargs):
-        raise NotImplementedError
+    def _place_order(self, pair, amount, price, side, **kwargs):
+        q = {'pair': pair, 'type': side, 'price': price, 'amount': amount}
+        q.update(kwargs)
+        return self.private_query('placeorder', params=q)
 
     @return_api_response(fmt.order)
-    def ask(self, pair, price, amount, replace=False, **kwargs):
-        raise NotImplementedError
+    def bid(self, pair, price, amount, **kwargs):
+        return self._place_order(pair, amount, price, 'BUY', **kwargs)
+
+    @return_api_response(fmt.order)
+    def ask(self, pair, price, amount, **kwargs):
+        return self._place_order(pair, amount, price, 'SELL', **kwargs)
 
     @return_api_response(fmt.cancel)
-    def cancel_order(self, order_id, all=False, **kwargs):
-        raise NotImplementedError
+    def cancel_order(self, order_id, **kwargs):
+        q = {'order_id': order_id}
+        q.update(kwargs)
+        return self.private_query('cancelorder', params=q)
 
     @return_api_response(fmt.order_status)
     def order(self, order_id, **kwargs):
-        raise NotImplementedError
+        q = {'order_id': order_id}
+        q.update(kwargs)
+        return self.private_query('getorder', params=q)
 
     @return_api_response(fmt.balance)
     def balance(self, **kwargs):
-        raise NotImplementedError
+        return self.private_query('getfunds', params=kwargs)
 
     @return_api_response(fmt.withdraw)
     def withdraw(self, amount, tar_addr, **kwargs):
