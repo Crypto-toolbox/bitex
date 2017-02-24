@@ -22,6 +22,12 @@ class HitBtc(HitBTCREST):
         if key_file:
             self.load_key(key_file)
 
+    def public_query(self, endpoint, method_verb=None, **kwargs):
+        if not method_verb:
+            method_verb = 'GET'
+        endpoint = 'public/' + endpoint
+        return self.query(method_verb, endpoint, **kwargs)
+
     """
     BitEx Standardized Methods
     """
@@ -32,7 +38,8 @@ class HitBtc(HitBTCREST):
 
     @return_api_response(fmt.ticker)
     def ticker(self, pair, **kwargs):
-        raise NotImplementedError
+        q = kwargs
+        return self.query('public/%s/ticker' % pair, params=q)
 
     @return_api_response(fmt.trades)
     def trades(self, pair, **kwargs):
@@ -68,3 +75,7 @@ class HitBtc(HitBTCREST):
     @return_api_response(fmt.deposit)
     def deposit_address(self, **kwargs):
         raise NotImplementedError
+
+if __name__ == ' __main__':
+    k = HitBtc()
+    print(k.ticker('BTCUSD'))
