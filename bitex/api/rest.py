@@ -579,7 +579,7 @@ class VaultoroREST(APIClient):
 
 class BterREST(APIClient):
     def __init__(self, key=None, secret=None, api_version=None,
-                 url='https://http://data.bter.com/api/', timeout=5):
+                 url='http://data.bter.com/api', timeout=5):
         api_version = '1' if not api_version else api_version
         super(BterREST, self).__init__(url, api_version=api_version,
                                            key=key, secret=secret,
