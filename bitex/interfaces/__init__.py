@@ -15,4 +15,4 @@ from bitex.interfaces.quoine import Quoine
 from bitex.interfaces.quadriga import QuadrigaCX
 from bitex.interfaces.vaultoro import Vaultoro
 from bitex.interfaces.hitbtc import HitBtc
-
+from bitex.interfaces.bter import Bter
