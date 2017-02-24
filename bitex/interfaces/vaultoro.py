@@ -22,48 +22,73 @@ class Vaultoro(VaultoroREST):
         if key_file:
             self.load_key(key_file)
 
+    def public_query(self, endpoint, method_verb=None, **kwargs):
+        if not method_verb:
+            method_verb = 'GET'
+        return self.query(method_verb, endpoint, **kwargs)
+
+    def private_query(self, endpoint, method_verb=None, **kwargs):
+        if not method_verb:
+            method_verb = 'GET'
+        return self.query(method_verb, endpoint, authenticate=True,
+                          **kwargs)
+
     """
     BitEx Standardized Methods
     """
 
     @return_api_response(fmt.order_book)
     def order_book(self, pair, **kwargs):
-        raise NotImplementedError
+        return self.public_query('orderbook')
 
     @return_api_response(fmt.ticker)
     def ticker(self, pair, **kwargs):
-        raise NotImplementedError
+        return self.public_query('markets', params=kwargs)
 
     @return_api_response(fmt.trades)
-    def trades(self, pair, **kwargs):
-        raise NotImplementedError
+    def trades(self, pair, count=250, **kwargs):
+        q = {'count': count}
+        q.update(kwargs)
+        return self.public_query('latesttrades', params=q)
 
-    def _place_order(self, pair, amount, price, side, replace, **kwargs):
-        raise NotImplementedError
+    def _place_order(self, pair, amount, price, side, order_type, **kwargs):
+        args = side, pair, order_type
+        q = {'gld': amount, 'price': price}
+        return self.private_query('1/%s/%s/%s' % args, params=kwargs,
+                                  method_verb='POST')
 
     @return_api_response(fmt.order)
-    def bid(self, pair, price, amount, replace=False, **kwargs):
-        raise NotImplementedError
+    def bid(self, pair, price, amount, order_type=None, **kwargs):
+        if not order_type:
+            order_type = 'limit'
+        return self._place_order(pair, amount, price, 'buy', order_type,
+                                 **kwargs)
 
     @return_api_response(fmt.order)
-    def ask(self, pair, price, amount, replace=False, **kwargs):
-        raise NotImplementedError
+    def ask(self, pair, price, amount, order_type=None, **kwargs):
+        if not order_type:
+            order_type = 'limit'
+        return self._place_order(pair, amount, price, 'sell', order_type,
+                                 **kwargs)
 
     @return_api_response(fmt.cancel)
-    def cancel_order(self, order_id, all=False, **kwargs):
-        raise NotImplementedError
+    def cancel_order(self, order_id, **kwargs):
+        return self.private_query('1/cancel/%s' % order_id, method_verb='POST',
+                                  params=kwargs)
 
     @return_api_response(fmt.order_status)
     def order(self, order_id, **kwargs):
-        raise NotImplementedError
+        return self.private_query('1/orders', params=kwargs)
 
     @return_api_response(fmt.balance)
     def balance(self, **kwargs):
-        raise NotImplementedError
+        return self.private_query('1/balance', params=kwargs)
 
     @return_api_response(fmt.withdraw)
-    def withdraw(self, amount, tar_addr, **kwargs):
-        raise NotImplementedError
+    def withdraw(self, amount, *args, **kwargs):
+        q = {'btc': amount}
+        q.update(kwargs)
+        return self.private_query('1/withdraw', method_verb='POST', params=q)
 
     @return_api_response(fmt.deposit)
     def deposit_address(self, **kwargs):
