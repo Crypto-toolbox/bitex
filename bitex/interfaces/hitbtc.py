@@ -1,5 +1,5 @@
 """
-http://link.to.API.Documentation.com
+https://hitbtc.com/api
 """
 
 # Import Built-Ins
