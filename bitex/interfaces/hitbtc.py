@@ -39,7 +39,7 @@ class HitBtc(HitBTCREST):
     @return_api_response(fmt.ticker)
     def ticker(self, pair, **kwargs):
         q = kwargs
-        return self.query('public/%s/ticker' % pair, params=q)
+        return self.public_query('%s/ticker' % pair, params=q)
 
     @return_api_response(fmt.trades)
     def trades(self, pair, **kwargs):
