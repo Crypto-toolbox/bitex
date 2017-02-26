@@ -48,13 +48,13 @@ class Gemini(GeminiREST):
 
     @return_api_response(fmt.order)
     def bid(self, pair, price, size, **kwargs):
-        q = {'symbol': pair, 'amount': size, 'price': price, 'side': 'buy'}
+        q = {'symbol': pair, 'size': size, 'price': price, 'side': 'buy'}
         q.update(kwargs)
         return self.private_query('order/new', params=q)
 
     @return_api_response(fmt.order)
     def ask(self, pair, price, size, **kwargs):
-        q = {'symbol': pair, 'amount': size, 'price': price, 'side': 'sell'}
+        q = {'symbol': pair, 'size': size, 'price': price, 'side': 'sell'}
         q.update(kwargs)
         return self.private_query('order/new', params=q)
 
@@ -75,7 +75,7 @@ class Gemini(GeminiREST):
         return self.private_query('balances', params=kwargs)
 
     @return_api_response(fmt.withdraw)
-    def withdraw(self, amount, tar_addr, **kwargs):
+    def withdraw(self, size, tar_addr, **kwargs):
         raise NotImplementedError()
 
     @return_api_response(fmt.deposit)
