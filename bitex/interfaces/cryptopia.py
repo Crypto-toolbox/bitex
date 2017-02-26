@@ -56,13 +56,13 @@ class Cryptopia(CryptopiaREST):
 
     @return_api_response(fmt.order)
     def bid(self, pair, price, size, **kwargs):
-        q = {'Market': pair, 'Type': 'Buy', 'Rate': price, 'Amount': size}
+        q = {'Market': pair, 'Type': 'Buy', 'Rate': price, 'Size': size}
         q.update(kwargs)
         return self.private_query('SubmitTrade', params=q)
 
     @return_api_response(fmt.order)
-    def ask(self, pair, price, amount, **kwargs):
-        q = {'Market': pair, 'Type': 'Sell', 'Rate': price, 'Amount': size}
+    def ask(self, pair, price, size, **kwargs):
+        q = {'Market': pair, 'Type': 'Sell', 'Rate': price, 'Size': size}
         q.update(kwargs)
         return self.private_query('SubmitTrade', params=q)
 
@@ -81,8 +81,8 @@ class Cryptopia(CryptopiaREST):
         return self.private_query('GetBalance', params=kwargs)
 
     @return_api_response(fmt.withdraw)
-    def withdraw(self, amount, tar_addr, **kwargs):
-        q = {'Amount': amount, 'Address': tar_addr}
+    def withdraw(self, size, tar_addr, **kwargs):
+        q = {'Size': size, 'Address': tar_addr}
         q.update(kwargs)
         return self.private_query('SubmitWithdraw', params=q)
 
