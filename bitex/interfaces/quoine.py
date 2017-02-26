@@ -59,7 +59,7 @@ class Quoine(QuoineREST):
 
     @return_api_response(fmt.order)
     def ask(self, pair, price, size, **kwargs):
-        q = {'quantity': size, 'price': price, 'order_type': 'limit',
+        q = {'size': size, 'price': price, 'order_type': 'limit',
              'product_id': self.pairs[pair], 'side': 'sell'}
         q.update(kwargs)
         return self.private_query('orders/' % pair, params=q)
@@ -80,7 +80,7 @@ class Quoine(QuoineREST):
         return self.private_query('/accounts/balance/', method='GET')
 
     @return_api_response(fmt.withdraw)
-    def withdraw(self, amount, tar_addr, **kwargs):
+    def withdraw(self, size, tar_addr, **kwargs):
         raise NotImplementedError()
 
     @return_api_response(fmt.deposit)
