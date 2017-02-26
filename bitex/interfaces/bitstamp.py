@@ -46,13 +46,13 @@ class Bitstamp(BitstampREST):
 
     @return_api_response(fmt.order)
     def bid(self, pair, price, size, **kwargs):
-        q = {'amount': size, 'price': price}
+        q = {'size': size, 'price': price}
         q.update(kwargs)
         return self.private_query('v2/buy/%s/' % pair, params=q)
 
     @return_api_response(fmt.order)
     def ask(self, pair, price, size, **kwargs):
-        q = {'amount': size, 'price': price}
+        q = {'size': size, 'price': price}
         q.update(kwargs)
         return self.private_query('v2/sell/%s/' % pair, params=q)
 
@@ -71,8 +71,8 @@ class Bitstamp(BitstampREST):
         return self.private_query('v2/balance/')
 
     @return_api_response(fmt.withdraw)
-    def withdraw(self, amount, tar_addr, **kwargs):
-        q = {'amount': amount, 'address': tar_addr}
+    def withdraw(self, size, tar_addr, **kwargs):
+        q = {'size': size, 'address': tar_addr}
         q.update(kwargs)
         return self.private_query('bitcoin_withdrawal/', params=q)
 
