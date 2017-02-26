@@ -52,14 +52,14 @@ class Coincheck(CoincheckREST):
 
     @return_api_response(fmt.order)
     def bid(self, pair, price, size, **kwargs):
-        q = {'rate': price, 'amount': size, 'pair': pair,
+        q = {'rate': price, 'size': size, 'pair': pair,
              'order_type': 'buy'}
         q.update(kwargs)
         return self.private_query('orders', params=q)
 
     @return_api_response(fmt.order)
     def ask(self, pair, price, size, **kwargs):
-        q = {'rate': price, 'amount': size, 'pair': pair,
+        q = {'rate': price, 'size': size, 'pair': pair,
              'order_type': 'sell'}
         q.update(kwargs)
         return self.private_query('orders', params=q)
@@ -77,8 +77,8 @@ class Coincheck(CoincheckREST):
         return self.private_query('accounts/balance')
 
     @return_api_response(fmt.withdraw)
-    def withdraw(self, amount, tar_addr, **kwargs):
-        q = {'address': tar_addr, 'amount': amount}
+    def withdraw(self, size, tar_addr, **kwargs):
+        q = {'address': tar_addr, 'size': size}
         q.update(kwargs)
         return self.private_query('send_money', params=q)
 
