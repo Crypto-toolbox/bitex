@@ -80,7 +80,7 @@ class CCEX(CCEXRest):
         return self.private_query('getbalance', params=kwargs)
 
     @return_api_response(fmt.withdraw)
-    def withdraw(self, _type, source_wallet, amount, tar_addr, **kwargs):
+    def withdraw(self, _type, source_wallet, size, tar_addr, **kwargs):
         raise NotImplementedError()
 
     @return_api_response(fmt.deposit)
