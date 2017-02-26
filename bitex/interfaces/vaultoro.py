@@ -51,24 +51,24 @@ class Vaultoro(VaultoroREST):
         q.update(kwargs)
         return self.public_query('latesttrades', params=q)
 
-    def _place_order(self, pair, amount, price, side, order_type, **kwargs):
+    def _place_order(self, pair, size, price, side, order_type, **kwargs):
         args = side, pair, order_type
-        q = {'gld': amount, 'price': price}
+        q = {'size': size, 'price': price}
         return self.private_query('1/%s/%s/%s' % args, params=kwargs,
                                   method_verb='POST')
 
     @return_api_response(fmt.order)
-    def bid(self, pair, price, amount, order_type=None, **kwargs):
+    def bid(self, pair, price, size, order_type=None, **kwargs):
         if not order_type:
             order_type = 'limit'
-        return self._place_order(pair, amount, price, 'buy', order_type,
+        return self._place_order(pair, size, price, 'buy', order_type,
                                  **kwargs)
 
     @return_api_response(fmt.order)
-    def ask(self, pair, price, amount, order_type=None, **kwargs):
+    def ask(self, pair, price, size, order_type=None, **kwargs):
         if not order_type:
             order_type = 'limit'
-        return self._place_order(pair, amount, price, 'sell', order_type,
+        return self._place_order(pair, size, price, 'sell', order_type,
                                  **kwargs)
 
     @return_api_response(fmt.cancel)
@@ -85,8 +85,8 @@ class Vaultoro(VaultoroREST):
         return self.private_query('1/balance', params=kwargs)
 
     @return_api_response(fmt.withdraw)
-    def withdraw(self, amount, *args, **kwargs):
-        q = {'btc': amount}
+    def withdraw(self, size, *args, **kwargs):
+        q = {'size': size}
         q.update(kwargs)
         return self.private_query('1/withdraw', method_verb='POST', params=q)
 
