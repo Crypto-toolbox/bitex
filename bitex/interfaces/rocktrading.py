@@ -48,7 +48,7 @@ class RockTradingLtd(RockTradingREST):
         return self.public_query('funds/%s/trades' % pair, params=kwargs)
 
     def _place_order(self, side, pair, price, size, **kwargs):
-        q = {'fund_id': pair, 'side': side, 'amount': size, 'price': price}
+        q = {'fund_id': pair, 'side': side, 'size': size, 'price': price}
         q.update(kwargs)
         return self.private_query('funds/%s/orders' % pair, method='POST',
                                   params=q)
@@ -81,8 +81,8 @@ class RockTradingLtd(RockTradingREST):
         return self.private_query('balances', params=kwargs)
 
     @return_api_response(fmt.withdraw)
-    def withdraw(self, amount, tar_addr, **kwargs):
-        q = {'destination_address': tar_addr, 'amount': amount}
+    def withdraw(self, size, tar_addr, **kwargs):
+        q = {'destination_address': tar_addr, 'size': size}
         q.update(kwargs)
         return self.private_query('atms/withdraw', params=q)
 
