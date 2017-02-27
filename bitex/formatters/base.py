@@ -22,6 +22,15 @@ class Formatter:
         pass
 
     @staticmethod
+    def format_pair(input_pair):
+        """
+        Returns the pair properly formatted for the exchange's API.
+        :param input_pair: str
+        :return: str
+        """
+        return input_pair
+
+    @staticmethod
     def ticker(data, *args, **kwargs):
         """
         Returns list of ticker data in following format:
