@@ -13,6 +13,56 @@ log = logging.getLogger(__name__)
 class KrknFormatter(Formatter):
 
     @staticmethod
+    def format_pair(input_pair):
+        """
+        Formats input to conform with kraken pair format. The API expects one of
+        two formats:
+        XBTXLT
+        or
+        XXBTXLTC
+
+        Where crypto currencies have an X prepended, and fiat currencies have
+        a Z prepended. Since the API returns the 8 character format, that's what
+        we will format into as well.
+
+        We expect 6 or 8 character strings, but do not explicitly check for it.
+        Should the string be of uneven length, we'll split the pair in the middle
+        like so:
+        BTC-LTC -> BTC, LTC.
+
+        Furthermore, since Kraken uses 'XBT' as Bitcoins symbol, we look for, and
+        replace occurrences of 'btc' with 'XBT'.
+
+        :param input_pair: str
+        :return: str
+        """
+        if len(input_pair) % 2 == 0:
+            base_cur, quote_cur = input_pair[:len(input_pair)//2], input_pair[len(input_pair)//2:]
+        else:
+            base_cur, quote_cur = input_pair.split(input_pair[len(input_pair)//2])
+
+        def add_prefix(input_string):
+            input_string = input_string.lower()
+            if any(x in input_string for x in ['usd', 'eur', 'jpy', 'gbp', 'cad']):
+                # appears to be fiat currency
+                if not input_string.startswith('z'):
+                    input_string = 'z' + input_string
+
+            else:
+                # Appears to be Crypto currency
+                if 'btc' in input_string:
+                    input_string = input_string.replace('btc', 'xbt')
+
+                if not input_string.startswith('x') or len(input_string) == 3:
+                    input_string = 'x' + input_string
+            return input_string
+
+        base_cur = add_prefix(base_cur)
+        quote_cur = add_prefix(quote_cur)
+
+        return (base_cur + quote_cur).upper()
+
+    @staticmethod
     def ticker(data, *args, **kwargs):
         tickers = []
         for k in data['result']:
