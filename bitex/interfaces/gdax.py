@@ -52,7 +52,7 @@ class GDAX(GDAXRest):
         return self.private_query('orders', params=q)
 
     @return_api_response(fmt.order)
-    def ask(self, pair, price, amount, **kwargs):
+    def ask(self, pair, price, size, **kwargs):
         q = {'side': 'sell', 'type': 'market', 'product_id': pair,
              'price': price, 'size': size}
         q.update(kwargs)
@@ -78,7 +78,7 @@ class GDAX(GDAXRest):
         return self.private_query('accounts', method_verb='GET', params=kwargs)
 
     @return_api_response(fmt.withdraw)
-    def withdraw(self, amount, tar_addr, **kwargs):
+    def withdraw(self, size, tar_addr, **kwargs):
         raise NotImplementedError()
 
     @return_api_response(fmt.deposit)
