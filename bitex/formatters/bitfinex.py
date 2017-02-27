@@ -14,7 +14,7 @@ class BtfxFormatter(Formatter):
 
     @staticmethod
     def ticker(data, *args, **kwargs):
-        return (data['bid'], data['ask'], data['high'], data['low'],None, None,
+        return (data['bid'], data['ask'], data['high'], data['low'], None, None,
                 data['last_price'], data['volume'], data['timestamp'])
 
     @staticmethod
