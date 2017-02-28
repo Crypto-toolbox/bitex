@@ -53,7 +53,7 @@ class ItBit(ItbitREST):
     @return_api_response(fmt.order)
     def bid(self, pair, price, size, **kwargs):
         wallet_id = kwargs.pop('wallet')
-        q = {'side': 'buy', 'type': 'limit', 'size': size, 'price': price,
+        q = {'side': 'buy', 'type': 'limit', 'amount': size, 'price': price,
              'instrument': pair}
         q.update(kwargs)
         return self.private_query('wallets/%s/orders' % wallet_id, params=q)
@@ -61,7 +61,7 @@ class ItBit(ItbitREST):
     @return_api_response(fmt.order)
     def ask(self, pair, price, size, **kwargs):
         wallet_id = kwargs.pop('wallet')
-        q = {'side': 'buy', 'type': 'limit', 'size': size, 'price': price,
+        q = {'side': 'buy', 'type': 'limit', 'amount': size, 'price': price,
              'instrument': pair}
         q.update(kwargs)
         return self.private_query('wallets/%s/orders' % wallet_id, params=q)
@@ -83,7 +83,7 @@ class ItBit(ItbitREST):
     @return_api_response(fmt.withdraw)
     def withdraw(self, size, tar_addr, **kwargs):
         wallet_id = kwargs.pop('wallet_id')
-        q = {'address': tar_addr, 'size': size}
+        q = {'address': tar_addr, 'amount': size}
         return self.private_query('wallets/%s/cryptocurrency_withdrawals' % wallet_id,
                                   params=q)
 
