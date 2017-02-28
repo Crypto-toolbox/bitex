@@ -53,7 +53,7 @@ class Vaultoro(VaultoroREST):
 
     def _place_order(self, pair, size, price, side, order_type, **kwargs):
         args = side, pair, order_type
-        q = {'size': size, 'price': price}
+        q = {'gld': size, 'price': price}
         return self.private_query('1/%s/%s/%s' % args, params=kwargs,
                                   method_verb='POST')
 
@@ -86,7 +86,7 @@ class Vaultoro(VaultoroREST):
 
     @return_api_response(fmt.withdraw)
     def withdraw(self, size, *args, **kwargs):
-        q = {'size': size}
+        q = {'btc': size}
         q.update(kwargs)
         return self.private_query('1/withdraw', method_verb='POST', params=q)
 
