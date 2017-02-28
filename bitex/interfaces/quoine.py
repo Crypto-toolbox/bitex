@@ -80,7 +80,7 @@ class Quoine(QuoineREST):
         return self.private_query('/accounts/balance/', method='GET')
 
     @return_api_response(fmt.withdraw)
-    def withdraw(self, amount, tar_addr, **kwargs):
+    def withdraw(self, size, tar_addr, **kwargs):
         raise NotImplementedError()
 
     @return_api_response(fmt.deposit)
