@@ -71,8 +71,8 @@ class Bitstamp(BitstampREST):
         return self.private_query('v2/balance/')
 
     @return_api_response(fmt.withdraw)
-    def withdraw(self, amount, tar_addr, **kwargs):
-        q = {'amount': amount, 'address': tar_addr}
+    def withdraw(self, size, tar_addr, **kwargs):
+        q = {'amount': size, 'address': tar_addr}
         q.update(kwargs)
         return self.private_query('bitcoin_withdrawal/', params=q)
 
