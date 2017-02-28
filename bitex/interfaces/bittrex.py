@@ -88,7 +88,7 @@ class Bittrex(BittrexREST):
 
     @return_api_response(fmt.withdraw)
     def withdraw(self, size, tar_addr, **kwargs):
-        q = {'size': size, 'address': tar_addr}
+        q = {'quantity': size, 'address': tar_addr}
         q.update(kwargs)
         return self.private_query('account/withdraw', params=q)
 
