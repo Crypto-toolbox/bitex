@@ -43,7 +43,7 @@ class Bitfinex(BitfinexREST):
         return self.public_query('trades/%s' % pair, params=kwargs)
 
     def _place_order(self, pair, size, price, side, replace, **kwargs):
-        q = {'symbol': pair, 'size': size, 'price': price, 'side': side,
+        q = {'symbol': pair, 'amount': size, 'price': price, 'side': side,
              'type': 'exchange limit'}
         q.update(kwargs)
         if replace:
@@ -86,7 +86,7 @@ class Bitfinex(BitfinexREST):
     def withdraw(self, size, tar_addr, **kwargs):
         q = {'withdraw_type': kwargs.pop('withdraw_type'),
              'walletselected': kwargs.pop('walletselected'),
-             'size': size, 'address': tar_addr}
+             'amount': size, 'address': tar_addr}
         q.update(kwargs)
         return self.private_query('withdraw', params=q)
 
