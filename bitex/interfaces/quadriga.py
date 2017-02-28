@@ -52,13 +52,13 @@ class QuadrigaCX(QuadrigaCXREST):
 
     @return_api_response(fmt.order)
     def bid(self, pair, price, size, **kwargs):
-        q = {'size': size, 'price': price, 'book': pair}
+        q = {'amount': size, 'price': price, 'book': pair}
         q.update(kwargs)
         return self.private_query('buy', params=q)
 
     @return_api_response(fmt.order)
     def ask(self, pair, price, size, **kwargs):
-        q = {'size': size, 'price': price, 'book': pair}
+        q = {'amount': size, 'price': price, 'book': pair}
         q.update(kwargs)
         return self.private_query('sell', params=q)
 
@@ -80,7 +80,7 @@ class QuadrigaCX(QuadrigaCXREST):
 
     @return_api_response(fmt.withdraw)
     def withdraw(self, size, tar_addr, cur='bitcoin', **kwargs):
-        q = {'size': size, 'address': tar_addr}
+        q = {'amount': size, 'address': tar_addr}
         q.update(kwargs)
         if cur in ['bitcoin', 'ether']:
             return self.private_query('%s_withdrawal' % cur, params=q)
