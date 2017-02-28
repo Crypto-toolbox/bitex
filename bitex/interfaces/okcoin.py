@@ -51,13 +51,13 @@ class OKCoin(OKCoinREST):
 
     @return_api_response(fmt.order)
     def bid(self, pair, price, size, **kwargs):
-        q = {'symbol': pair, 'price': price, 'size': size, 'type': 'buy'}
+        q = {'symbol': pair, 'price': price, 'amount': size, 'type': 'buy'}
         q.update(kwargs)
         return self.private_query('trade.do', params=q)
 
     @return_api_response(fmt.order)
     def ask(self, pair, price, size, **kwargs):
-        q = {'symbol': pair, 'price': price, 'size': size, 'type': 'sell'}
+        q = {'symbol': pair, 'price': price, 'amount': size, 'type': 'sell'}
         q.update(kwargs)
         return self.private_query('trade.do', params=q)
 
@@ -79,7 +79,7 @@ class OKCoin(OKCoinREST):
 
     @return_api_response(fmt.withdraw)
     def withdraw(self, size, tar_addr, **kwargs):
-        q = {'withdraw_address': tar_addr, 'withdraw_size': size}
+        q = {'withdraw_address': tar_addr, 'withdraw_amount': size}
         q.update(kwargs)
         return self.private_query('withdraw.do', params=q)
 
