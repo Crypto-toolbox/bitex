@@ -59,7 +59,7 @@ class Quoine(QuoineREST):
 
     @return_api_response(fmt.order)
     def ask(self, pair, price, size, **kwargs):
-        q = {'size': size, 'price': price, 'order_type': 'limit',
+        q = {'quantity': size, 'price': price, 'order_type': 'limit',
              'product_id': self.pairs[pair], 'side': 'sell'}
         q.update(kwargs)
         return self.private_query('orders/' % pair, params=q)
