@@ -55,21 +55,21 @@ class HitBtc(HitBTCREST):
         q = kwargs
         return self.public_query('%s/trades' % pair, params=q)
 
-    def _place_order(self, pair, amount, price, side, order_id, **kwargs):
-        q = {'symbol': pair, 'price': price, 'quantity': amount, 'side': side,
+    def _place_order(self, pair, size, price, side, order_id, **kwargs):
+        q = {'symbol': pair, 'price': price, 'quantity': size, 'side': side,
              'clientOrderId': order_id}
         q.update(kwargs)
         return self.private_query('trading/new_order', method_verb='POST', params=q)
 
     @return_api_response(fmt.order)
-    def bid(self, pair, price, amount, order_id=None, **kwargs):
+    def bid(self, pair, price, size, order_id=None, **kwargs):
         order_id = order_id if order_id else str(time.time())
-        self._place_order(pair, amount, price, 'buy', order_id, **kwargs)
+        self._place_order(pair, size, price, 'buy', order_id, **kwargs)
 
     @return_api_response(fmt.order)
-    def ask(self, pair, price, amount, order_id=None, **kwargs):
+    def ask(self, pair, price, size, order_id=None, **kwargs):
         order_id = order_id if order_id else str(time.time())
-        self._place_order(pair, amount, price, 'sell', order_id, **kwargs)
+        self._place_order(pair, size, price, 'sell', order_id, **kwargs)
 
     @return_api_response(fmt.cancel)
     def cancel_order(self, order_id, all=False, **kwargs):
@@ -91,9 +91,9 @@ class HitBtc(HitBTCREST):
         return self.private_query('trading/balance', params=kwargs)
 
     @return_api_response(fmt.withdraw)
-    def withdraw(self, amount, tar_addr, currency=None, **kwargs):
+    def withdraw(self, size, tar_addr, currency=None, **kwargs):
         currency = 'BTC' if not currency else currency
-        q = {'amount': amount, 'currency_code': currency, 'address': tar_addr}
+        q = {'amount': size, 'currency_code': currency, 'address': tar_addr}
         q.update(kwargs)
         return self.private_query('payment/payout', params=q)
 
