@@ -79,8 +79,8 @@ class QuadrigaCX(QuadrigaCXREST):
         return self.private_query('balance', params=kwargs)
 
     @return_api_response(fmt.withdraw)
-    def withdraw(self, amount, tar_addr, cur='bitcoin', **kwargs):
-        q = {'amount': amount, 'address': tar_addr}
+    def withdraw(self, size, tar_addr, cur='bitcoin', **kwargs):
+        q = {'amount': size, 'address': tar_addr}
         q.update(kwargs)
         if cur in ['bitcoin', 'ether']:
             return self.private_query('%s_withdrawal' % cur, params=q)
