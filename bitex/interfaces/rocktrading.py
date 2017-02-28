@@ -81,8 +81,8 @@ class RockTradingLtd(RockTradingREST):
         return self.private_query('balances', params=kwargs)
 
     @return_api_response(fmt.withdraw)
-    def withdraw(self, amount, tar_addr, **kwargs):
-        q = {'destination_address': tar_addr, 'amount': amount}
+    def withdraw(self, size, tar_addr, **kwargs):
+        q = {'destination_address': tar_addr, 'amount': size}
         q.update(kwargs)
         return self.private_query('atms/withdraw', params=q)
 
