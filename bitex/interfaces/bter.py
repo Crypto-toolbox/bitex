@@ -51,7 +51,7 @@ class Bter(BterREST):
         return self.public_query('trade/%s' % pair, params=kwargs)
 
     def _place_order(self, pair, size, price, side, **kwargs):
-        q = {'pair': pair, 'type': side, 'price': price, 'size': size}
+        q = {'pair': pair, 'type': side, 'price': price, 'amount': size}
         q.update(kwargs)
         return self.private_query('placeorder', params=q)
 
