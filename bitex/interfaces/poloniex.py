@@ -48,14 +48,14 @@ class Poloniex(PoloniexREST):
 
     @return_api_response(fmt.order)
     def bid(self, pair, rate, size, **kwargs):
-        q = {'command': 'buy', 'currencyPair': pair, 'size': size,
+        q = {'command': 'buy', 'currencyPair': pair, 'amount': size,
              'rate': rate}
         q.update(kwargs)
         return self.private_query('tradingApi', params=q)
 
     @return_api_response(fmt.order)
     def ask(self, pair, rate, size, **kwargs):
-        q = {'command': 'sell', 'currencyPair': pair, 'size': size,
+        q = {'command': 'sell', 'currencyPair': pair, 'amount': size,
              'rate':    rate}
         q.update(kwargs)
         return self.private_query('tradingApi', params=q)
@@ -82,7 +82,7 @@ class Poloniex(PoloniexREST):
 
     @return_api_response(fmt.withdraw)
     def withdraw(self, size, tar_addr, **kwargs):
-        q = {'currency': kwargs.pop('currency'), 'size': size, 'address': tar_addr}
+        q = {'currency': kwargs.pop('currency'), 'amount': size, 'address': tar_addr}
         q.update(kwargs)
         return self.private_query('tradingApi', params=q)
 
