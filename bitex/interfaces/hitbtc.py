@@ -56,7 +56,7 @@ class HitBtc(HitBTCREST):
         return self.public_query('%s/trades' % pair, params=q)
 
     def _place_order(self, pair, size, price, side, order_id, **kwargs):
-        q = {'symbol': pair, 'price': price, 'size': size, 'side': side,
+        q = {'symbol': pair, 'price': price, 'quantity': size, 'side': side,
              'clientOrderId': order_id}
         q.update(kwargs)
         return self.private_query('trading/new_order', method_verb='POST', params=q)
@@ -93,7 +93,7 @@ class HitBtc(HitBTCREST):
     @return_api_response(fmt.withdraw)
     def withdraw(self, size, tar_addr, currency=None, **kwargs):
         currency = 'BTC' if not currency else currency
-        q = {'size': size, 'currency_code': currency, 'address': tar_addr}
+        q = {'amount': size, 'currency_code': currency, 'address': tar_addr}
         q.update(kwargs)
         return self.private_query('payment/payout', params=q)
 
