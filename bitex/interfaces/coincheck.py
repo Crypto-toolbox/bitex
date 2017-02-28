@@ -77,8 +77,8 @@ class Coincheck(CoincheckREST):
         return self.private_query('accounts/balance')
 
     @return_api_response(fmt.withdraw)
-    def withdraw(self, amount, tar_addr, **kwargs):
-        q = {'address': tar_addr, 'amount': amount}
+    def withdraw(self, size, tar_addr, **kwargs):
+        q = {'address': tar_addr, 'amount': size}
         q.update(kwargs)
         return self.private_query('send_money', params=q)
 
