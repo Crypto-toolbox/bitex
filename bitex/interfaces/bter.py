@@ -50,18 +50,18 @@ class Bter(BterREST):
     def trades(self, pair, **kwargs):
         return self.public_query('trade/%s' % pair, params=kwargs)
 
-    def _place_order(self, pair, amount, price, side, **kwargs):
-        q = {'pair': pair, 'type': side, 'price': price, 'amount': amount}
+    def _place_order(self, pair, size, price, side, **kwargs):
+        q = {'pair': pair, 'type': side, 'price': price, 'amount': size}
         q.update(kwargs)
         return self.private_query('placeorder', params=q)
 
     @return_api_response(fmt.order)
-    def bid(self, pair, price, amount, **kwargs):
-        return self._place_order(pair, amount, price, 'BUY', **kwargs)
+    def bid(self, pair, price, size, **kwargs):
+        return self._place_order(pair, size, price, 'BUY', **kwargs)
 
     @return_api_response(fmt.order)
-    def ask(self, pair, price, amount, **kwargs):
-        return self._place_order(pair, amount, price, 'SELL', **kwargs)
+    def ask(self, pair, price, size, **kwargs):
+        return self._place_order(pair, size, price, 'SELL', **kwargs)
 
     @return_api_response(fmt.cancel)
     def cancel_order(self, order_id, **kwargs):
@@ -80,7 +80,7 @@ class Bter(BterREST):
         return self.private_query('getfunds', params=kwargs)
 
     @return_api_response(fmt.withdraw)
-    def withdraw(self, amount, tar_addr, **kwargs):
+    def withdraw(self, size, tar_addr, **kwargs):
         raise NotImplementedError
 
     @return_api_response(fmt.deposit)
