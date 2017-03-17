@@ -7,10 +7,25 @@ Exchanges:
 - Bter API Client & Interface
 - Vaultoro API Client & Interface
 
+APIs:
+- The Following Exchanges had their WSS API implemented:
+    - HitBTC
+    - GDAX
+    - Bitfinex
+    - Bitstamp
+    - Gemini
+    - Poloniex[Beta]
+    - OkCoin
+    
 ### Changed
+Project Structure
+- `bitex.api` now features 2 submodules, `REST` and `API`. This should
+not affect any imports in existing code.
+
 ### Deprecated
 ### Removed
 ### Fixed
+Various spelling errors
 
 ## V 1.0
 ### Added
