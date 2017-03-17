@@ -6,7 +6,7 @@ import json
 # Import Third-Party
 
 # Import Homebrew
-from bitex.api.REST.api import RESTAPI
+from bitex.api.REST.api import APIClient
 from bitex.api.REST.rest import KrakenREST, CryptopiaREST, CCEXRest, GeminiREST
 from bitex.api.REST.rest import YunbiREST, RockTradingREST
 
@@ -18,8 +18,8 @@ class APITests(unittest.TestCase):
     Tests APIs for connection establishment, authentication, key loading.
     """
     def setUp(self):
-        self.api = RESTAPI('http://google.com/api', api_version='v1', key='12345',
-                           secret='abcde')
+        self.api = APIClient('http://google.com/api', api_version='v1',
+                             key='12345', secret='abcde')
 
     def tearDown(self):
         self.api = None
