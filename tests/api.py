@@ -6,7 +6,7 @@ import json
 # Import Third-Party
 
 # Import Homebrew
-from bitex.api.api import RESTAPI
+from bitex.api.REST.api import RESTAPI
 from bitex.api.REST.rest import KrakenREST, CryptopiaREST, CCEXRest, GeminiREST
 from bitex.api.REST.rest import YunbiREST, RockTradingREST
 
