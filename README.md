@@ -140,10 +140,10 @@ b.ask(pair, price, size)
 g.ask(pair, price, size)
 ```
 
-# Standardzied Methods
+# Standardized Methods
 
-As explained in the previous section, __standardized methods__ refer to the methods of each interface,
-which have been deemed as part of the set of minimal methods and functions required, to trade
+As explained in the previous section, __standardized methods__ refer to the methods of each interface
+which have been deemed as part of the set of minimal methods and functions required to trade
 at an exchange via its API. They feature the following characteristics:
 
 - Each method has an identical method header across all interfaces
