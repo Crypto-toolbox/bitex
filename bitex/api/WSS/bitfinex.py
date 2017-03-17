@@ -36,7 +36,7 @@ class BitfinexWSS(WSSAPI):
     the Server issues a connection reset.
     """
 
-    def __init__(self):
+    def __init__(self, pairs=None):
         """
         Initializes BitfinexWSS Instance.
         :param key: Api Key as string
@@ -45,6 +45,12 @@ class BitfinexWSS(WSSAPI):
         """
         super(BitfinexWSS, self).__init__('wss://api.bitfinex.com/ws/2', 'Bitfinex')
         self.conn = None
+        if pairs:
+            self.pairs = pairs
+        else:
+            self.pairs = ['ETHBTC', 'BTCUSD', 'ETHUSD', 'ETCUSD', 'ETCBTC',
+                          'ZECUSD', 'ZECBTC', 'XMRUSD', 'XMRBTC', 'LTCUSD',
+                          'LTCBTC', 'DASHUSD']
 
         # Set up variables for receiver and main loop threads
         self._receiver_lock = threading.Lock()
@@ -706,10 +712,8 @@ class BitfinexWSS(WSSAPI):
         self.send({'event': 'ping'})
 
     def setup_subscriptions(self):
-        pairs = ['ETHBTC', 'BTCUSD', 'ETHUSD', 'ETCUSD', 'ETCBTC', 'ZECUSD',
-                 'ZECBTC', 'XMRUSD', 'XMRBTC', 'LTCUSD', 'LTCBTC', 'DASHUSD']
         self.config(decimals_as_strings=True)
-        for pair in pairs:
+        for pair in self.pairs:
             self.ticker(pair)
             self.ohlc(pair)
             self.order_book(pair)
