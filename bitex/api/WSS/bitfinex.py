@@ -248,7 +248,7 @@ class BitfinexWSS(WSSAPI):
         super(BitfinexWSS, self).restart()
 
         # cache channel labels temporarily if soft == True
-        channel_labels = self.channel_labels if soft else None
+        channel_labels = [self.channel_labels[k] for k in self.channel_labels] if soft else None
 
         # clear previous channel caches
         self.channels = {}
@@ -707,8 +707,7 @@ class BitfinexWSS(WSSAPI):
 
     def setup_subscriptions(self):
         pairs = ['ETHBTC', 'BTCUSD', 'ETHUSD', 'ETCUSD', 'ETCBTC', 'ZECUSD',
-                 'ZECBTC', 'XMRUSD', 'XMRBTC', 'LTCUSD', 'LTCBTC', 'DASHUSD',
-                 'DASHBTC']
+                 'ZECBTC', 'XMRUSD', 'XMRBTC', 'LTCUSD', 'LTCBTC', 'DASHUSD']
         self.config(decimals_as_strings=True)
         for pair in pairs:
             self.ticker(pair)
