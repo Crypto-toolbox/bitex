@@ -10,7 +10,7 @@ from abc import ABCMeta, abstractmethod
 import requests
 
 # Import Homebrew
-from bitex.api.response import APIResponse
+from bitex.api.REST.response import APIResponse
 
 log = logging.getLogger(__name__)
 
