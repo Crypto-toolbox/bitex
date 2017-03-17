@@ -1,8 +1,3 @@
-"""
-Task:
-Do fancy shit.
-"""
-
 # Import Built-ins
 import logging
 import unittest
@@ -12,8 +7,8 @@ import json
 
 # Import Homebrew
 from bitex.api.api import RESTAPI
-from bitex.api.rest import KrakenREST, CryptopiaREST, CCEXRest, GeminiREST
-from bitex.api.rest import YunbiREST, RockTradingREST
+from bitex.api.REST.rest import KrakenREST, CryptopiaREST, CCEXRest, GeminiREST
+from bitex.api.REST.rest import YunbiREST, RockTradingREST
 
 log = logging.getLogger(__name__)
 

@@ -8,7 +8,7 @@ import logging
 # Import Third-Party
 
 # Import Homebrew
-from bitex.api.rest import BittrexREST
+from bitex.api.REST.rest import BittrexREST
 from bitex.utils import return_api_response
 from bitex.formatters.bittrex import BtrxFormatter as fmt
 # Init Logging Facilities
