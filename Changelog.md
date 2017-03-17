@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased] V 1.1
+## V 1.1.0
 ### Added
 Exchanges:
 - HitBTC API Client & Interface
