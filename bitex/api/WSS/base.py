@@ -23,6 +23,7 @@ class WSSAPI:
         :param addr:
         :param name:
         """
+        log.debug("WSSAPI.__init__(): Initializing Websocket API")
         self.addr = addr
         self.name = name
         self.running = False
@@ -44,7 +45,7 @@ class WSSAPI:
         Starts threads. Extend this in your child class.
         :return:
         """
-        log.debug("BaseWSS.start(): Starting Basic Facilities")
+        log.info("WSSAPI.start(): Starting Basic Facilities")
         self.running = True
         if self._controller_thread is None or not self._controller_thread.is_alive():
             self._controller_thread = Thread(target=self._controller,
@@ -58,6 +59,7 @@ class WSSAPI:
         Stops Threads. Overwrite this in your child class as necessary.
         :return:
         """
+        log.debug("WSSAPI.stop(): Stopping..")
         self.running = False
 
     def restart(self):
@@ -65,6 +67,7 @@ class WSSAPI:
         Restart Threads.
         :return:
         """
+        log.debug("WSSAPI.restart(): Restarting API Client..")
         self.stop()
         self.start()
 
@@ -78,7 +81,7 @@ class WSSAPI:
                 cmd = self._controller_q.get(timeout=1)
             except (TimeoutError, Empty):
                 continue
-
+            log.debug("WSSAPI._controller(): Received command: %s", cmd)
             Thread(target=self.eval_command, args=(cmd,)).start()
 
     def send(self, payload):
