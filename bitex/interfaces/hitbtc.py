@@ -9,6 +9,7 @@ import time
 
 # Import Homebrew
 from bitex.api.REST.rest import HitBTCREST
+from bitex.api.WSS.hitbtc import HitBTCWSS
 from bitex.utils import return_api_response
 from bitex.formatters.hitbtc import HitBtcFormatter as fmt
 
@@ -21,6 +22,11 @@ class HitBtc(HitBTCREST):
         super(HitBtc, self).__init__(key, secret)
         if key_file:
             self.load_key(key_file)
+        if websocket:
+            self.wss = HitBTCWSS()
+            self.wss.start()
+        else:
+            self.wss = None
 
     def public_query(self, endpoint, method_verb=None, **kwargs):
         if not method_verb:
