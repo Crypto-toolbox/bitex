@@ -5,15 +5,15 @@ import logging
 import pusherclient
 
 # Import Homebrew
-from bitexwss.api.base import WSSAPI
+from bitex.api.WSS.base import WSSAPI
 
 # Init Logging Facilities
 log = logging.getLogger(__name__)
 
 
-class BitstampWss(WSSAPI):
+class BitstampWSS(WSSAPI):
     """
-    Creates a BitstampWss Object, which automatically describes to all
+    Creates a BitstampWSS Object, which automatically describes to all
     available endpoints of the  Bitstamp Websocket API.
 
     By Default, data is printed to stdout. If you'd like to customize this
@@ -33,7 +33,7 @@ class BitstampWss(WSSAPI):
 
         key = key if key else 'de504dc5763aeef9ff52'
 
-        super(BitstampWss, self).__init__(key, 'Bitstamp')
+        super(BitstampWSS, self).__init__(key, 'Bitstamp')
 
         self.pusher = None
         self.__pusher_options = kwargs
@@ -70,7 +70,7 @@ class BitstampWss(WSSAPI):
         the relevant channels, before initializing a connection.
         :return:
         """
-        super(BitstampWss, self).start()
+        super(BitstampWSS, self).start()
 
         self.pusher = pusherclient.Pusher(self.addr, **self.__pusher_options)
         self.pusher.connection.bind('pusher:connection_established',
@@ -78,7 +78,7 @@ class BitstampWss(WSSAPI):
         self.pusher.connect()
 
     def stop(self):
-        super(BitstampWss, self).stop()
+        super(BitstampWSS, self).stop()
         self.pusher = None
 
     """

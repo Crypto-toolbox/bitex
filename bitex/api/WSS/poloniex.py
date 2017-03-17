@@ -10,7 +10,7 @@ from asyncio import coroutine, get_event_loop
 import requests
 
 # Import Homebrew
-from bitexwss.api.base import WSSAPI
+from bitex.api.WSS.base import WSSAPI
 
 # Init Logging Facilities
 log = logging.getLogger(__name__)
@@ -51,9 +51,9 @@ class PlnxEndpoint(mp.Process):
         super(PlnxEndpoint, self).join(*args, **kwargs)
 
 
-class Poloniex(WSSAPI):
+class PoloniexWSS(WSSAPI):
     def __init__(self, endpoints=None):
-        super(Poloniex, self).__init__(None, 'Poloniex')
+        super(PoloniexWSS, self).__init__(None, 'Poloniex')
         self.data_q = mp.Queue()
         self.connections = {}
         if endpoints:
@@ -67,19 +67,19 @@ class Poloniex(WSSAPI):
             self.connections[endpoint] = PlnxEndpoint(endpoint, self.data_q)
 
     def start(self):
-        super(Poloniex, self).start()
+        super(PoloniexWSS, self).start()
         for conn in self.connections:
             self.connections[conn].start()
 
     def stop(self):
         for conn in self.connections:
             self.connections[conn].terminate()
-        super(Poloniex, self).stop()
+        super(PoloniexWSS, self).stop()
 
 
 if __name__ == "__main__":
 
-    wss = Poloniex()
+    wss = PoloniexWSS()
     wss.start()
     time.sleep(5)
     wss.stop()

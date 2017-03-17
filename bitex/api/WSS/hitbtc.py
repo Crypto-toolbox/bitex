@@ -10,16 +10,16 @@ import hashlib
 from websocket import create_connection, WebSocketTimeoutException
 
 # Import Homebrew
-from bitexwss.api.base import WSSAPI
+from bitex.api.WSS.base import WSSAPI
 
 # Init Logging Facilities
 log = logging.getLogger(__name__)
 
 
-class HitBTCWss(WSSAPI):
+class HitBTCWSS(WSSAPI):
     def __init__(self, key=None, secret=None):
         data_addr = 'ws://api.hitbtc.com:80'
-        super(HitBTCWss, self).__init__(data_addr, 'HitBTC')
+        super(HitBTCWSS, self).__init__(data_addr, 'HitBTC')
         self.trader_addr = 'ws://api.hitbtc.com:8080'
 
         self.data_thread = None
@@ -32,7 +32,7 @@ class HitBTCWss(WSSAPI):
         self.trade_command_q = Queue()
 
     def start(self, duplex=False):
-        super(HitBTCWss, self).start()
+        super(HitBTCWSS, self).start()
 
         if duplex:
             self.trade_thread = Thread(target=self._trade_thread,
@@ -45,7 +45,7 @@ class HitBTCWss(WSSAPI):
         self.data_thread.start()
 
     def stop(self):
-        super(HitBTCWss, self).stop()
+        super(HitBTCWSS, self).stop()
         self.data_thread.join()
         if self.trade_thread:
             self.trade_thread.join()

@@ -1,5 +1,5 @@
 """
-Contains Exceptions (Errors, Warnings, Infos) relevant to BtfxWss.
+Contains Exceptions (Errors, Warnings, Infos) relevant to BtfxWSS.
 
 Generally, BtfxServerInfo & BtfxServerError Exceptions should
 be handled.
@@ -167,7 +167,7 @@ class InvalidBookLengthError(BtfxServerError):
 
 class BtfxClientError(Exception):
     """
-    General class for BtfxWss Client-related errors. This includes errors raised due
+    General class for BtfxWSS Client-related errors. This includes errors raised due
     to unknown events, status codes, and book-keeping errors (i.e. duplicate
     subscriptions and the like).
 
@@ -206,7 +206,7 @@ class UnknownWSSError(BtfxClientError):
 
 class UnknownChannelError(BtfxClientError):
     """
-    Raised when a channel is received via the websocket for which BtfxWss has
+    Raised when a channel is received via the websocket for which BtfxWSS has
     no data handler set in _data_handlers.
     (field 'channel' in payload, 'event' == 'subscribed' | 'unsubscribed')
     """
@@ -232,7 +232,7 @@ class UnknownWSSInfo(BtfxClientError):
 class AlreadyRegisteredError(BtfxClientError):
     """
     Raised when a subscription response is received, but the channel ID has
-    already been registered in BtfxWss.channels attribute;
+    already been registered in BtfxWSS.channels attribute;
     """
     def __init__(self, message=None):
         if not message:

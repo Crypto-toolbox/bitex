@@ -9,15 +9,15 @@ from websocket import create_connection, WebSocketTimeoutException
 import requests
 
 # Import Homebrew
-from bitexwss.api.base import WSSAPI
+from bitex.api.WSS.base import WSSAPI
 
 # Init Logging Facilities
 log = logging.getLogger(__name__)
 
 
-class OKCoinWss(WSSAPI):
+class OKCoinWSS(WSSAPI):
     def __init__(self):
-        super(OKCoinWss, self).__init__('wss://real.okcoin.com:10440/websocket/okcoinapi ',
+        super(OKCoinWSS, self).__init__('wss://real.okcoin.com:10440/websocket/okcoinapi ',
                                         'OKCoin')
         self.conn = None
 
@@ -25,14 +25,14 @@ class OKCoinWss(WSSAPI):
         self._data_thread = None
 
     def start(self):
-        super(OKCoinWss, self).start()
+        super(OKCoinWSS, self).start()
 
         self._data_thread = threading.Thread(target=self._process_data)
         self._data_thread.daemon = True
         self._data_thread.start()
 
     def stop(self):
-        super(OKCoinWss, self).stop()
+        super(OKCoinWSS, self).stop()
 
         self._data_thread.join()
 

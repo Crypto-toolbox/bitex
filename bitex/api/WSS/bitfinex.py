@@ -4,7 +4,6 @@ import json
 import time
 import queue
 import threading
-from collections import defaultdict
 from threading import Thread
 
 # Import Third-Party
@@ -12,39 +11,39 @@ from websocket import create_connection, WebSocketTimeoutException
 from websocket import WebSocketConnectionClosedException
 
 # Import Homebrew
-from bitexwss.api.base import WSSAPI
+from bitex.api.WSS.base import WSSAPI
 
 # import Server-side Exceptions
-from bitexwss.exceptions import InvalidBookLengthError, GenericSubscriptionError
-from bitexwss.exceptions import NotSubscribedError,  AlreadySubscribedError
-from bitexwss.exceptions import InvalidPairError, InvalidChannelError
-from bitexwss.exceptions import InvalidEventError, InvalidBookPrecisionError
+from bitex.api.WSS.exceptions import InvalidBookLengthError, GenericSubscriptionError
+from bitex.api.WSS.exceptions import NotSubscribedError,  AlreadySubscribedError
+from bitex.api.WSS.exceptions import InvalidPairError, InvalidChannelError
+from bitex.api.WSS.exceptions import InvalidEventError, InvalidBookPrecisionError
 
 # import Client-side Exceptions
-from bitexwss.exceptions import UnknownEventError, UnknownWSSError
-from bitexwss.exceptions import UnknownWSSInfo, AlreadyRegisteredError
-from bitexwss.exceptions import NotRegisteredError, UnknownChannelError
-from bitexwss.exceptions import FaultyPayloadError
+from bitex.api.WSS.exceptions import UnknownEventError, UnknownWSSError
+from bitex.api.WSS.exceptions import UnknownWSSInfo, AlreadyRegisteredError
+from bitex.api.WSS.exceptions import NotRegisteredError, UnknownChannelError
+from bitex.api.WSS.exceptions import FaultyPayloadError
 
 # Init Logging Facilities
 log = logging.getLogger(__name__)
 
 
-class BitfinexWss(WSSAPI):
+class BitfinexWSS(WSSAPI):
     """
     Client Class to connect to Bitfinex Websocket API. Data is stored in attributes.
     Features error handling and logging, as well as reconnection automation if
     the Server issues a connection reset.
     """
 
-    def __init__(self, key=None, secret=None, addr=None):
+    def __init__(self):
         """
-        Initializes BitfinexWss Instance.
+        Initializes BitfinexWSS Instance.
         :param key: Api Key as string
         :param secret: Api secret as string
         :param addr: Websocket API Address
         """
-        super(BitfinexWss, self).__init__('wss://api.bitfinex.com/ws/2', 'Bitfinex')
+        super(BitfinexWSS, self).__init__('wss://api.bitfinex.com/ws/2', 'Bitfinex')
         self.conn = None
 
         # Set up variables for receiver and main loop threads
@@ -123,7 +122,7 @@ class BitfinexWss(WSSAPI):
             if ts - self._heartbeats[chan_id] >= 10:
                 if chan_id not in self._late_heartbeats:
                     # This is newly late; escalate
-                    log.warning("BitfinexWss.heartbeats: Channel %s hasn't sent a "
+                    log.warning("BitfinexWSS.heartbeats: Channel %s hasn't sent a "
                                 "heartbeat in %s seconds!",
                                 self.channel_labels[chan_id],
                                 ts - self._heartbeats[chan_id])
@@ -139,7 +138,7 @@ class BitfinexWss(WSSAPI):
                 except KeyError:
                     # wasn't late before, check next channel
                     continue
-                log.info("BitfinexWss.heartbeats: Channel %s has sent a "
+                log.info("BitfinexWSS.heartbeats: Channel %s has sent a "
                          "heartbeat again!", self.channel_labels[chan_id])
 
     def _check_ping(self):
@@ -156,7 +155,7 @@ class BitfinexWss(WSSAPI):
         :return:
         """
         self._receiver_lock.acquire()
-        log.info("BitfinexWss.pause(): Pausing client..")
+        log.info("BitfinexWSS.pause(): Pausing client..")
 
     def unpause(self):
         """
@@ -164,16 +163,16 @@ class BitfinexWss(WSSAPI):
         :return:
         """
         self._receiver_lock.release()
-        log.info("BitfinexWss.pause(): Unpausing client..")
+        log.info("BitfinexWSS.pause(): Unpausing client..")
 
     def start(self):
         """
         Start the websocket client threads
         :return:
         """
-        super(BitfinexWss, self).start()
+        super(BitfinexWSS, self).start()
 
-        log.info("BitfinexWss.start(): Initializing Websocket connection..")
+        log.info("BitfinexWSS.start(): Initializing Websocket connection..")
         while self.conn is None:
             try:
                 self.conn = create_connection(self.addr, timeout=3)
@@ -181,20 +180,20 @@ class BitfinexWss(WSSAPI):
                 self.conn = None
                 print("Couldn't create websocket connection - retrying!")
 
-        log.info("BitfinexWss.start(): Initializing receiver thread..")
+        log.info("BitfinexWSS.start(): Initializing receiver thread..")
         if not self.receiver_thread:
             self.receiver_thread = Thread(target=self.receive, name='Receiver Thread')
             self.receiver_thread.start()
         else:
-            log.info("BitfinexWss.start(): Thread not started! "
+            log.info("BitfinexWSS.start(): Thread not started! "
                      "self.receiver_thread is populated!")
 
-        log.info("BitfinexWss.start(): Initializing processing thread..")
+        log.info("BitfinexWSS.start(): Initializing processing thread..")
         if not self.processing_thread:
             self.processing_thread = Thread(target=self.process, name='Processing Thread')
             self.processing_thread.start()
         else:
-            log.info("BitfinexWss.start(): Thread not started! "
+            log.info("BitfinexWSS.start(): Thread not started! "
                      "self.processing_thread is populated!")
 
         self.setup_subscriptions()
@@ -204,27 +203,27 @@ class BitfinexWss(WSSAPI):
         Stop all threads and modules of the client.
         :return:
         """
-        super(BitfinexWss, self).stop()
+        super(BitfinexWSS, self).stop()
 
-        log.info("BitfinexWss.stop(): Stopping client..")
+        log.info("BitfinexWSS.stop(): Stopping client..")
 
-        log.info("BitfinexWss.stop(): Joining receiver thread..")
+        log.info("BitfinexWSS.stop(): Joining receiver thread..")
         try:
             self.receiver_thread.join()
             if self.receiver_thread.is_alive():
                 time.time(1)
         except AttributeError:
-            log.debug("BitfinexWss.stop(): Receiver thread was not running!")
+            log.debug("BitfinexWSS.stop(): Receiver thread was not running!")
 
-        log.info("BitfinexWss.stop(): Joining processing thread..")
+        log.info("BitfinexWSS.stop(): Joining processing thread..")
         try:
             self.processing_thread.join()
             if self.processing_thread.is_alive():
                 time.time(1)
         except AttributeError:
-            log.debug("BitfinexWss.stop(): Processing thread was not running!")
+            log.debug("BitfinexWSS.stop(): Processing thread was not running!")
 
-        log.info("BitfinexWss.stop(): Closing websocket conection..")
+        log.info("BitfinexWSS.stop(): Closing websocket conection..")
         try:
             self.conn.close()
         except WebSocketConnectionClosedException:
@@ -237,7 +236,7 @@ class BitfinexWss(WSSAPI):
         self.processing_thread = None
         self.receiver_thread = None
 
-        log.info("BitfinexWss.stop(): Done!")
+        log.info("BitfinexWSS.stop(): Done!")
 
     def restart(self, soft=False):
         """
@@ -245,8 +244,8 @@ class BitfinexWss(WSSAPI):
         to all channels which it was previously subscribed to.
         :return:
         """
-        log.info("BitfinexWss.restart(): Restarting client..")
-        super(BitfinexWss, self).restart()
+        log.info("BitfinexWSS.restart(): Restarting client..")
+        super(BitfinexWSS, self).restart()
 
         # cache channel labels temporarily if soft == True
         channel_labels = self.channel_labels if soft else None
@@ -303,11 +302,11 @@ class BitfinexWss(WSSAPI):
                     try:
                         self._check_ping()
                     except TimeoutError:
-                        log.exception("BitfinexWss.ping(): TimedOut! (%ss)" %
+                        log.exception("BitfinexWSS.ping(): TimedOut! (%ss)" %
                                       self.ping_timer)
                     except (WebSocketConnectionClosedException,
                             ConnectionResetError):
-                        log.exception("BitfinexWss.ping(): Connection Error!")
+                        log.exception("BitfinexWSS.ping(): Connection Error!")
                         self.conn = None
                 if not self.conn:
                     # The connection was killed - initiate restart
@@ -498,7 +497,7 @@ class BitfinexWss(WSSAPI):
         :param ts: timestamp, declares when data was received by the client
         :return:
         """
-        log.info("BitfinexWss.ping(): Ping received! (%ss)",
+        log.info("BitfinexWSS.ping(): Ping received! (%ss)",
                  ts - self.ping_timer)
         self.ping_timer = None
 

@@ -8,7 +8,7 @@ from queue import Queue
 import requests
 
 # Import Homebrew
-from bitexwss.api.base import WSSAPI
+from bitex.api.WSS.base import WSSAPI
 
 # Init Logging Facilities
 log = logging.getLogger(__name__)
@@ -16,9 +16,9 @@ log = logging.getLogger(__name__)
 from websocket import create_connection, WebSocketTimeoutException
 
 
-class GeminiWss(WSSAPI):
+class GeminiWSS(WSSAPI):
     def __init__(self, endpoints=None):
-        super(GeminiWss, self).__init__('wss://api.gemini.com/v1/', 'Gemini')
+        super(GeminiWSS, self).__init__('wss://api.gemini.com/v1/', 'Gemini')
         self.endpoints = (endpoints if endpoints else
                           requests.get('https://api.gemini.com/v1/symbols').json())
         self.endpoints = ['marketdata/' + x.upper() for x in self.endpoints]
@@ -65,14 +65,14 @@ class GeminiWss(WSSAPI):
             self.data_q.put((ep, pair, msg, time.time()))
 
     def start(self):
-        super(GeminiWss, self).start()
+        super(GeminiWSS, self).start()
 
         log.debug("GeminiWSS.start(): launching Endpoint Threads..")
         for endpoint in self.endpoints:
             self.subscribe(endpoint)
 
     def stop(self):
-        super(GeminiWss, self).stop()
+        super(GeminiWSS, self).stop()
         for endpoint in self.endpoints:
             try:
                 self.unsubscribe(endpoint)
