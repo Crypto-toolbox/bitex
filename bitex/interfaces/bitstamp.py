@@ -8,7 +8,7 @@ import logging
 # Import Third-Party
 
 # Import Homebrew
-from bitex.api.rest import BitstampREST
+from bitex.api.REST.rest import BitstampREST
 from bitex.utils import return_api_response
 from bitex.formatters.bitstamp import BtstFormatter as fmt
 

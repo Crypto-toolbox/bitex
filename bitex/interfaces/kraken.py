@@ -8,7 +8,7 @@ import logging
 # Import Third-Party
 
 # Import Homebrew
-from bitex.api.rest import KrakenREST
+from bitex.api.REST.rest import KrakenREST
 from bitex.utils import return_api_response
 from bitex.formatters.kraken import KrknFormatter as fmt
 # Init Logging Facilities

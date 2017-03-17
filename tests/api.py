@@ -1,8 +1,3 @@
-"""
-Task:
-Do fancy shit.
-"""
-
 # Import Built-ins
 import logging
 import unittest
@@ -11,9 +6,9 @@ import json
 # Import Third-Party
 
 # Import Homebrew
-from bitex.api.api import RESTAPI
-from bitex.api.rest import KrakenREST, CryptopiaREST, CCEXRest, GeminiREST
-from bitex.api.rest import YunbiREST, RockTradingREST
+from bitex.api.REST.api import APIClient
+from bitex.api.REST.rest import KrakenREST, CryptopiaREST, CCEXRest, GeminiREST
+from bitex.api.REST.rest import YunbiREST, RockTradingREST
 
 log = logging.getLogger(__name__)
 
@@ -23,8 +18,8 @@ class APITests(unittest.TestCase):
     Tests APIs for connection establishment, authentication, key loading.
     """
     def setUp(self):
-        self.api = RESTAPI('http://google.com/api', api_version='v1', key='12345',
-                           secret='abcde')
+        self.api = APIClient('http://google.com/api', api_version='v1',
+                             key='12345', secret='abcde')
 
     def tearDown(self):
         self.api = None
