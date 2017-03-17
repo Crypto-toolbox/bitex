@@ -62,7 +62,15 @@ class GeminiWSS(WSSAPI):
 
             log.debug("%s, %s", endpoint, msg)
             ep, pair = endpoint.split('/')
-            self.data_q.put((ep, pair, msg, time.time()))
+            log.debug("_subscription_thread(): Putting data on q..")
+            try:
+                self.data_q.put((ep, pair, msg, time.time()), timeout=1)
+            except TimeoutError:
+                continue
+            finally:
+                log.debug("_subscription_thread(): Data Processed, looping back..")
+        conn.close()
+        log.debug("_subscription_thread(): Thread Loop Ended.")
 
     def start(self):
         super(GeminiWSS, self).start()
@@ -73,11 +81,16 @@ class GeminiWSS(WSSAPI):
 
     def stop(self):
         super(GeminiWSS, self).stop()
+        log.debug('stop(): Shutting down Endpoint threads..')
         for endpoint in self.endpoints:
             try:
                 self.unsubscribe(endpoint)
             except KeyError:
                 pass
+        while not all(not self.endpoint_threads[x].is_alive() for x in self.endpoint_threads):
+            time.sleep(1)
+            log.debug('stop(): Waiting for threads to shutdown..')
+        log.debug("stop(): Shutting down complete - running Grabage Collector..")
         self.garbage_collector()
 
     def restart(self):
@@ -96,7 +109,10 @@ class GeminiWSS(WSSAPI):
 
     def unsubscribe(self, endpoint):
         self.threads_running[endpoint] = False
-        self.endpoint_threads[endpoint].join()
+        try:
+            self.endpoint_threads[endpoint].join(timeout=1)
+        except TimeoutError:
+            self.endpoint_threads.pop(endpoint)
 
         self.garbage_collector()
 
