@@ -106,3 +106,6 @@ class WSSAPI:
 
         else:
             raise ValueError("Unknown Command passed to controller! %s" % cmd)
+
+    def get(self, **kwargs):
+        return self.data_q.get(**kwargs)
