@@ -13,3 +13,4 @@ from bitex.interfaces.yunbi import Yunbi
 from bitex.interfaces.poloniex import Poloniex
 from bitex.interfaces.quoine import Quoine
 from bitex.interfaces.quadriga import QuadrigaCX
+from bitex.interfaces.gdax import GDAX
