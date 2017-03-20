@@ -27,7 +27,7 @@ class Bitstamp(BitstampREST):
             self.wss = BitstampWSS()
             self.wss.start()
         else:
-            self.wss = False
+            self.wss = None
 
     def public_query(self, endpoint, **kwargs):
         return self.query('GET', endpoint, **kwargs)
