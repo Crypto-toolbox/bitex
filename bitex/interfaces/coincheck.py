@@ -8,7 +8,7 @@ import logging
 # Import Third-Party
 
 # Import Homebrew
-from bitex.api.rest import CoincheckREST
+from bitex.api.REST.rest import CoincheckREST
 from bitex.utils import return_api_response
 from bitex.formatters.coincheck import CnckFormatter as fmt
 
@@ -77,8 +77,8 @@ class Coincheck(CoincheckREST):
         return self.private_query('accounts/balance')
 
     @return_api_response(fmt.withdraw)
-    def withdraw(self, amount, tar_addr, **kwargs):
-        q = {'address': tar_addr, 'amount': amount}
+    def withdraw(self, size, tar_addr, **kwargs):
+        q = {'address': tar_addr, 'amount': size}
         q.update(kwargs)
         return self.private_query('send_money', params=q)
 

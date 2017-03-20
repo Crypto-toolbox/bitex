@@ -8,7 +8,8 @@ import logging
 # Import Third-Party
 
 # Import Homebrew
-from bitex.api.rest import BitstampREST
+from bitex.api.REST.rest import BitstampREST
+from bitex.api.WSS.bitstamp import BitstampWSS
 from bitex.utils import return_api_response
 from bitex.formatters.bitstamp import BtstFormatter as fmt
 
@@ -17,10 +18,16 @@ log = logging.getLogger(__name__)
 
 
 class Bitstamp(BitstampREST):
-    def __init__(self, key='', secret='', key_file=''):
+    def __init__(self, key='', secret='', key_file='', websocket=False):
         super(Bitstamp, self).__init__(key, secret)
         if key_file:
             self.load_key(key_file)
+
+        if websocket:
+            self.wss = BitstampWSS()
+            self.wss.start()
+        else:
+            self.wss = None
 
     def public_query(self, endpoint, **kwargs):
         return self.query('GET', endpoint, **kwargs)
@@ -71,8 +78,8 @@ class Bitstamp(BitstampREST):
         return self.private_query('v2/balance/')
 
     @return_api_response(fmt.withdraw)
-    def withdraw(self, amount, tar_addr, **kwargs):
-        q = {'amount': amount, 'address': tar_addr}
+    def withdraw(self, size, tar_addr, **kwargs):
+        q = {'amount': size, 'address': tar_addr}
         q.update(kwargs)
         return self.private_query('bitcoin_withdrawal/', params=q)
 

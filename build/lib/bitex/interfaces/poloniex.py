@@ -8,7 +8,7 @@ import logging
 # Import Third-Party
 
 # Import Homebrew
-from bitex.api.rest import PoloniexREST
+from bitex.api.REST.rest import PoloniexREST
 from bitex.utils import return_api_response
 from bitex.formatters.poloniex import PlnxFormatter as fmt
 # Init Logging Facilities

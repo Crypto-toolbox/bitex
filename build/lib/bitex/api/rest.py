@@ -22,7 +22,7 @@ except ImportError:
     jwt = False
 
 # Import Homebrew
-from bitex.api.api import APIClient
+from bitex.api.REST.api import APIClient
 
 
 log = logging.getLogger(__name__)

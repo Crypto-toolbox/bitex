@@ -8,7 +8,8 @@ import logging
 # Import Third-Party
 
 # Import Homebrew
-from bitex.api.rest import GeminiREST
+from bitex.api.REST.rest import GeminiREST
+from bitex.api.WSS.gemini import GeminiWSS
 from bitex.utils import return_api_response
 from bitex.formatters.gemini import GmniFormatter as fmt
 
@@ -18,11 +19,15 @@ log = logging.getLogger(__name__)
 
 
 class Gemini(GeminiREST):
-    def __init__(self, key='', secret='', key_file=''):
+    def __init__(self, key='', secret='', key_file='', websocket=False):
         super(Gemini, self).__init__(key, secret)
         if key_file:
             self.load_key(key_file)
-        print(self.uri)
+        if websocket:
+            self.wss = GeminiWSS()
+            self.wss.start()
+        else:
+            self.wss = None
 
     def public_query(self, endpoint, **kwargs):
         return self.query('GET', endpoint, **kwargs)
@@ -75,7 +80,7 @@ class Gemini(GeminiREST):
         return self.private_query('balances', params=kwargs)
 
     @return_api_response(fmt.withdraw)
-    def withdraw(self, amount, tar_addr, **kwargs):
+    def withdraw(self, size, tar_addr, **kwargs):
         raise NotImplementedError()
 
     @return_api_response(fmt.deposit)

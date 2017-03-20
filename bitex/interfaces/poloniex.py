@@ -8,7 +8,8 @@ import logging
 # Import Third-Party
 
 # Import Homebrew
-from bitex.api.rest import PoloniexREST
+from bitex.api.REST.rest import PoloniexREST
+from bitex.api.WSS.poloniex import PoloniexWSS
 from bitex.utils import return_api_response
 from bitex.formatters.poloniex import PlnxFormatter as fmt
 # Init Logging Facilities
@@ -16,10 +17,15 @@ log = logging.getLogger(__name__)
 
 
 class Poloniex(PoloniexREST):
-    def __init__(self, key='', secret='', key_file=''):
+    def __init__(self, key='', secret='', key_file='', websocket=False):
         super(Poloniex, self).__init__(key, secret)
         if key_file:
             self.load_key(key_file)
+        if websocket:
+            self.wss = PoloniexWSS()
+            self.wss.start()
+        else:
+            self.wss = None
 
     def public_query(self, endpoint, **kwargs):
         return self.query('GET', 'public?command=' + endpoint, **kwargs)
@@ -47,15 +53,15 @@ class Poloniex(PoloniexREST):
         return self.public_query('returnTradeHistory', params=kwargs)
 
     @return_api_response(fmt.order)
-    def bid(self, pair, rate, amount, **kwargs):
-        q = {'command': 'buy', 'currencyPair': pair, 'amount': amount,
+    def bid(self, pair, rate, size, **kwargs):
+        q = {'command': 'buy', 'currencyPair': pair, 'amount': size,
              'rate': rate}
         q.update(kwargs)
         return self.private_query('tradingApi', params=q)
 
     @return_api_response(fmt.order)
-    def ask(self, pair, rate, amount, **kwargs):
-        q = {'command': 'sell', 'currencyPair': pair, 'amount': amount,
+    def ask(self, pair, rate, size, **kwargs):
+        q = {'command': 'sell', 'currencyPair': pair, 'amount': size,
              'rate':    rate}
         q.update(kwargs)
         return self.private_query('tradingApi', params=q)
@@ -81,8 +87,8 @@ class Poloniex(PoloniexREST):
         return self.private_query('tradingApi', params=q)
 
     @return_api_response(fmt.withdraw)
-    def withdraw(self, amount, tar_addr, **kwargs):
-        q = {'currency': kwargs.pop('currency'), 'amount': amount, 'address': tar_addr}
+    def withdraw(self, size, tar_addr, **kwargs):
+        q = {'currency': kwargs.pop('currency'), 'amount': size, 'address': tar_addr}
         q.update(kwargs)
         return self.private_query('tradingApi', params=q)
 

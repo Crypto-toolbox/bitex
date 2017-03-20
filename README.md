@@ -9,7 +9,9 @@ interfaces, on top of which the second part - `bitex.interfaces` - builds upon.
 # State
 --------------------------------
 
-**API** : **Completed**
+**RESTAPI** : **Completed**
+
+**WSSAPI** : **BETA**
 
 **Interfaces** : **WIP**
 
@@ -23,34 +25,38 @@ interfaces, on top of which the second part - `bitex.interfaces` - builds upon.
 | Bitfinex       | Done | Done           | Done              | Done               | WIP        | WIP   |
 | Bitstamp       | Done | Done           | Done              | Done               | WIP        | WIP   |
 | Bittrex        | Done | Done           | Done              | Done               | WIP        | WIP   |
+| Bter           | Done | BETA           | Done              | Done               | WIP        | WIP   |
 | C-Cex          | Done | BETA           | Done              | Done               | WIP        | WIP   |
 | CoinCheck      | Done | Done           | Done              | Done               | WIP        | WIP   |
 | Cryptopia      | Done | BETA           | Done              | Done               | WIP        | WIP   |
 | GDAX           | Done | BETA           | Done              | Done               | WIP        | WIP   |
 | Gemini         | Done | BETA           | Done              | Done               | WIP        | WIP   |
+| HitBtc         | Done | BETA           | Done              | Done               | WIP        | WIP   |
 | itBit          | Done | BETA           | Done              | Done               | WIP        | WIP   |
 | Kraken         | Done | Done           | Done              | Done               | WIP        | WIP   |
 | OkCoin         | Done | BETA           | Done              | Done               | WIP        | WIP   |
 | Poloniex       | Done | Done           | Done              | Done               | WIP        | WIP   |
-| TheRockTrading | Done | BETA           | Done              | Done               | WIP        | WIP   |
-| Yunbi          | Done | BETA           | Done              | Done               | WIP        | WIP   |
 | Quoine         | Done | BETA           | Done              | Done               | WIP        | WIP   |
 | QuadrigaCX     | Done | BETA           | Done              | Done               | WIP        | WIP   |
+| TheRockTrading | Done | BETA           | Done              | Done               | WIP        | WIP   |
+| Yunbi          | Done | BETA           | Done              | Done               | WIP        | WIP   |
+| Vaultoro       | Done | BETA           | Done              | Done               | WIP        | WIP   |
+
 
 Additional clients will be added to (or removed from) this list, 
 according to their liquidity and market volume.
 
 [^1]: This table considers standardized methods only, when describing the state. See section `Standardized Methods` for more
 
-# bitex.api
+# bitex.api.REST
 
-Classes found in `bitex.api` provide wrapper classes and methods for Python's
+Classes found in `bitex.api.REST` provide wrapper classes and methods for Python's
 `requests` module, including handling of each exchange's specific authentication
 procedure.
 
 An example:
 ```
-from bitex.api.rest import KrakenREST
+from bitex.api.REST.rest import KrakenREST
 
 k = KrakenREST()
 k.load_key('kraken.key')  # loads key and secret from given file;
@@ -84,6 +90,31 @@ Userid
 accountname
 ```
 
+# bitex.api.WSS
+`bitex.api.WSS` offers `Queue()`-based Websocket interface for a select few exchanges.
+The classes found within are very basic, and subject to further development. Private
+endpoints and trading are only sporadically implemented.
+
+Their prime objective is to provide a raw, realtime interface to all of an exchange's
+Websocket endpoint.
+
+## Usage
+```
+from.bitex.api.WSS import GeminiWSS
+import time
+
+wss = GeminiWSS()
+wss.start()
+time.sleep(5)
+wss.stop()
+
+while not wss.data_q.empty():
+    print(wss.data_q.get())
+    
+```
+You can of course also access `data_q` while the `WebSocket` is still running 
+(i.e. before calling `stop()`).
+
 # bitex.interfaces
 
 Built on top of `bitex.api`'s api classes are the slightly more sophisticated
@@ -109,48 +140,47 @@ b.ask(pair, price, size)
 g.ask(pair, price, size)
 ```
 
-# Standardzied Methods
+# Standardized Methods
 
-As explained in the previous section, __standardized methods__ refer to the methods of each interface,
-which have been deemed as part of the set of minimal methods and functions required, to trade
+As explained in the previous section, __standardized methods__ refer to the methods of each interface
+which have been deemed as part of the set of minimal methods and functions required to trade
 at an exchange via its API. They feature the following characteristics:
 
 - Each method has an identical method header across all interfaces
 - Its output is identical across all interfaces
-- Each method returns a tuple of (data, `requests.response()` object) where data is:
+- Each method returns a `bitex.api.response.APIResponse` object; these behave like `requests.Request` objects, with the addition
+of a new attribute, `formatted`, which stores a standardized representation of the data queried.
 
-      a) a formatted json response, if a formatter is present
-      
-      or
-      
-      b) the raw json data contained as returned by `requests.response().json()` 
+
 
 # bitex.formatters
 
 This module provide formatters for the standardized methods, formatting their json output into a uniform layout. They are a work in progress feature.
 
-Be mindful that, in order to provide a unified output format, some fields have been dropped in the formatted output! If you rely on one of these dropped fields, be sure to use the returned `requests.response()` object, and parse the json yourself:
+Be mindful that, in order to provide a unified output format, some fields have been dropped in the formatted output! If you rely on one of these dropped fields, be sure to use the `APIResponse`'s `json` attribute instead, and parse the json yourself:
 
 ```
 from bitex import Kraken
 k = Kraken()
-formatted_output, requests_response_object = k.ticker()
-print(formatted_output)  # drops bid/ask sizes, vwap and other data
-print(requests.response_object.json())  # Returns all data
+response = k.ticker()
+print(response.formatted)  # show formatted data
+print(response.json())  # Returns all json data
 ```
 
-The following is a table of all formatters currently implemented - any method not marked as `Done` will not do any formatting, and simply return `requests.response.json()` if data contains valid json - else `None` is returned instead.
+The following is a table of all formatters currently implemented - any method not marked as `Done` will not do any formatting.
 
 | Exchange          | `ticker()` | order_book() | trades() | bid()/ask() | order() | cancel_order() | balance() | withdraw() | deposit() |
 |-------------------|------------|--------------|----------|-------------|---------|----------------|-----------|------------|-----------|
 | Bitfinex          | Done       | Planned      | Planned  | Planned     | Planned | Planned        | Planned   | Planned    | Planned   |
 | Bitstamp          | Done       | Planned      | Planned  | Planned     | Planned | Planned        | Planned   | Planned    | Planned   |
 | Bittrex           | Done       | Planned      | Planned  | Planned     | Planned | Planned        | Planned   | Planned    | Planned   |
+| Bter              | WIP        | WIP          | WIP      | WIP         | WIP     | WIP            | WIP       | WIP        | WIP       |
 | C-Cex             | Done       | Planned      | Planned  | Planned     | Planned | Planned        | Planned   | Planned    | Planned   |
 | Coincheck         | Done       | Planned      | Planned  | Planned     | Planned | Planned        | Planned   | Planned    | Planned   |
 | Cryptopia         | Done       | Planned      | Planned  | Planned     | Planned | Planned        | Planned   | Planned    | Planned   |
 | GDAX              | Done       | Planned      | Planned  | Planned     | Planned | Planned        | Planned   | Planned    | Planned   |
 | Gemini            | Done       | Planned      | Planned  | Planned     | Planned | Planned        | Planned   | Planned    | Planned   |
+| HitBtc            | WIP        | WIP          | WIP      | WIP         | WIP     | WIP            | WIP       | WIP        | WIP       |
 | itBit             | Done       | Planned      | Planned  | Planned     | Planned | Planned        | Planned   | Planned    | Planned   |
 | Kraken            | Done       | Planned      | Planned  | Planned     | Planned | Planned        | Planned   | Planned    | Planned   |
 | OKCoin            | Done       | Planned      | Planned  | Planned     | Planned | Planned        | Planned   | Planned    | Planned   |
@@ -158,7 +188,9 @@ The following is a table of all formatters currently implemented - any method no
 | QuadrigaCX        | Done       | Planned      | Planned  | Planned     | Planned | Planned        | Planned   | Planned    | Planned   |
 | Quoine            | Done       | Planned      | Planned  | Planned     | Planned | Planned        | Planned   | Planned    | Planned   |
 | TheRockTradingLTD | Done       | Planned      | Planned  | Planned     | Planned | Planned        | Planned   | Planned    | Planned   |
+| Vaultoro          | WIP        | WIP          | WIP      | WIP         | WIP     | WIP            | WIP       | WIP        | WIP       |
 | Yunbi             | Done       | Planned      | Planned  | Planned     | Planned | Planned        | Planned   | Planned    | Planned   |
+
 
 
 # Installation

@@ -8,7 +8,8 @@ import logging
 # Import Third-Party
 
 # Import Homebrew
-from bitex.api.rest import GDAXRest
+from bitex.api.REST.rest import GDAXRest
+from bitex.api.WSS.gdax import GDAXWSS
 from bitex.utils import return_api_response
 from bitex.formatters.gdax import GdaxFormatter as fmt
 
@@ -17,10 +18,15 @@ log = logging.getLogger(__name__)
 
 
 class GDAX(GDAXRest):
-    def __init__(self, key='', secret='', key_file=''):
+    def __init__(self, key='', secret='', key_file='', websocket=False):
         super(GDAX, self).__init__(key, secret)
         if key_file:
             self.load_key(key_file)
+        if websocket:
+            self.wss = GDAXWSS()
+            self.wss.start()
+        else:
+            self.wss = None
 
     def public_query(self, endpoint, **kwargs):
         return self.query('GET', endpoint, **kwargs)
@@ -52,7 +58,7 @@ class GDAX(GDAXRest):
         return self.private_query('orders', params=q)
 
     @return_api_response(fmt.order)
-    def ask(self, pair, price, amount, **kwargs):
+    def ask(self, pair, price, size, **kwargs):
         q = {'side': 'sell', 'type': 'market', 'product_id': pair,
              'price': price, 'size': size}
         q.update(kwargs)
@@ -78,7 +84,7 @@ class GDAX(GDAXRest):
         return self.private_query('accounts', method_verb='GET', params=kwargs)
 
     @return_api_response(fmt.withdraw)
-    def withdraw(self, amount, tar_addr, **kwargs):
+    def withdraw(self, size, tar_addr, **kwargs):
         raise NotImplementedError()
 
     @return_api_response(fmt.deposit)

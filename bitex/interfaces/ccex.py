@@ -8,7 +8,7 @@ import logging
 # Import Third-Party
 
 # Import Homebrew
-from bitex.api.rest import CCEXRest
+from bitex.api.REST.rest import CCEXRest
 from bitex.utils import return_api_response
 from bitex.formatters.ccex import CcexFormatter as fmt
 
@@ -80,7 +80,7 @@ class CCEX(CCEXRest):
         return self.private_query('getbalance', params=kwargs)
 
     @return_api_response(fmt.withdraw)
-    def withdraw(self, _type, source_wallet, amount, tar_addr, **kwargs):
+    def withdraw(self, _type, source_wallet, size, tar_addr, **kwargs):
         raise NotImplementedError()
 
     @return_api_response(fmt.deposit)

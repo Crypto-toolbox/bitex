@@ -8,7 +8,7 @@ import logging
 # Import Third-Party
 
 # Import Homebrew
-from bitex.api.rest import RockTradingREST
+from bitex.api.REST.rest import RockTradingREST
 from bitex.utils import return_api_response
 from bitex.formatters.rocktrading import RockFormatter as fmt
 

@@ -1,2 +1,3 @@
-from bitex.api import rest
-from bitex.api.response import APIResponse
+import bitex.api.REST
+import bitex.api.WSS
+

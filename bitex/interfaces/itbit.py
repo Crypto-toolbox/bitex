@@ -8,7 +8,7 @@ import logging
 # Import Third-Party
 
 # Import Homebrew
-from bitex.api.rest import ItbitREST
+from bitex.api.REST.rest import ItbitREST
 from bitex.utils import return_api_response
 from bitex.formatters.itbit import itbtFormatter as fmt
 
@@ -81,9 +81,9 @@ class ItBit(ItbitREST):
         raise NotImplementedError()
 
     @return_api_response(fmt.withdraw)
-    def withdraw(self, amount, tar_addr, **kwargs):
+    def withdraw(self, size, tar_addr, **kwargs):
         wallet_id = kwargs.pop('wallet_id')
-        q = {'address': tar_addr, 'amount': amount}
+        q = {'address': tar_addr, 'amount': size}
         return self.private_query('wallets/%s/cryptocurrency_withdrawals' % wallet_id,
                                   params=q)
 

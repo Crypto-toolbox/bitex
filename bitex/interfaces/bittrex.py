@@ -8,7 +8,7 @@ import logging
 # Import Third-Party
 
 # Import Homebrew
-from bitex.api.rest import BittrexREST
+from bitex.api.REST.rest import BittrexREST
 from bitex.utils import return_api_response
 from bitex.formatters.bittrex import BtrxFormatter as fmt
 # Init Logging Facilities
@@ -87,8 +87,8 @@ class Bittrex(BittrexREST):
         return self.private_query('account/getbalances')
 
     @return_api_response(fmt.withdraw)
-    def withdraw(self, amount, tar_addr, **kwargs):
-        q = {'quantity': amount, 'address': tar_addr}
+    def withdraw(self, size, tar_addr, **kwargs):
+        q = {'quantity': size, 'address': tar_addr}
         q.update(kwargs)
         return self.private_query('account/withdraw', params=q)
 

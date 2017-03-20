@@ -8,7 +8,7 @@ import logging
 # Import Third-Party
 
 # Import Homebrew
-from bitex.api.rest import CryptopiaREST
+from bitex.api.REST.rest import CryptopiaREST
 from bitex.utils import return_api_response
 from bitex.formatters.cryptopia import CrptFormatter as fmt
 # Init Logging Facilities

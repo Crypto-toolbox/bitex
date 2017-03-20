@@ -8,7 +8,7 @@ import logging
 # Import Third-Party
 
 # Import Homebrew
-from bitex.api.rest import QuoineREST
+from bitex.api.REST.rest import QuoineREST
 from bitex.utils import return_api_response
 from bitex.formatters.quoine import QoinFormatter as fmt
 
@@ -80,7 +80,7 @@ class Quoine(QuoineREST):
         return self.private_query('/accounts/balance/', method='GET')
 
     @return_api_response(fmt.withdraw)
-    def withdraw(self, amount, tar_addr, **kwargs):
+    def withdraw(self, size, tar_addr, **kwargs):
         raise NotImplementedError()
 
     @return_api_response(fmt.deposit)

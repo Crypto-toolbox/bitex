@@ -8,7 +8,7 @@ import logging
 # Import Third-Party
 
 # Import Homebrew
-from bitex.api.rest import KrakenREST
+from bitex.api.REST.rest import KrakenREST
 from bitex.utils import return_api_response
 from bitex.formatters.kraken import KrknFormatter as fmt
 # Init Logging Facilities
@@ -53,20 +53,20 @@ class Kraken(KrakenREST):
         q = self.make_params(pair, **kwargs)
         return self.public_query('Trades', params=q)
 
-    def _add_order(self, pair, side, price, amount, **kwargs):
+    def _add_order(self, pair, side, price, size, **kwargs):
         q = {'pair': pair, 'type': side, 'price': price,
-             'ordertype': 'limit', 'volume': amount,
+             'ordertype': 'limit', 'volume': size,
              'trading_agreement': 'agree'}
         q.update(kwargs)
         return self.private_query('AddOrder', params=q)
 
     @return_api_response(fmt.order)
-    def bid(self, pair, price, amount, **kwargs):
-        return self._add_order(pair, 'buy', price, amount, **kwargs)
+    def bid(self, pair, price, size, **kwargs):
+        return self._add_order(pair, 'buy', price, size, **kwargs)
 
     @return_api_response(fmt.order)
-    def ask(self, pair, price, amount, **kwargs):
-        return self._add_order(pair, 'sell', price, amount, **kwargs)
+    def ask(self, pair, price, size, **kwargs):
+        return self._add_order(pair, 'sell', price, size, **kwargs)
 
     @return_api_response(fmt.cancel)
     def cancel_order(self, order_id, **kwargs):
@@ -91,7 +91,7 @@ class Kraken(KrakenREST):
         return self.private_query('Balance')
 
     @return_api_response(fmt.withdraw)
-    def withdraw(self, amount, tar_addr, **kwargs):
+    def withdraw(self, size, tar_addr, **kwargs):
         raise NotImplementedError()
 
     @return_api_response(fmt.deposit)

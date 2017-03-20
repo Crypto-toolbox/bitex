@@ -14,3 +14,6 @@ from bitex.interfaces.poloniex import Poloniex
 from bitex.interfaces.quoine import Quoine
 from bitex.interfaces.quadriga import QuadrigaCX
 from bitex.interfaces.gdax import GDAX
+from bitex.interfaces.vaultoro import Vaultoro
+from bitex.interfaces.hitbtc import HitBtc
+from bitex.interfaces.bter import Bter

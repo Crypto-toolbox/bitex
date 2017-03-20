@@ -12,7 +12,6 @@ from functools import wraps
 import requests
 
 # Import Homebrew
-from bitex.api import APIResponse
 
 # Init Logging Facilities
 log = logging.getLogger(__name__)

@@ -8,7 +8,7 @@ import logging
 # Import Third-Party
 
 # Import Homebrew
-from bitex.api.rest import CryptopiaREST
+from bitex.api.REST.rest import CryptopiaREST
 from bitex.utils import return_api_response
 from bitex.formatters.cryptopia import CrptFormatter as fmt
 # Init Logging Facilities
@@ -61,7 +61,7 @@ class Cryptopia(CryptopiaREST):
         return self.private_query('SubmitTrade', params=q)
 
     @return_api_response(fmt.order)
-    def ask(self, pair, price, amount, **kwargs):
+    def ask(self, pair, price, size, **kwargs):
         q = {'Market': pair, 'Type': 'Sell', 'Rate': price, 'Amount': size}
         q.update(kwargs)
         return self.private_query('SubmitTrade', params=q)
@@ -81,8 +81,8 @@ class Cryptopia(CryptopiaREST):
         return self.private_query('GetBalance', params=kwargs)
 
     @return_api_response(fmt.withdraw)
-    def withdraw(self, amount, tar_addr, **kwargs):
-        q = {'Amount': amount, 'Address': tar_addr}
+    def withdraw(self, size, tar_addr, **kwargs):
+        q = {'Amount': size, 'Address': tar_addr}
         q.update(kwargs)
         return self.private_query('SubmitWithdraw', params=q)
 
