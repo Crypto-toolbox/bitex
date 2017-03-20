@@ -8,5 +8,8 @@ setup(name='BitEx', version='1.1.0', author='Nils Diefenbach',
                 'bitex.interfaces', 'bitex.formatters'],
       install_requires=['requests', 'websocket-client', 'autobahn',
                         'pusherclient']
+      description='Python3-based API Framework for Crypto Exchanges',
+      license='MIT',  classifiers=['Development Status :: 4 - Beta',
+                                   'Intended Audience :: Developers'],
       )
 
