@@ -17,4 +17,3 @@ from bitex.interfaces.gdax import GDAX
 from bitex.interfaces.vaultoro import Vaultoro
 from bitex.interfaces.hitbtc import HitBtc
 from bitex.interfaces.bter import Bter
-

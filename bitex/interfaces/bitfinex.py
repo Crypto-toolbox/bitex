@@ -9,6 +9,7 @@ import logging
 
 # Import Homebrew
 from bitex.api.REST.rest import BitfinexREST
+from bitex.api.WSS.bitfinex import BitfinexWSS
 from bitex.utils import return_api_response
 from bitex.formatters.bitfinex import BtfxFormatter as fmt
 # Init Logging Facilities
@@ -16,10 +17,15 @@ log = logging.getLogger(__name__)
 
 
 class Bitfinex(BitfinexREST):
-    def __init__(self, key='', secret='', key_file=''):
+    def __init__(self, key='', secret='', key_file='', websocket=False):
         super(Bitfinex, self).__init__(key, secret)
         if key_file:
             self.load_key(key_file)
+        if websocket:
+            self.wss = BitfinexWSS()
+            self.wss.start()
+        else:
+            self.wss = None
 
     def public_query(self, endpoint, **kwargs):
         return self.query('GET', endpoint, **kwargs)

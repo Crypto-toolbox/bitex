@@ -25,6 +25,8 @@ class PoloniexSession(ApplicationSession):
         def onTicker(*args, **kwargs):
             self.config.extra['queue'].put((channel, (args, kwargs, time.time())))
 
+        if self.config.extra['is_killed'].is_set():
+            raise KeyboardInterrupt()
         try:
             yield from self.subscribe(onTicker, self.config.extra['channel'])
 
@@ -38,16 +40,17 @@ class PlnxEndpoint(mp.Process):
                                                 endpoint, **kwargs)
         self.endpoint = endpoint
         self.q = q
+        self.is_killed = mp.Event()
 
     def run(self):
         self.runner = ApplicationRunner("wss://api.poloniex.com:443", 'realm1',
                                    extra={'channel': self.endpoint,
-                                          'queue': self.q})
+                                          'queue': self.q,
+                                          'is_killed': self.is_killed})
         self.runner.run(PoloniexSession)
 
     def join(self, *args, **kwargs):
-        loop = get_event_loop()
-        loop.stop()
+        self.is_killed.set()
         super(PlnxEndpoint, self).join(*args, **kwargs)
 
 
@@ -73,7 +76,7 @@ class PoloniexWSS(WSSAPI):
 
     def stop(self):
         for conn in self.connections:
-            self.connections[conn].terminate()
+            self.connections[conn].join()
         super(PoloniexWSS, self).stop()
 
 

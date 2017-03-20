@@ -36,7 +36,7 @@ class BitfinexWSS(WSSAPI):
     the Server issues a connection reset.
     """
 
-    def __init__(self):
+    def __init__(self, pairs=None):
         """
         Initializes BitfinexWSS Instance.
         :param key: Api Key as string
@@ -45,6 +45,12 @@ class BitfinexWSS(WSSAPI):
         """
         super(BitfinexWSS, self).__init__('wss://api.bitfinex.com/ws/2', 'Bitfinex')
         self.conn = None
+        if pairs:
+            self.pairs = pairs
+        else:
+            self.pairs = ['ETHBTC', 'BTCUSD', 'ETHUSD', 'ETCUSD', 'ETCBTC',
+                          'ZECUSD', 'ZECBTC', 'XMRUSD', 'XMRBTC', 'LTCUSD',
+                          'LTCBTC', 'DASHUSD']
 
         # Set up variables for receiver and main loop threads
         self._receiver_lock = threading.Lock()
@@ -121,15 +127,22 @@ class BitfinexWSS(WSSAPI):
         for chan_id in self._heartbeats:
             if ts - self._heartbeats[chan_id] >= 10:
                 if chan_id not in self._late_heartbeats:
-                    # This is newly late; escalate
-                    log.warning("BitfinexWSS.heartbeats: Channel %s hasn't sent a "
-                                "heartbeat in %s seconds!",
-                                self.channel_labels[chan_id],
-                                ts - self._heartbeats[chan_id])
-                    self._late_heartbeats[chan_id] = ts
+                    try:
+                        # This is newly late; escalate
+                        log.warning("BitfinexWSS.heartbeats: Channel %s hasn't "
+                                    "sent a heartbeat in %s seconds!",
+                                    self.channel_labels[chan_id],
+                                    ts - self._heartbeats[chan_id])
+                        self._late_heartbeats[chan_id] = ts
+                    except KeyError:
+                        # This channel ID Is not known to us - log and raise
+                        log.error("BitfinexWSS.heartbeats: Channel %s is not "
+                                  "registered in the connector's registry! "
+                                  "Restarting Connection to avoid errors..",
+                                  chan_id)
+                        raise UnknownChannelError
                 else:
                     # We know of this already
-                    self.ping()
                     continue
             else:
                 # its not late
@@ -140,6 +153,7 @@ class BitfinexWSS(WSSAPI):
                     continue
                 log.info("BitfinexWSS.heartbeats: Channel %s has sent a "
                          "heartbeat again!", self.channel_labels[chan_id])
+            self.ping()
 
     def _check_ping(self):
         """
@@ -248,7 +262,7 @@ class BitfinexWSS(WSSAPI):
         super(BitfinexWSS, self).restart()
 
         # cache channel labels temporarily if soft == True
-        channel_labels = self.channel_labels if soft else None
+        channel_labels = [self.channel_labels[k] for k in self.channel_labels] if soft else None
 
         # clear previous channel caches
         self.channels = {}
@@ -706,11 +720,8 @@ class BitfinexWSS(WSSAPI):
         self.send({'event': 'ping'})
 
     def setup_subscriptions(self):
-        pairs = ['ETHBTC', 'BTCUSD', 'ETHUSD', 'ETCUSD', 'ETCBTC', 'ZECUSD',
-                 'ZECBTC', 'XMRUSD', 'XMRBTC', 'LTCUSD', 'LTCBTC', 'DASHUSD',
-                 'DASHBTC']
         self.config(decimals_as_strings=True)
-        for pair in pairs:
+        for pair in self.pairs:
             self.ticker(pair)
             self.ohlc(pair)
             self.order_book(pair)

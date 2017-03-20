@@ -6,6 +6,4 @@ setup(name='BitEx', version='1.1.0', author='Nils Diefenbach',
       packages=['bitex', 'bitex.api', 'bitex.api.WSS', 'bitex.api.REST',
                 'bitex.interfaces', 'bitex.formatters'],
       install_requires=['requests', 'websocket-client', 'autobahn',
-                        'pusherclient']
-      )
-
+                        'pusherclient'])

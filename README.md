@@ -9,7 +9,9 @@ interfaces, on top of which the second part - `bitex.interfaces` - builds upon.
 # State
 --------------------------------
 
-**API** : **Completed**
+**RESTAPI** : **Completed**
+
+**WSSAPI** : **BETA**
 
 **Interfaces** : **WIP**
 
@@ -46,9 +48,9 @@ according to their liquidity and market volume.
 
 [^1]: This table considers standardized methods only, when describing the state. See section `Standardized Methods` for more
 
-# bitex.api
+# bitex.api.REST
 
-Classes found in `bitex.api` provide wrapper classes and methods for Python's
+Classes found in `bitex.api.REST` provide wrapper classes and methods for Python's
 `requests` module, including handling of each exchange's specific authentication
 procedure.
 
@@ -88,6 +90,31 @@ Userid
 accountname
 ```
 
+# bitex.api.WSS
+`bitex.api.WSS` offers `Queue()`-based Websocket interface for a select few exchanges.
+The classes found within are very basic, and subject to further development. Private
+endpoints and trading are only sporadically implemented.
+
+Their prime objective is to provide a raw, realtime interface to all of an exchange's
+Websocket endpoint.
+
+## Usage
+```
+from.bitex.api.WSS import GeminiWSS
+import time
+
+wss = GeminiWSS()
+wss.start()
+time.sleep(5)
+wss.stop()
+
+while not wss.data_q.empty():
+    print(wss.data_q.get())
+    
+```
+You can of course also access `data_q` while the `WebSocket` is still running 
+(i.e. before calling `stop()`).
+
 # bitex.interfaces
 
 Built on top of `bitex.api`'s api classes are the slightly more sophisticated
@@ -113,10 +140,10 @@ b.ask(pair, price, size)
 g.ask(pair, price, size)
 ```
 
-# Standardzied Methods
+# Standardized Methods
 
-As explained in the previous section, __standardized methods__ refer to the methods of each interface,
-which have been deemed as part of the set of minimal methods and functions required, to trade
+As explained in the previous section, __standardized methods__ refer to the methods of each interface
+which have been deemed as part of the set of minimal methods and functions required to trade
 at an exchange via its API. They feature the following characteristics:
 
 - Each method has an identical method header across all interfaces
@@ -163,6 +190,7 @@ The following is a table of all formatters currently implemented - any method no
 | TheRockTradingLTD | Done       | Planned      | Planned  | Planned     | Planned | Planned        | Planned   | Planned    | Planned   |
 | Vaultoro          | WIP        | WIP          | WIP      | WIP         | WIP     | WIP            | WIP       | WIP        | WIP       |
 | Yunbi             | Done       | Planned      | Planned  | Planned     | Planned | Planned        | Planned   | Planned    | Planned   |
+
 
 
 # Installation
