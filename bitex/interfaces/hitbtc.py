@@ -18,7 +18,7 @@ log = logging.getLogger(__name__)
 
 
 class HitBtc(HitBTCREST):
-    def __init__(self, key='', secret='', key_file=''):
+    def __init__(self, key='', secret='', key_file='', websocket=False):
         super(HitBtc, self).__init__(key, secret)
         if key_file:
             self.load_key(key_file)
