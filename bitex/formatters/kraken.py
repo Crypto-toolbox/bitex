@@ -36,11 +36,21 @@ class KrknFormatter(Formatter):
         :param input_pair: str
         :return: str
         """
-        if len(input_pair) % 2 == 0:
-            base_cur, quote_cur = (input_pair[:len(input_pair)//2],
-                                   input_pair[len(input_pair)//2:])
-        else:
-            base_cur, quote_cur = input_pair.split(input_pair[len(input_pair)//2])
+        # Check for common split notations first
+        base_cur, quote_cur = None, None
+        for separator in ['_', '-', '/']:
+            try:
+                base_cur, quote_cur = input_pair.split(separator)
+            except ValueError:
+                continue
+            break
+        if not base_cur:
+            if len(input_pair) % 2 == 0:
+                base_cur, quote_cur = (input_pair[:len(input_pair)//2],
+                                       input_pair[len(input_pair)//2:])
+            else:
+                base_cur, quote_cur = (input_pair[:len(input_pair)//2+1],
+                                       input_pair[len(input_pair)//2+1:])
 
         def add_prefix(input_string):
             input_string = input_string.lower()
@@ -50,10 +60,11 @@ class KrknFormatter(Formatter):
                     input_string = 'z' + input_string
 
             else:
+                log.debug(input_string)
                 # Appears to be Crypto currency
                 if 'btc' in input_string:
                     input_string = input_string.replace('btc', 'xbt')
-                elif 'dash' == input_string:
+                elif 'dash' in input_string:
                     return input_string
 
                 if not input_string.startswith('x') or len(input_string) == 3:
