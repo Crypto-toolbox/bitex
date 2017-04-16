@@ -20,7 +20,7 @@ class FormatterTest(TestCase):
         test_pairs = ['btcusd', 'ltcbtc', 'xmr_btc', 'xxbtxltc', 'DaShBTC',
                       'dasheur']
         expected_output = ['XXBTZUSD', 'XLTCXXBT', 'XXMRXXBT', 'XXBTXLTC',
-                           'DASHXBT', 'DASHZEUR']
+                           'DASHXXBT', 'DASHZEUR']
         fmt_output = [fmt.format_pair(pair) for pair in test_pairs]
         self.assertEqual(fmt_output, expected_output)
 
