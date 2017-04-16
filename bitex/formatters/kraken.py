@@ -37,7 +37,8 @@ class KrknFormatter(Formatter):
         :return: str
         """
         if len(input_pair) % 2 == 0:
-            base_cur, quote_cur = input_pair[:len(input_pair)//2], input_pair[len(input_pair)//2:]
+            base_cur, quote_cur = (input_pair[:len(input_pair)//2],
+                                   input_pair[len(input_pair)//2:])
         else:
             base_cur, quote_cur = input_pair.split(input_pair[len(input_pair)//2])
 
@@ -52,6 +53,8 @@ class KrknFormatter(Formatter):
                 # Appears to be Crypto currency
                 if 'btc' in input_string:
                     input_string = input_string.replace('btc', 'xbt')
+                elif 'dash' == input_string:
+                    return input_string
 
                 if not input_string.startswith('x') or len(input_string) == 3:
                     input_string = 'x' + input_string
