@@ -5,7 +5,8 @@ It comes with two parts - `bitex.api` represents the base level API
 interfaces, on top of which the second part - `bitex.interfaces` - builds upon.
 `bitex.api` classes can be used without making use of the interface classes.
 
-
+Donations welcome!
+BTC @ 3D4yuyf84eQUauyZLoQKyouPuThoxMMRZa
 # State
 --------------------------------
 
