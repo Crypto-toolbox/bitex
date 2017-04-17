@@ -13,43 +13,58 @@ from bitex.formatters.bittrex import BtrxFormatter
 # Init Logging Facilities
 log = logging.getLogger(__name__)
 
-# Sample data for tests can be found at
-# './test_data/%s_%s.json' % (exchange_name, func_name)
+
+class FormatterTestCase(TestCase):
+
+    def setUp(self):
+        self.formatter = None
+
+    def test_format_pair_works_correctly(self, test_pairs, expected):
+        fmt_output = [self.formatter.format_pair(pair) for pair in test_pairs]
+        self.assertEqual(fmt_output, expected)
 
 
-class KrakenFormatterTest(TestCase):
+class KrakenFormatterTest(FormatterTestCase):
+    def setUp(self):
+        self.formatter = KrknFormatter()
+
     def test_format_pair_works_correctly(self):
-        fmt = KrknFormatter()
         test_pairs = ['btcusd', 'ltcbtc', 'xmr_btc', 'xxbtxltc', 'DaShBTC',
                       'dasheur']
         expected_output = ['XXBTZUSD', 'XLTCXXBT', 'XXMRXXBT', 'XXBTXLTC',
                            'DASHXXBT', 'DASHZEUR']
-        fmt_output = [fmt.format_pair(pair) for pair in test_pairs]
-        self.assertEqual(fmt_output, expected_output)
+        super(KrakenFormatterTest, self).test_format_pair_works_correctly(
+            test_pairs, expected_output)
 
 
-class BitstampFormatterTest(TestCase):
+class BitstampFormatterTest(FormatterTestCase):
+    def setUp(self):
+        self.formatter = BtstFormatter()
+
     def test_format_pair_works_correctly(self):
-        fmt = BtstFormatter()
         test_pairs = ['btcusd', 'ltcbtc', 'xmr_btc', 'BTCEUR']
         expected_output = ['btcusd', 'ltcbtc', 'xmrbtc', 'btceur']
-        fmt_output = [fmt.format_pair(pair) for pair in test_pairs]
-        self.assertEqual(fmt_output, expected_output)
+        super(BitstampFormatterTest, self).test_format_pair_works_correctly(
+            test_pairs, expected_output)
 
 
-class BitfinexFormatterTest(TestCase):
+class BitfinexFormatterTest(FormatterTestCase):
+    def setUp(self):
+        self.formatter = BtfxFormatter()
+
     def test_format_pair_works_correctly(self):
-        fmt = BtfxFormatter()
         test_pairs = ['btcusd', 'ltcbtc', 'xmr_btc', 'BTCEUR']
         expected_output = ['BTCUSD', 'LTCBTC', 'XMRBTC', 'BTCEUR']
-        fmt_output = [fmt.format_pair(pair) for pair in test_pairs]
-        self.assertEqual(fmt_output, expected_output)
+        super(BitfinexFormatterTest, self).test_format_pair_works_correctly(
+            test_pairs, expected_output)
 
 
-class BittrexFormatterTest(TestCase):
+class BittrexFormatterTest(FormatterTestCase):
+    def setUp(self):
+        self.formatter = BtrxFormatter()
+
     def test_format_pair_works_correctly(self):
-        fmt = BtrxFormatter()
         test_pairs = ['btcusd', 'ltcbtc', 'xmr_btc', 'BTCEUR']
         expected_output = ['BTC-USD', 'BTC-LTC', 'XMR-BTC', 'BTC-EUR']
-        fmt_output = [fmt.format_pair(pair) for pair in test_pairs]
-        self.assertEqual(fmt_output, expected_output)
+        super(BittrexFormatterTest, self).test_format_pair_works_correctly(
+            test_pairs, expected_output)
