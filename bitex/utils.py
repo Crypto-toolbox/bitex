@@ -29,7 +29,7 @@ def return_api_response(formatter=None):
         @wraps(func)
         def wrapper(*args, **kwargs):
             try:
-                r = APIResponse(func(*args, **kwargs))
+                r = func(*args, **kwargs)
             except Exception:
                 log.exception("return_api_response(): Error during call to %s(%s, %s)",
                               func.__name__, args, kwargs)
