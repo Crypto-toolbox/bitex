@@ -32,19 +32,20 @@ class APITests(unittest.TestCase):
     def test_restapi_nonce(self):
         n = self.api.nonce()
         self.assertTrue(n.strip().isdigit())
+        self.assertTrue(n < self.api.nonce())
 
     def test_restapi_query(self):
         # Test that the unauthenticated request is built correctly
         r = self.api.query('testing/endpoint/', authenticate=False,
-                       request_method=requests.get,
-                       params={'test_param': "chimichanga"})
+                           request_method=requests.get,
+                           params={'test_param': "chimichanga"})
         url = 'http://google.com/api/v1/testing/endpoint/?test_param=chimichanga'
         self.assertTrue(r.request.url == url)
 
         # Test that authentication requests are built correctly
         r = self.api.query('testing/endpoint/', authenticate=True,
-                       request_method=requests.get,
-                       params={'test_param': "chimichanga"})
+                           request_method=requests.get,
+                           params={'test_param': "chimichanga"})
         url = 'http://google.com/api/v1/testing/endpoint/?test_param=authenticated_chimichanga'
         self.assertTrue(r.request.url == url)
 
