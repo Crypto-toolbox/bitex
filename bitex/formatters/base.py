@@ -21,8 +21,7 @@ class Formatter:
     def __init__(self):
         pass
 
-    @staticmethod
-    def format_pair(input_pair):
+    def format_pair(self, input_pair):
         """
         Returns the pair properly formatted for the exchange's API.
         :param input_pair: str
