@@ -100,7 +100,7 @@ class BittrexFormatterTest(FormatterTestCase):
 
     def test_format_pair_works_correctly(self):
         test_pairs = ['btcusd', 'ltcbtc', 'xmr_btc', 'BTCEUR']
-        expected_output = ['BTC-USD', 'BTC-LTC', 'XMR-BTC', 'BTC-EUR']
+        expected_output = ['BTC-USD', 'LTC-BTC', 'XMR-BTC', 'BTC-EUR']
         super(BittrexFormatterTest, self).test_format_pair_works_correctly(
             test_pairs, expected_output)
 
