@@ -12,4 +12,6 @@ log = logging.getLogger(__name__)
 
 class HitBtcFormatter(Formatter):
 
-    pass
+    def format_pair(self, input_pair):
+        base, quote = super(HitBtcFormatter, self).format_pair(input_pair)
+        return base.upper() + quote.upper()
