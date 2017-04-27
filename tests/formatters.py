@@ -4,10 +4,26 @@ from unittest import TestCase
 # Import Third-Party
 
 # Import Homebrew
-from bitex.formatters.kraken import KrknFormatter
 from bitex.formatters.bitfinex import BtfxFormatter
 from bitex.formatters.bitstamp import BtstFormatter
 from bitex.formatters.bittrex import BtrxFormatter
+from bitex.formatters.bter import BterFormatter
+from bitex.formatters.ccex import CcexFormatter
+from bitex.formatters.coincheck import CnckFormatter
+from bitex.formatters.cryptopia import CrptFormatter
+from bitex.formatters.gdax import GdaxFormatter
+from bitex.formatters.gemini import GmniFormatter
+from bitex.formatters.hitbtc import HitBtcFormatter
+from bitex.formatters.itbit import itbtFormatter
+from bitex.formatters.kraken import KrknFormatter
+from bitex.formatters.okcoin import OkcnFormatter
+from bitex.formatters.poloniex import PlnxFormatter
+from bitex.formatters.quadriga import QuadrigaCXFormatter
+from bitex.formatters.quoine import QoinFormatter
+from bitex.formatters.rocktrading import RockFormatter
+from bitex.formatters.vaultoro import VaultoroFormatter
+from bitex.formatters.yunbi import YnbiFormatter
+
 
 
 # Init Logging Facilities
@@ -107,11 +123,11 @@ class BittrexFormatterTest(FormatterTestCase):
 
 class BterFormatterTest(FormatterTestCase):
     def setUp(self):
-        self.formatter = BtrxFormatter()
+        self.formatter = BterFormatter()
 
     def test_format_pair_works_correctly(self):
         test_pairs = ['btcusd', 'ltcbtc', 'xmr_btc', 'BTCEUR', 'qtumeth']
-        expected_output = ['btc_usd', 'btc_ltc', 'xmr_btc', 'btc_eur', 'qtum_eth']
+        expected_output = ['btc_usd', 'ltc_btc', 'xmr_btc', 'btc_eur', 'qtum_eth']
         super(BterFormatterTest, self).test_format_pair_works_correctly(
             test_pairs, expected_output)
 
@@ -122,7 +138,7 @@ class CCEXFormatterTest(FormatterTestCase):
 
     def test_format_pair_works_correctly(self):
         test_pairs = ['btcusd', 'ltcbtc', 'xmr_btc', 'BTCEUR', 'qtumeth']
-        expected_output = ['btc-usd', 'btc-ltc', 'xmr-btc', 'btc-eur', 'qtum-eth']
+        expected_output = ['btc-usd', 'ltc-btc', 'xmr-btc', 'btc-eur', 'qtum-eth']
         super(CCEXFormatterTest, self).test_format_pair_works_correctly(
             test_pairs, expected_output)
 
@@ -133,7 +149,7 @@ class CoinCheckFormatterTest(FormatterTestCase):
 
     def test_format_pair_works_correctly(self):
         test_pairs = ['btcusd', 'ltcbtc', 'xmr_btc', 'BTCEUR', 'qtumeth']
-        expected_output = ['btc_usd', 'btc_ltc', 'xmr_btc', 'btc_eur', 'qtum-eth']
+        expected_output = ['btc_usd', 'ltc_btc', 'xmr_btc', 'btc_eur', 'qtum-eth']
         super(CoinCheckFormatterTest, self).test_format_pair_works_correctly(
             test_pairs, expected_output)
 
@@ -155,7 +171,7 @@ class GDAXFormatterTest(FormatterTestCase):
 
     def test_format_pair_works_correctly(self):
         test_pairs = ['btcusd', 'ltcbtc', 'xmr_btc', 'BTCEUR', 'qtumeth']
-        expected_output = ['BTC-USD', 'BTC-LTC', 'XMR-BTC', 'BTC-EUR', 'QTUM-ETH']
+        expected_output = ['BTC-USD', 'LTC-BTC', 'XMR-BTC', 'BTC-EUR', 'QTUM-ETH']
         super(GDAXFormatterTest, self).test_format_pair_works_correctly(
             test_pairs, expected_output)
 
@@ -166,7 +182,7 @@ class GeminiFormatterTest(FormatterTestCase):
 
     def test_format_pair_works_correctly(self):
         test_pairs = ['btcusd', 'ltcbtc', 'xmr_btc', 'BTCEUR', 'qtumeth']
-        expected_output = ['btcusd', 'btcltc', 'xmrbtc', 'btceur', 'qtumeth']
+        expected_output = ['btcusd', 'ltcbtc', 'xmrbtc', 'btceur', 'qtumeth']
         super(GeminiFormatterTest, self).test_format_pair_works_correctly(
             test_pairs, expected_output)
 
@@ -177,7 +193,7 @@ class HitBtcFormatterTest(FormatterTestCase):
 
     def test_format_pair_works_correctly(self):
         test_pairs = ['btcusd', 'ltcbtc', 'xmr_btc', 'BTCEUR', 'qtumeth']
-        expected_output = ['BTCUSD', 'BTCLTC', 'XMRBTC', 'BTCEUR', 'QTUMETH']
+        expected_output = ['BTCUSD', 'LTCBTC', 'XMRBTC', 'BTCEUR', 'QTUMETH']
         super(HitBtcFormatterTest, self).test_format_pair_works_correctly(
             test_pairs, expected_output)
 
@@ -188,7 +204,7 @@ class ItBitFormatterTest(FormatterTestCase):
 
     def test_format_pair_works_correctly(self):
         test_pairs = ['btcusd', 'ltcbtc', 'xmr_btc', 'BTCEUR', 'qtumeth']
-        expected_output = ['BTCUSD', 'BTCLTC', 'XMRBTC', 'BTCEUR', 'QTUMETH']
+        expected_output = ['BTCUSD', 'LTCBTC', 'XMRBTC', 'BTCEUR', 'QTUMETH']
         super(ItBitFormatterTest, self).test_format_pair_works_correctly(
             test_pairs, expected_output)
 
@@ -199,7 +215,7 @@ class OKCoinFormatterTest(FormatterTestCase):
 
     def test_format_pair_works_correctly(self):
         test_pairs = ['btcusd', 'ltcbtc', 'xmr_btc', 'BTCEUR', 'qtumeth']
-        expected_output = ['btc_usd', 'btc_ltc', 'xmr_btc', 'btc_eur', 'qtum_eth']
+        expected_output = ['btc_usd', 'ltc_btc', 'xmr_btc', 'btc_eur', 'qtum_eth']
         super(OKCoinFormatterTest, self).test_format_pair_works_correctly(
             test_pairs, expected_output)
 
@@ -210,7 +226,7 @@ class PoloniexFormatterTest(FormatterTestCase):
 
     def test_format_pair_works_correctly(self):
         test_pairs = ['btcusd', 'ltcbtc', 'xmr_btc', 'BTCEUR', 'qtumeth']
-        expected_output = ['BTC_USD', 'BTC_LTC', 'XMR_BTC', 'BTC_EUR', 'QTUM_ETH']
+        expected_output = ['BTC_USD', 'LTC_BTC', 'XMR_BTC', 'BTC_EUR', 'QTUM_ETH']
         super(PoloniexFormatterTest, self).test_format_pair_works_correctly(
             test_pairs, expected_output)
 
@@ -221,7 +237,7 @@ class QuadrigaCXFormatterTest(FormatterTestCase):
 
     def test_format_pair_works_correctly(self):
         test_pairs = ['btcusd', 'ltcbtc', 'xmr_btc', 'BTCEUR', 'qtumeth']
-        expected_output = ['btc_usd', 'btc_ltc', 'xmr_btc', 'btc_eur', 'qtum_eth']
+        expected_output = ['btc_usd', 'ltc_btc', 'xmr_btc', 'btc_eur', 'qtum_eth']
         super(QuadrigaCXFormatterTest, self).test_format_pair_works_correctly(
             test_pairs, expected_output)
 
@@ -254,7 +270,7 @@ class VaultoroFormatterTest(FormatterTestCase):
 
     def test_format_pair_works_correctly(self):
         test_pairs = ['btcusd', 'ltcbtc', 'xmr_btc', 'BTCEUR', 'qtumeth']
-        expected_output = ['btc_usd', 'btc_ltc', 'xmr_btc', 'btc_eur', 'qtum_eth']
+        expected_output = ['btc_usd', 'ltc_btc', 'xmr_btc', 'btc_eur', 'qtum_eth']
         super(VaultoroFormatterTest, self).test_format_pair_works_correctly(
             test_pairs, expected_output)
 
@@ -265,6 +281,6 @@ class YunbiFormatterTest(FormatterTestCase):
 
     def test_format_pair_works_correctly(self):
         test_pairs = ['btcusd', 'ltcbtc', 'xmr_btc', 'BTCEUR', 'qtumeth']
-        expected_output = ['btc_usd', 'btc_ltc', 'xmr_btc', 'btc_eur', 'qtum_eth']
+        expected_output = ['btc_usd', 'ltc_btc', 'xmr_btc', 'btc_eur', 'qtum_eth']
         super(YunbiFormatterTest, self).test_format_pair_works_correctly(
             test_pairs, expected_output)
