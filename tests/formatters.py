@@ -134,7 +134,7 @@ class BterFormatterTest(FormatterTestCase):
 
 class CCEXFormatterTest(FormatterTestCase):
     def setUp(self):
-        self.formatter = BtrxFormatter()
+        self.formatter = CcexFormatter()
 
     def test_format_pair_works_correctly(self):
         test_pairs = ['btcusd', 'ltcbtc', 'xmr_btc', 'BTCEUR', 'qtumeth']
@@ -145,7 +145,7 @@ class CCEXFormatterTest(FormatterTestCase):
 
 class CoinCheckFormatterTest(FormatterTestCase):
     def setUp(self):
-        self.formatter = BtrxFormatter()
+        self.formatter = CnckFormatter()
 
     def test_format_pair_works_correctly(self):
         test_pairs = ['btcusd', 'ltcbtc', 'xmr_btc', 'BTCEUR', 'qtumeth']
@@ -156,7 +156,7 @@ class CoinCheckFormatterTest(FormatterTestCase):
 
 class CryptopiaFormatterTest(FormatterTestCase):
     def setUp(self):
-        self.formatter = BtrxFormatter()
+        self.formatter = CrptFormatter()
 
     def test_format_pair_works_correctly(self):
         test_pairs = ['btcusd', 'ltcbtc', 'xmr_btc', 'BTCEUR', 'dashuno']
@@ -167,7 +167,7 @@ class CryptopiaFormatterTest(FormatterTestCase):
 
 class GDAXFormatterTest(FormatterTestCase):
     def setUp(self):
-        self.formatter = BtrxFormatter()
+        self.formatter = GdaxFormatter()
 
     def test_format_pair_works_correctly(self):
         test_pairs = ['btcusd', 'ltcbtc', 'xmr_btc', 'BTCEUR', 'qtumeth']
@@ -178,7 +178,7 @@ class GDAXFormatterTest(FormatterTestCase):
 
 class GeminiFormatterTest(FormatterTestCase):
     def setUp(self):
-        self.formatter = BtrxFormatter()
+        self.formatter = GmniFormatter()
 
     def test_format_pair_works_correctly(self):
         test_pairs = ['btcusd', 'ltcbtc', 'xmr_btc', 'BTCEUR', 'qtumeth']
@@ -189,7 +189,7 @@ class GeminiFormatterTest(FormatterTestCase):
 
 class HitBtcFormatterTest(FormatterTestCase):
     def setUp(self):
-        self.formatter = BtrxFormatter()
+        self.formatter = HitBtcFormatter()
 
     def test_format_pair_works_correctly(self):
         test_pairs = ['btcusd', 'ltcbtc', 'xmr_btc', 'BTCEUR', 'qtumeth']
@@ -200,7 +200,7 @@ class HitBtcFormatterTest(FormatterTestCase):
 
 class ItBitFormatterTest(FormatterTestCase):
     def setUp(self):
-        self.formatter = BtrxFormatter()
+        self.formatter = itbtFormatter()
 
     def test_format_pair_works_correctly(self):
         test_pairs = ['btcusd', 'ltcbtc', 'xmr_btc', 'BTCEUR', 'qtumeth']
@@ -211,7 +211,7 @@ class ItBitFormatterTest(FormatterTestCase):
 
 class OKCoinFormatterTest(FormatterTestCase):
     def setUp(self):
-        self.formatter = BtrxFormatter()
+        self.formatter = OkcnFormatter()
 
     def test_format_pair_works_correctly(self):
         test_pairs = ['btcusd', 'ltcbtc', 'xmr_btc', 'BTCEUR', 'qtumeth']
@@ -222,7 +222,7 @@ class OKCoinFormatterTest(FormatterTestCase):
 
 class PoloniexFormatterTest(FormatterTestCase):
     def setUp(self):
-        self.formatter = BtrxFormatter()
+        self.formatter = PlnxFormatter()
 
     def test_format_pair_works_correctly(self):
         test_pairs = ['btcusd', 'ltcbtc', 'xmr_btc', 'BTCEUR', 'qtumeth']
@@ -233,7 +233,7 @@ class PoloniexFormatterTest(FormatterTestCase):
 
 class QuadrigaCXFormatterTest(FormatterTestCase):
     def setUp(self):
-        self.formatter = BtrxFormatter()
+        self.formatter = QuadrigaCXFormatter()
 
     def test_format_pair_works_correctly(self):
         test_pairs = ['btcusd', 'ltcbtc', 'xmr_btc', 'BTCEUR', 'qtumeth']
@@ -244,7 +244,7 @@ class QuadrigaCXFormatterTest(FormatterTestCase):
 
 class QuoineFormatterTest(FormatterTestCase):
     def setUp(self):
-        self.formatter = BtrxFormatter()
+        self.formatter = QoinFormatter()
 
     def test_format_pair_works_correctly(self):
         test_pairs = ['btcusd', 'ltcbtc', 'xmr_btc', 'BTCEUR', 'qtumeth']
@@ -255,7 +255,7 @@ class QuoineFormatterTest(FormatterTestCase):
 
 class RockTradingFormatterTest(FormatterTestCase):
     def setUp(self):
-        self.formatter = BtrxFormatter()
+        self.formatter = RockFormatter()
 
     def test_format_pair_works_correctly(self):
         test_pairs = ['btcusd', 'ltcbtc', 'xmr_btc', 'BTCEUR', 'qtumeth']
@@ -266,7 +266,7 @@ class RockTradingFormatterTest(FormatterTestCase):
 
 class VaultoroFormatterTest(FormatterTestCase):
     def setUp(self):
-        self.formatter = BtrxFormatter()
+        self.formatter = VaultoroFormatter()
 
     def test_format_pair_works_correctly(self):
         test_pairs = ['btcusd', 'ltcbtc', 'xmr_btc', 'BTCEUR', 'qtumeth']
@@ -277,7 +277,7 @@ class VaultoroFormatterTest(FormatterTestCase):
 
 class YunbiFormatterTest(FormatterTestCase):
     def setUp(self):
-        self.formatter = BtrxFormatter()
+        self.formatter = YnbiFormatter()
 
     def test_format_pair_works_correctly(self):
         test_pairs = ['btcusd', 'ltcbtc', 'xmr_btc', 'BTCEUR', 'qtumeth']
