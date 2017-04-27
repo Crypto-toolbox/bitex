@@ -160,7 +160,7 @@ class CryptopiaFormatterTest(FormatterTestCase):
 
     def test_format_pair_works_correctly(self):
         test_pairs = ['btcusd', 'ltcbtc', 'xmr_btc', 'BTCEUR', 'dashuno']
-        expected_output = [None, 101, 2999, None, None]
+        expected_output = [None, 101, 2999, None, 5012]
         super(CryptopiaFormatterTest, self).test_format_pair_works_correctly(
             test_pairs, expected_output)
 
