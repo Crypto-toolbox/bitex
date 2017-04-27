@@ -4,10 +4,26 @@ from unittest import TestCase
 # Import Third-Party
 
 # Import Homebrew
-from bitex.formatters.kraken import KrknFormatter
 from bitex.formatters.bitfinex import BtfxFormatter
 from bitex.formatters.bitstamp import BtstFormatter
 from bitex.formatters.bittrex import BtrxFormatter
+from bitex.formatters.bter import BterFormatter
+from bitex.formatters.ccex import CcexFormatter
+from bitex.formatters.coincheck import CnckFormatter
+from bitex.formatters.cryptopia import CrptFormatter
+from bitex.formatters.gdax import GdaxFormatter
+from bitex.formatters.gemini import GmniFormatter
+from bitex.formatters.hitbtc import HitBtcFormatter
+from bitex.formatters.itbit import itbtFormatter
+from bitex.formatters.kraken import KrknFormatter
+from bitex.formatters.okcoin import OkcnFormatter
+from bitex.formatters.poloniex import PlnxFormatter
+from bitex.formatters.quadriga import QuadrigaCXFormatter
+from bitex.formatters.quoine import QoinFormatter
+from bitex.formatters.rocktrading import RockFormatter
+from bitex.formatters.vaultoro import VaultoroFormatter
+from bitex.formatters.yunbi import YnbiFormatter
+
 
 
 # Init Logging Facilities
@@ -100,6 +116,171 @@ class BittrexFormatterTest(FormatterTestCase):
 
     def test_format_pair_works_correctly(self):
         test_pairs = ['btcusd', 'ltcbtc', 'xmr_btc', 'BTCEUR']
-        expected_output = ['BTC-USD', 'BTC-LTC', 'XMR-BTC', 'BTC-EUR']
+        expected_output = ['BTC-USD', 'LTC-BTC', 'XMR-BTC', 'BTC-EUR']
         super(BittrexFormatterTest, self).test_format_pair_works_correctly(
+            test_pairs, expected_output)
+
+
+class BterFormatterTest(FormatterTestCase):
+    def setUp(self):
+        self.formatter = BterFormatter()
+
+    def test_format_pair_works_correctly(self):
+        test_pairs = ['btcusd', 'ltcbtc', 'xmr_btc', 'BTCEUR', 'qtumeth']
+        expected_output = ['btc_usd', 'ltc_btc', 'xmr_btc', 'btc_eur', 'qtum_eth']
+        super(BterFormatterTest, self).test_format_pair_works_correctly(
+            test_pairs, expected_output)
+
+
+class CCEXFormatterTest(FormatterTestCase):
+    def setUp(self):
+        self.formatter = CcexFormatter()
+
+    def test_format_pair_works_correctly(self):
+        test_pairs = ['btcusd', 'ltcbtc', 'xmr_btc', 'BTCEUR', 'qtumeth']
+        expected_output = ['btc-usd', 'ltc-btc', 'xmr-btc', 'btc-eur', 'qtum-eth']
+        super(CCEXFormatterTest, self).test_format_pair_works_correctly(
+            test_pairs, expected_output)
+
+
+class CoinCheckFormatterTest(FormatterTestCase):
+    def setUp(self):
+        self.formatter = CnckFormatter()
+
+    def test_format_pair_works_correctly(self):
+        test_pairs = ['btcusd', 'ltcbtc', 'xmr_btc', 'BTCEUR', 'qtumeth']
+        expected_output = ['btc_usd', 'ltc_btc', 'xmr_btc', 'btc_eur', 'qtum_eth']
+        super(CoinCheckFormatterTest, self).test_format_pair_works_correctly(
+            test_pairs, expected_output)
+
+
+class CryptopiaFormatterTest(FormatterTestCase):
+    def setUp(self):
+        self.formatter = CrptFormatter()
+
+    def test_format_pair_works_correctly(self):
+        test_pairs = ['btcusd', 'ltcbtc', 'xmr_btc', 'BTCEUR', 'dashuno']
+        expected_output = [None, 101, 2999, None, 5012]
+        super(CryptopiaFormatterTest, self).test_format_pair_works_correctly(
+            test_pairs, expected_output)
+
+
+class GDAXFormatterTest(FormatterTestCase):
+    def setUp(self):
+        self.formatter = GdaxFormatter()
+
+    def test_format_pair_works_correctly(self):
+        test_pairs = ['btcusd', 'ltcbtc', 'xmr_btc', 'BTCEUR', 'qtumeth']
+        expected_output = ['BTC-USD', 'LTC-BTC', 'XMR-BTC', 'BTC-EUR', 'QTUM-ETH']
+        super(GDAXFormatterTest, self).test_format_pair_works_correctly(
+            test_pairs, expected_output)
+
+
+class GeminiFormatterTest(FormatterTestCase):
+    def setUp(self):
+        self.formatter = GmniFormatter()
+
+    def test_format_pair_works_correctly(self):
+        test_pairs = ['btcusd', 'ltcbtc', 'xmr_btc', 'BTCEUR', 'qtumeth']
+        expected_output = ['btcusd', 'ltcbtc', 'xmrbtc', 'btceur', 'qtumeth']
+        super(GeminiFormatterTest, self).test_format_pair_works_correctly(
+            test_pairs, expected_output)
+
+
+class HitBtcFormatterTest(FormatterTestCase):
+    def setUp(self):
+        self.formatter = HitBtcFormatter()
+
+    def test_format_pair_works_correctly(self):
+        test_pairs = ['btcusd', 'ltcbtc', 'xmr_btc', 'BTCEUR', 'qtumeth']
+        expected_output = ['BTCUSD', 'LTCBTC', 'XMRBTC', 'BTCEUR', 'QTUMETH']
+        super(HitBtcFormatterTest, self).test_format_pair_works_correctly(
+            test_pairs, expected_output)
+
+
+class ItBitFormatterTest(FormatterTestCase):
+    def setUp(self):
+        self.formatter = itbtFormatter()
+
+    def test_format_pair_works_correctly(self):
+        test_pairs = ['btcusd', 'ltcbtc', 'xmr_btc', 'BTCEUR', 'qtumeth']
+        expected_output = ['BTCUSD', 'LTCBTC', 'XMRBTC', 'BTCEUR', 'QTUMETH']
+        super(ItBitFormatterTest, self).test_format_pair_works_correctly(
+            test_pairs, expected_output)
+
+
+class OKCoinFormatterTest(FormatterTestCase):
+    def setUp(self):
+        self.formatter = OkcnFormatter()
+
+    def test_format_pair_works_correctly(self):
+        test_pairs = ['btcusd', 'ltcbtc', 'xmr_btc', 'BTCEUR', 'qtumeth']
+        expected_output = ['btc_usd', 'ltc_btc', 'xmr_btc', 'btc_eur', 'qtum_eth']
+        super(OKCoinFormatterTest, self).test_format_pair_works_correctly(
+            test_pairs, expected_output)
+
+
+class PoloniexFormatterTest(FormatterTestCase):
+    def setUp(self):
+        self.formatter = PlnxFormatter()
+
+    def test_format_pair_works_correctly(self):
+        test_pairs = ['btcusd', 'ltcbtc', 'xmr_btc', 'BTCEUR', 'qtumeth']
+        expected_output = ['BTC_USD', 'LTC_BTC', 'XMR_BTC', 'BTC_EUR', 'QTUM_ETH']
+        super(PoloniexFormatterTest, self).test_format_pair_works_correctly(
+            test_pairs, expected_output)
+
+
+class QuadrigaCXFormatterTest(FormatterTestCase):
+    def setUp(self):
+        self.formatter = QuadrigaCXFormatter()
+
+    def test_format_pair_works_correctly(self):
+        test_pairs = ['btcusd', 'ltcbtc', 'xmr_btc', 'BTCEUR', 'qtumeth']
+        expected_output = ['btc_usd', 'ltc_btc', 'xmr_btc', 'btc_eur', 'qtum_eth']
+        super(QuadrigaCXFormatterTest, self).test_format_pair_works_correctly(
+            test_pairs, expected_output)
+
+
+class QuoineFormatterTest(FormatterTestCase):
+    def setUp(self):
+        self.formatter = QoinFormatter()
+
+    def test_format_pair_works_correctly(self):
+        test_pairs = ['btcusd', 'ltcbtc', 'xmr_btc', 'BTCEUR', 'qtumeth']
+        expected_output = ['BTCUSD', 'LTCBTC', 'XMRBTC', 'BTCEUR', 'QTUMETH']
+        super(QuoineFormatterTest, self).test_format_pair_works_correctly(
+            test_pairs, expected_output)
+
+
+class RockTradingFormatterTest(FormatterTestCase):
+    def setUp(self):
+        self.formatter = RockFormatter()
+
+    def test_format_pair_works_correctly(self):
+        test_pairs = ['btcusd', 'ltcbtc', 'xmr_btc', 'BTCEUR', 'qtumeth']
+        expected_output = ['BTCUSD', 'LTCBTC', 'XMRBTC', 'BTCEUR', 'QTUMETH']
+        super(RockTradingFormatterTest, self).test_format_pair_works_correctly(
+            test_pairs, expected_output)
+
+
+class VaultoroFormatterTest(FormatterTestCase):
+    def setUp(self):
+        self.formatter = VaultoroFormatter()
+
+    def test_format_pair_works_correctly(self):
+        test_pairs = ['btcusd', 'ltcbtc', 'xmr_btc', 'BTCEUR', 'qtumeth']
+        expected_output = ['btcusd', 'ltcbtc', 'xmrbtc', 'btceur', 'qtumeth']
+        super(VaultoroFormatterTest, self).test_format_pair_works_correctly(
+            test_pairs, expected_output)
+
+
+class YunbiFormatterTest(FormatterTestCase):
+    def setUp(self):
+        self.formatter = YnbiFormatter()
+
+    def test_format_pair_works_correctly(self):
+        test_pairs = ['btcusd', 'ltcbtc', 'xmr_btc', 'BTCEUR', 'qtumeth']
+        expected_output = ['btc_usd', 'ltc_btc', 'xmr_btc', 'btc_eur', 'qtum_eth']
+        super(YunbiFormatterTest, self).test_format_pair_works_correctly(
             test_pairs, expected_output)

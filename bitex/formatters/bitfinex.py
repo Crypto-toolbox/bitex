@@ -12,6 +12,10 @@ log = logging.getLogger(__name__)
 
 class BtfxFormatter(Formatter):
 
+    def format_pair(self, input_pair):
+        base, quote = super(BtfxFormatter, self).format_pair(input_pair)
+        return base.upper() + quote.upper()
+
     @staticmethod
     def ticker(data, *args, **kwargs):
         return (data['bid'], data['ask'], data['high'], data['low'], None, None,

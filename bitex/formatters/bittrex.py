@@ -11,6 +11,10 @@ log = logging.getLogger(__name__)
 
 class BtrxFormatter(Formatter):
 
+    def format_pair(self, input_pair):
+        base, quote = super(BtrxFormatter, self).format_pair(input_pair)
+        return base.upper() + '-' + quote.upper()
+
     @staticmethod
     def ticker(data, *args, **kwargs):
         data = data['result'][0]

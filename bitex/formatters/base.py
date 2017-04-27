@@ -21,14 +21,29 @@ class Formatter:
     def __init__(self):
         pass
 
-    @staticmethod
-    def format_pair(input_pair):
+    def format_pair(self, input_pair):
         """
         Returns the pair properly formatted for the exchange's API.
         :param input_pair: str
         :return: str
         """
-        return input_pair
+        if any(x in input_pair for x in ['-', '_']):
+            try:
+                base, quote = input_pair.split('_')
+            except ValueError:
+                base, quote = input_pair.split('-')
+        elif len(input_pair) % 2 == 0:
+            # even
+            pivot = len(input_pair) // 2
+            base, quote = input_pair[:pivot], input_pair[pivot:]
+        elif len(input_pair) % 2 == 1:
+            # uneven
+            pivot = len(input_pair) // 2 + 1
+            base, quote = input_pair[:pivot], input_pair[pivot:]
+        else:
+            raise NotImplementedError
+
+        return base, quote
 
     @staticmethod
     def ticker(data, *args, **kwargs):

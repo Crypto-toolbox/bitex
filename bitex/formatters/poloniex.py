@@ -12,6 +12,10 @@ log = logging.getLogger(__name__)
 
 class PlnxFormatter(Formatter):
 
+    def format_pair(self, input_pair):
+        base, quote = super(PlnxFormatter, self).format_pair(input_pair)
+        return base.upper() + '_' + quote.upper()
+
     @staticmethod
     def ticker(data, *args, **kwargs):
         data = data[args[0]]

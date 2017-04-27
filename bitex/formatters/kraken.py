@@ -60,7 +60,6 @@ class KrknFormatter(Formatter):
                     input_string = 'z' + input_string
 
             else:
-                log.debug(input_string)
                 # Appears to be Crypto currency
                 if 'btc' in input_string:
                     input_string = input_string.replace('btc', 'xbt')

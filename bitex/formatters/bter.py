@@ -12,4 +12,6 @@ log = logging.getLogger(__name__)
 
 class BterFormatter(Formatter):
 
-    pass
+    def format_pair(self, input_pair):
+        base, quote = super(BterFormatter, self).format_pair(input_pair)
+        return base.lower() + '_' + quote.lower()
