@@ -149,7 +149,7 @@ class CoinCheckFormatterTest(FormatterTestCase):
 
     def test_format_pair_works_correctly(self):
         test_pairs = ['btcusd', 'ltcbtc', 'xmr_btc', 'BTCEUR', 'qtumeth']
-        expected_output = ['btc_usd', 'ltc_btc', 'xmr_btc', 'btc_eur', 'qtum-eth']
+        expected_output = ['btc_usd', 'ltc_btc', 'xmr_btc', 'btc_eur', 'qtum_eth']
         super(CoinCheckFormatterTest, self).test_format_pair_works_correctly(
             test_pairs, expected_output)
 
