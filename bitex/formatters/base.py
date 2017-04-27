@@ -34,7 +34,7 @@ class Formatter:
                 base, quote = input_pair.split('-')
         elif len(input_pair) % 2 == 0:
             # even
-            pivot = len(input_pair)
+            pivot = len(input_pair) // 2
             base, quote = input_pair[:pivot], input_pair[pivot:]
         elif len(input_pair) % 2 == 1:
             # uneven
