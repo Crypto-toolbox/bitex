@@ -12,6 +12,10 @@ log = logging.getLogger(__name__)
 
 class QoinFormatter(Formatter):
 
+    def format_pair(self, input_pair):
+        base, quote = super(QoinFormatter, self).format_pair(input_pair)
+        return base.upper() + quote.upper()
+
     @staticmethod
     def ticker(data, *args, **kwargs):
         return (data['market_bid'], data['market_ask'], data['high_market_bid'],
