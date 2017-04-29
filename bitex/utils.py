@@ -44,7 +44,7 @@ def return_api_response(formatter=None):
 
             #  Verify json data
             try:
-                data = r.json()
+                data = r.json() if r.status_code == 200 else None
             except json.JSONDecodeError:
                 log.error('return_api_response: Error while parsing json. '
                           'Request url was: %s, result is: '
@@ -60,7 +60,7 @@ def return_api_response(formatter=None):
                 try:
                     r.formatted = formatter(data, *args, **kwargs)
                 except Exception:
-                    log.exception("Error while applying formatter!")
+                    log.exception("Error while applying formatter to data! %s", data)
 
             return r
 
