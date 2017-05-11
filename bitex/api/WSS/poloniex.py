@@ -23,7 +23,7 @@ class PoloniexSession(ApplicationSession):
         channel = self.config.extra['channel']
 
         def onTicker(*args, **kwargs):
-            self.config.extra['queue'].put((channel, (args, kwargs), time.time())))
+            self.config.extra['queue'].put((channel, (args, kwargs), time.time()))
 
         if self.config.extra['is_killed'].is_set():
             raise KeyboardInterrupt()
