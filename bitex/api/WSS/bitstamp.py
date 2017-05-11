@@ -1,5 +1,6 @@
 # Import Built-Ins
 import logging
+import time
 
 # Import Third-Party
 import pusherclient
@@ -189,7 +190,7 @@ class BitstampWSS(WSSAPI):
         :param data:
         :return:
         """
-        self.data_q.put(('live_orders', pair, data))
+        self.data_q.put(('live_orders', pair, data, time.time()))
 
     def btcusd_lo_callback(self, data):
         self.live_orders_callback('BTCUSD', data)

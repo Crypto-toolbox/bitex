@@ -565,8 +565,7 @@ class BitfinexWSS(WSSAPI):
         :return:
         """
         pair = self.channel_labels[chan_id][1]['pair']
-        entry = (*data, ts)
-        self.data_q.put(('ticker', pair, entry))
+        self.data_q.put(('ticker', pair, data, ts))
 
     def _handle_book(self, ts, chan_id, data):
         """
@@ -577,8 +576,7 @@ class BitfinexWSS(WSSAPI):
         :return:
         """
         pair = self.channel_labels[chan_id][1]['pair']
-        entry = data, ts
-        self.data_q.put(('order_book', pair, entry))
+        self.data_q.put(('order_book', pair, data, ts))
 
     def _handle_raw_book(self, ts, chan_id, data):
         """
@@ -589,8 +587,7 @@ class BitfinexWSS(WSSAPI):
         :return:
         """
         pair = self.channel_labels[chan_id][1]['pair']
-        entry = data, ts
-        self.data_q.put(('raw_order_book', pair, entry))
+        self.data_q.put(('raw_order_book', pair, data, ts))
 
     def _handle_trades(self, ts, chan_id, data):
         """
@@ -601,8 +598,7 @@ class BitfinexWSS(WSSAPI):
         :return:
         """
         pair = self.channel_labels[chan_id][1]['pair']
-        entry = data, ts
-        self.data_q.put(('trades', pair, entry))
+        self.data_q.put(('trades', pair, data, ts))
 
     def _handle_candles(self, ts, chan_id, data):
         """
@@ -613,8 +609,7 @@ class BitfinexWSS(WSSAPI):
         :return:
         """
         pair = self.channel_labels[chan_id][1]['key'].split(':')[-1][1:]
-        entry = data, ts
-        self.data_q.put(('ohlc', pair, entry))
+        self.data_q.put(('ohlc', pair, data, ts))
 
     def _handle_auth(self, ts, chan_id, data):
         keys = {'hts': self._handle_auth_trades,
@@ -660,48 +655,37 @@ class BitfinexWSS(WSSAPI):
             raise
 
     def _handle_auth_trades(self, ts, data):
-        entry = data, ts
-        self.data_q.put(('account_trades', 'NA', entry))
+        self.data_q.put(('account_trades', 'NA', data, ts))
 
     def _handle_auth_positions(self, ts, data):
-        entry = data, ts
-        self.data_q.put(('account_positions', 'NA', entry))
+        self.data_q.put(('account_positions', 'NA', data, ts))
 
     def _handle_auth_orders(self, ts, data):
-        entry = data, ts
-        self.data_q.put(('account_orders', 'NA', entry))
+        self.data_q.put(('account_orders', 'NA', data, ts))
 
     def _handle_auth_wallet(self, ts, data):
-        entry = data, ts
-        self.data_q.put(('account_wallet', 'NA', entry))
+        self.data_q.put(('account_wallet', 'NA', data, ts))
 
     def _handle_auth_balance(self, ts, data):
-        entry = data, ts
-        self.data_q.put(('account_balance', 'NA', entry))
+        self.data_q.put(('account_balance', 'NA', data, ts))
 
     def _handle_auth_margin_info(self, ts, data):
-        entry = data, ts
-        self.data_q.put(('account_margin_info', 'NA', entry))
+        self.data_q.put(('account_margin_info', 'NA', data, ts))
 
     def _handle_auth_funding_info(self, ts, data):
-        entry = data, ts
-        self.data_q.put(('account_funding_info', 'NA', entry))
+        self.data_q.put(('account_funding_info', 'NA', data, ts))
 
     def _handle_auth_offers(self, ts, data):
-        entry = data, ts
-        self.data_q.put(('account_offers', 'NA', entry))
+        self.data_q.put(('account_offers', 'NA', data, ts))
 
     def _handle_auth_credits(self, ts, data):
-        entry = data, ts
-        self.data_q.put(('account_credits', 'NA', entry))
+        self.data_q.put(('account_credits', 'NA', data, ts))
 
     def _handle_auth_loans(self, event, data):
-        entry = data, time.time()
-        self.data_q.put(('account_loans', 'NA', entry))
+        self.data_q.put(('account_loans', 'NA', data, ts))
 
     def _handle_auth_funding_trades(self, event, data):
-        entry = data, time.time()
-        self.data_q.put(('account_funding_trades', 'NA', entry))
+        self.data_q.put(('account_funding_trades', 'NA', data, ts))
 
     ##
     # Commands
