@@ -50,7 +50,7 @@ class BitfinexWSS(WSSAPI):
         else:
             self.pairs = ['ETHBTC', 'BTCUSD', 'ETHUSD', 'ETCUSD', 'ETCBTC',
                           'ZECUSD', 'ZECBTC', 'XMRUSD', 'XMRBTC', 'LTCUSD',
-                          'LTCBTC', 'DASHUSD']
+                          'LTCBTC', 'DSHUSD', 'DSHBTC']
 
         # Set up variables for receiver and main loop threads
         self._receiver_lock = threading.Lock()
