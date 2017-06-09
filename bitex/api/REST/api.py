@@ -14,104 +14,159 @@ from bitex.api.REST.response import APIResponse
 
 log = logging.getLogger(__name__)
 
+# Import Built-Ins
+import logging
+import warnings
+import configparser
+import time
 
-class APIClient(metaclass=ABCMeta):
+# Import Third-Party
+import requests
+
+# Import Homebrew
+from bitex.exceptions import IncompleteCredentialsWarning
+# Init Logging Facilities
+log = logging.getLogger(__name__)
+
+
+class BaseAPI:
     """
-    Base Class for API ojects. Provides basic methods to interact
-    with exchange APIs, such as sending queries and signing messages to pass
-    authentication.
+    BaseAPI provides lowest-common-denominator methods used in all API types.
+
+    It provides a Nonce() method, basic configuration loading and a place-holder
+    sign() method.
     """
+    def __init__(self, *, addr, key, secret, version, config):
+        """
+        Initialize a BaseAPI instance.
+        :param addr: str, API url
+        :param key: str, API key
+        :param secret: str, API secret
+        :param version: str, version of API to request
+        :param config: str, path to config file
+        """
+        # validate inputs
+        if key == '' or secret == '':
+            raise ValueError("Invalid key or secret - cannot be empty string! "
+                             "Pass None instead!")
 
-    def __init__(self, uri, api_version=None, key=None, secret=None, timeout=5):
-        """
-        Create API Client object.
-        :param uri: string address for api (i.e. https://api.kraken.com/
-        :param api_version: version, as required to query an endpoint
-        :param key: API access key
-        :param secret: API secret
-        """
-        self.key = key
-        self.secret = secret
-        self.uri = uri
-        self.version = api_version if api_version else ''
-        self.timeout = timeout
-        log.debug("Initialized API Client for URI: %s; "
-                  "Will request on API version: %s" %
-                  (self.uri, self.version))
+        if ((key is None and secret is not None) or
+                (key is not None and secret is None)):
+            warnings.warn("Incomplete Credentials were given - authentication "
+                          "may not work!", IncompleteCredentialsWarning)
 
-    def load_key(self, path):
-        """
-        Load key and secret from file.
-        :param path: path to file with first two lines are key, secret respectively
-        """
-        with open(path, 'r') as f:
-            self.key = f.readline().strip()
-            self.secret = f.readline().strip()
+        self.addr = addr
+        self.key = key if key else None
+        self.secret = secret if secret else None
+        self.version = version if version else ''
+        if config:
+            self.load_config(config)
 
-    def nonce(self):
+    def load_config(self, fname):
+        """
+        Load configuration from an ini file. Return it, in case this
+        func needs to be extended.
+        :param fname: path to file
+        :return: configparser.ConfigParser() Obj
+        """
+        conf = configparser.ConfigParser()
+        conf.read(fname)
+        self.key = conf['AUTH']['key']
+        self.secret = conf['AUTH']['secret']
+        self.version = conf['API']['version']
+        self.addr = conf['API']['address']
+        return conf
+
+    @staticmethod
+    def nonce():
         """
         Creates a Nonce value for signature generation
-        :return:
+        :return: Nonce as string
         """
         return str(int(1000 * time.time()))
 
-    @staticmethod
-    def api_request(*args, **kwargs):
-        """
-        Wrapper which converts a requests.Response into our custom APIResponse
-        object
-        :param args:
-        :param kwargs:
-        :return:
-        """
-        r = requests.request(*args, **kwargs)
-        return APIResponse(r)
 
-    @abstractmethod
-    def sign(self, url, endpoint, endpoint_path, method_verb, *args, **kwargs):
+class RESTAPI(BaseAPI):
+    """
+    Generic REST API interface. Supplies private and public query methods,
+    as well as building blocks to customize the signature generation process.
+    """
+    def __init__(self, addr, timeout=None, key=None, secret=None, version=None,
+                 config=None):
         """
-        Dummy Signature creation method. Override this in child.
-        URL is required to be returned, as some Signatures use the url for
-        sig generation, and api calls made must match the address exactly.
-        param url: self.uri + self.version + endpoint (i.e https://api.kraken/0/Depth)
-        param endpoint: api endpoint to call (i.e. 'Depth')
-        param endpoint_path: self.version + endpoint (i.e. '0/Depth')
-        param method_verb: valid request type (PUT, GET, POST etc)
-        param return:
+        Initializes the RESTAPI instance.
+        :param addr: str, API URL (excluding endpoint paths, if applicable)
+        :param key: str, API key
+        :param secret: str, API secret
+        :param config: str, path to config file
+        :param timeout: int or float, defines timeout for requests to API
         """
-        url = self.uri
+        super(RESTAPI, self).__init__(addr, key=key, secret=secret,
+                                      version=version, config=config)
+        self.timeout = timeout if timeout else 10
 
-        return url, {'params': {'test_param': "authenticated_chimichanga"}}
-
-    def query(self, method_verb, endpoint, authenticate=False,
-              *args, **kwargs):
+    def generate_uri(self, endpoint):
         """
-        Queries exchange using given data. Defaults to unauthenticated query.
-        :param method_verb: valid request type (PUT, GET, POST etc)
-        :param endpoint: endpoint path for the resource to query, sans the url &
-                         API version (i.e. '/btcusd/ticker/').
-        :param authenticate: Bool to determine whether or not a signature is
-                             required.
-        :param args: Optional args for requests.request()
-        :param kwargs: Optional Kwargs for self.sign() and requests.request()
-        :return: request.response() obj
+        Generate a Unique Resource Identifier (API Version + Endpoint)
+        :param endpoint: str, endpoint path (i.e. /market/btcusd)
+        :return: str, URI
         """
         if self.version:
-            endpoint_path = '/' + self.version + '/' + endpoint
+            return '/' + self.version + '/' + endpoint
         else:
-            endpoint_path = '/' + endpoint
+            return '/' + endpoint
 
-        url = self.uri + endpoint_path
-        if authenticate:  # sign off kwargs and url before sending request
-            url, request_kwargs = self.sign(url, endpoint, endpoint_path,
-                                            method_verb, *args, **kwargs)
-        else:
-            request_kwargs = kwargs
-        log.debug("Making request to: %s, kwargs: %s", url, request_kwargs)
-        r = self.api_request(method_verb, url, timeout=self.timeout,
-                             **request_kwargs)
-        log.debug("Made %s request made to %s, with headers %s and body %s. "
-                  "Status code %s", r.request.method,
-                  r.request.url, r.request.headers,
-                  r.request.body, r.status_code)
-        return r
+    def generate_url(self, uri):
+        """
+        Generate a Unique Resource Locator (API Address + URI)
+        :param uri: str, URI
+        :return: str, URL
+        """
+        return self.addr + uri
+
+    def sign_request_kwargs(self, endpoint, **kwargs):
+        """
+        Dummy Request Kwarg Signature Generator.
+        Extend this to implement signing of requests for private api calls.
+        :param endpoint: str, API Endpoint
+        :param kwargs: Kwargs meant for requests.Request()
+        :return: dict, request kwargs
+        """
+        uri = self.generate_uri(endpoint)
+        url = self.generate_url(uri)
+        template = {'method': None, 'url': url, 'headers': None, 'files': None,
+                    'data': None, 'params': None, 'auth': None, 'cookies': None,
+                    'hooks': None, 'json': None}
+        template.update(kwargs)
+        return template
+
+    def _query(self, method_verb, **request_kwargs):
+        """
+        Send the request to the API via requests.
+        :param method_verb: valid HTTP Verb (GET, PUT, DELETE, etc.)
+        :param request_kwargs: kwargs for request.Request()
+        :return: request.Response() object
+        """
+        return requests.request(method_verb, **request_kwargs)
+
+    def private_query(self, method_verb, endpoint, **request_kwargs):
+        """
+        Query a private API endpoint requiring signing of the request.
+        :param method_verb: valid HTTP Verb (GET, PUT, DELETE, etc.)
+        :param endpoint: str, API Endpoint
+        :param request_kwargs: kwargs for request.Request()
+        :return: request.Response() object
+        """
+        request_kwargs = self.sign_request_kwargs(endpoint, **request_kwargs)
+        return self._query(method_verb, **request_kwargs)
+
+    def public_query(self, method_verb, endpoint, **request_kwargs):
+        """
+        Query a public (i.e. unauthenticated) API endpoint and return the result.
+        :param method_verb: valid HTTP Verb (GET, PUT, DELETE, etc.)
+        :param endpoint: str, API Endpoint
+        :param request_kwargs: kwargs for request.Request()
+        :return: request.Response() object
+        """
+        request_kwargs['url'] = self.generate_url(self.generate_uri(endpoint))
+        return self._query(method_verb, **request_kwargs)

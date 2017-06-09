@@ -11,6 +11,7 @@ import base64
 import time
 import urllib
 import urllib.parse
+import warnings
 
 # Import Third-Party
 from requests.auth import AuthBase
@@ -22,46 +23,63 @@ except ImportError:
     jwt = False
 
 # Import Homebrew
-from bitex.api.REST.api import APIClient
+from bitex.api.REST.api import RESTAPI
+from bitex.exceptions import IncompleteCredentialsWarning
 
 
 log = logging.getLogger(__name__)
 
 
-class BitfinexREST(APIClient):
-    def __init__(self, key=None, secret=None, api_version='v1',
-                 url='https://api.bitfinex.com', timeout=5):
-        super(BitfinexREST, self).__init__(url, api_version=api_version,
-                                           key=key, secret=secret,
-                                           timeout=timeout)
+class BitfinexREST(RESTAPI):
+    def __init__(self, addr='https://api.bitfinex.com', key=None, secret=None,
+                 version='v1', config=None, timeout=None):
+        super(BitfinexREST, self).__init__(addr, version=version, key=key,
+                                           secret=secret, timeout=timeout,
+                                           config=config)
 
-    def sign(self, url, endpoint, endpoint_path, method_verb, *args, **kwargs):
-        try:
-            req = kwargs['params']
-        except KeyError:
-            req = {}
-        req['request'] = endpoint_path
-        req['nonce'] = self.nonce()
+    def sign_request_kwargs(self, endpoint, *args, **kwargs):
+        req_kwargs = super(BitfinexREST, self).sign_request_kwargs(endpoint,
+                                                                   **kwargs)
 
-        js = json.dumps(req)
+        # Parameters go into headers, so pop params key and generate signature
+        params = req_kwargs.pop('params')
+        params['request'] = self.generate_uri(endpoint)
+        params['nonce'] = self.nonce()
+
+        # convert to json, encode and hash
+        js = json.dumps(params)
         data = base64.standard_b64encode(js.encode('utf8'))
 
         h = hmac.new(self.secret.encode('utf8'), data, hashlib.sha384)
         signature = h.hexdigest()
-        headers = {"X-BFX-APIKEY": self.key,
-                   "X-BFX-SIGNATURE": signature,
-                   "X-BFX-PAYLOAD": data}
 
-        return url, {'headers': headers}
+        # Update headers and return
+        req_kwargs['headers'] = {"X-BFX-APIKEY": self.key,
+                                 "X-BFX-SIGNATURE": signature,
+                                 "X-BFX-PAYLOAD": data}
+
+        return req_kwargs
 
 
-class BitstampREST(APIClient):
-    def __init__(self, user_id='', key=None, secret=None, api_version=None,
-                 url='https://www.bitstamp.net/api', timeout=5):
+class BitstampREST(RESTAPI):
+    def __init__(self, addr='https://www.bitstamp.net/api', user_id=None,
+                 key=None, secret=None, version=None, timeout=5):
+        if user_id == '':
+            raise ValueError("Invalid user id - cannot be empty string! "
+                             "Pass None instead!")
         self.id = user_id
-        super(BitstampREST, self).__init__(url, api_version=api_version,
+        if (not all(x is None for x in (user_id, key, secret)) or
+                not all(x is not None for x in (user_id, key, secret))):
+            warnings.warn("Incomplete Credentials were given - authentication "
+                          "may not work!", IncompleteCredentialsWarning)
+
+        super(BitstampREST, self).__init__(addr, version=version,
                                            key=key, secret=secret,
                                            timeout=timeout)
+
+    def load_config(self, fname):
+        conf = super(BitstampREST, self).load_config(fname)
+        self.user_id = conf['AUTH']['user_id']
 
     def load_key(self, path):
         """
