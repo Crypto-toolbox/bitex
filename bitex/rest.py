@@ -33,7 +33,7 @@ log = logging.getLogger(__name__)
 class BitfinexREST(RESTAPI):
     def __init__(self, addr='https://api.bitfinex.com', key=None, secret=None,
                  version='v1', config=None, timeout=None):
-        super(BitfinexREST, self).__init__(addr, version=version, key=key,
+        super(BitfinexREST, self).__init__(addr=addr, version=version, key=key,
                                            secret=secret, timeout=timeout,
                                            config=config)
 
@@ -73,7 +73,7 @@ class BitstampREST(RESTAPI):
             warnings.warn("Incomplete Credentials were given - authentication "
                           "may not work!", IncompleteCredentialsWarning)
 
-        super(BitstampREST, self).__init__(addr, version=version,
+        super(BitstampREST, self).__init__(addr=addr, version=version,
                                            key=key, secret=secret,
                                            timeout=timeout, config=config)
 

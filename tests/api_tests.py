@@ -26,7 +26,7 @@ class BaseAPITests(TestCase):
                           config=None, version=None)
 
         # silently initialize if all other parameters are none
-        api = BaseAPI('Bangarang', key=None, secret=None, config=None,
+        api = BaseAPI(addr='Bangarang', key=None, secret=None, config=None,
                       version=None)
 
         # if version is None, make version an empty string
@@ -40,24 +40,24 @@ class BaseAPITests(TestCase):
 
         # raise warning if only key or only secret is passed
         with self.assertWarns(IncompleteCredentialsWarning):
-            api = BaseAPI('Bangarang', key='SomeKey', secret=None, config=None,
+            api = BaseAPI(addr='Bangarang', key='SomeKey', secret=None, config=None,
                           version=None)
         with self.assertWarns(IncompleteCredentialsWarning):
-            api = BaseAPI('Bangarang', key=None, secret='SomeSecret',
+            api = BaseAPI(addr='Bangarang', key=None, secret='SomeSecret',
                           config=None, version=None)
 
         # raise a Value Error if an empty string is passed in either key or 
         # secret kwarg
         with self.assertRaises(ValueError):
-            api = BaseAPI('Bangarang', key='', secret=None,
+            api = BaseAPI(addr='Bangarang', key='', secret=None,
                           config=None, version=None)
         with self.assertRaises(ValueError):
-            api = BaseAPI('Bangarang', key=None, secret='',
+            api = BaseAPI(addr='Bangarang', key=None, secret='',
                           config=None, version=None)
 
         # Make sure all attributes are correctly updated if a config file is
         # given
-        api = BaseAPI('Bangarang', key=None, secret=None, config='config.ini',
+        api = BaseAPI(addr='Bangarang', key=None, secret=None, config='/home/nils/git/bitex/tests/config.ini',
                       version=None)
         self.assertEqual(api.addr, 'http://some.api.com')
         self.assertEqual(api.secret, 'panda')
@@ -93,10 +93,6 @@ class RESTAPITests(TestCase):
         for k in template:
             self.assertTrue(k in d)
 
-        # Make sure sign_request_kwargs() method raises NotImplementedError
-        with self.assertRaises(NotImplementedError):
-            api.sign_request_kwargs()
-
     def test_bitstamp_class(self):
 
         # make sure a warning is displayed upon incomplete credentials
@@ -127,4 +123,4 @@ class RESTAPITests(TestCase):
 
 if __name__ == '__main__':
     import unittest
-    unittest.makeSuite()
+    unittest.main()

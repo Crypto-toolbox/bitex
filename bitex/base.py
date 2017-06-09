@@ -97,7 +97,7 @@ class RESTAPI(BaseAPI):
         :param config: str, path to config file
         :param timeout: int or float, defines timeout for requests to API
         """
-        super(RESTAPI, self).__init__(addr, key=key, secret=secret,
+        super(RESTAPI, self).__init__(addr=addr, key=key, secret=secret,
                                       version=version, config=config)
         self.timeout = timeout if timeout else 10
 
