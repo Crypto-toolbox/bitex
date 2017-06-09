@@ -6,8 +6,8 @@ import time
 # Import Third-Party
 
 # Import Homebrew
-from bitex.api.base import BaseAPI, RESTAPI
-from bitex.api.rest import BitstampREST
+from bitex.base import BaseAPI, RESTAPI
+from bitex.rest import BitstampREST
 from bitex.exceptions import IncompleteCredentialsWarning
 
 # Init Logging Facilities
@@ -124,3 +124,7 @@ class RESTAPITests(TestCase):
 
         # Test that the sign_request_kwargs generate appropriate kwargs:
         self.fail("Finish this test")
+
+if __name__ == '__main__':
+    import unittest
+    unittest.makeSuite()
