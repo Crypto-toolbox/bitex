@@ -95,7 +95,8 @@ class BitstampREST(RESTAPI):
             self.id = f.readline().strip()
 
     def sign_request_kwargs(self, endpoint, **kwargs):
-        req_kwargs = super(BitstampREST, self).sign_request_kwargs(endpoint, **kwargs)
+        req_kwargs = super(BitstampREST, self).sign_request_kwargs(endpoint,
+                                                                   **kwargs)
 
         # Generate Signature
         nonce = self.nonce()
@@ -114,28 +115,43 @@ class BitstampREST(RESTAPI):
         return req_kwargs
 
 
-class BittrexREST(APIClient):
+class BittrexREST(RESTAPI):
     def __init__(self, key=None, secret=None, api_version='v1.1',
                  url='https://bittrex.com/api', timeout=5):
         super(BittrexREST, self).__init__(url, api_version=api_version, key=key,
                                           secret=secret, timeout=timeout)
 
-    def sign(self, url, endpoint, endpoint_path, method_verb, *args, **kwargs):
+    def sign_request_kwargs(self, endpoint, **kwargs):
+        """
+        Bittrex requires the request address to be included as a sha512 encoded
+        string in the query header. This means that the request address used for
+        signing, and the actual address used to send the request (incuding order
+        of parameters) needs to be identical. Hence, we must build the request
+        address ourselves, instead of relying on the requests library to do it
+        for us.
+        """
+        req_kwargs = super(BittrexREST, self).sign_request_kwargs(endpoint,
+                                                                  **kwargs)
 
-        try:
-            params = kwargs['params']
-        except KeyError:
-            params = {}
-
+        # Prepare arguments for query request.
+        params = kwargs.pop('params')
         nonce = self.nonce()
+        uri = self.generate_uri(endpoint)
+        url = self.generate_url(uri)
 
-        req_string = endpoint_path + '?apikey=' + self.key + "&nonce=" + nonce + '&'
+        # Build request address
+        req_string = '?apikey=' + self.key + "&nonce=" + nonce + '&'
         req_string += urllib.parse.urlencode(params)
-        headers = {"apisign": hmac.new(self.secret.encode('utf-8'),
-                                       (self.uri + req_string).encode('utf-8'),
-                                       hashlib.sha512).hexdigest()}
+        request_address = url + req_string
+        req_kwargs['url'] = request_address
 
-        return self.uri + req_string, {'headers': headers, 'params': {}}
+        # generate signature
+        signature = hmac.new(self.secret.encode('utf-8'),
+                             request_address.encode('utf-8'),
+                             hashlib.sha512).hexdigest()
+        req_kwargs['headers'] = {"apisign": signature}
+
+        return req_kwargs
 
 
 class CoincheckREST(APIClient):
