@@ -6,7 +6,8 @@ import time
 # Import Third-Party
 
 # Import Homebrew
-from bitex.api import BaseAPI, RESTAPI, BitfinexREST, BitstampREST
+from bitex.api.base import BaseAPI, RESTAPI
+from bitex.api.rest import BitstampREST
 from bitex.exceptions import IncompleteCredentialsWarning
 
 # Init Logging Facilities
@@ -71,10 +72,6 @@ class BaseAPITests(TestCase):
             self.assertLess(previous_nonce, new_nonce)
             previous_nonce = new_nonce
 
-        # Make sure sign() method raises NotImplementedError
-        with self.assertRaises(NotImplementedError):
-            api.sign()
-
 
 class RESTAPITests(TestCase):
     def test_generate_methods_work_correctly(self):
@@ -95,6 +92,10 @@ class RESTAPITests(TestCase):
                     'params': None, 'auth': None, 'cookies': None, 'json': None}
         for k in template:
             self.assertTrue(k in d)
+
+        # Make sure sign_request_kwargs() method raises NotImplementedError
+        with self.assertRaises(NotImplementedError):
+            api.sign_request_kwargs()
 
     def test_bitstamp_class(self):
 
@@ -122,4 +123,4 @@ class RESTAPITests(TestCase):
         self.assertEqual(api.user_id, 'testuser')
 
         # Test that the sign_request_kwargs generate appropriate kwargs:
-
+        self.fail("Finish this test")
