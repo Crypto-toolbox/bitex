@@ -9,7 +9,6 @@ import logging
 
 # Import Homebrew
 from bitex.api.rest import PoloniexREST
-from bitex.api.WSS.poloniex import PoloniexWSS
 from bitex.utils import return_api_response
 from bitex.formatters.poloniex import PlnxFormatter as fmt
 # Init Logging Facilities
@@ -21,11 +20,6 @@ class Poloniex(PoloniexREST):
         super(Poloniex, self).__init__(key, secret)
         if key_file:
             self.load_key(key_file)
-        if websocket:
-            self.wss = PoloniexWSS()
-            self.wss.start()
-        else:
-            self.wss = None
 
     def public_query(self, endpoint, **kwargs):
         return self.query('GET', 'public?command=' + endpoint, **kwargs)

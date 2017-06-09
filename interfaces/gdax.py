@@ -21,9 +21,7 @@ class GDAX(GDAXRest):
         super(GDAX, self).__init__(key, secret)
         if key_file:
             self.load_key(key_file)
-        if websocket:
-            self.wss = GDAXWSS()
-            self.wss.start()
+
         else:
             self.wss = None
 

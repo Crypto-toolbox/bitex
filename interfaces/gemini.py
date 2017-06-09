@@ -22,11 +22,6 @@ class Gemini(GeminiREST):
         super(Gemini, self).__init__(key, secret)
         if key_file:
             self.load_key(key_file)
-        if websocket:
-            self.wss = GeminiWSS()
-            self.wss.start()
-        else:
-            self.wss = None
 
     def public_query(self, endpoint, **kwargs):
         return self.query('GET', endpoint, **kwargs)

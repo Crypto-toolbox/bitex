@@ -20,9 +20,7 @@ class Bitfinex(BitfinexREST):
         super(Bitfinex, self).__init__(key, secret)
         if key_file:
             self.load_key(key_file)
-        if websocket:
-            self.wss = BitfinexWSS()
-            self.wss.start()
+
         else:
             self.wss = None
 
