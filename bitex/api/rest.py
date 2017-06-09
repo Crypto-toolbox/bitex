@@ -23,7 +23,7 @@ except ImportError:
     jwt = False
 
 # Import Homebrew
-from bitex.api.REST.api import RESTAPI
+from bitex.api.base import RESTAPI
 from bitex.exceptions import IncompleteCredentialsWarning
 
 
