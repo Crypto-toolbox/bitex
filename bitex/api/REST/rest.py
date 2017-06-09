@@ -67,7 +67,7 @@ class BitstampREST(RESTAPI):
         if user_id == '':
             raise ValueError("Invalid user id - cannot be empty string! "
                              "Pass None instead!")
-        self.id = user_id
+        self.user_id = user_id
         if (not all(x is None for x in (user_id, key, secret)) or
                 not all(x is not None for x in (user_id, key, secret))):
             warnings.warn("Incomplete Credentials were given - authentication "
@@ -79,7 +79,11 @@ class BitstampREST(RESTAPI):
 
     def load_config(self, fname):
         conf = super(BitstampREST, self).load_config(fname)
-        self.user_id = conf['AUTH']['user_id']
+        try:
+            self.user_id = conf['AUTH']['user_id']
+        except KeyError:
+            warnings.warn(IncompleteCredentialsWarning,
+                          "'user_id' not found in config!")
 
     def load_key(self, path):
         """
@@ -90,22 +94,24 @@ class BitstampREST(RESTAPI):
             self.secret = f.readline().strip()
             self.id = f.readline().strip()
 
-    def sign(self, url, endpoint, endpoint_path, method_verb, *args, **kwargs):
-        nonce = self.nonce()
-        message = nonce + self.id + self.key
+    def sign_request_kwargs(self, endpoint, **kwargs):
+        req_kwargs = super(BitstampREST, self).sign_request_kwargs(endpoint, **kwargs)
 
-        signature = hmac.new(self.secret.encode(), message.encode(),
+        # Generate Signature
+        nonce = self.nonce()
+        message = nonce + self.user_id + self.key
+        signature = hmac.new(self.secret.encode('utf-8'), message.encode('utf-8'),
                              hashlib.sha256)
         signature = signature.hexdigest().upper()
 
-        try:
-            req = kwargs['params']
-        except KeyError:
-            req = {}
-        req['key'] = self.key
-        req['nonce'] = nonce
-        req['signature'] = signature
-        return url, {'data': req}
+        # Parameters go into the data kwarg, so move it there from 'params'
+        params = req_kwargs.pop('params')
+        params['key'] = self.key
+        params['nonce'] = nonce
+        params['signature'] = signature
+        req_kwargs['data'] = params
+
+        return req_kwargs
 
 
 class BittrexREST(APIClient):
