@@ -101,8 +101,8 @@ class RESTAPITests(TestCase):
 
         # make sure a warning is displayed upon incomplete credentials
         with self.assertWarns(IncompleteCredentialsWarning):
-            api = BitstampREST('Bangarang', user_id=None, key='SomeKey', secret='SomeSecret',
-                          config=None, version=None)
+            api = BitstampREST('Bangarang', user_id=None, key='SomeKey',
+                               secret='SomeSecret', config=None, version=None)
 
         # make sure an exception is raised if user_id is passed as ''
         with self.assertRaises(ValueError):
