@@ -8,8 +8,7 @@ import logging
 # Import Third-Party
 
 # Import Homebrew
-from bitex.api.REST.rest import GDAXRest
-from bitex.api.WSS.gdax import GDAXWSS
+from bitex.api.rest import GDAXRest
 from bitex.utils import return_api_response
 from bitex.formatters.gdax import GdaxFormatter as fmt
 

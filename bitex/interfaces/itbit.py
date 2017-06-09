@@ -8,7 +8,7 @@ import logging
 # Import Third-Party
 
 # Import Homebrew
-from bitex.api.REST.rest import ItbitREST
+from bitex.api.rest import ItbitREST
 from bitex.utils import return_api_response
 from bitex.formatters.itbit import itbtFormatter as fmt
 

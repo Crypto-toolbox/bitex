@@ -8,7 +8,7 @@ import logging
 # Import Third-Party
 
 # Import Homebrew
-from bitex.api.REST.rest import OKCoinREST
+from bitex.api.rest import OKCoinREST
 from bitex.utils import return_api_response
 from bitex.formatters.okcoin import OkcnFormatter as fmt
 
