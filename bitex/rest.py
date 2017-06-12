@@ -193,7 +193,7 @@ class CoincheckREST(RESTAPI):
         return req_kwargs
 
 
-class GdaxAuth(AuthBase):
+class GDAXAuth(AuthBase):
     def __init__(self, api_key, secret_key, passphrase):
         self.api_key = api_key.encode('utf-8')
         self.secret_key = secret_key.encode('utf-8')
@@ -243,7 +243,7 @@ class GDAXREST(RESTAPI):
     def sign_request_kwargs(self, endpoint, **kwargs):
         req_kwargs = super(GDAXREST, self).sign_request_kwargs(endpoint,
                                                                **kwargs)
-        req_kwargs['auth'] = GdaxAuth(self.key, self.secret, self.passphrase)
+        req_kwargs['auth'] = GDAXAuth(self.key, self.secret, self.passphrase)
 
         try:
             req_kwargs['json'] = kwargs['params']
