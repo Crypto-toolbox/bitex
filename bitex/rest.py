@@ -207,13 +207,11 @@ class GdaxAuth(AuthBase):
         signature = hmac.new(hmac_key, message.encode('utf-8'), hashlib.sha256)
         signature_b64 = base64.b64encode(signature.digest())
 
-        request.headers.update({
-            'CB-ACCESS-SIGN': signature_b64,
-            'CB-ACCESS-TIMESTAMP': timestamp,
-            'CB-ACCESS-KEY': self.api_key,
-            'CB-ACCESS-PASSPHRASE': self.passphrase,
-            'Content-Type': 'application/json'
-        })
+        request.headers.update({'CB-ACCESS-SIGN': signature_b64,
+                                'CB-ACCESS-TIMESTAMP': timestamp,
+                                'CB-ACCESS-KEY': self.api_key,
+                                'CB-ACCESS-PASSPHRASE': self.passphrase,
+                                'Content-Type': 'application/json'})
         return request
 
 
@@ -230,9 +228,9 @@ class GDAXREST(RESTAPI):
         self.passphrase = passphrase
         addr = 'https://api.gdax.com' if not addr else addr
 
-        super(GDAXREST, self).__init__(addr=addr, version=version,
-                                           key=key, secret=secret,
-                                           timeout=timeout, config=config)
+        super(GDAXREST, self).__init__(addr=addr, version=version, key=key,
+                                       secret=secret, timeout=timeout,
+                                       config=config)
 
     def load_config(self, fname):
         conf = super(GDAXREST, self).load_config(fname)
