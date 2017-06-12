@@ -116,10 +116,13 @@ class BitstampREST(RESTAPI):
 
 
 class BittrexREST(RESTAPI):
-    def __init__(self, key=None, secret=None, api_version='v1.1',
-                 url='https://bittrex.com/api', timeout=5):
-        super(BittrexREST, self).__init__(url, api_version=api_version, key=key,
-                                          secret=secret, timeout=timeout)
+    def __init__(self, key=None, secret=None, version=None,
+                 addr=None, timeout=5, config=None):
+        version = 'v1.1' if not version else version
+        addr = 'https://bittrex.com/api' if not addr else addr
+        super(BittrexREST, self).__init__(addr=addr, version=version, key=key,
+                                          secret=secret, timeout=timeout,
+                                          config=config)
 
     def sign_request_kwargs(self, endpoint, **kwargs):
         """
@@ -134,7 +137,10 @@ class BittrexREST(RESTAPI):
                                                                   **kwargs)
 
         # Prepare arguments for query request.
-        params = kwargs.pop('params')
+        try:
+            params = kwargs.pop('params')
+        except KeyError:
+            params = {}
         nonce = self.nonce()
         uri = self.generate_uri(endpoint)
         url = self.generate_url(uri)
@@ -161,24 +167,30 @@ class CoincheckREST(RESTAPI):
                                             key=key, secret=secret,
                                             timeout=timeout)
 
-    def sign(self, url, endpoint, endpoint_path, method_verb, *args, **kwargs):
+    def sign_reuqest_kwargs(self, endpoint, **kwargs):
+        req_kwargs = super(CoincheckREST, self).sign_request_kwargs(endpoint,
+                                                                    **kwargs)
 
-        nonce = self.nonce()
+        # Prepare argument for signature
         try:
-            params = kwargs['params']
+            params = kwargs.pop('params')
         except KeyError:
             params = {}
-
+        nonce = self.nonce()
         params = json.dumps(params)
+
+        # Create signature
         # sig = nonce + url + req
-        data = (nonce + endpoint_path + params).encode('utf-8')
+        data = (nonce + self.generate_uri(endpoint) + params).encode('utf-8')
         h = hmac.new(self.secret.encode('utf8'), data, hashlib.sha256)
         signature = h.hexdigest()
-        headers = {"ACCESS-KEY": self.key,
-                   "ACCESS-NONCE": nonce,
-                   "ACCESS-SIGNATURE": signature}
 
-        return url, {'headers': headers}
+        # Update headers
+        req_kwargs['headers'] = {"ACCESS-KEY": self.key,
+                                 "ACCESS-NONCE": nonce,
+                                 "ACCESS-SIGNATURE": signature}
+
+        return req_kwargs
 
 
 class GdaxAuth(AuthBase):
@@ -205,30 +217,42 @@ class GdaxAuth(AuthBase):
         return request
 
 
-class GDAXRest(RESTAPI):
-    def __init__(self, passphrase='', key=None, secret=None, api_version=None,
-                 url='https://api.gdax.com', timeout=5):
+class GDAXREST(RESTAPI):
+    def __init__(self, passphrase=None, key=None, secret=None, version=None,
+                 addr=None, config=None, timeout=5):
+        if passphrase == '':
+            raise ValueError("Invalid user id - cannot be empty string! "
+                             "Pass None instead!")
+        if (not all(x is None for x in (passphrase, key, secret)) or
+                not all(x is not None for x in (passphrase, key, secret))):
+            warnings.warn("Incomplete Credentials were given - authentication "
+                          "may not work!", IncompleteCredentialsWarning)
         self.passphrase = passphrase
-        super(GDAXRest, self).__init__(url, api_version=api_version, key=key,
-                                       secret=secret, timeout=timeout)
+        addr = 'https://api.gdax.com' if not addr else addr
 
-    def load_key(self, path):
-        """
-        Load key and secret from file.
-        """
-        with open(path, 'r') as f:
-            self.key = f.readline().strip()
-            self.secret = f.readline().strip()
-            self.passphrase = f.readline().strip()
+        super(GDAXREST, self).__init__(addr=addr, version=version,
+                                           key=key, secret=secret,
+                                           timeout=timeout, config=config)
 
-    def sign(self, url, endpoint, endpoint_path, method_verb, *args, **kwargs):
-        auth = GdaxAuth(self.key, self.secret, self.passphrase)
+    def load_config(self, fname):
+        conf = super(GDAXREST, self).load_config(fname)
         try:
-            js = kwargs['params']
+            self.passphrase = conf['AUTH']['passphrase']
         except KeyError:
-            js = {}
+            warnings.warn(IncompleteCredentialsWarning,
+                          "'user_id' not found in config!")
 
-        return url, {'json': js, 'auth': auth}
+    def sign_request_kwargs(self, endpoint, **kwargs):
+        req_kwargs = super(GDAXREST, self).sign_request_kwargs(endpoint,
+                                                               **kwargs)
+        req_kwargs['auth'] = GdaxAuth(self.key, self.secret, self.passphrase)
+
+        try:
+            req_kwargs['json'] = kwargs['params']
+        except KeyError:
+            pass
+
+        return req_kwargs
 
 
 class KrakenREST(RESTAPI):
