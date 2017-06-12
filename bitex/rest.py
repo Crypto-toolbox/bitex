@@ -254,35 +254,40 @@ class GDAXREST(RESTAPI):
 
 
 class KrakenREST(RESTAPI):
-    def __init__(self, key=None, secret=None, api_version='0',
-                 url='https://api.kraken.com', timeout=5):
-        super(KrakenREST, self).__init__(url, api_version=api_version,
-                                         key=key, secret=secret, timeout=timeout)
+    def __init__(self, key=None, secret=None, version=None,
+                 addr=None, timeout=5, config=None):
+        addr = 'https://api.kraken.com' if not addr else addr
+        version = '0' if not version else version
+        super(KrakenREST, self).__init__(addr=addr, version=version, key=key,
+                                         config=config, secret=secret,
+                                         timeout=timeout)
 
-    def sign(self, url, endpoint, endpoint_path, method_verb, *args, **kwargs):
+    def sign_request_kwargs(self, endpoint, **kwargs):
+        req_kwargs = super(KrakenREST, self).sign_request_kwargs(endpoint,
+                                                                 **kwargs)
+        # Prepare Payload
         try:
-            req = kwargs['params']
+            payload = kwargs['params']
         except KeyError:
-            req = {}
-
-        req['nonce'] = self.nonce()
-        postdata = urllib.parse.urlencode(req)
-
-        # Unicode-objects must be encoded before hashing
-        encoded = (str(req['nonce']) + postdata).encode('utf-8')
-        message = (endpoint_path.encode('utf-8') +
+            payload = {}
+        payload['nonce'] = self.nonce()
+        
+        # Generate Signature
+        postdata = urllib.parse.urlencode(payload)
+        encoded = (str(payload['nonce']) + postdata).encode('utf-8')
+        message = (self.generate_uri(endpoint).encode('utf-8') +
                    hashlib.sha256(encoded).digest())
 
-        signature = hmac.new(base64.b64decode(self.secret),
+        sig_hmac = hmac.new(base64.b64decode(self.secret),
                              message, hashlib.sha512)
-        sigdigest = base64.b64encode(signature.digest())
+        signature = base64.b64encode(sig_hmac.digest())
 
-        headers = {
-            'API-Key': self.key,
-            'API-Sign': sigdigest.decode('utf-8')
-        }
+        # Update request kwargs
+        req_kwargs['headers'] = {'API-Key': self.key,
+                                 'API-Sign': signature.decode('utf-8')}
+        req_kwargs['data'] = payload
 
-        return url, {'data': req, 'headers': headers}
+        return req_kwargs
 
 
 class ItbitREST(RESTAPI):
