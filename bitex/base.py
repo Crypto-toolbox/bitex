@@ -124,6 +124,7 @@ class RESTAPI(BaseAPI):
         """
         Dummy Request Kwarg Signature Generator.
         Extend this to implement signing of requests for private api calls.
+        By default, supplies a default URL using generate_uri and generate_url
         :param endpoint: str, API Endpoint
         :param kwargs: Kwargs meant for requests.Request()
         :return: dict, request kwargs
