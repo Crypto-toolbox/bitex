@@ -271,7 +271,7 @@ class KrakenREST(RESTAPI):
         except KeyError:
             payload = {}
         payload['nonce'] = self.nonce()
-        
+
         # Generate Signature
         postdata = urllib.parse.urlencode(payload)
         encoded = (str(payload['nonce']) + postdata).encode('utf-8')
