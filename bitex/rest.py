@@ -669,23 +669,37 @@ class QuoineREST(RESTAPI):
 
 
 class QuadrigaCXREST(RESTAPI):
-    def __init__(self, key=None, secret=None, client_id='', version='v2',
-                 addr='https://api.quoine.com/', timeout=5):
+    def __init__(self, key=None, secret=None, client_id=None, version=None,
+                 addr=None, timeout=5, config=None):
+
+        version = 'v2' if not version else version
+        addr = 'https://api.quoine.com/' if not addr else addr
+
+        if client_id == '':
+            raise ValueError("Invalid client id - cannot be empty string! "
+                             "Pass None instead!")
         self.client_id = client_id
-        super(QuadrigaCXREST, self).__init__(url, version=version,
+        if (not all(x is None for x in (client_id, key, secret)) or
+                not all(x is not None for x in (client_id, key, secret))):
+            warnings.warn("Incomplete Credentials were given - authentication "
+                          "may not work!", IncompleteCredentialsWarning)
+        super(QuadrigaCXREST, self).__init__(addr=addr, version=version,
                                              key=key, secret=secret,
-                                             timeout=timeout)
+                                             timeout=timeout, config=config)
 
-    def load_key(self, path):
-        """
-        Load key and secret from file.
-        """
-        with open(path, 'r') as f:
-            self.key = f.readline().strip()
-            self.secret = f.readline().strip()
-            self.client_id = f.readline().strip()
+    def load_config(self, fname):
+        conf = super(QuadrigaCXREST, self).load_config(fname)
+        try:
+            self.user_id = conf['AUTH']['client_id']
+        except KeyError:
+            warnings.warn(IncompleteCredentialsWarning,
+                          "'client_id' not found in config!")
 
-    def sign(self, uri, endpoint, endpoint_path, method_verb, *args, **kwargs):
+    def sign_request_kwargs(self, endpoint, **kwargs):
+        req_kwargs = super(QuadrigaCXREST, self).sign_request_kwargs(endpoint,
+                                                                     **kwargs)
+
+        # Prepare Payload arguments
         try:
             params = kwargs['params']
         except KeyError:
@@ -693,11 +707,15 @@ class QuadrigaCXREST(RESTAPI):
         nonce = self.nonce()
         msg = nonce + self.client_id + self.key
 
+        # generate signature
         signature = hmac.new(self.secret.encode(encoding='utf-8'),
                              msg.encode(encoding='utf-8'), hashlib.sha256)
-        headers = {'key': self.key, 'signature': signature,
-                   'nonce': nonce}
-        return self.uri, {'headers': headers, 'data': params}
+
+        # update req_kwargs keys
+        req_kwargs['headers'] = {'key': self.key, 'signature': signature,
+                                 'nonce': nonce}
+        req_kwargs['data'] = params
+        return req_kwargs
 
 
 class HitBTCREST(RESTAPI):
