@@ -59,7 +59,7 @@ class BaseAPI:
             try:
                 self.load_config(config)
             except KeyError:
-                warnings.warn("Config file was missing one or more required" /
+                warnings.warn("Config file was missing one or more required" \
                               "parameters!", IncompleteCredentialsWarning)
 
     def load_config(self, fname):
