@@ -310,7 +310,8 @@ class ITbitREST(RESTAPI):
                           "may not work!", IncompleteCredentialsWarning)
 
         super(ItbitREST, self).__init__(addr=addr, version=version, key=key,
-                                        secret=secret, timeout=timeout)
+                                        secret=secret, timeout=timeout,
+                                        config=config)
 
     def load_config(self, fname):
         conf = super(ITbitREST, self).load_config(fname)
