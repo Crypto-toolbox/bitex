@@ -100,22 +100,22 @@ class RESTAPITests(TestCase):
         # assert that an InvalidCredentialsError is raised, if any of the auth
         # attributes are None (key, secret)
         api = RESTAPI(addr='http://some.api.com', key='shadow', secret=None,
-                      version='v2')
+                      version='v2', timeout=5)
 
         with self.assertRaises(IncompleteCredentialsError):
-            api.private_query('market')
+            api.private_query('GET', 'market', url='https://www.someapi.com')
 
         api = RESTAPI(addr='http://some.api.com', key=None, secret='panda',
                       version='v2')
 
         with self.assertRaises(IncompleteCredentialsError):
-            api.private_query('market')
+            api.private_query('GET', 'market', url='https://www.someapi.com')
 
         api = RESTAPI(addr='http://some.api.com', key=None, secret=None,
                       version='v2')
 
         with self.assertRaises(IncompleteCredentialsError):
-            api.private_query('market')
+            api.private_query('GET', 'market', url='https://www.someapi.com')
 
         # assert that _query() silently returns an requests.Response() obj, if
         # the request was good
