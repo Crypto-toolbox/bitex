@@ -396,12 +396,19 @@ class OKCoinREST(RESTAPI):
 
 
 class BTCERest(RESTAPI):
-    def __init__(self, key=None, secret=None, api_version='3',
-                 url='https://btc-e.com/api', timeout=5):
-        super(BTCERest, self).__init__(url, api_version=api_version, key=key,
-                                         secret=secret, timeout=timeout)
+    def __init__(self, key=None, secret=None, version=None,
+                 addr=None, timeout=5, config=None):
+        version = '3' if not version else version
+        addr = 'https://btc-e.com/api' if not addr else addr
+        super(BTCERest, self).__init__(addr=addr, version=version, key=key,
+                                       secret=secret, timeout=timeout,
+                                       config=config)
 
-    def sign(self, url, endpoint, endpoint_path, method_verb, *args, **kwargs):
+    def sign_request_kwargs(self, endpoint, **kwargs):
+        req_kwargs = super(BTCERest, self).sign_request_kwargs(endpoint,
+                                                               **kwargs)
+
+        # Prepare POST payload
         nonce = self.nonce()
         try:
             params = kwargs['params']
@@ -411,16 +418,18 @@ class BTCERest(RESTAPI):
         post_params.update({'nonce': nonce, 'method': endpoint.split('/', 1)[1]})
         post_params = urllib.parse.urlencode(post_params)
 
+        # Sign POST payload
         signature = hmac.new(self.secret.encode('utf-8'),
                              post_params.encode('utf-8'), hashlib.sha512)
-        headers = {'Key': self.key, 'Sign': signature.hexdigest(),
-                   "Content-type": "application/x-www-form-urlencoded"}
 
-        # split by tapi str to gain clean url;
-        url = url.split('/tapi', 1)[0] + '/tapi'
+        # update req_kwargs keys
+        req_kwargs['headers'] = {'Key': self.key, 'Sign': signature.hexdigest(),
+                                 "Content-type": "application/x-www-form-urlencoded"}
 
-        return url, {'headers': headers, 'params': params}
+        # drop string after '/tapi';
+        req_kwargs['url'] = url.split('/tapi', 1)[0] + '/tapi'
 
+        return req_kwargs
 
 class CCEXRest(RESTAPI):
     def __init__(self, key=None, secret=None, api_version=None,
