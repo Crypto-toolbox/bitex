@@ -148,7 +148,8 @@ class RESTAPI(BaseAPI):
         :param request_kwargs: kwargs for request.Request()
         :return: request.Response() object
         """
-        resp = requests.request(method_verb, **request_kwargs)
+        resp = requests.request(method_verb, **request_kwargs,
+                                timeout=self.timeout)
         resp.raise_for_status()
         return resp
 
