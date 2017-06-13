@@ -31,13 +31,15 @@ log = logging.getLogger(__name__)
 
 
 class BitfinexREST(RESTAPI):
-    def __init__(self, addr='https://api.bitfinex.com', key=None, secret=None,
-                 version='v1', config=None, timeout=None):
+    def __init__(self, addr=None, key=None, secret=None,
+                 version=None, config=None, timeout=None):
+        addr = 'https://api.bitfinex.com' if not addr else addr
+        version = 'v1' if not version else version
         super(BitfinexREST, self).__init__(addr=addr, version=version, key=key,
                                            secret=secret, timeout=timeout,
                                            config=config)
 
-    def sign_request_kwargs(self, endpoint, *args, **kwargs):
+    def sign_request_kwargs(self, endpoint, **kwargs):
         req_kwargs = super(BitfinexREST, self).sign_request_kwargs(endpoint,
                                                                    **kwargs)
 
