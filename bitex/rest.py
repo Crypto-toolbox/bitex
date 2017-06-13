@@ -506,7 +506,7 @@ class CryptopiaREST(RESTAPI):
 
 class GeminiREST(RESTAPI):
     def __init__(self, key=None, secret=None, version=None,
-                 addr=None, timeout=5, config=config):
+                 addr=None, timeout=5, config=None):
         addr = 'https://api.gemini.com' if not addr else addr
         version = 'v1' if not version else version
         super(GeminiREST, self).__init__(addr=addr, version=version, key=key,
@@ -539,10 +539,13 @@ class GeminiREST(RESTAPI):
 
 
 class YunbiREST(RESTAPI):
-    def __init__(self, key=None, secret=None, version='v2',
-                 addr='https://yunbi.com/api', timeout=5):
+    def __init__(self, key=None, secret=None, version=None,
+                 addr=None, timeout=5, config=None):
+        version = 'v2' if not version else version
+        addr = 'https://yunbi.com/api' if not addr else addr
         super(YunbiREST, self).__init__(url, version=version, key=key,
-                                         secret=secret, timeout=timeout)
+                                         secret=secret, timeout=timeout,
+                                         config=config)
 
     def sign(self, uri, endpoint, endpoint_path, method_verb, *args, **kwargs):
         nonce = self.nonce()
