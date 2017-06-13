@@ -4,6 +4,7 @@ from unittest import TestCase
 import time
 
 # Import Third-Party
+import requests
 
 # Import Homebrew
 from bitex.base import BaseAPI, RESTAPI
@@ -16,10 +17,10 @@ log = logging.getLogger(__name__)
 
 class BaseAPITests(TestCase):
     def test_base_api_parameters_initialize_correctly(self):
-        # Raises an error if a Kwarg wasn't given (i.e. instantiation must specify kwargs explicitly)
+        # Raises an error if a Kwarg wasn't given (i.e. instantiation must
+        # specify kwargs explicitly)
         with self.assertRaises(TypeError):
-            api = BaseAPI(addr='Bangarang', key=None, secret=None,
-                          config=None, version=None)
+            api = BaseAPI(addr='Bangarang')
 
         # raise error if address is None
         with self.assertRaises(TypeError):
@@ -41,8 +42,8 @@ class BaseAPITests(TestCase):
 
         # raise warning if only key or only secret is passed
         with self.assertWarns(IncompleteCredentialsWarning):
-            api = BaseAPI(addr='Bangarang', key='SomeKey', secret=None, config=None,
-                          version=None)
+            api = BaseAPI(addr='Bangarang', key='SomeKey', secret=None,
+                          config=None, version=None)
         with self.assertWarns(IncompleteCredentialsWarning):
             api = BaseAPI(addr='Bangarang', key=None, secret='SomeSecret',
                           config=None, version=None)
@@ -58,7 +59,8 @@ class BaseAPITests(TestCase):
 
         # Make sure all attributes are correctly updated if a config file is
         # given
-        api = BaseAPI(addr='Bangarang', key=None, secret=None, config='/home/nils/git/bitex/tests/config.ini',
+        api = BaseAPI(addr='Bangarang', key=None, secret=None,
+                      config='/home/nils/git/bitex/tests/config.ini',
                       version=None)
         self.assertEqual(api.addr, 'http://some.api.com')
         self.assertEqual(api.secret, 'panda')
@@ -112,19 +114,24 @@ class RESTAPITests(TestCase):
         api = RESTAPI(addr='http://some.api.com', key=None, secret=None,
                       version='v2')
 
-        with self.assertRaises(InvalidCredentialsError):
+        with self.assertRaises(IncompleteCredentialsError):
             api.private_query('market')
 
         # assert that _query() silently returns an requests.Response() obj, if
         # the request was good
-        resp = api._query('GET', url='http://api.geonames.org/childrenJSON?formatted=true&geonameId=3175395&username=demo&style=full')
+        resp = api._query('GET', url='http://api.geonames.org/childrenJSON?'
+                                     'formatted=true&geonameId=3175395&'
+                                     'username=demo&style=full')
         self.assertIsInstance(resp, requests.Response)
 
         # assert that _query() raises an appropriate error on status code other
         # than 200
         with self.assertRaises(requests.exceptions.HTTPError):
-            api._query('data', url='http://api.geonames.org/childrenJSON?formatted=true&geonameId=3175395&username=demo&style=full')
+            api._query('data', url='http://api.geonames.org/childrenJSON?'
+                                   'formatted=true&geonameId=3175395&'
+                                   'username=demo&style=full')
         self.fail("finish this test!")
+
 
 class BitstampRESTTests(TestCase):
     def test_initialization(self):

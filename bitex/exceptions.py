@@ -13,5 +13,5 @@ class IncompleteCredentialsWarning(UserWarning):
     pass
 
 
-class IncompleteCredentialsWarning(Exception):
+class IncompleteCredentialsError(Exception):
     pass
