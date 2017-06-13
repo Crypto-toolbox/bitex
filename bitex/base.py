@@ -135,7 +135,7 @@ class RESTAPI(BaseAPI):
         """
         uri = self.generate_uri(endpoint)
         url = self.generate_url(uri)
-        template = {'method': None, 'url': url, 'headers': None, 'files': None,
+        template = {'url': url, 'headers': None, 'files': None,
                     'data': None, 'params': None, 'auth': None, 'cookies': None,
                     'hooks': None, 'json': None}
         template.update(kwargs)
