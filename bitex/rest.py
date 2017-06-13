@@ -62,8 +62,9 @@ class BitfinexREST(RESTAPI):
 
 
 class BitstampREST(RESTAPI):
-    def __init__(self, addr='https://www.bitstamp.net/api', user_id=None,
-                 key=None, secret=None, version=None, timeout=5, config=None):
+    def __init__(self, addr=None, user_id=None, key=None, secret=None,
+                 version=None, timeout=5, config=None):
+        addr = 'https://www.bitstamp.net/api' if not addr else addr
         if user_id == '':
             raise ValueError("Invalid user id - cannot be empty string! "
                              "Pass None instead!")
