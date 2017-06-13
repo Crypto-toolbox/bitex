@@ -161,9 +161,11 @@ class BittrexREST(RESTAPI):
 
 
 class CoincheckREST(RESTAPI):
-    def __init__(self, key=None, secret=None, api_version='api',
-                 url='https://coincheck.com', timeout=5):
-        super(CoincheckREST, self).__init__(url, api_version=api_version,
+    def __init__(self, key=None, secret=None, version=None,
+                 addr=None, timeout=5):
+        addr = 'https://coincheck.com' if not url else url
+        version = 'api' if not version else version
+        super(CoincheckREST, self).__init__(addr=addr, version=api_version,
                                             key=key, secret=secret,
                                             timeout=timeout)
 
@@ -666,4 +668,3 @@ class BterREST(RESTAPI):
                              msg.encode(encoding='utf-8'), hashlib.sha512).hexdigest()
         headers = {'Key': signature, 'Sign': signature}
         return uri + msg, {'headers': headers}
-
