@@ -102,13 +102,13 @@ class RESTAPITests(TestCase):
         api = RESTAPI(addr='http://some.api.com', key='shadow', secret=None,
                       version='v2')
 
-        with self.assertRaises(InvalidCredentialsError):
+        with self.assertRaises(IncompleteCredentialsError):
             api.private_query('market')
 
         api = RESTAPI(addr='http://some.api.com', key=None, secret='panda',
                       version='v2')
 
-        with self.assertRaises(InvalidCredentialsError):
+        with self.assertRaises(IncompleteCredentialsError):
             api.private_query('market')
 
         api = RESTAPI(addr='http://some.api.com', key=None, secret=None,
