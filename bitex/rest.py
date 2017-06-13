@@ -598,13 +598,18 @@ class RockTradingREST(RESTAPI):
 
 
 class PoloniexREST(RESTAPI):
-    def __init__(self, key=None, secret=None, version=None,
-                 addr='https://poloniex.com', timeout=5):
-        super(PoloniexREST, self).__init__(url, version=version,
+    def __init__(self, key=None, secret=None, version=None, config=None,
+                 addr=None, timeout=5):
+        addr = 'https://poloniex.com' if not addr else add
+        super(PoloniexREST, self).__init__(addr=addr, version=version,
                                            key=key, secret=secret,
-                                           timeout=timeout)
+                                           timeout=timeout, config=config)
 
-    def sign(self, uri, endpoint, endpoint_path, method_verb, *args, **kwargs):
+    def sign_request_kwargs(self, endpoint, **kwargs):
+        req_kwargs = super(PoloniexREST, self).sign_request_kwargs(endpoint,
+                                                                   **kwargs)
+        
+        # Prepare Payload arguments
         try:
             params = kwargs['params']
         except KeyError:
@@ -612,11 +617,15 @@ class PoloniexREST(RESTAPI):
         params['nonce'] = self.nonce()
         payload = params
 
+        # generate signature
         msg = urllib.parse.urlencode(payload).encode('utf-8')
         sig = hmac.new(self.secret.encode('utf-8'), msg, hashlib.sha512).hexdigest()
-        headers = {'Key': self.key, 'Sign': sig}
-        return uri, {'headers': headers, 'data': params}
 
+        # update req_kwargs keys
+        req_kwargs['headers'] = {'Key': self.key, 'Sign': sig}
+        req_kwargs['data'] = params
+
+        return req_kwargs
 
 class QuoineREST(RESTAPI):
     """
