@@ -725,27 +725,38 @@ class QuadrigaCXREST(RESTAPI):
 
 
 class HitBTCREST(RESTAPI):
-    def __init__(self, key=None, secret=None, version='1',
-                 addr='http://api.hitbtc.com/api/', timeout=5):
-        version = '' if not version else version
+    def __init__(self, key=None, secret=None, version=None,
+                 addr=None, timeout=5, config=None):
+        version = '1' if not version else version
+        addr = 'http://api.hitbtc.com/api/' if not addr else addr
         super(HitBTCREST, self).__init__(url, version=version,
                                          key=key, secret=secret,
-                                         timeout=timeout)
+                                         timeout=timeout, config=config)
 
-    def sign(self, uri, endpoint, endpoint_path, method_verb, *args, **kwargs):
+    def sign_request_kwargs(self, endpoint, **kwargs):
+        req_kwargs = super(HitBTCREST, self).sign_request_kwargs(endpoint,
+                                                                 **kwargs)
+
+        # prepare Payload arguments
         try:
             params = kwargs['params']
         except KeyError:
             params = {}
         nonce = self.nonce()
-        kwargs['nonce'] = nonce
-        kwargs['apikey'] = self.key
-        msg = endpoint_path + urllib.parse.urlencode(params)
+        params['nonce'] = nonce
+        params['apikey'] = self.key
+        msg = self.generate_uri(endpoint) + urllib.parse.urlencode(params)
 
+        # generate signature
         signature = hmac.new(self.secret.encode(encoding='utf-8'),
                              msg.encode(encoding='utf-8'), hashlib.sha512)
-        headers = {'Api-signature': signature}
-        return self.uri + msg, {'headers': headers, 'data': params}
+
+        # update req_kwargs keys
+        req_kwargs['headers'] = {'Api-signature': signature}
+        req_kwargs['url'] = self.generate_url(msg)
+        req_kwargs['data'] = params
+
+        return req_kwargs
 
 
 class VaultoroREST(RESTAPI):
