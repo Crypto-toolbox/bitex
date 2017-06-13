@@ -24,7 +24,7 @@ class BaseAPITests(TestCase):
 
         # raise error if address is None
         with self.assertRaises(TypeError):
-            api = BaseAPI(addr='Bangarang', key=None, secret=None,
+            api = BaseAPI(addr=None, key=None, secret=None,
                           config=None, version=None)
 
         # silently initialize if all other parameters are none
