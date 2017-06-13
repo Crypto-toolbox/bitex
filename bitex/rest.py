@@ -292,23 +292,38 @@ class KrakenREST(RESTAPI):
         return req_kwargs
 
 
-class ItbitREST(RESTAPI):
-    def __init__(self, user_id = '', key=None, secret=None, api_version='v1',
-                 url='https://api.itbit.com', timeout=5):
+class ITbitREST(RESTAPI):
+    def __init__(self, user_id =None key=None, secret=None, version=None,
+                 addr=None timeout=5):
         self.userId = user_id
-        super(ItbitREST, self).__init__(url, api_version=api_version,
-                                 key=key, secret=secret, timeout=timeout)
+        version = 'v1' if not version else version
+        addr = 'https://api.itbit.com' if not addr else addr
 
-    def load_key(self, path):
-        """
-        Load user id, key and secret from file.
-        """
-        with open(path, 'r') as f:
-            self.key = f.readline().strip()
-            self.secret = f.readline().strip()
-            self.userId = f.readline().strip()
+        if user_id == '':
+            raise ValueError("Invalid user id - cannot be empty string! "
+                             "Pass None instead!")
+        self.user_id = user_id
+        if (not all(x is None for x in (user_id, key, secret)) or
+                not all(x is not None for x in (user_id, key, secret))):
+            warnings.warn("Incomplete Credentials were given - authentication "
+                          "may not work!", IncompleteCredentialsWarning)
 
-    def sign(self, url, endpoint, endpoint_path, method_verb, *args, **kwargs):
+        super(ItbitREST, self).__init__(addr=addr, version=version, key=key,
+                                        secret=secret, timeout=timeout)
+
+    def load_config(self, fname):
+        conf = super(ITbitREST, self).load_config(fname)
+        try:
+            self.user_id = conf['AUTH']['user_id']
+        except KeyError:
+            warnings.warn(IncompleteCredentialsWarning,
+                          "'user_id' not found in config!")
+
+    def sign_request_kwargs(self, endpoint, **kwargs):
+        req_kwargs = super(ITbitREST, self).sign_request_kwargs(endpoint,
+                                                                **kwargs)
+
+        # Prepare payload arguments
         try:
             params = kwargs['params']
         except KeyError:
@@ -335,13 +350,14 @@ class ItbitREST(RESTAPI):
                                hashlib.sha512).digest()
         signature = base64.b64encode(hmac_digest)
 
-        auth_headers = {
+        # Update request kwargs header variable
+        req_kwargs['headers'] = {
             'Authorization': self.key + ':' + signature.decode('utf8'),
             'X-Auth-Timestamp': timestamp,
             'X-Auth-Nonce': nonce,
             'Content-Type': 'application/json'
         }
-        return url, {'headers': auth_headers}
+        return req_kwargs
 
 
 class OKCoinREST(RESTAPI):
