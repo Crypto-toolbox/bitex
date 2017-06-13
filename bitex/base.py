@@ -20,7 +20,7 @@ import time
 import requests
 
 # Import Homebrew
-from bitex.exceptions import IncompleteCredentialsWarning
+from bitex.exceptions import IncompleteCredentialsWarning, IncompleteCredentialsError
 # Init Logging Facilities
 log = logging.getLogger(__name__)
 
@@ -161,6 +161,8 @@ class RESTAPI(BaseAPI):
         :param request_kwargs: kwargs for request.Request()
         :return: request.Response() object
         """
+        if any(attr is None for attr in (self.key, self.secret)):
+            raise IncompleteCredentialsError
         request_kwargs = self.sign_request_kwargs(endpoint, **request_kwargs)
         return self._query(method_verb, **request_kwargs)
 
