@@ -547,7 +547,10 @@ class YunbiREST(RESTAPI):
                                          secret=secret, timeout=timeout,
                                          config=config)
 
-    def sign(self, uri, endpoint, endpoint_path, method_verb, *args, **kwargs):
+    def sign_request_kwargs(self, endpoint, **kwargs):
+        req_kwargs = super(YunbiREST, self).sign_request_kwargs(endpoint,
+                                                                **kwargs)
+        # prepare Payload arguments
         nonce = self.nonce()
         try:
             params = kwargs['params']
@@ -558,10 +561,13 @@ class YunbiREST(RESTAPI):
         post_params = urllib.parse.urlencode(params)
         msg = '%s|%s|%s' % (method_verb, endpoint_path, post_params)
 
+        # generate signature
         sig = hmac.new(self.secret, msg, hashlib.sha256).hexdigest()
-        uri += post_params + '&signature=' + sig
 
-        return uri, {}
+        # update req_kwargs keys
+        req_kwargs['url'] += post_params + '&signature=' + sig
+
+        return req_kwargs
 
 
 class RockTradingREST(RESTAPI):
