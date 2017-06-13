@@ -565,13 +565,18 @@ class YunbiREST(RESTAPI):
 
 
 class RockTradingREST(RESTAPI):
-    def __init__(self, key=None, secret=None, version='v1',
-                 addr='https://api.therocktrading.com', timeout=5):
-        super(RockTradingREST, self).__init__(url, version=version,
+    def __init__(self, key=None, secret=None, version=None, config=None,
+                 addr=None, timeout=5):
+        version = 'v1' if not version else version
+        addr = 'https://api.therocktrading.com' if not addr else addr
+        super(RockTradingREST, self).__init__(addr=addr, version=version,
                                               key=key, secret=secret,
-                                              timeout=timeout)
+                                              timeout=timeout, config=config)
 
-    def sign(self, uri, endpoint, endpoint_path, method_verb, *args, **kwargs):
+    def sign_request_kwargs(self, endpoint, **kwargs):
+        req_kwargs = super(RockTradingREST, self).sign_request_kwargs(endpoint,
+                                                                      **kwargs)
+        # Prepare Payload arguments
         nonce = self.nonce()
         try:
             params = kwargs['params']
@@ -579,14 +584,17 @@ class RockTradingREST(RESTAPI):
             params = {}
         payload = params
         payload['nonce'] = int(nonce)
-        payload['request'] = endpoint_path
+        payload['request'] = self.generate_uri(endpoint)
 
-        msg = nonce + uri
+        # generate signature
+        msg = nonce + req_kwargs['url']
         sig = hmac.new(self.secret.encode(), msg.encode(), hashlib.sha384).hexdigest()
-        headers = {'X-TRT-APIKEY': self.key,
-                   'X-TRT-Nonce': nonce,
-                   'X-TRT-SIGNATURE': sig, 'Content-Type': 'application/json'}
-        return uri, {'headers': headers}
+
+        # Update req_kwargs keys
+        req_kwargs['headers'] = {'X-TRT-APIKEY': self.key, 'X-TRT-Nonce': nonce,
+                                 'X-TRT-SIGNATURE': sig,
+                                 'Content-Type': 'application/json'}
+        return req_kwargs
 
 
 class PoloniexREST(RESTAPI):
