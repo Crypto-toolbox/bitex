@@ -608,7 +608,7 @@ class PoloniexREST(RESTAPI):
     def sign_request_kwargs(self, endpoint, **kwargs):
         req_kwargs = super(PoloniexREST, self).sign_request_kwargs(endpoint,
                                                                    **kwargs)
-        
+
         # Prepare Payload arguments
         try:
             params = kwargs['params']
@@ -630,28 +630,42 @@ class PoloniexREST(RESTAPI):
 class QuoineREST(RESTAPI):
     """
     The Quoine Api requires the API version to be designated in each requests's
-    header as {'X-Quoine-API-Version': 2}
+    header as {'X-Quoine-API-Version': 2}, instead of adding it to the URL.
+    Hence, we need to adapt generate_url.
     """
-    def __init__(self, key=None, secret=None, version=None,
-                 addr='https://api.quoine.com/', timeout=5):
+    def __init__(self, key=None, secret=None, version=None, config=None,
+                 addr=None, timeout=5):
         if not jwt:
             raise SystemError("No JWT Installed! Quoine API Unavailable!")
-        super(QuoineREST, self).__init__(url, version=version,
-                                         key=key, secret=secret, timeout=timeout)
+        addr = 'https://api.quoine.com/' if not addr else addr
+        version = '2' if not version else version
+        super(QuoineREST, self).__init__(addr=addr, version=version,
+                                         key=key, secret=secret, config=config,
+                                         timeout=timeout)
 
-    def sign(self, uri, endpoint, endpoint_path, method_verb, *args, **kwargs):
+    def generate_uri(self, endpoint):
+        return endpoint
+
+    def sign_request_kwargs(self, endpoint, **kwargs):
+        req_kwargs = super(QuoineREST, self).sign_request_kwargs(endpoint,
+                                                                 **kwargs)
+
+        # Prepare Payload arguments
         try:
             params = kwargs['params']
         except KeyError:
             params = {}
 
-        path = endpoint_path + urllib.parse.urlencode(params)
+        path = endpoint + urllib.parse.urlencode(params)
         msg = {'path': path, 'nonce': self.nonce(), 'token_id': self.key}
 
+        # generate signature
         signature = jwt.encode(msg, self.secret, algorithm='HS256')
-        headers = {'X-Quoine-API-Version': '2', 'X-Quoine-Auth': signature,
-                   'Content-Type': 'application/json'}
-        return self.uri+path, {'headers': headers}
+
+        req_kwargs['headers'] = {'X-Quoine-API-Version': self.version,
+                                 'X-Quoine-Auth': signature,
+                                 'Content-Type': 'application/json'}
+        return req_kwargs
 
 
 class QuadrigaCXREST(RESTAPI):
