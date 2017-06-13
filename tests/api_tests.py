@@ -18,11 +18,12 @@ class BaseAPITests(TestCase):
     def test_base_api_parameters_initialize_correctly(self):
         # Raises an error if a Kwarg wasn't given (i.e. instantiation must specify kwargs explicitly)
         with self.assertRaises(TypeError):
-            api = BaseAPI(addr='Bangarang')
+            api = BaseAPI(addr='Bangarang', key=None, secret=None,
+                          config=None, version=None)
 
         # raise error if address is None
         with self.assertRaises(TypeError):
-            api = BaseAPI(key=None, secret=None,
+            api = BaseAPI(addr='Bangarang', key=None, secret=None,
                           config=None, version=None)
 
         # silently initialize if all other parameters are none
