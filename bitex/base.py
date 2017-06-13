@@ -56,7 +56,11 @@ class BaseAPI:
         self.secret = secret if secret else None
         self.version = version if version else ''
         if config:
-            self.load_config(config)
+            try:
+                self.load_config(config)
+            except KeyError:
+                warnings.warn("Config file was missing one or more required" /
+                              "parameters!", IncompleteCredentialsWarning)
 
     def load_config(self, fname):
         """
