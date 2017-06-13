@@ -93,10 +93,20 @@ class RESTAPITests(TestCase):
         for k in template:
             self.assertTrue(k in d)
 
-    def test_query_raises_appropriate_errors(self):
+    def test_query_method_returns_as_expected(self):
+        # assert that an InvalidCredentialsError is raised, if any of the auth
+        # attributes are None (key, secret)
+        
+        # assert that _query() silently returns an requests.Response() obj, if
+        # the request was good
 
+        # assert that _query() raises an appropriate error on status code other
+        # than 200
 
-    def test_bitstamp_class(self):
+        self.fail("finish this test!")
+
+class BitstampRESTTests(TestCase):
+    def test_initialization(self):
 
         # make sure a warning is displayed upon incomplete credentials
         with self.assertWarns(IncompleteCredentialsWarning):
@@ -121,6 +131,7 @@ class RESTAPITests(TestCase):
         api = BitstampREST(addr='Bangarang', config='config_bitstamp.ini')
         self.assertEqual(api.user_id, 'testuser')
 
+    def test_sign_request_kwargs_method_and_signature(self):
         # Test that the sign_request_kwargs generate appropriate kwargs:
         self.fail("Finish this test")
 
