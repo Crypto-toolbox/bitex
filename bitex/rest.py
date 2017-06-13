@@ -295,7 +295,7 @@ class KrakenREST(RESTAPI):
 
 class ITbitREST(RESTAPI):
     def __init__(self, user_id =None key=None, secret=None, version=None,
-                 addr=None timeout=5):
+                 addr=None timeout=5, config=None):
         self.userId = user_id
         version = 'v1' if not version else version
         addr = 'https://api.itbit.com' if not addr else addr
@@ -362,8 +362,8 @@ class ITbitREST(RESTAPI):
 
 
 class OKCoinREST(RESTAPI):
-    def __init__(self, key=None, secret=None, api_version='v1',
-                 url='https://www.okcoin.com/api', timeout=5):
+    def __init__(self, key=None, secret=None, version='v1', config=None
+                 addr='https://www.okcoin.com/api', timeout=5):
         super(OKCoinREST, self).__init__(url, api_version=api_version,
                                          key=key, secret=secret,
                                          timeout=timeout)
