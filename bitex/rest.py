@@ -363,25 +363,36 @@ class ITbitREST(RESTAPI):
 
 
 class OKCoinREST(RESTAPI):
-    def __init__(self, key=None, secret=None, version='v1', config=None
-                 addr='https://www.okcoin.com/api', timeout=5):
-        super(OKCoinREST, self).__init__(url, api_version=api_version,
-                                         key=key, secret=secret,
+    def __init__(self, key=None, secret=None, version=None, config=None,
+                 addr=None, timeout=5):
+        version = 'v1' if not version else version
+        addr = 'https://www.okcoin.com/api' if not addr else addr
+        super(OKCoinREST, self).__init__(addr=addr, version=version,
+                                         key=key, secret=secret, config=config,
                                          timeout=timeout)
 
-    def sign(self,url, endpoint, endpoint_path, method_verb, *args, **kwargs):
+    def sign_request_kwargs(self, endpoint, **kwargs):
+        req_kwargs = super(OKCoinREST, self).sign_request_kwargs(endpoint,
+                                                                 **kwargs)
+        # Prepare payload arguments
         nonce = self.nonce()
+        try:
+            params = kwargs['params']
+        except KeyError:
+            params = {}
 
-        # sig = nonce + url + req
-        data = (nonce + url).encode()
+        encoded_url = req_kwargs['url'] + urllib.parse.urlencode(params)
 
-        h = hmac.new(self.secret.encode('utf8'), data, hashlib.sha256)
-        signature = h.hexdigest()
-        headers = {"ACCESS-KEY":       self.key,
-                   "ACCESS-NONCE":     nonce,
-                   "ACCESS-SIGNATURE": signature}
+        # Create Signature
+        sig_string = (nonce + encoded_url).encode()
+        sig_hmac = hmac.new(self.secret.encode('utf8'), sig_string, hashlib.sha256)
+        signature = sig_hmac.hexdigest()
 
-        return url, {'headers': headers}
+        # Update req_kwargs keys
+        req_kwargs['headers'] = {"ACCESS-KEY": self.key, "ACCESS-NONCE": nonce,
+                                 "ACCESS-SIGNATURE": signature}
+        req_kwargs['url'] = encoded_url
+        return req_kwargs
 
 
 class BTCERest(RESTAPI):
