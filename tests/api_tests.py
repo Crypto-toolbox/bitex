@@ -59,7 +59,7 @@ class BaseAPITests(TestCase):
 
         # Make sure all attributes are correctly updated if a config file is
         # given
-        api = BaseAPI(addr='Bangarang', key=None, secret=None,
+        api = BaseAPI(addr='http://some.api.com', key=None, secret=None,
                       config='/home/nils/git/bitex/tests/config.ini',
                       version=None)
         self.assertEqual(api.addr, 'http://some.api.com')
