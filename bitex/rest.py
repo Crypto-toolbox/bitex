@@ -432,12 +432,19 @@ class BTCERest(RESTAPI):
         return req_kwargs
 
 class CCEXRest(RESTAPI):
-    def __init__(self, key=None, secret=None, api_version=None,
-                 url='https://c-cex.com/t', timeout=5):
-        super(CCEXRest, self).__init__(url, api_version=api_version, key=key,
-                                         secret=secret, timeout=timeout)
+    def __init__(self, key=None, secret=None, version=None,
+                 addr=None, timeout=5, config=None):
+        addr = 'https://c-cex.com/t' if not addr else addr
 
-    def sign(self, uri, endpoint, endpoint_path, method_verb, *args, **kwargs):
+        super(CCEXRest, self).__init__(addr=addr, version=version, key=key,
+                                       secret=secret, timeout=timeout,
+                                       config=config)
+
+    def sign_request_kwargs(self, endpoint, **kwargs):
+        req_kwargs = super(CCEXRest, self).sign_request_kwargs(endpoint,
+                                                               **kwargs)
+
+        # Prepare Payload arguments
         nonce = self.nonce()
         try:
             params = kwargs['params']
@@ -449,13 +456,16 @@ class CCEXRest(RESTAPI):
         post_params = params
         post_params.update({'nonce': nonce, 'method': endpoint})
         post_params = urllib.parse.urlencode(post_params)
-
-        url = uri + post_params
-
+        url = self.generate_url(post_params)
+        
+        # generate signature
         sig = hmac.new(url, self.secret, hashlib.sha512)
-        headers = {'apisign': sig}
 
-        return url, {'headers': headers}
+        # update req_kwargs keys
+        req_kwargs['headers'] = {'apisign': sig}
+        req_kwargs['url'] = url
+
+        return req_kwargs
 
 
 class CryptopiaREST(RESTAPI):
