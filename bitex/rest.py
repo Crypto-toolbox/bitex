@@ -426,8 +426,8 @@ class BTCERest(RESTAPI):
         req_kwargs['headers'] = {'Key': self.key, 'Sign': signature.hexdigest(),
                                  "Content-type": "application/x-www-form-urlencoded"}
 
-        # drop string after '/tapi';
-        req_kwargs['url'] = url.split('/tapi', 1)[0] + '/tapi'
+        # update url for POST;
+        req_kwargs['url'] = self.address.replace('api/3'+endpoint, 'tapi')
 
         return req_kwargs
 
