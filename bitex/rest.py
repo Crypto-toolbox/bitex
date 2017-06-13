@@ -166,7 +166,7 @@ class CoincheckREST(RESTAPI):
                  addr=None, timeout=5):
         addr = 'https://coincheck.com' if not url else url
         version = 'api' if not version else version
-        super(CoincheckREST, self).__init__(addr=addr, version=api_version,
+        super(CoincheckREST, self).__init__(addr=addr, version=version,
                                             key=key, secret=secret,
                                             timeout=timeout)
 
@@ -505,12 +505,19 @@ class CryptopiaREST(RESTAPI):
 
 
 class GeminiREST(RESTAPI):
-    def __init__(self, key=None, secret=None, api_version='v1',
-                 url='https://api.gemini.com', timeout=5):
-        super(GeminiREST, self).__init__(url, api_version=api_version, key=key,
-                                         secret=secret, timeout=timeout)
+    def __init__(self, key=None, secret=None, version=None,
+                 addr=None, timeout=5, config=config):
+        addr = 'https://api.gemini.com' if not addr else addr
+        version = 'v1' if not version else version
+        super(GeminiREST, self).__init__(addr=addr, version=version, key=key,
+                                         secret=secret, timeout=timeout,
+                                         config=config)
 
-    def sign(self, uri, endpoint, endpoint_path, method_verb, *args, **kwargs):
+    def sign_request_kwargs(self, endpoint,**kwargs):
+        req_kwargs = super(GeminiREST, self).sign_request_kwargs(endpoint,
+                                                                 **kwargs)
+
+        # Prepare Payload
         nonce = self.nonce()
         try:
             params = kwargs['params']
@@ -520,17 +527,21 @@ class GeminiREST(RESTAPI):
         payload['nonce'] = nonce
         payload['request'] = endpoint_path
         payload = base64.b64encode(json.dumps(payload))
+
+        # generate signature
         sig = hmac.new(self.secret, payload, hashlib.sha384).hexdigest()
-        headers = {'X-GEMINI-APIKEY': self.key,
-                   'X-GEMINI-PAYLOAD': payload,
-                   'X-GEMINI-SIGNATURE': sig}
-        return uri, {'headers': headers}
+
+        # update req_kwargs keys
+        req_kwargs['headers'] = {'X-GEMINI-APIKEY': self.key,
+                                 'X-GEMINI-PAYLOAD': payload,
+                                 'X-GEMINI-SIGNATURE': sig}
+        return req_kwargs
 
 
 class YunbiREST(RESTAPI):
-    def __init__(self, key=None, secret=None, api_version='v2',
-                 url='https://yunbi.com/api', timeout=5):
-        super(YunbiREST, self).__init__(url, api_version=api_version, key=key,
+    def __init__(self, key=None, secret=None, version='v2',
+                 addr='https://yunbi.com/api', timeout=5):
+        super(YunbiREST, self).__init__(url, version=version, key=key,
                                          secret=secret, timeout=timeout)
 
     def sign(self, uri, endpoint, endpoint_path, method_verb, *args, **kwargs):
@@ -551,9 +562,9 @@ class YunbiREST(RESTAPI):
 
 
 class RockTradingREST(RESTAPI):
-    def __init__(self, key=None, secret=None, api_version='v1',
-                 url='https://api.therocktrading.com', timeout=5):
-        super(RockTradingREST, self).__init__(url, api_version=api_version,
+    def __init__(self, key=None, secret=None, version='v1',
+                 addr='https://api.therocktrading.com', timeout=5):
+        super(RockTradingREST, self).__init__(url, version=version,
                                               key=key, secret=secret,
                                               timeout=timeout)
 
@@ -576,9 +587,9 @@ class RockTradingREST(RESTAPI):
 
 
 class PoloniexREST(RESTAPI):
-    def __init__(self, key=None, secret=None, api_version=None,
-                 url='https://poloniex.com', timeout=5):
-        super(PoloniexREST, self).__init__(url, api_version=api_version,
+    def __init__(self, key=None, secret=None, version=None,
+                 addr='https://poloniex.com', timeout=5):
+        super(PoloniexREST, self).__init__(url, version=version,
                                            key=key, secret=secret,
                                            timeout=timeout)
 
@@ -601,11 +612,11 @@ class QuoineREST(RESTAPI):
     The Quoine Api requires the API version to be designated in each requests's
     header as {'X-Quoine-API-Version': 2}
     """
-    def __init__(self, key=None, secret=None, api_version=None,
-                 url='https://api.quoine.com/', timeout=5):
+    def __init__(self, key=None, secret=None, version=None,
+                 addr='https://api.quoine.com/', timeout=5):
         if not jwt:
             raise SystemError("No JWT Installed! Quoine API Unavailable!")
-        super(QuoineREST, self).__init__(url, api_version=api_version,
+        super(QuoineREST, self).__init__(url, version=version,
                                          key=key, secret=secret, timeout=timeout)
 
     def sign(self, uri, endpoint, endpoint_path, method_verb, *args, **kwargs):
@@ -624,10 +635,10 @@ class QuoineREST(RESTAPI):
 
 
 class QuadrigaCXREST(RESTAPI):
-    def __init__(self, key=None, secret=None, client_id='', api_version='v2',
-                 url='https://api.quoine.com/', timeout=5):
+    def __init__(self, key=None, secret=None, client_id='', version='v2',
+                 addr='https://api.quoine.com/', timeout=5):
         self.client_id = client_id
-        super(QuadrigaCXREST, self).__init__(url, api_version=api_version,
+        super(QuadrigaCXREST, self).__init__(url, version=version,
                                              key=key, secret=secret,
                                              timeout=timeout)
 
@@ -656,10 +667,10 @@ class QuadrigaCXREST(RESTAPI):
 
 
 class HitBTCREST(RESTAPI):
-    def __init__(self, key=None, secret=None, api_version='1',
-                 url='http://api.hitbtc.com/api/', timeout=5):
-        api_version = '' if not api_version else api_version
-        super(HitBTCREST, self).__init__(url, api_version=api_version,
+    def __init__(self, key=None, secret=None, version='1',
+                 addr='http://api.hitbtc.com/api/', timeout=5):
+        version = '' if not version else version
+        super(HitBTCREST, self).__init__(url, version=version,
                                          key=key, secret=secret,
                                          timeout=timeout)
 
@@ -680,10 +691,10 @@ class HitBTCREST(RESTAPI):
 
 
 class VaultoroREST(RESTAPI):
-    def __init__(self, key=None, secret=None, api_version=None,
-                 url='https://api.vaultoro.com', timeout=5):
-        api_version = '' if not api_version else api_version
-        super(VaultoroREST, self).__init__(url, api_version=api_version,
+    def __init__(self, key=None, secret=None, version=None,
+                 addr='https://api.vaultoro.com', timeout=5):
+        version = '' if not version else version
+        super(VaultoroREST, self).__init__(url, version=version,
                                            key=key, secret=secret,
                                            timeout=timeout)
 
@@ -704,10 +715,10 @@ class VaultoroREST(RESTAPI):
 
 
 class BterREST(RESTAPI):
-    def __init__(self, key=None, secret=None, api_version=None,
-                 url='http://data.bter.com/api', timeout=5):
-        api_version = '1' if not api_version else api_version
-        super(BterREST, self).__init__(url, api_version=api_version,
+    def __init__(self, key=None, secret=None, version=None,
+                 addr='http://data.bter.com/api', timeout=5):
+        version = '1' if not version else version
+        super(BterREST, self).__init__(url, version=version,
                                            key=key, secret=secret,
                                            timeout=timeout)
 
