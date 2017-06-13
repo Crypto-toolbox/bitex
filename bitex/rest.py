@@ -431,6 +431,7 @@ class BTCERest(RESTAPI):
 
         return req_kwargs
 
+
 class CCEXRest(RESTAPI):
     def __init__(self, key=None, secret=None, version=None,
                  addr=None, timeout=5, config=None):
@@ -633,6 +634,7 @@ class PoloniexREST(RESTAPI):
 
         return req_kwargs
 
+
 class QuoineREST(RESTAPI):
     """
     The Quoine Api requires the API version to be designated in each requests's
@@ -820,5 +822,5 @@ class BterREST(RESTAPI):
         # update req_kwargs keys
         req_kwargs['headers'] = {'Key': signature, 'Sign': signature}
         req_kwargs['url'] = url
-        
+
         return req_kwargs
