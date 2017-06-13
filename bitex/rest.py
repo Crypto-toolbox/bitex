@@ -169,7 +169,7 @@ class CoincheckREST(RESTAPI):
                                             key=key, secret=secret,
                                             timeout=timeout)
 
-    def sign_reuqest_kwargs(self, endpoint, **kwargs):
+    def sign_request_kwargs(self, endpoint, **kwargs):
         req_kwargs = super(CoincheckREST, self).sign_request_kwargs(endpoint,
                                                                     **kwargs)
 
