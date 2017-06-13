@@ -144,7 +144,9 @@ class RESTAPI(BaseAPI):
         :param request_kwargs: kwargs for request.Request()
         :return: request.Response() object
         """
-        return requests.request(method_verb, **request_kwargs)
+        resp = requests.request(method_verb, **request_kwargs)
+        resp.raise_for_status()
+        return resp
 
     def private_query(self, method_verb, endpoint, **request_kwargs):
         """
