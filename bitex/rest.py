@@ -457,7 +457,7 @@ class CCEXRest(RESTAPI):
         post_params.update({'nonce': nonce, 'method': endpoint})
         post_params = urllib.parse.urlencode(post_params)
         url = self.generate_url(post_params)
-        
+
         # generate signature
         sig = hmac.new(url, self.secret, hashlib.sha512)
 
@@ -469,30 +469,39 @@ class CCEXRest(RESTAPI):
 
 
 class CryptopiaREST(RESTAPI):
-    def __init__(self, key=None, secret=None, api_version=None,
-                 url='https://www.cryptopia.co.nz/api', timeout=5):
-        super(CryptopiaREST, self).__init__(url, api_version=api_version, key=key,
-                                         secret=secret, timeout=timeout)
+    def __init__(self, key=None, secret=None, version=None, config=None,
+                 addr=None, timeout=5):
+        addr = 'https://www.cryptopia.co.nz/api' if not addr else addr
+        super(CryptopiaREST, self).__init__(addr=addr, version=version, key=key,
+                                            secret=secret, timeout=timeout,
+                                            config=config)
 
-    def sign(self, uri, endpoint, endpoint_path, method_verb, *args, **kwargs):
+    def sign_request_kwargs(self, endpoint, **kwargs):
+        req_kwargs = super(CryptopiaREST, self).sign_request_kwargs(endpoint,
+                                                                    **kwargs)
+
+        # Prepare POST Payload arguments
         nonce = self.nonce()
         try:
             params = kwargs['params']
         except KeyError:
             params = {}
 
-
         post_data = json.dumps(params)
-        md5 = base64.b64encode(hashlib.md5().updated(post_data).digest())
 
-        sig = self.key + 'POST' + urllib.parse.quote_plus(uri).lower() + nonce + md5
+        # generate signature
+        md5 = base64.b64encode(hashlib.md5().updated(post_data).digest())
+        sig = self.key + 'POST' + urllib.parse.quote_plus(req_kwargs['url']).lower() + nonce + md5
         hmac_sig = base64.b64encode(hmac.new(base64.b64decode(self.secret),
                                               sig, hashlib.sha256).digest())
         header_data = 'amx' + self.key + ':' + hmac_sig + ':' + nonce
-        headers = {'Authorization': header_data,
-                   'Content-Type': 'application/json; charset=utf-8'}
 
-        return uri, {'headers': headers, 'data': post_data}
+        # Update req_kwargs keys
+        req_kwargs['headers'] = {'Authorization': header_data,
+                                 'Content-Type': 'application/json; charset=utf-8'}
+        req_kwargs['data'] = post_data
+
+        return req_kwargs
 
 
 class GeminiREST(RESTAPI):
