@@ -12,3 +12,6 @@ log = logging.getLogger(__name__)
 class IncompleteCredentialsWarning(UserWarning):
     pass
 
+
+class IncompleteCredentialsWarning(Exception):
+    pass

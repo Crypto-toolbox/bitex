@@ -8,7 +8,7 @@ import time
 # Import Homebrew
 from bitex.base import BaseAPI, RESTAPI
 from bitex.rest import BitstampREST
-from bitex.exceptions import IncompleteCredentialsWarning
+from bitex.exceptions import IncompleteCredentialsWarning, IncompleteCredentialsError
 
 # Init Logging Facilities
 log = logging.getLogger(__name__)
@@ -93,16 +93,36 @@ class RESTAPITests(TestCase):
         for k in template:
             self.assertTrue(k in d)
 
-    def test_query_method_returns_as_expected(self):
+    def test_query_methods_return_as_expected(self):
         # assert that an InvalidCredentialsError is raised, if any of the auth
         # attributes are None (key, secret)
-        
+        api = RESTAPI(addr='http://some.api.com', key='shadow', secret=None,
+                      version='v2')
+
+        with self.assertRaises(InvalidCredentialsError):
+            api.private_query('market')
+
+        api = RESTAPI(addr='http://some.api.com', key=None, secret='panda',
+                      version='v2')
+
+        with self.assertRaises(InvalidCredentialsError):
+            api.private_query('market')
+
+        api = RESTAPI(addr='http://some.api.com', key=None, secret=None,
+                      version='v2')
+
+        with self.assertRaises(InvalidCredentialsError):
+            api.private_query('market')
+
         # assert that _query() silently returns an requests.Response() obj, if
         # the request was good
+        resp = api._query('GET', url='http://api.geonames.org/childrenJSON?formatted=true&geonameId=3175395&username=demo&style=full')
+        self.assertIsInstance(resp, requests.Response)
 
         # assert that _query() raises an appropriate error on status code other
         # than 200
-
+        with self.assertRaises(requests.exceptions.HTTPError):
+            api._query('data', url='http://api.geonames.org/childrenJSON?formatted=true&geonameId=3175395&username=demo&style=full')
         self.fail("finish this test!")
 
 class BitstampRESTTests(TestCase):
