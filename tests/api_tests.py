@@ -46,7 +46,7 @@ class BaseAPITests(TestCase):
             api = BaseAPI(addr='Bangarang', key=None, secret='SomeSecret',
                           config=None, version=None)
 
-        # raise a Value Error if an empty string is passed in either key or 
+        # raise a Value Error if an empty string is passed in either key or
         # secret kwarg
         with self.assertRaises(ValueError):
             api = BaseAPI(addr='Bangarang', key='', secret=None,
@@ -75,7 +75,7 @@ class BaseAPITests(TestCase):
 
 class RESTAPITests(TestCase):
     def test_generate_methods_work_correctly(self):
-        api = RESTAPI('http://some.api.com', key='shadow', secret='panda',
+        api = RESTAPI(addr='http://some.api.com', key='shadow', secret='panda',
                       version='v2')
 
         # generate_uri returns a string of version + endpoint
@@ -93,29 +93,32 @@ class RESTAPITests(TestCase):
         for k in template:
             self.assertTrue(k in d)
 
+    def test_query_raises_appropriate_errors(self):
+
+
     def test_bitstamp_class(self):
 
         # make sure a warning is displayed upon incomplete credentials
         with self.assertWarns(IncompleteCredentialsWarning):
-            api = BitstampREST('Bangarang', user_id=None, key='SomeKey',
+            api = BitstampREST(addr='Bangarang', user_id=None, key='SomeKey',
                                secret='SomeSecret', config=None, version=None)
 
         # make sure an exception is raised if user_id is passed as ''
         with self.assertRaises(ValueError):
-            api = BitstampREST('Bangarang', user_id='', key='SomeKey',
+            api = BitstampREST(addr='Bangarang', user_id='', key='SomeKey',
                                secret='SomeSecret', config=None,
                                version=None)
 
         # make sure user_id=None is converted to ''
-        api = BitstampREST('Bangarang', user_id=None)
+        api = BitstampREST(addr='Bangarang', user_id=None)
         self.assertIs(api.user_id, None)
 
         # make sure that load_config loads user_id correctly, and issues a
         # warning if user_id param isn't available
         with self.assertWarns(IncompleteCredentialsWarning):
-            api = BitstampREST('Bangarang', config='config.ini')
+            api = BitstampREST(addr='Bangarang', config='config.ini')
 
-        api = BitstampREST('Bangarang', config='config_bitstamp.ini')
+        api = BitstampREST(addr='Bangarang', config='config_bitstamp.ini')
         self.assertEqual(api.user_id, 'testuser')
 
         # Test that the sign_request_kwargs generate appropriate kwargs:
