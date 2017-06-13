@@ -761,13 +761,17 @@ class HitBTCREST(RESTAPI):
 
 class VaultoroREST(RESTAPI):
     def __init__(self, key=None, secret=None, version=None,
-                 addr='https://api.vaultoro.com', timeout=5):
-        version = '' if not version else version
-        super(VaultoroREST, self).__init__(url, version=version,
+                 addr=None, timeout=5, config=None):
+        addr = 'https://api.vaultoro.com' if not addr else addr
+        super(VaultoroREST, self).__init__(addr=addr, version=version,
                                            key=key, secret=secret,
-                                           timeout=timeout)
+                                           timeout=timeout, config=config)
 
-    def sign(self, uri, endpoint, endpoint_path, method_verb, *args, **kwargs):
+    def sign_request_kwargs(self, endpoint, **kwargs):
+        req_kwargs = super(VaultoroREST, self).sign_request_kwargs(endpoint,
+                                                                   **kwargs)
+
+        # prepare Payload arguments
         try:
             params = kwargs['params']
         except KeyError:
@@ -775,11 +779,15 @@ class VaultoroREST(RESTAPI):
         nonce = self.nonce()
         kwargs['nonce'] = nonce
         kwargs['apikey'] = self.key
-        msg = uri + urllib.parse.urlencode(params)
+        url = self.generate_url(urllib.parse.urlencode(params))
 
+        # generate signature
         signature = hmac.new(self.secret.encode(encoding='utf-8'),
-                             msg.encode(encoding='utf-8'), hashlib.sha256).hexdigest()
-        headers = {'X-Signature': signature}
+                             url.encode(encoding='utf-8'), hashlib.sha256).hexdigest()
+
+        # update req_kwargs keys
+        req_kwargs['headers'] = {'X-Signature': signature}
+        req_kwargs['url'] = url
         return msg, {'headers': headers}
 
 
