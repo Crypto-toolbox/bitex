@@ -296,8 +296,8 @@ class KrakenREST(RESTAPI):
 
 
 class ITbitREST(RESTAPI):
-    def __init__(self, user_id =None key=None, secret=None, version=None,
-                 addr=None timeout=5, config=None):
+    def __init__(self, user_id=None, key=None, secret=None, version=None,
+                 addr=None, timeout=5, config=None):
         self.userId = user_id
         version = 'v1' if not version else version
         addr = 'https://api.itbit.com' if not addr else addr
