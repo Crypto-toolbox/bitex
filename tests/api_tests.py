@@ -198,7 +198,10 @@ class BitstampRESTTests(TestCase):
         self.assertEqual(api.key, 'shadow')
         self.assertEqual(api.secret, 'panda')
         self.assertEqual(api.user_id, 'testuser', msg=conf['AUTH']['user_id'])
-        resp = api.private_query('POST', 'balance/btcusd')
+        try:
+            resp = api.private_query('POST', 'balance/btcusd')
+        except requests.ConnectionError:
+            self.fail("Internet connection is required!")
         self.assertEqual(resp.status, 200)
         self.fail("Finish this test")
 
