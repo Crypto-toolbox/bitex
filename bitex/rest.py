@@ -82,20 +82,12 @@ class BitstampREST(RESTAPI):
 
     def load_config(self, fname):
         conf = super(BitstampREST, self).load_config(fname)
+        conf.read(fname)
         try:
             self.user_id = conf['AUTH']['user_id']
         except KeyError:
             warnings.warn(IncompleteCredentialsWarning,
                           "'user_id' not found in config!")
-
-    def load_key(self, path):
-        """
-        Load key and secret from file.
-        """
-        with open(path, 'r') as f:
-            self.key = f.readline().strip()
-            self.secret = f.readline().strip()
-            self.id = f.readline().strip()
 
     def sign_request_kwargs(self, endpoint, **kwargs):
         req_kwargs = super(BitstampREST, self).sign_request_kwargs(endpoint,
