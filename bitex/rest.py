@@ -85,7 +85,7 @@ class BitstampREST(RESTAPI):
 
     def private_query(self, method_verb, endpoint, **req_kwargs):
         if any(x is None for x in (self.key, self.secret, self.user_id)):
-            raise InvalidCredentialsError
+            raise IncompleteCredentialsError
         return super(BitstampREST, self).private_query(method_verb, endpoint,
                                                        **req_kwargs)
 
