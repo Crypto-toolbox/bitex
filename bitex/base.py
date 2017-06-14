@@ -20,7 +20,7 @@ import time
 import requests
 
 # Import Homebrew
-from bitex.exceptions import IncompleteCredentialsWarning, IncompleteCredentialsError
+from bitex.exceptions import IncompleteCredentialsWarning, IncompleteCredentialsError, IncompleteAPIConfigurationWarning
 # Init Logging Facilities
 log = logging.getLogger(__name__)
 
@@ -76,8 +76,12 @@ class BaseAPI:
         conf.read(fname)
         self.key = conf['AUTH']['key']
         self.secret = conf['AUTH']['secret']
-        self.version = conf['API']['version']
-        self.addr = conf['API']['address']
+        try:
+            self.version = conf['API']['version']
+            self.addr = conf['API']['address']
+        except KeyError:
+            warnings.warn("API wasn't configured fully - requests may not work!",
+                          IncompleteAPIConfigurationWarning)
         return conf
 
     @staticmethod
@@ -138,9 +142,9 @@ class RESTAPI(BaseAPI):
         """
         uri = self.generate_uri(endpoint)
         url = self.generate_url(uri)
-        template = {'url': url, 'headers': None, 'files': None,
-                    'data': None, 'params': None, 'auth': None, 'cookies': None,
-                    'hooks': None, 'json': None}
+        template = {'url': url, 'headers': {}, 'files': {},
+                    'data': {}, 'params': {}, 'auth': {}, 'cookies': {},
+                    'hooks': {}, 'json': {}}
         template.update(kwargs)
         return template
 
