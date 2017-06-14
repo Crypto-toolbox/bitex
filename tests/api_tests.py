@@ -16,6 +16,7 @@ from bitex.exceptions import IncompleteCredentialsWarning, IncompleteCredentials
 # Init Logging Facilities
 log = logging.getLogger(__name__)
 
+ tests_folder_dir = '/home/nls/git/bitex/tests'
 
 class BaseAPITests(TestCase):
     def test_base_api_parameters_initialize_correctly(self):
@@ -62,7 +63,7 @@ class BaseAPITests(TestCase):
         # Make sure all attributes are correctly updated if a config file is
         # given
         api = BaseAPI(addr='http://some.api.com', key='shadow', secret='panda',
-                      config='/home/nils/git/bitex/tests/configs/config.ini',
+                      config='%s/configs/config.ini' % tests_folder_dir,
                       version='v2')
         self.assertEqual(api.addr, 'http://some.api.com')
         self.assertEqual(api.secret, 'panda')
@@ -174,7 +175,7 @@ class BitstampRESTTests(TestCase):
         self.assertEqual(api.user_id, 'testuser')
 
     def test_private_query_raises_error_on_incomplete_credentials(self):
-        config_path = '/home/nls/git/bitex/tests/keys/bitstamp.ini'
+        config_path = '%s/auth/bitstamp.ini' % tests_folder_dir
         api = BitstampREST(config=config_path)
         with self.assertRaises(IncompleteCredentialsError):
             api.private_query('POST', 'balance')
@@ -182,7 +183,7 @@ class BitstampRESTTests(TestCase):
 
     def test_sign_request_kwargs_method_and_signature(self):
         # Test that the sign_request_kwargs generate appropriate kwargs:
-        config_path = '/home/nls/git/bitex/tests/keys/bitstamp.ini'
+        config_path = '%s/auth/bitstamp.ini' % tests_folder_dir
         api = BitstampREST(config=config_path)
         resp = api.private_query('POST', 'balance/btcusd')
         self.assertEqual(resp.status, 200)
