@@ -90,7 +90,7 @@ class RESTAPITests(TestCase):
 
         # generate_request_kwargs returns a dict with all necessary keys present
         d = api.sign_request_kwargs('market')
-        template = {'method': None, 'url': 'http://some.api.com/v2/market',
+        template = {'url': 'http://some.api.com/v2/market',
                     'headers': None, 'files': None, 'data': None, 'hooks': None,
                     'params': None, 'auth': None, 'cookies': None, 'json': None}
         for k in template:
@@ -119,9 +119,12 @@ class RESTAPITests(TestCase):
 
         # assert that _query() silently returns an requests.Response() obj, if
         # the request was good
-        resp = api._query('GET', url='http://api.geonames.org/childrenJSON?'
+        try:
+            resp = api._query('GET', url='http://api.geonames.org/childrenJSON?'
                                      'formatted=true&geonameId=3175395&'
                                      'username=demo&style=full')
+        except requests.exceptions.ConnectionError:
+            self.fail("No Internet connection detected to ")
         self.assertIsInstance(resp, requests.Response)
 
         # assert that _query() raises an appropriate error on status code other
@@ -147,16 +150,18 @@ class BitstampRESTTests(TestCase):
                                secret='SomeSecret', config=None,
                                version=None)
 
-        # make sure user_id=None is converted to ''
-        api = BitstampREST(addr='Bangarang', user_id=None)
-        self.assertIs(api.user_id, None)
+        # make sure user_id is assigned properly
+        api = BitstampREST(addr='Bangarang', user_id='woloho')
+        self.assertIs(api.user_id, 'woloho')
 
         # make sure that load_config loads user_id correctly, and issues a
         # warning if user_id param isn't available
         with self.assertWarns(IncompleteCredentialsWarning):
             api = BitstampREST(addr='Bangarang', config='config.ini')
 
-        api = BitstampREST(addr='Bangarang', config='config_bitstamp.ini')
+        config_path = '/home/nls/git/bitex/tests/config_bitstamp.ini'
+        api = BitstampREST(config=config_path)
+        self.assertTrue(api.config_file == config_path)
         self.assertEqual(api.user_id, 'testuser')
 
     def test_sign_request_kwargs_method_and_signature(self):
