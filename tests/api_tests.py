@@ -11,12 +11,12 @@ import requests
 # Import Homebrew
 from bitex.base import BaseAPI, RESTAPI
 from bitex.rest import BitstampREST
-from bitex.exceptions import IncompleteCredentialsWarning, IncompleteCredentialsError
+from bitex.exceptions import IncompleteCredentialsWarning, IncompleteCredentialsError, IncompleteAPIConfigurationWarning
 
 # Init Logging Facilities
 log = logging.getLogger(__name__)
 
- tests_folder_dir = '/home/nls/git/bitex/tests'
+tests_folder_dir = '/home/nls/git/bitex/tests'
 
 class BaseAPITests(TestCase):
     def test_base_api_parameters_initialize_correctly(self):
@@ -70,6 +70,13 @@ class BaseAPITests(TestCase):
         self.assertEqual(api.key, 'shadow')
         self.assertEqual(api.version, 'v2')
 
+        # Make sure Missing keys in config file are treated as None; raise an
+        # error if version or address are not present
+        with self.assertWarns(IncompleteAPIConfigurationWarning):
+            api = BaseAPI(addr='http://some.api.com', key='shadow', secret='panda',
+                          config='%s/configs/config_no_api.ini' % tests_folder_dir,
+                          version='v2')
+
         # Make sure nonce() method always supplies increasing Nonce
         previous_nonce = 0
         for i in range(100):
@@ -97,8 +104,8 @@ class RESTAPITests(TestCase):
         # generate_request_kwargs returns a dict with all necessary keys present
         d = api.sign_request_kwargs('market')
         template = {'url': 'http://some.api.com/v2/market',
-                    'headers': None, 'files': None, 'data': None, 'hooks': None,
-                    'params': None, 'auth': None, 'cookies': None, 'json': None}
+                    'headers': {}, 'files': {}, 'data': {}, 'hooks': {},
+                    'params': {}, 'auth': {}, 'cookies': {}, 'json': {}}
         for k in template:
             self.assertTrue(k in d)
 
@@ -175,20 +182,26 @@ class BitstampRESTTests(TestCase):
         self.assertEqual(api.user_id, 'testuser')
 
     def test_private_query_raises_error_on_incomplete_credentials(self):
-        config_path = '%s/auth/bitstamp.ini' % tests_folder_dir
+        # config.ini is missing the key 'user_id' and hence should raise
+        # a warning.
+        config_path = '%s/auth/config.ini' % tests_folder_dir
         api = BitstampREST(config=config_path)
         with self.assertRaises(IncompleteCredentialsError):
             api.private_query('POST', 'balance')
-
 
     def test_sign_request_kwargs_method_and_signature(self):
         # Test that the sign_request_kwargs generate appropriate kwargs:
         config_path = '%s/auth/bitstamp.ini' % tests_folder_dir
         api = BitstampREST(config=config_path)
+        conf = api.load_config(api.config_file)
+        self.assertEqual(api.config_file, config_path)
+        self.assertEqual(api.key, 'shadow')
+        self.assertEqual(api.secret, 'panda')
+        self.assertEqual(api.user_id, 'testuser', msg=conf['AUTH']['user_id'])
         resp = api.private_query('POST', 'balance/btcusd')
         self.assertEqual(resp.status, 200)
         self.fail("Finish this test")
 
 if __name__ == '__main__':
     import unittest
-    unittest.main()
+    unittest.main(verbosity=2)
