@@ -80,7 +80,7 @@ class BitstampREST(RESTAPI):
                                            key=key, secret=secret,
                                            timeout=timeout, config=config)
 
-    def private_query(method_verb, endpoint, **req_kwargs):
+    def private_query(self, method_verb, endpoint, **req_kwargs):
         if any(x is None for x in (self.key, self.secret, self.user_id)):
             raise InvalidCredentialsError
         return super(BitstampREST, self).private_query(method_verb, endpoint,
