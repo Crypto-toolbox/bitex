@@ -90,6 +90,9 @@ class RESTAPITests(TestCase):
         # generate_url returns a string of address + uri
         self.assertEqual(api.generate_url(uri), 'http://some.api.com/v2/market')
 
+    def test_sign_request_kwargs_method_and_signature(self):
+        api = RESTAPI(addr='http://some.api.com', key='shadow', secret='panda',
+                      version='v2')
         # generate_request_kwargs returns a dict with all necessary keys present
         d = api.sign_request_kwargs('market')
         template = {'url': 'http://some.api.com/v2/market',
@@ -122,9 +125,7 @@ class RESTAPITests(TestCase):
         # assert that _query() silently returns an requests.Response() obj, if
         # the request was good
         try:
-            resp = api._query('GET', url='http://api.geonames.org/childrenJSON?'
-                                     'formatted=true&geonameId=3175395&'
-                                     'username=demo&style=full')
+            resp = api._query('GET', url='https://api.kraken.com/0/public/Time')
         except requests.exceptions.ConnectionError:
             self.fail("No Internet connection detected to ")
         self.assertIsInstance(resp, requests.Response)
@@ -132,9 +133,7 @@ class RESTAPITests(TestCase):
         # assert that _query() raises an appropriate error on status code other
         # than 200
         with self.assertRaises(requests.exceptions.HTTPError):
-            api._query('data', url='http://api.geonames.org/childrenJSON?'
-                                   'formatted=true&geonameId=3175395&'
-                                   'username=demo&style=full')
+            api._query('data', url='https://api.kraken.com/0/public/Wasabi')
         self.fail("finish this test!")
 
 
@@ -174,10 +173,19 @@ class BitstampRESTTests(TestCase):
         self.assertTrue(api.config_file == config_path)
         self.assertEqual(api.user_id, 'testuser')
 
+    def test_private_query_raises_error_on_incomplete_credentials(self):
+        config_path = '/home/nls/git/bitex/tests/keys/bitstamp.ini'
+        api = BitstampREST(config=config_path)
+        with self.assertRaises(IncompleteCredentialsError):
+            api.private_query('POST', 'balance')
+
+
     def test_sign_request_kwargs_method_and_signature(self):
         # Test that the sign_request_kwargs generate appropriate kwargs:
         config_path = '/home/nls/git/bitex/tests/keys/bitstamp.ini'
-        api = BitstampREST()
+        api = BitstampREST(config=config_path)
+        resp = api.private_query('POST', 'balance/btcusd')
+        self.assertEqual(resp.status, 200)
         self.fail("Finish this test")
 
 if __name__ == '__main__':
