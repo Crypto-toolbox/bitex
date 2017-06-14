@@ -140,7 +140,14 @@ class RESTAPITests(TestCase):
 
 class BitstampRESTTests(TestCase):
     def test_initialization(self):
-
+        # test that all default values are assigned correctly if No kwargs are
+        # given
+        api = BitstampREST()
+        self.assertIs(api.secret, None)
+        self.assertIs(api.key, None)
+        self.assertEqual(api.addr, 'https://www.bitstamp.net/api')
+        self.assertIs(api.version, '')
+        self.assertIs(api.config_file, None)
         # make sure a warning is displayed upon incomplete credentials
         with self.assertWarns(IncompleteCredentialsWarning):
             api = BitstampREST(addr='Bangarang', user_id=None, key='SomeKey',
