@@ -2,6 +2,8 @@
 import logging
 from unittest import TestCase
 import time
+import hmac
+import hashlib
 
 # Import Third-Party
 import requests
@@ -60,7 +62,7 @@ class BaseAPITests(TestCase):
         # Make sure all attributes are correctly updated if a config file is
         # given
         api = BaseAPI(addr='http://some.api.com', key='shadow', secret='panda',
-                      config='/home/nils/git/bitex/tests/config.ini',
+                      config='/home/nils/git/bitex/tests/configs/config.ini',
                       version='v2')
         self.assertEqual(api.addr, 'http://some.api.com')
         self.assertEqual(api.secret, 'panda')
@@ -157,15 +159,18 @@ class BitstampRESTTests(TestCase):
         # make sure that load_config loads user_id correctly, and issues a
         # warning if user_id param isn't available
         with self.assertWarns(IncompleteCredentialsWarning):
-            api = BitstampREST(addr='Bangarang', config='config.ini')
+            api = BitstampREST(addr='Bangarang',
+                               config='/home/nls/git/bitex/tests/configs/config.ini')
 
-        config_path = '/home/nls/git/bitex/tests/config_bitstamp.ini'
+        config_path = '/home/nls/git/bitex/tests/configs/config_bitstamp.ini'
         api = BitstampREST(config=config_path)
         self.assertTrue(api.config_file == config_path)
         self.assertEqual(api.user_id, 'testuser')
 
     def test_sign_request_kwargs_method_and_signature(self):
         # Test that the sign_request_kwargs generate appropriate kwargs:
+        config_path = '/home/nls/git/bitex/tests/keys/bitstamp.ini'
+        api = BitstampREST()
         self.fail("Finish this test")
 
 if __name__ == '__main__':
