@@ -82,7 +82,6 @@ class BitstampREST(RESTAPI):
 
     def load_config(self, fname):
         conf = super(BitstampREST, self).load_config(fname)
-        conf.read(fname)
         try:
             self.user_id = conf['AUTH']['user_id']
         except KeyError:
