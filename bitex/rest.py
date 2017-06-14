@@ -85,8 +85,8 @@ class BitstampREST(RESTAPI):
         try:
             self.user_id = conf['AUTH']['user_id']
         except KeyError:
-            warnings.warn(IncompleteCredentialsWarning,
-                          "'user_id' not found in config!")
+            warnings.warn("'user_id' not found in config!",
+                          IncompleteCredentialsWarning)
 
     def sign_request_kwargs(self, endpoint, **kwargs):
         req_kwargs = super(BitstampREST, self).sign_request_kwargs(endpoint,
