@@ -16,6 +16,9 @@ import warnings
 # Import Third-Party
 from requests.auth import AuthBase
 
+# Import Homebrew
+from bitex.exceptions import IncompleteCredentialsError
+
 try:
     import pyjwt as jwt
     jwt = True
