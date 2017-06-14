@@ -15,3 +15,6 @@ class IncompleteCredentialsWarning(UserWarning):
 
 class IncompleteCredentialsError(Exception):
     pass
+
+class IncompleteAPIConfigurationWarning(UserWarning):
+    pass
