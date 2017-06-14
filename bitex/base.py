@@ -51,13 +51,16 @@ class BaseAPI:
             warnings.warn("Incomplete Credentials were given - authentication "
                           "may not work!", IncompleteCredentialsWarning)
 
+        if addr is None:
+            raise ValueError("Address cannot be None!")
         self.addr = addr
         self.key = key if key else None
         self.secret = secret if secret else None
         self.version = version if version else ''
+        self.config_file = config
         if config:
             try:
-                self.load_config(config)
+                self.load_config(self.config_file)
             except KeyError:
                 warnings.warn("Config file was missing one or more required" \
                               "parameters!", IncompleteCredentialsWarning)
