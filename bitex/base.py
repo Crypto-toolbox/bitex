@@ -77,10 +77,14 @@ class BaseAPI:
         self.key = conf['AUTH']['key']
         self.secret = conf['AUTH']['secret']
         try:
-            self.version = conf['API']['version']
             self.addr = conf['API']['address']
         except KeyError:
-            warnings.warn("API wasn't configured fully - requests may not work!",
+            warnings.warn("API address not present in config - requests may not work!",
+                          IncompleteAPIConfigurationWarning)
+        try:
+            self.version = conf['API']['version']
+        except KeyError:
+            warnings.warn("API version was not present in config - requests may not work!",
                           IncompleteAPIConfigurationWarning)
         return conf
 
