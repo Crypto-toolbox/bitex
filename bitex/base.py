@@ -3,6 +3,7 @@ ABC for Exchange APIs
 """
 # Import Built-Ins
 import logging
+import os
 
 # Import Third-Party
 
@@ -69,6 +70,9 @@ class BaseAPI:
         :param fname: path to file
         :return: configparser.ConfigParser() Obj
         """
+        if not os.path.exists(fname):
+            raise FileNotFoundError
+
         conf = configparser.ConfigParser()
         conf.read(fname)
         try:
