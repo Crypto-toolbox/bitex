@@ -74,15 +74,17 @@ class BaseAPI:
         try:
             self.key = conf['AUTH']['key']
         except KeyError:
-            warnings.warn("Key parameter not present in config - "
-                          "authentication may not work!",
-                          IncompleteCredentialsWarning)
+            if self.key is None:
+                warnings.warn("Key parameter not present in config - "
+                              "authentication may not work!",
+                              IncompleteCredentialsWarning)
         try:
             self.secret = conf['AUTH']['secret']
         except KeyError:
-            warnings.warn("Secret parameter not present in config - "
-                          "authentication may not work!",
-                          IncompleteCredentialsWarning)
+            if self.secret is None:
+                warnings.warn("Secret parameter not present in config - "
+                              "authentication may not work!",
+                              IncompleteCredentialsWarning)
         try:
             self.addr = conf['API']['address']
         except KeyError:
