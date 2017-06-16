@@ -21,7 +21,10 @@ import time
 import requests
 
 # Import Homebrew
-from bitex.exceptions import IncompleteCredentialsWarning, IncompleteCredentialsError, IncompleteAPIConfigurationWarning, IncompleteCredentialConfigurationWarning
+from bitex.exceptions import IncompleteCredentialsWarning
+from bitex.exceptions import IncompleteCredentialsError
+from bitex.exceptions import IncompleteAPIConfigurationWarning
+from bitex.exceptions import IncompleteCredentialConfigurationWarning
 # Init Logging Facilities
 log = logging.getLogger(__name__)
 
