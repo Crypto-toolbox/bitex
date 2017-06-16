@@ -18,6 +18,7 @@ log = logging.getLogger(__name__)
 
 tests_folder_dir = '/home/nls/git/bitex/tests'
 
+
 class BaseAPITests(TestCase):
     def test_base_api_parameters_initialize_correctly(self):
         # Raises an error if a Kwarg wasn't given (i.e. instantiation must
@@ -43,7 +44,7 @@ class BaseAPITests(TestCase):
         # if secret is None, make secret None
         self.assertIs(api.secret, None)
 
-        # raise warning if only key or only secret is passed
+        # raise warning if only key or only secret is passed and config is None
         with self.assertWarns(IncompleteCredentialsWarning):
             api = BaseAPI(addr='Bangarang', key='SomeKey', secret=None,
                           config=None, version=None)
@@ -51,14 +52,24 @@ class BaseAPITests(TestCase):
             api = BaseAPI(addr='Bangarang', key=None, secret='SomeSecret',
                           config=None, version=None)
 
+        # assert that no warning is raised if credential kwargs are incomplete
+        # but a config is passed
+        with self.assertRaises(AssertionError,
+                               msg='IncompleteCredentialsWarning was raised '
+                                   'unexpectedly!'):
+            with self.assertWarns(IncompleteCredentialsWarning):
+                BaseAPI(addr='Bangarang', key=None, secret='SomeSecret',
+                        config="%s/configs/config.ini" % tests_folder_dir,
+                        version=None)
+
         # raise a Value Error if an empty string is passed in either key or
         # secret kwarg
         with self.assertRaises(ValueError):
-            api = BaseAPI(addr='Bangarang', key='', secret=None,
-                          config=None, version=None)
+            BaseAPI(addr='Bangarang', key='', secret=None, config=None,
+                    version=None)
         with self.assertRaises(ValueError):
-            api = BaseAPI(addr='Bangarang', key=None, secret='',
-                          config=None, version=None)
+            BaseAPI(addr='Bangarang', key=None, secret='', config=None,
+                    version=None)
 
         # Make sure all attributes are correctly updated if a config file is
         # given
@@ -70,12 +81,19 @@ class BaseAPITests(TestCase):
         self.assertEqual(api.key, 'shadow')
         self.assertEqual(api.version, 'v2')
 
-        # Make sure Missing keys in config file are treated as None; raise an
-        # error if version or address are not present
+        # Assert that a warning is issued if version is None and 'version'
+        # is not present in the passed config file.
         with self.assertWarns(IncompleteAPIConfigurationWarning):
-            api = BaseAPI(addr='http://some.api.com', key='shadow', secret='panda',
-                          config='%s/configs/config_no_api.ini' % tests_folder_dir,
-                          version='v2')
+            BaseAPI(addr='http://some.api.com', key='shadow', secret='panda',
+                    config='%s/configs/config_no_api.ini' % tests_folder_dir,
+                    version=None)
+
+        # Assert that a warning is issued if addr is None and 'address'
+        # is not present in the passed config file.
+        with self.assertWarns(IncompleteAPIConfigurationWarning):
+            api = BaseAPI(addr=None, key='shadow', version='v2', secret='panda',
+                          config='%s/configs/config_no_api.ini' %
+                                 tests_folder_dir)
 
         # Make sure nonce() method always supplies increasing Nonce
         previous_nonce = 0
@@ -112,9 +130,11 @@ class RESTAPITests(TestCase):
     def test_query_methods_return_as_expected(self):
         # assert that an InvalidCredentialsError is raised, if any of the auth
         # attributes are None (key, secret)
+
         api = RESTAPI(addr='http://some.api.com', key='shadow', secret=None,
                       version='v2', timeout=5)
 
+        # config is None by default
         with self.assertRaises(IncompleteCredentialsError):
             api.private_query('GET', 'market', url='https://www.someapi.com')
 
@@ -177,7 +197,9 @@ class BitstampRESTTests(TestCase):
                                config='/home/nls/git/bitex/tests/configs/config.ini')
 
         config_path = '/home/nls/git/bitex/tests/configs/config_bitstamp.ini'
-        api = BitstampREST(config=config_path)
+        with self.assertRaises(AssertionError):
+            with self.assertWarns(IncompleteCredentialsWarning):
+                api = BitstampREST(config=config_path)
         self.assertTrue(api.config_file == config_path)
         self.assertEqual(api.user_id, 'testuser')
 
@@ -194,7 +216,6 @@ class BitstampRESTTests(TestCase):
         config_path = '%s/auth/bitstamp.ini' % tests_folder_dir
         api = BitstampREST(config=config_path)
         self.assertEqual(api.config_file, config_path)
-        self.assertEqual(api.user_id, 'testuser', msg=conf['AUTH']['user_id'])
 
         # Check signatured request kwargs
         self.fail("Finish this test")
