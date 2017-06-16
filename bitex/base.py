@@ -21,7 +21,7 @@ import time
 import requests
 
 # Import Homebrew
-from bitex.exceptions import IncompleteCredentialsWarning, IncompleteCredentialsError, IncompleteAPIConfigurationWarning
+from bitex.exceptions import IncompleteCredentialsWarning, IncompleteCredentialsError, IncompleteAPIConfigurationWarning, IncompleteCredentialConfigurationWarning
 # Init Logging Facilities
 log = logging.getLogger(__name__)
 
@@ -53,14 +53,12 @@ class BaseAPI:
             warnings.warn("Incomplete Credentials were given - authentication "
                           "may not work!", IncompleteCredentialsWarning)
 
-        if addr is None:
-            raise ValueError("Address cannot be None!")
         self.addr = addr
         self.key = key if key else None
         self.secret = secret if secret else None
         self.version = version if version else ''
         self.config_file = config
-        if config:
+        if self.config_file:
             self.load_config(self.config_file)
 
     def load_config(self, fname):
@@ -81,14 +79,14 @@ class BaseAPI:
             if self.key is None:
                 warnings.warn("Key parameter not present in config - "
                               "authentication may not work!",
-                              IncompleteCredentialsWarning)
+                              IncompleteCredentialConfigurationWarning)
         try:
             self.secret = conf['AUTH']['secret']
         except KeyError:
             if self.secret is None:
                 warnings.warn("Secret parameter not present in config - "
                               "authentication may not work!",
-                              IncompleteCredentialsWarning)
+                              IncompleteCredentialConfigurationWarning)
         try:
             self.addr = conf['API']['address']
         except KeyError:
@@ -99,7 +97,7 @@ class BaseAPI:
         try:
             self.version = conf['API']['version']
         except KeyError:
-            if self.version is None:
+            if self.version == '':
                 warnings.warn("API version was not present in config - "
                               "requests may not work!",
                               IncompleteAPIConfigurationWarning)

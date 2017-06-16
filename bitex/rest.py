@@ -17,7 +17,7 @@ import warnings
 from requests.auth import AuthBase
 
 # Import Homebrew
-from bitex.exceptions import IncompleteCredentialsError
+from bitex.exceptions import IncompleteCredentialsError, IncompleteCredentialConfigurationWarning
 
 try:
     import pyjwt as jwt
@@ -94,8 +94,10 @@ class BitstampREST(RESTAPI):
         try:
             self.user_id = conf['AUTH']['user_id']
         except KeyError:
-            warnings.warn("'user_id' not found in config!",
-                          IncompleteCredentialsWarning)
+            if self.user_id is None:
+                print("Couldnt find user_id", fname)
+                warnings.warn("'user_id' not found in config!",
+                              IncompleteCredentialConfigurationWarning)
         return conf
 
     def sign_request_kwargs(self, endpoint, **kwargs):
