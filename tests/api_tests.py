@@ -10,7 +10,7 @@ import requests
 
 # Import Homebrew
 from bitex.base import BaseAPI, RESTAPI
-from bitex.rest import BitstampREST
+from bitex.rest import BitstampREST, BitfinexREST
 from bitex.exceptions import IncompleteCredentialsWarning, IncompleteCredentialsError, IncompleteAPIConfigurationWarning, IncompleteCredentialConfigurationWarning
 
 # Init Logging Facilities
@@ -40,12 +40,11 @@ class BaseAPITests(TestCase):
         self.assertIs(api.secret, None)
 
         # raise warning if only key or only secret is passed and config is None
-        with self.assertWarns(IncompleteCredentialsWarning):
-            api = BaseAPI(addr='Bangarang', key='SomeKey', secret=None,
-                          config=None, version=None)
-        with self.assertWarns(IncompleteCredentialsWarning):
-            api = BaseAPI(addr='Bangarang', key=None, secret='SomeSecret',
-                          config=None, version=None)
+        kwargs = ({'key': 'SomeKey', 'secret': None},
+                  {'key': None, 'secret': 'SomeSecret'})
+        for auth in kwargs:
+            with self.assertWarns(IncompleteCredentialsWarning):
+                api = BaseAPI(addr='Bangarang', config=None, version=None, **auth)
 
         # assert that no warning is raised if credential kwargs are incomplete
         # but a config is passed
@@ -59,12 +58,11 @@ class BaseAPITests(TestCase):
 
         # raise a Value Error if an empty string is passed in either key or
         # secret kwarg
-        with self.assertRaises(ValueError):
-            BaseAPI(addr='Bangarang', key='', secret=None, config=None,
-                    version=None)
-        with self.assertRaises(ValueError):
-            BaseAPI(addr='Bangarang', key=None, secret='', config=None,
-                    version=None)
+        kwargs = ({'key': '', 'secret': None}, {'key': None, 'secret': ''})
+        for auth in kwargs:
+            with self.assertRaises(ValueError, msg=auth):
+                BaseAPI(addr='Bangarang', config=None, version=None, **auth)
+
 
         # Make sure all attributes are correctly updated if a config file is
         # given
@@ -85,17 +83,19 @@ class BaseAPITests(TestCase):
 
         # Assert that a warning is issued if version is None and 'version'
         # is not present in the passed config file.
-        with self.assertWarns(IncompleteAPIConfigurationWarning):
-            BaseAPI(addr='http://some.api.com', key='shadow', secret='panda',
-                    config='%s/configs/config_no_api.ini' % tests_folder_dir,
-                    version=None)
-
         # Assert that a warning is issued if addr is None and 'address'
         # is not present in the passed config file.
-        with self.assertWarns(IncompleteAPIConfigurationWarning):
-            api = BaseAPI(addr=None, key='shadow', version='v2', secret='panda',
-                          config='%s/configs/config_no_api.ini' %
-                                 tests_folder_dir)
+        kwargs = ({'version': None, 'addr': 'http://some.api.com'},
+                  {'version': 'v2', 'addr': None})
+        for api_config in kwargs:
+            with self.assertWarns(IncompleteAPIConfigurationWarning,
+                                  msg=api_config):
+                BaseAPI(key='shadow', secret='panda',
+                        config='%s/configs/config_no_api.ini' % tests_folder_dir,
+                        **api_config)
+
+
+
 
         # Make sure nonce() method always supplies increasing Nonce
         previous_nonce = 0
@@ -130,27 +130,18 @@ class RESTAPITests(TestCase):
             self.assertTrue(k in d)
 
     def test_query_methods_return_as_expected(self):
-        # assert that an InvalidCredentialsError is raised, if any of the auth
-        # attributes are None (key, secret)
+        # assert that an IncompleteCredentialsError is raised, if any of the auth
+        # attributes are None (key, secret) when querying a private endpoint
+        # of the API.
+        kwargs = ({'key': 'shadow', 'secret': None},
+                  {'key': None, 'secret': 'panda'},
+                  {'key': None, 'secret': None})
+        for kw in kwargs:
+            api = RESTAPI(addr='http://some.api.com', version='v2', timeout=5,
+                          **kw)
+            with self.assertRaises(IncompleteCredentialsError, msg=kw):
+                api.private_query('GET', 'market', url='https://www.someapi.com')
 
-        api = RESTAPI(addr='http://some.api.com', key='shadow', secret=None,
-                      version='v2', timeout=5)
-
-        # config is None by default
-        with self.assertRaises(IncompleteCredentialsError):
-            api.private_query('GET', 'market', url='https://www.someapi.com')
-
-        api = RESTAPI(addr='http://some.api.com', key=None, secret='panda',
-                      version='v2')
-
-        with self.assertRaises(IncompleteCredentialsError):
-            api.private_query('GET', 'market', url='https://www.someapi.com')
-
-        api = RESTAPI(addr='http://some.api.com', key=None, secret=None,
-                      version='v2')
-
-        with self.assertRaises(IncompleteCredentialsError):
-            api.private_query('GET', 'market', url='https://www.someapi.com')
 
         # assert that _query() silently returns an requests.Response() obj, if
         # the request was good
@@ -177,7 +168,8 @@ class BitstampRESTTests(TestCase):
         self.assertEqual(api.addr, 'https://www.bitstamp.net/api')
         self.assertIs(api.version, '')
         self.assertIs(api.config_file, None)
-        # make sure a warning is displayed upon incomplete credentials
+        # Assert that a Warning is raised if user_id is None, and BaseAPI's
+        # check mechanism is extended properly
         with self.assertWarns(IncompleteCredentialsWarning):
             api = BitstampREST(addr='Bangarang', user_id=None, key='SomeKey',
                                secret='SomeSecret', config=None, version=None)
@@ -192,8 +184,8 @@ class BitstampRESTTests(TestCase):
         api = BitstampREST(addr='Bangarang', user_id='woloho')
         self.assertIs(api.user_id, 'woloho')
 
-        # Check that a IncompleteCredentialConfigurationWarning is issued if user_id isn't
-        # available in config, and no user_id was given.
+        # Check that a IncompleteCredentialConfigurationWarning is issued if
+        # user_id isn't available in config, and no user_id was given.
         with self.assertWarns(IncompleteCredentialConfigurationWarning):
             api = BitstampREST(addr='Bangarang', user_id=None,
                                config='/home/nls/git/bitex/tests/configs/config.ini')
@@ -219,6 +211,27 @@ class BitstampRESTTests(TestCase):
         # Test that the sign_request_kwargs generate appropriate kwargs:
         config_path = '%s/auth/bitstamp.ini' % tests_folder_dir
         api = BitstampREST(config=config_path)
+        self.assertEqual(api.config_file, config_path)
+
+        # Check signatured request kwargs
+        self.fail("Finish this test")
+
+
+class BitfinexRESTTests(TestCase):
+    def test_initialization(self):
+        # test that all default values are assigned correctly if No kwargs are
+        # given
+        api = BitfinexREST()
+        self.assertIs(api.secret, None)
+        self.assertIs(api.key, None)
+        self.assertEqual(api.addr, 'https://api.bitfinex.com')
+        self.assertIs(api.version, 'v1')
+        self.assertIs(api.config_file, None)
+
+    def test_sign_request_kwargs_method_and_signature(self):
+        # Test that the sign_request_kwargs generate appropriate kwargs:
+        config_path = '%s/auth/bitfinex.ini' % tests_folder_dir
+        api = BitfinexREST(config=config_path)
         self.assertEqual(api.config_file, config_path)
 
         # Check signatured request kwargs
