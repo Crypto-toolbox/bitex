@@ -59,11 +59,7 @@ class BaseAPI:
         self.version = version if version else ''
         self.config_file = config
         if config:
-            try:
-                self.load_config(self.config_file)
-            except KeyError:
-                warnings.warn("Config file was missing one or more required" \
-                              "parameters!", IncompleteCredentialsWarning)
+            self.load_config(self.config_file)
 
     def load_config(self, fname):
         """
@@ -74,17 +70,29 @@ class BaseAPI:
         """
         conf = configparser.ConfigParser()
         conf.read(fname)
-        self.key = conf['AUTH']['key']
-        self.secret = conf['AUTH']['secret']
+        try:
+            self.key = conf['AUTH']['key']
+        except KeyError:
+            warnings.warn("Key parameter not present in config - "
+                          "authentication may not work!",
+                          IncompleteCredentialsWarning)
+        try:
+            self.secret = conf['AUTH']['secret']
+        except:
+            warnings.warn("Secret parameter not present in config - "
+                          "authentication may not work!",
+                          IncompleteCredentialsWarning)
         try:
             self.addr = conf['API']['address']
         except KeyError:
-            warnings.warn("API address not present in config - requests may not work!",
+            warnings.warn("API address not present in config - "
+                          "requests may not work!",
                           IncompleteAPIConfigurationWarning)
         try:
             self.version = conf['API']['version']
         except KeyError:
-            warnings.warn("API version was not present in config - requests may not work!",
+            warnings.warn("API version was not present in config - "
+                          "requests may not work!",
                           IncompleteAPIConfigurationWarning)
         return conf
 
