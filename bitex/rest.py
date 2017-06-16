@@ -95,7 +95,6 @@ class BitstampREST(RESTAPI):
             self.user_id = conf['AUTH']['user_id']
         except KeyError:
             if self.user_id is None:
-                print("Couldnt find user_id", fname)
                 warnings.warn("'user_id' not found in config!",
                               IncompleteCredentialConfigurationWarning)
         return conf
