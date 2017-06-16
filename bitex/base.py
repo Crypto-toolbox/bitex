@@ -46,8 +46,8 @@ class BaseAPI:
             raise ValueError("Invalid key or secret - cannot be empty string! "
                              "Pass None instead!")
 
-        if ((key is None and secret is not None) or
-                (key is not None and secret is None)):
+        if (((key is None and secret is not None) and config is None) or
+                 ((key is not None and secret is None) and config is None)):
             warnings.warn("Incomplete Credentials were given - authentication "
                           "may not work!", IncompleteCredentialsWarning)
 
