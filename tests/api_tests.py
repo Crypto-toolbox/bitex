@@ -11,7 +11,7 @@ import requests
 # Import Homebrew
 from bitex.base import BaseAPI, RESTAPI
 from bitex.rest import BitstampREST
-from bitex.exceptions import IncompleteCredentialsWarning, IncompleteCredentialsError, IncompleteAPIConfigurationWarning
+from bitex.exceptions import IncompleteCredentialsWarning, IncompleteCredentialsError, IncompleteAPIConfigurationWarning, IncompleteCredentialConfigurationWarning
 
 # Init Logging Facilities
 log = logging.getLogger(__name__)
@@ -25,11 +25,6 @@ class BaseAPITests(TestCase):
         # specify kwargs explicitly)
         with self.assertRaises(TypeError):
             api = BaseAPI(addr='Bangarang')
-
-        # raise error if address is None
-        with self.assertRaises(ValueError):
-            api = BaseAPI(addr=None, key=None, secret=None,
-                          config=None, version=None)
 
         # silently initialize if all other parameters are none
         api = BaseAPI(addr='Bangarang', key=None, secret=None, config=None,
@@ -80,6 +75,13 @@ class BaseAPITests(TestCase):
         self.assertEqual(api.secret, 'panda')
         self.assertEqual(api.key, 'shadow')
         self.assertEqual(api.version, 'v2')
+
+        # assert that FileNotFoundError is raised if an invalid file path
+        # is given
+        with self.assertRaises(FileNotFoundError):
+            BaseAPI(addr='http://some.api.com', key='shadow', secret='panda',
+                    config='%s/configs/file_doesnt_exist.ini' % tests_folder_dir,
+                    version=None)
 
         # Assert that a warning is issued if version is None and 'version'
         # is not present in the passed config file.
@@ -190,23 +192,25 @@ class BitstampRESTTests(TestCase):
         api = BitstampREST(addr='Bangarang', user_id='woloho')
         self.assertIs(api.user_id, 'woloho')
 
-        # make sure that load_config loads user_id correctly, and issues a
-        # warning if user_id param isn't available
-        with self.assertWarns(IncompleteCredentialsWarning):
-            api = BitstampREST(addr='Bangarang',
+        # Check that a IncompleteCredentialConfigurationWarning is issued if user_id isn't
+        # available in config, and no user_id was given.
+        with self.assertWarns(IncompleteCredentialConfigurationWarning):
+            api = BitstampREST(addr='Bangarang', user_id=None,
                                config='/home/nls/git/bitex/tests/configs/config.ini')
 
-        config_path = '/home/nls/git/bitex/tests/configs/config_bitstamp.ini'
+        # check that user_id is loaded correctly, and no IncompleteCredentialsWarning
+        # is issued, if we dont pass a user_id kwarg but it is avaialable in the config file
+        config_path = '/home/nls/git/bitex/tests/auth/bitstamp.ini'
         with self.assertRaises(AssertionError):
-            with self.assertWarns(IncompleteCredentialsWarning):
+            with self.assertWarns(IncompleteCredentialConfigurationWarning):
                 api = BitstampREST(config=config_path)
         self.assertTrue(api.config_file == config_path)
         self.assertEqual(api.user_id, 'testuser')
 
     def test_private_query_raises_error_on_incomplete_credentials(self):
         # config.ini is missing the key 'user_id' and hence should raise
-        # a warning.
-        config_path = '%s/auth/config.ini' % tests_folder_dir
+        # an error on attempting to query a private endpoint.
+        config_path = '%s/configs/config.ini' % tests_folder_dir
         api = BitstampREST(config=config_path)
         with self.assertRaises(IncompleteCredentialsError):
             api.private_query('POST', 'balance')
