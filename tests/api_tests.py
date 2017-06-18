@@ -10,7 +10,7 @@ import requests
 
 # Import Homebrew
 from bitex.base import BaseAPI, RESTAPI
-from bitex.rest import BitstampREST, BitfinexREST
+from bitex.rest import BitstampREST, BitfinexREST, BittrexREST
 from bitex.exceptions import IncompleteCredentialsWarning, IncompleteCredentialsError, IncompleteAPIConfigurationWarning, IncompleteCredentialConfigurationWarning
 
 # Init Logging Facilities
@@ -94,9 +94,6 @@ class BaseAPITests(TestCase):
                         config='%s/configs/config_no_api.ini' % tests_folder_dir,
                         **api_config)
 
-
-
-
         # Make sure nonce() method always supplies increasing Nonce
         previous_nonce = 0
         for i in range(100):
@@ -141,7 +138,6 @@ class RESTAPITests(TestCase):
                           **kw)
             with self.assertRaises(IncompleteCredentialsError, msg=kw):
                 api.private_query('GET', 'market', url='https://www.someapi.com')
-
 
         # assert that _query() silently returns an requests.Response() obj, if
         # the request was good
@@ -236,6 +232,28 @@ class BitfinexRESTTests(TestCase):
 
         # Check signatured request kwargs
         self.fail("Finish this test")
+
+
+class BittrexRESTTest(TestCase):
+    def test_initialization(self):
+        # test that all default values are assigned correctly if No kwargs are
+        # given
+        api = BittrexREST()
+        self.assertIs(api.secret, None)
+        self.assertIs(api.key, None)
+        self.assertEqual(api.addr, 'https://bittrex.com/api')
+        self.assertIs(api.version, 'v1.1')
+        self.assertIs(api.config_file, None)
+
+    def test_sign_request_kwargs_method_and_signature(self):
+        # Test that the sign_request_kwargs generate appropriate kwargs:
+        config_path = '%s/auth/bittrex.ini' % tests_folder_dir
+        api = BittrexREST(config=config_path)
+        self.assertEqual(api.config_file, config_path)
+
+        # Check signatured request kwargs
+        self.fail("Finish this test")
+
 
 if __name__ == '__main__':
     import unittest
