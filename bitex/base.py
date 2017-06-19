@@ -1,5 +1,5 @@
 """
-ABC for Exchange APIs
+API Base Classes for BitEx
 """
 # Import Built-Ins
 import logging
@@ -33,8 +33,9 @@ class BaseAPI:
     """
     BaseAPI provides lowest-common-denominator methods used in all API types.
 
-    It provides a Nonce() method, basic configuration loading and a place-holder
-    sign() method.
+    It provides a nonce() method, basic configuration loading and Credential
+    validity checking method check_auth_requirements(), which should be
+    extended in subclasses to cover any additional parameters necessary.
     """
     def __init__(self, *, addr, key, secret, version, config):
         """
