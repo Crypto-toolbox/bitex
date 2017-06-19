@@ -168,7 +168,7 @@ class BittrexREST(RESTAPI):
 class CoincheckREST(RESTAPI):
     def __init__(self, key=None, secret=None, version=None,
                  addr=None, timeout=5):
-        addr = 'https://coincheck.com' if not url else url
+        addr = 'https://coincheck.com' if not addr else addr
         version = 'api' if not version else version
         super(CoincheckREST, self).__init__(addr=addr, version=version,
                                             key=key, secret=secret,
