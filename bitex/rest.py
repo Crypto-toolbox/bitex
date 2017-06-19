@@ -347,7 +347,7 @@ class ITbitREST(RESTAPI):
         except KeyError:
             params = {}
 
-        verb = method_verb
+        verb = kwargs['method']
 
         if verb in ('PUT', 'POST'):
             body = params
@@ -357,24 +357,22 @@ class ITbitREST(RESTAPI):
         timestamp = self.nonce()
         nonce = self.nonce()
 
-        message = json.dumps([verb, url, body, nonce, timestamp],
+        message = json.dumps([verb, req_kwargs['url'], body, nonce, timestamp],
                              separators=(',', ':'))
         sha256_hash = hashlib.sha256()
         nonced_message = nonce + message
         sha256_hash.update(nonced_message.encode('utf8'))
         hash_digest = sha256_hash.digest()
         hmac_digest = hmac.new(self.secret.encode('utf-8'),
-                               url.encode('utf-8') + hash_digest,
+                               req_kwargs['url'].encode('utf-8') + hash_digest,
                                hashlib.sha512).digest()
         signature = base64.b64encode(hmac_digest)
 
         # Update request kwargs header variable
-        req_kwargs['headers'] = {
-            'Authorization': self.key + ':' + signature.decode('utf8'),
-            'X-Auth-Timestamp': timestamp,
-            'X-Auth-Nonce': nonce,
-            'Content-Type': 'application/json'
-        }
+        req_kwargs['headers'] = {'Authorization': self.key + ':' + signature.decode('utf8'),
+                                 'X-Auth-Timestamp': timestamp,
+                                 'X-Auth-Nonce': nonce,
+                                 'Content-Type': 'application/json'}
         return req_kwargs
 
 
