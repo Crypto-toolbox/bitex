@@ -630,7 +630,7 @@ class RockTradingREST(RESTAPI):
 class PoloniexREST(RESTAPI):
     def __init__(self, key=None, secret=None, version=None, config=None,
                  addr=None, timeout=5):
-        addr = 'https://poloniex.com' if not addr else add
+        addr = 'https://poloniex.com' if not addr else addr
         super(PoloniexREST, self).__init__(addr=addr, version=version,
                                            key=key, secret=secret,
                                            timeout=timeout, config=config)
