@@ -1,6 +1,6 @@
 """
 Contains all API Client sub-classes, which store exchange specific details
-and feature the respective exchanges authentication method (sign()).
+and feature the respective exchanges authentication method (sign_request_kwargs()).
 """
 # Import Built-ins
 import logging
