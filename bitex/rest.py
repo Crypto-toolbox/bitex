@@ -83,11 +83,16 @@ class BitstampREST(RESTAPI):
                                            key=key, secret=secret,
                                            timeout=timeout, config=config)
 
-    def private_query(self, method_verb, endpoint, **req_kwargs):
-        if any(x is None for x in (self.key, self.secret, self.user_id)):
+    def _check_auth_requirements(self):
+        try:
+            super(BitstampREST, self)._check_auth_requirements()
+        except IncompleteCredentialsError:
+            raise
+
+        if self.user_id is None:
             raise IncompleteCredentialsError
-        return super(BitstampREST, self).private_query(method_verb, endpoint,
-                                                       **req_kwargs)
+        else:
+            return
 
     def load_config(self, fname):
         conf = super(BitstampREST, self).load_config(fname)
@@ -239,11 +244,16 @@ class GDAXREST(RESTAPI):
                                        secret=secret, timeout=timeout,
                                        config=config)
 
-    def private_query(self, method_verb, endpoint, **req_kwargs):
-        if any(x is None for x in (self.key, self.secret, self.passphrase)):
+    def _check_auth_requirements(self):
+        try:
+            super(GDAXREST, self)._check_auth_requirements()
+        except IncompleteCredentialsError:
+            raise
+
+        if self.passphrase is None:
             raise IncompleteCredentialsError
-        return super(GDAXREST, self).private_query(method_verb, endpoint,
-                                                   **req_kwargs)
+        else:
+            return
 
     def load_config(self, fname):
         conf = super(GDAXREST, self).load_config(fname)
@@ -323,11 +333,16 @@ class ITbitREST(RESTAPI):
                                         secret=secret, timeout=timeout,
                                         config=config)
 
-    def private_query(self, method_verb, endpoint, **req_kwargs):
-        if any(x is None for x in (self.key, self.secret, self.user_id)):
+    def _check_auth_requirements(self):
+        try:
+            super(ITbitREST, self)._check_auth_requirements()
+        except IncompleteCredentialsError:
+            raise
+
+        if self.user_id is None:
             raise IncompleteCredentialsError
-        return super(ITbitREST, self).private_query(method_verb, endpoint,
-                                                    **req_kwargs)
+        else:
+            return
 
     def load_config(self, fname):
         conf = super(ITbitREST, self).load_config(fname)
@@ -717,11 +732,16 @@ class QuadrigaCXREST(RESTAPI):
                                              key=key, secret=secret,
                                              timeout=timeout, config=config)
 
-    def private_query(self, method_verb, endpoint, **req_kwargs):
-        if any(x is None for x in (self.key, self.secret, self.client_id)):
+    def _check_auth_requirements(self):
+        try:
+            super(QuadrigaCXREST, self)._check_auth_requirements()
+        except IncompleteCredentialsError:
+            raise
+
+        if self.client_id is None:
             raise IncompleteCredentialsError
-        return super(QuadrigaCXREST, self).private_query(method_verb, endpoint,
-                                                         **req_kwargs)
+        else:
+            return
 
     def load_config(self, fname):
         conf = super(QuadrigaCXREST, self).load_config(fname)
