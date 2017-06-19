@@ -659,11 +659,6 @@ class PoloniexREST(RESTAPI):
 
 
 class QuoineREST(RESTAPI):
-    """
-    The Quoine Api requires the API version to be designated in each requests's
-    header as {'X-Quoine-API-Version': 2}, instead of adding it to the URL.
-    Hence, we need to adapt generate_url.
-    """
     def __init__(self, key=None, secret=None, version=None, config=None,
                  addr=None, timeout=5):
         if not jwt:
@@ -675,6 +670,10 @@ class QuoineREST(RESTAPI):
                                          timeout=timeout)
 
     def generate_uri(self, endpoint):
+        """The Quoine Api requires the API version to be designated in each
+        requests's header as {'X-Quoine-API-Version': 2}, instead of adding it
+        to the URL. Hence, we need to adapt generate_uri.
+        """
         return endpoint
 
     def sign_request_kwargs(self, endpoint, **kwargs):
