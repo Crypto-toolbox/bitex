@@ -50,11 +50,13 @@ class BaseAPI:
             raise ValueError("Invalid key or secret - cannot be empty string! "
                              "Pass None instead!")
 
-        if (config is None and
-                ((key is None and secret is not None) or
-                     (key is not None and secret is None))):
-            warnings.warn("Incomplete Credentials were given - authentication "
-                          "may not work!", IncompleteCredentialsWarning)
+        try:
+            self._check_auth_requirements()
+        except IncompleteCredentialsError:
+            if config is None:
+                warnings.warn("Incomplete Credentials were given - "
+                              "authentication may not work!",
+                              IncompleteCredentialsWarning)
 
         self.addr = addr
         self.key = key if key else None
@@ -63,6 +65,22 @@ class BaseAPI:
         self.config_file = config
         if self.config_file:
             self.load_config(self.config_file)
+
+    def _check_auth_requirements(self):
+        """Check that neither self.key nor self.secret are None. If so, this
+        method raises an IncompleteCredentialsError. Otherwise returns None.
+
+        Extend this in  child classes if you need to check for further
+        required values.
+
+        :raise: IncompleteCredentialsError
+        :return: None
+
+        """
+        if any(attr is None for attr in (self.key, self.secret)):
+            raise IncompleteCredentialsError
+        else:
+            return
 
     def load_config(self, fname):
         """
@@ -169,22 +187,6 @@ class RESTAPI(BaseAPI):
                     'hooks': {}, 'json': {}}
         template.update(kwargs)
         return template
-
-    def _check_auth_requirements(self):
-        """Check that neither self.key nor self.secret are None. If so, this
-        method raises an IncompleteCredentialsError. Otherwise returns None.
-
-        Extend this in  child classes if you need to check for further
-        required values.
-
-        :raise: IncompleteCredentialsError
-        :return: None
-
-        """
-        if any(attr is None for attr in (self.key, self.secret)):
-            raise IncompleteCredentialsError
-        else:
-            return
 
     def _query(self, method_verb, **request_kwargs):
         """
