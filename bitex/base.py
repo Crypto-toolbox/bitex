@@ -51,7 +51,7 @@ class BaseAPI:
                              "Pass None instead!")
 
         try:
-            self._check_auth_requirements()
+            self.check_auth_requirements()
         except IncompleteCredentialsError:
             if config is None:
                 warnings.warn("Incomplete Credentials were given - "
@@ -66,7 +66,7 @@ class BaseAPI:
         if self.config_file:
             self.load_config(self.config_file)
 
-    def _check_auth_requirements(self):
+    def check_auth_requirements(self):
         """Check that neither self.key nor self.secret are None. If so, this
         method raises an IncompleteCredentialsError. Otherwise returns None.
 
@@ -208,7 +208,7 @@ class RESTAPI(BaseAPI):
         :param request_kwargs: kwargs for request.Request()
         :return: request.Response() object
         """
-        self._check_auth_requirements()
+        self.check_auth_requirements()
         request_kwargs = self.sign_request_kwargs(endpoint, **request_kwargs)
         return self._query(method_verb, **request_kwargs)
 

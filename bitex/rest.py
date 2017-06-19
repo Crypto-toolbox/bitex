@@ -83,9 +83,9 @@ class BitstampREST(RESTAPI):
                                            key=key, secret=secret,
                                            timeout=timeout, config=config)
 
-    def _check_auth_requirements(self):
+    def check_auth_requirements(self):
         try:
-            super(BitstampREST, self)._check_auth_requirements()
+            super(BitstampREST, self).check_auth_requirements()
         except IncompleteCredentialsError:
             raise
 
@@ -244,9 +244,9 @@ class GDAXREST(RESTAPI):
                                        secret=secret, timeout=timeout,
                                        config=config)
 
-    def _check_auth_requirements(self):
+    def check_auth_requirements(self):
         try:
-            super(GDAXREST, self)._check_auth_requirements()
+            super(GDAXREST, self).check_auth_requirements()
         except IncompleteCredentialsError:
             raise
 
@@ -333,9 +333,9 @@ class ITbitREST(RESTAPI):
                                         secret=secret, timeout=timeout,
                                         config=config)
 
-    def _check_auth_requirements(self):
+    def check_auth_requirements(self):
         try:
-            super(ITbitREST, self)._check_auth_requirements()
+            super(ITbitREST, self).check_auth_requirements()
         except IncompleteCredentialsError:
             raise
 
@@ -732,9 +732,9 @@ class QuadrigaCXREST(RESTAPI):
                                              key=key, secret=secret,
                                              timeout=timeout, config=config)
 
-    def _check_auth_requirements(self):
+    def check_auth_requirements(self):
         try:
-            super(QuadrigaCXREST, self)._check_auth_requirements()
+            super(QuadrigaCXREST, self).check_auth_requirements()
         except IncompleteCredentialsError:
             raise
 
