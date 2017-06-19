@@ -239,6 +239,12 @@ class GDAXREST(RESTAPI):
                                        secret=secret, timeout=timeout,
                                        config=config)
 
+    def private_query(self, method_verb, endpoint, **req_kwargs):
+        if any(x is None for x in (self.key, self.secret, self.passphrase)):
+            raise IncompleteCredentialsError
+        return super(GDAXREST, self).private_query(method_verb, endpoint,
+                                                   **req_kwargs)
+
     def load_config(self, fname):
         conf = super(GDAXREST, self).load_config(fname)
         try:
