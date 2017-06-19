@@ -759,7 +759,7 @@ class HitBTCREST(RESTAPI):
                  addr=None, timeout=5, config=None):
         version = '1' if not version else version
         addr = 'http://api.hitbtc.com/api/' if not addr else addr
-        super(HitBTCREST, self).__init__(url, version=version,
+        super(HitBTCREST, self).__init__(addr=addr, version=version,
                                          key=key, secret=secret,
                                          timeout=timeout, config=config)
 
@@ -818,7 +818,7 @@ class VaultoroREST(RESTAPI):
         # update req_kwargs keys
         req_kwargs['headers'] = {'X-Signature': signature}
         req_kwargs['url'] = url
-        return msg, {'headers': headers}
+        return req_kwargs
 
 
 class BterREST(RESTAPI):
