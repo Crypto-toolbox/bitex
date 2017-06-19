@@ -717,12 +717,18 @@ class QuadrigaCXREST(RESTAPI):
                                              key=key, secret=secret,
                                              timeout=timeout, config=config)
 
+    def private_query(self, method_verb, endpoint, **req_kwargs):
+        if any(x is None for x in (self.key, self.secret, self.client_id)):
+            raise IncompleteCredentialsError
+        return super(QuadrigaCXREST, self).private_query(method_verb, endpoint,
+                                                         **req_kwargs)
+
     def load_config(self, fname):
         conf = super(QuadrigaCXREST, self).load_config(fname)
         try:
-            self.user_id = conf['AUTH']['client_id']
+            self.client_id = conf['AUTH']['client_id']
         except KeyError:
-            warnings.warn(IncompleteCredentialsWarning,
+            warnings.warn(IncompleteCredentialConfigurationWarning,
                           "'client_id' not found in config!")
 
     def sign_request_kwargs(self, endpoint, **kwargs):
