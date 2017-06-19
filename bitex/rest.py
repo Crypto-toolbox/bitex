@@ -15,10 +15,6 @@ import warnings
 
 # Import Third-Party
 from requests.auth import AuthBase
-
-# Import Homebrew
-from bitex.exceptions import IncompleteCredentialsError, IncompleteCredentialConfigurationWarning
-
 try:
     import pyjwt as jwt
     jwt = True
@@ -28,6 +24,8 @@ except ImportError:
 # Import Homebrew
 from bitex.base import RESTAPI
 from bitex.exceptions import IncompleteCredentialsWarning
+from bitex.exceptions import IncompleteCredentialsError
+from bitex.exceptions import IncompleteCredentialConfigurationWarning
 
 
 log = logging.getLogger(__name__)

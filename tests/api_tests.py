@@ -2,8 +2,6 @@
 import logging
 from unittest import TestCase
 import time
-import hmac
-import hashlib
 
 # Import Third-Party
 import requests
@@ -11,7 +9,10 @@ import requests
 # Import Homebrew
 from bitex.base import BaseAPI, RESTAPI
 from bitex.rest import BitstampREST, BitfinexREST
-from bitex.exceptions import IncompleteCredentialsWarning, IncompleteCredentialsError, IncompleteAPIConfigurationWarning, IncompleteCredentialConfigurationWarning
+from bitex.exceptions import IncompleteCredentialsWarning
+from bitex.exceptions import IncompleteCredentialsError
+from bitex.exceptions import IncompleteAPIConfigurationWarning
+from bitex.exceptions import IncompleteCredentialConfigurationWarning
 
 # Init Logging Facilities
 log = logging.getLogger(__name__)
@@ -186,8 +187,9 @@ class BitstampRESTTests(TestCase):
             api = BitstampREST(addr='Bangarang', user_id=None,
                                config='/home/nls/git/bitex/tests/configs/config.ini')
 
-        # check that user_id is loaded correctly, and no IncompleteCredentialsWarning
-        # is issued, if we dont pass a user_id kwarg but it is avaialable in the config file
+        # check that user_id is loaded correctly, and no
+        # IncompleteCredentialsWarning is issued, if we dont pass a user_id
+        # kwarg but it is avaialable in the config file
         config_path = '/home/nls/git/bitex/tests/auth/bitstamp.ini'
         with self.assertRaises(AssertionError):
             with self.assertWarns(IncompleteCredentialConfigurationWarning):

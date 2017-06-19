@@ -3,19 +3,10 @@ API Base Classes for BitEx
 """
 # Import Built-Ins
 import logging
-import os
-
-# Import Third-Party
-
-# Import Homebrew
-
-log = logging.getLogger(__name__)
-
-# Import Built-Ins
-import logging
 import warnings
 import configparser
 import time
+import os
 
 # Import Third-Party
 import requests
@@ -25,6 +16,7 @@ from bitex.exceptions import IncompleteCredentialsWarning
 from bitex.exceptions import IncompleteCredentialsError
 from bitex.exceptions import IncompleteAPIConfigurationWarning
 from bitex.exceptions import IncompleteCredentialConfigurationWarning
+
 # Init Logging Facilities
 log = logging.getLogger(__name__)
 

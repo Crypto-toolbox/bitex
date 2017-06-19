@@ -1,3 +1,6 @@
+"""
+Contains all custom Warnings and Exceptions used in BitEx
+"""
 # Import Built-Ins
 import logging
 
