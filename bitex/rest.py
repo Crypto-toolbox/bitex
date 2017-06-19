@@ -250,7 +250,7 @@ class GDAXREST(RESTAPI):
         try:
             self.passphrase = conf['AUTH']['passphrase']
         except KeyError:
-            warnings.warn(IncompleteCredentialsWarning,
+            warnings.warn(IncompleteCredentialConfigurationWarning,
                           "'passphrase' not found in config!")
 
     def sign_request_kwargs(self, endpoint, **kwargs):
