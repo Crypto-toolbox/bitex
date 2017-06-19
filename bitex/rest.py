@@ -338,6 +338,10 @@ class ITbitREST(RESTAPI):
                           "'user_id' not found in config!")
 
     def sign_request_kwargs(self, endpoint, **kwargs):
+        """Requires that the HTTP request VERB is passed along in kwargs as
+        as key:value pair 'method':<Verb>; otherwise authentication will
+        not work.
+        """
         req_kwargs = super(ITbitREST, self).sign_request_kwargs(endpoint,
                                                                 **kwargs)
 
@@ -528,7 +532,7 @@ class GeminiREST(RESTAPI):
                                          secret=secret, timeout=timeout,
                                          config=config)
 
-    def sign_request_kwargs(self, endpoint,**kwargs):
+    def sign_request_kwargs(self, endpoint, **kwargs):
         req_kwargs = super(GeminiREST, self).sign_request_kwargs(endpoint,
                                                                  **kwargs)
 
@@ -540,7 +544,7 @@ class GeminiREST(RESTAPI):
             params = {}
         payload = params
         payload['nonce'] = nonce
-        payload['request'] = endpoint_path
+        payload['request'] = self.generate_uri(endpoint)
         payload = base64.b64encode(json.dumps(payload))
 
         # generate signature
@@ -558,11 +562,15 @@ class YunbiREST(RESTAPI):
                  addr=None, timeout=5, config=None):
         version = 'v2' if not version else version
         addr = 'https://yunbi.com/api' if not addr else addr
-        super(YunbiREST, self).__init__(url, version=version, key=key,
-                                         secret=secret, timeout=timeout,
-                                         config=config)
+        super(YunbiREST, self).__init__(addr=addr, version=version, key=key,
+                                        secret=secret, timeout=timeout,
+                                        config=config)
 
     def sign_request_kwargs(self, endpoint, **kwargs):
+        """Requires that the HTTP request VERB is passed along in kwargs as
+        as key:value pair 'method':<Verb>; otherwise authentication will
+        not work.
+        """
         req_kwargs = super(YunbiREST, self).sign_request_kwargs(endpoint,
                                                                 **kwargs)
         # prepare Payload arguments
@@ -574,7 +582,8 @@ class YunbiREST(RESTAPI):
         params['tonce'] = nonce
         params['access_key'] = self.key
         post_params = urllib.parse.urlencode(params)
-        msg = '%s|%s|%s' % (method_verb, endpoint_path, post_params)
+        msg = '%s|%s|%s' % (kwargs['method'], self.generate_uri(endpoint),
+                            post_params)
 
         # generate signature
         sig = hmac.new(self.secret, msg, hashlib.sha256).hexdigest()
