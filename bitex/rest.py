@@ -319,16 +319,22 @@ class ITbitREST(RESTAPI):
             warnings.warn("Incomplete Credentials were given - authentication "
                           "may not work!", IncompleteCredentialsWarning)
 
-        super(ItbitREST, self).__init__(addr=addr, version=version, key=key,
+        super(ITbitREST, self).__init__(addr=addr, version=version, key=key,
                                         secret=secret, timeout=timeout,
                                         config=config)
+
+    def private_query(self, method_verb, endpoint, **req_kwargs):
+        if any(x is None for x in (self.key, self.secret, self.user_id)):
+            raise IncompleteCredentialsError
+        return super(ITbitREST, self).private_query(method_verb, endpoint,
+                                                    **req_kwargs)
 
     def load_config(self, fname):
         conf = super(ITbitREST, self).load_config(fname)
         try:
             self.user_id = conf['AUTH']['user_id']
         except KeyError:
-            warnings.warn(IncompleteCredentialsWarning,
+            warnings.warn(IncompleteCredentialConfigurationWarning,
                           "'user_id' not found in config!")
 
     def sign_request_kwargs(self, endpoint, **kwargs):
