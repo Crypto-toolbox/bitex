@@ -44,7 +44,8 @@ class BaseAPITests(TestCase):
                   {'key': None, 'secret': 'SomeSecret'})
         for auth in kwargs:
             with self.assertWarns(IncompleteCredentialsWarning):
-                api = BaseAPI(addr='Bangarang', config=None, version=None, **auth)
+                api = BaseAPI(addr='Bangarang', config=None, version=None,
+                              **auth)
 
         # assert that no warning is raised if credential kwargs are incomplete
         # but a config is passed
@@ -62,7 +63,6 @@ class BaseAPITests(TestCase):
         for auth in kwargs:
             with self.assertRaises(ValueError, msg=auth):
                 BaseAPI(addr='Bangarang', config=None, version=None, **auth)
-
 
         # Make sure all attributes are correctly updated if a config file is
         # given
@@ -93,9 +93,6 @@ class BaseAPITests(TestCase):
                 BaseAPI(key='shadow', secret='panda',
                         config='%s/configs/config_no_api.ini' % tests_folder_dir,
                         **api_config)
-
-
-
 
         # Make sure nonce() method always supplies increasing Nonce
         previous_nonce = 0
@@ -142,11 +139,10 @@ class RESTAPITests(TestCase):
             with self.assertRaises(IncompleteCredentialsError, msg=kw):
                 api.private_query('GET', 'market', url='https://www.someapi.com')
 
-
         # assert that _query() silently returns an requests.Response() obj, if
         # the request was good
         try:
-            resp = api._query('GET', url='https://api.kraken.com/0/public/Time')
+            resp = RESTAPI()._query('GET', url='https://api.kraken.com/0/public/Time')
         except requests.exceptions.ConnectionError:
             self.fail("No Internet connection detected to ")
         self.assertIsInstance(resp, requests.Response)
@@ -154,7 +150,7 @@ class RESTAPITests(TestCase):
         # assert that _query() raises an appropriate error on status code other
         # than 200
         with self.assertRaises(requests.exceptions.HTTPError):
-            api._query('data', url='https://api.kraken.com/0/public/Wasabi')
+            RESTAPI()._query('data', url='https://api.kraken.com/0/public/Wasabi')
         self.fail("finish this test!")
 
 
