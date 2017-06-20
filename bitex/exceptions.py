@@ -35,3 +35,8 @@ class IncompleteAPIConfigurationWarning(UserWarning):
     """Raised if either the version or address key word is not found in a
     given config file when load_config() is called."""
     pass
+
+
+class UnsupportedPairError(ValueError):
+    """Raised if a given pair isn't supported by an Interface / API.
+    """
