@@ -313,11 +313,6 @@ class ITbitREST(RESTAPI):
             raise ValueError("Invalid user id - cannot be empty string! "
                              "Pass None instead!")
         self.user_id = user_id
-        if (not all(x is None for x in (user_id, key, secret)) or
-                not all(x is not None for x in (user_id, key, secret))):
-            warnings.warn("Incomplete Credentials were given - authentication "
-                          "may not work!", IncompleteCredentialsWarning)
-
         super(ITbitREST, self).__init__(addr=addr, version=version, key=key,
                                         secret=secret, timeout=timeout,
                                         config=config)
