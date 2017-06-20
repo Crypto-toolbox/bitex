@@ -4,7 +4,7 @@ import unittest
 # Import Third-Party
 
 # Import Homebrew
-from bitex.pairs import PairFormatter()
+from bitex.pairs import PairFormatter
 # Init Logging Facilities
 log = logging.getLogger(__name__)
 
@@ -50,7 +50,7 @@ class PairTests(unittest.TestCase):
 
         # Assert that XMR is only swapped to base if current base is not BTC or
         # USDT
-        pair = PairFormatter('BTC' 'XMR')
+        pair = PairFormatter('BTC', 'XMR')
         self.assertEqual(pair.format('Poloniex'), 'BTC_XMR')
         pair = PairFormatter('USDT', 'XMR')
         self.assertEqual(pair.format('Poloniex'), 'USDT_XMR')
@@ -66,3 +66,6 @@ class PairTests(unittest.TestCase):
 
         pair = PairFormatter('USD', 'DASH')
         self.assertEqual(pair.format('Bitfinex'), 'USDDSH')
+
+if __name__ == '__main__':
+    unittest.main()
