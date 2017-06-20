@@ -37,6 +37,10 @@ class IncompleteAPIConfigurationWarning(UserWarning):
     pass
 
 
+class EmptySupportedPairListWarning(UserWarning):
+    """Raised when _supported_pairs is Empty or None while querying an API"""
+    pass
+
+
 class UnsupportedPairError(ValueError):
-    """Raised if a given pair isn't supported by an Interface / API.
-    """
+    """Raised if a given pair isn't supported by an Interface / API."""
