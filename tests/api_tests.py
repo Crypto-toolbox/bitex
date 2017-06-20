@@ -143,7 +143,8 @@ class RESTAPITests(TestCase):
         # assert that _query() silently returns an requests.Response() obj, if
         # the request was good
         try:
-            resp = RESTAPI()._query('GET', url='https://api.kraken.com/0/public/Time')
+            resp = RESTAPI('http://test.com')._query('GET',
+                                                     url='https://api.kraken.com/0/public/Time')
         except requests.exceptions.ConnectionError:
             self.fail("No Internet connection detected to ")
         self.assertIsInstance(resp, requests.Response)
@@ -151,7 +152,8 @@ class RESTAPITests(TestCase):
         # assert that _query() raises an appropriate error on status code other
         # than 200
         with self.assertRaises(requests.exceptions.HTTPError):
-            RESTAPI()._query('data', url='https://api.kraken.com/0/public/Wasabi')
+            RESTAPI('http://test.com')._query('data',
+                                              url='https://api.kraken.com/0/public/Wasabi')
         self.fail("finish this test!")
 
 
