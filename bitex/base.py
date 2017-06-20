@@ -1,21 +1,12 @@
 """
-ABC for Exchange APIs
+API Base Classes for BitEx
 """
-# Import Built-Ins
-import logging
-import os
-
-# Import Third-Party
-
-# Import Homebrew
-
-log = logging.getLogger(__name__)
-
 # Import Built-Ins
 import logging
 import warnings
 import configparser
 import time
+import os
 
 # Import Third-Party
 import requests
@@ -25,6 +16,7 @@ from bitex.exceptions import IncompleteCredentialsWarning
 from bitex.exceptions import IncompleteCredentialsError
 from bitex.exceptions import IncompleteAPIConfigurationWarning
 from bitex.exceptions import IncompleteCredentialConfigurationWarning
+
 # Init Logging Facilities
 log = logging.getLogger(__name__)
 
@@ -33,8 +25,9 @@ class BaseAPI:
     """
     BaseAPI provides lowest-common-denominator methods used in all API types.
 
-    It provides a Nonce() method, basic configuration loading and a place-holder
-    sign() method.
+    It provides a nonce() method, basic configuration loading and Credential
+    validity checking method check_auth_requirements(), which should be
+    extended in subclasses to cover any additional parameters necessary.
     """
     def __init__(self, *, addr, key, secret, version, config):
         """
@@ -50,11 +43,13 @@ class BaseAPI:
             raise ValueError("Invalid key or secret - cannot be empty string! "
                              "Pass None instead!")
 
-        if (config is None and
-                ((key is None and secret is not None) or
-                     (key is not None and secret is None))):
-            warnings.warn("Incomplete Credentials were given - authentication "
-                          "may not work!", IncompleteCredentialsWarning)
+        try:
+            self.check_auth_requirements()
+        except IncompleteCredentialsError:
+            if config is None:
+                warnings.warn("Incomplete Credentials were given - "
+                              "authentication may not work!",
+                              IncompleteCredentialsWarning)
 
         self.addr = addr
         self.key = key if key else None
@@ -63,6 +58,22 @@ class BaseAPI:
         self.config_file = config
         if self.config_file:
             self.load_config(self.config_file)
+
+    def check_auth_requirements(self):
+        """Check that neither self.key nor self.secret are None. If so, this
+        method raises an IncompleteCredentialsError. Otherwise returns None.
+
+        Extend this in  child classes if you need to check for further
+        required values.
+
+        :raise: IncompleteCredentialsError
+        :return: None
+
+        """
+        if any(attr is None for attr in (self.key, self.secret)):
+            raise IncompleteCredentialsError
+        else:
+            return
 
     def load_config(self, fname):
         """
@@ -183,15 +194,14 @@ class RESTAPI(BaseAPI):
         return resp
 
     def private_query(self, method_verb, endpoint, **request_kwargs):
-        """
-        Query a private API endpoint requiring signing of the request.
+        """Query a private API endpoint requiring signing of the request.
+
         :param method_verb: valid HTTP Verb (GET, PUT, DELETE, etc.)
         :param endpoint: str, API Endpoint
         :param request_kwargs: kwargs for request.Request()
         :return: request.Response() object
         """
-        if any(attr is None for attr in (self.key, self.secret)):
-            raise IncompleteCredentialsError
+        self.check_auth_requirements()
         request_kwargs = self.sign_request_kwargs(endpoint, **request_kwargs)
         return self._query(method_verb, **request_kwargs)
 

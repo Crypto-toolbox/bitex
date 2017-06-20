@@ -1,6 +1,6 @@
 """
 Contains all API Client sub-classes, which store exchange specific details
-and feature the respective exchanges authentication method (sign()).
+and feature the respective exchanges authentication method (sign_request_kwargs()).
 """
 # Import Built-ins
 import logging
@@ -15,10 +15,6 @@ import warnings
 
 # Import Third-Party
 from requests.auth import AuthBase
-
-# Import Homebrew
-from bitex.exceptions import IncompleteCredentialsError, IncompleteCredentialConfigurationWarning
-
 try:
     import pyjwt as jwt
     jwt = True
@@ -28,6 +24,8 @@ except ImportError:
 # Import Homebrew
 from bitex.base import RESTAPI
 from bitex.exceptions import IncompleteCredentialsWarning
+from bitex.exceptions import IncompleteCredentialsError
+from bitex.exceptions import IncompleteCredentialConfigurationWarning
 
 
 log = logging.getLogger(__name__)
@@ -83,11 +81,16 @@ class BitstampREST(RESTAPI):
                                            key=key, secret=secret,
                                            timeout=timeout, config=config)
 
-    def private_query(self, method_verb, endpoint, **req_kwargs):
-        if any(x is None for x in (self.key, self.secret, self.user_id)):
+    def check_auth_requirements(self):
+        try:
+            super(BitstampREST, self).check_auth_requirements()
+        except IncompleteCredentialsError:
+            raise
+
+        if self.user_id is None:
             raise IncompleteCredentialsError
-        return super(BitstampREST, self).private_query(method_verb, endpoint,
-                                                       **req_kwargs)
+        else:
+            return
 
     def load_config(self, fname):
         conf = super(BitstampREST, self).load_config(fname)
@@ -168,7 +171,7 @@ class BittrexREST(RESTAPI):
 class CoincheckREST(RESTAPI):
     def __init__(self, key=None, secret=None, version=None,
                  addr=None, timeout=5):
-        addr = 'https://coincheck.com' if not url else url
+        addr = 'https://coincheck.com' if not addr else addr
         version = 'api' if not version else version
         super(CoincheckREST, self).__init__(addr=addr, version=version,
                                             key=key, secret=secret,
@@ -239,12 +242,23 @@ class GDAXREST(RESTAPI):
                                        secret=secret, timeout=timeout,
                                        config=config)
 
+    def check_auth_requirements(self):
+        try:
+            super(GDAXREST, self).check_auth_requirements()
+        except IncompleteCredentialsError:
+            raise
+
+        if self.passphrase is None:
+            raise IncompleteCredentialsError
+        else:
+            return
+
     def load_config(self, fname):
         conf = super(GDAXREST, self).load_config(fname)
         try:
             self.passphrase = conf['AUTH']['passphrase']
         except KeyError:
-            warnings.warn(IncompleteCredentialsWarning,
+            warnings.warn(IncompleteCredentialConfigurationWarning,
                           "'passphrase' not found in config!")
 
     def sign_request_kwargs(self, endpoint, **kwargs):
@@ -313,19 +327,34 @@ class ITbitREST(RESTAPI):
             warnings.warn("Incomplete Credentials were given - authentication "
                           "may not work!", IncompleteCredentialsWarning)
 
-        super(ItbitREST, self).__init__(addr=addr, version=version, key=key,
+        super(ITbitREST, self).__init__(addr=addr, version=version, key=key,
                                         secret=secret, timeout=timeout,
                                         config=config)
+
+    def check_auth_requirements(self):
+        try:
+            super(ITbitREST, self).check_auth_requirements()
+        except IncompleteCredentialsError:
+            raise
+
+        if self.user_id is None:
+            raise IncompleteCredentialsError
+        else:
+            return
 
     def load_config(self, fname):
         conf = super(ITbitREST, self).load_config(fname)
         try:
             self.user_id = conf['AUTH']['user_id']
         except KeyError:
-            warnings.warn(IncompleteCredentialsWarning,
+            warnings.warn(IncompleteCredentialConfigurationWarning,
                           "'user_id' not found in config!")
 
     def sign_request_kwargs(self, endpoint, **kwargs):
+        """Requires that the HTTP request VERB is passed along in kwargs as
+        as key:value pair 'method':<Verb>; otherwise authentication will
+        not work.
+        """
         req_kwargs = super(ITbitREST, self).sign_request_kwargs(endpoint,
                                                                 **kwargs)
 
@@ -335,7 +364,7 @@ class ITbitREST(RESTAPI):
         except KeyError:
             params = {}
 
-        verb = method_verb
+        verb = kwargs['method']
 
         if verb in ('PUT', 'POST'):
             body = params
@@ -345,24 +374,22 @@ class ITbitREST(RESTAPI):
         timestamp = self.nonce()
         nonce = self.nonce()
 
-        message = json.dumps([verb, url, body, nonce, timestamp],
+        message = json.dumps([verb, req_kwargs['url'], body, nonce, timestamp],
                              separators=(',', ':'))
         sha256_hash = hashlib.sha256()
         nonced_message = nonce + message
         sha256_hash.update(nonced_message.encode('utf8'))
         hash_digest = sha256_hash.digest()
         hmac_digest = hmac.new(self.secret.encode('utf-8'),
-                               url.encode('utf-8') + hash_digest,
+                               req_kwargs['url'].encode('utf-8') + hash_digest,
                                hashlib.sha512).digest()
         signature = base64.b64encode(hmac_digest)
 
         # Update request kwargs header variable
-        req_kwargs['headers'] = {
-            'Authorization': self.key + ':' + signature.decode('utf8'),
-            'X-Auth-Timestamp': timestamp,
-            'X-Auth-Nonce': nonce,
-            'Content-Type': 'application/json'
-        }
+        req_kwargs['headers'] = {'Authorization': self.key + ':' + signature.decode('utf8'),
+                                 'X-Auth-Timestamp': timestamp,
+                                 'X-Auth-Nonce': nonce,
+                                 'Content-Type': 'application/json'}
         return req_kwargs
 
 
@@ -518,7 +545,7 @@ class GeminiREST(RESTAPI):
                                          secret=secret, timeout=timeout,
                                          config=config)
 
-    def sign_request_kwargs(self, endpoint,**kwargs):
+    def sign_request_kwargs(self, endpoint, **kwargs):
         req_kwargs = super(GeminiREST, self).sign_request_kwargs(endpoint,
                                                                  **kwargs)
 
@@ -530,7 +557,7 @@ class GeminiREST(RESTAPI):
             params = {}
         payload = params
         payload['nonce'] = nonce
-        payload['request'] = endpoint_path
+        payload['request'] = self.generate_uri(endpoint)
         payload = base64.b64encode(json.dumps(payload))
 
         # generate signature
@@ -548,11 +575,15 @@ class YunbiREST(RESTAPI):
                  addr=None, timeout=5, config=None):
         version = 'v2' if not version else version
         addr = 'https://yunbi.com/api' if not addr else addr
-        super(YunbiREST, self).__init__(url, version=version, key=key,
-                                         secret=secret, timeout=timeout,
-                                         config=config)
+        super(YunbiREST, self).__init__(addr=addr, version=version, key=key,
+                                        secret=secret, timeout=timeout,
+                                        config=config)
 
     def sign_request_kwargs(self, endpoint, **kwargs):
+        """Requires that the HTTP request VERB is passed along in kwargs as
+        as key:value pair 'method':<Verb>; otherwise authentication will
+        not work.
+        """
         req_kwargs = super(YunbiREST, self).sign_request_kwargs(endpoint,
                                                                 **kwargs)
         # prepare Payload arguments
@@ -564,7 +595,8 @@ class YunbiREST(RESTAPI):
         params['tonce'] = nonce
         params['access_key'] = self.key
         post_params = urllib.parse.urlencode(params)
-        msg = '%s|%s|%s' % (method_verb, endpoint_path, post_params)
+        msg = '%s|%s|%s' % (kwargs['method'], self.generate_uri(endpoint),
+                            post_params)
 
         # generate signature
         sig = hmac.new(self.secret, msg, hashlib.sha256).hexdigest()
@@ -611,7 +643,7 @@ class RockTradingREST(RESTAPI):
 class PoloniexREST(RESTAPI):
     def __init__(self, key=None, secret=None, version=None, config=None,
                  addr=None, timeout=5):
-        addr = 'https://poloniex.com' if not addr else add
+        addr = 'https://poloniex.com' if not addr else addr
         super(PoloniexREST, self).__init__(addr=addr, version=version,
                                            key=key, secret=secret,
                                            timeout=timeout, config=config)
@@ -640,11 +672,6 @@ class PoloniexREST(RESTAPI):
 
 
 class QuoineREST(RESTAPI):
-    """
-    The Quoine Api requires the API version to be designated in each requests's
-    header as {'X-Quoine-API-Version': 2}, instead of adding it to the URL.
-    Hence, we need to adapt generate_url.
-    """
     def __init__(self, key=None, secret=None, version=None, config=None,
                  addr=None, timeout=5):
         if not jwt:
@@ -656,6 +683,10 @@ class QuoineREST(RESTAPI):
                                          timeout=timeout)
 
     def generate_uri(self, endpoint):
+        """The Quoine Api requires the API version to be designated in each
+        requests's header as {'X-Quoine-API-Version': 2}, instead of adding it
+        to the URL. Hence, we need to adapt generate_uri.
+        """
         return endpoint
 
     def sign_request_kwargs(self, endpoint, **kwargs):
@@ -699,12 +730,23 @@ class QuadrigaCXREST(RESTAPI):
                                              key=key, secret=secret,
                                              timeout=timeout, config=config)
 
+    def check_auth_requirements(self):
+        try:
+            super(QuadrigaCXREST, self).check_auth_requirements()
+        except IncompleteCredentialsError:
+            raise
+
+        if self.client_id is None:
+            raise IncompleteCredentialsError
+        else:
+            return
+
     def load_config(self, fname):
         conf = super(QuadrigaCXREST, self).load_config(fname)
         try:
-            self.user_id = conf['AUTH']['client_id']
+            self.client_id = conf['AUTH']['client_id']
         except KeyError:
-            warnings.warn(IncompleteCredentialsWarning,
+            warnings.warn(IncompleteCredentialConfigurationWarning,
                           "'client_id' not found in config!")
 
     def sign_request_kwargs(self, endpoint, **kwargs):
@@ -735,7 +777,7 @@ class HitBTCREST(RESTAPI):
                  addr=None, timeout=5, config=None):
         version = '1' if not version else version
         addr = 'http://api.hitbtc.com/api/' if not addr else addr
-        super(HitBTCREST, self).__init__(url, version=version,
+        super(HitBTCREST, self).__init__(addr=addr, version=version,
                                          key=key, secret=secret,
                                          timeout=timeout, config=config)
 
@@ -794,7 +836,7 @@ class VaultoroREST(RESTAPI):
         # update req_kwargs keys
         req_kwargs['headers'] = {'X-Signature': signature}
         req_kwargs['url'] = url
-        return msg, {'headers': headers}
+        return req_kwargs
 
 
 class BterREST(RESTAPI):

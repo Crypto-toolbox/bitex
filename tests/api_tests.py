@@ -2,16 +2,22 @@
 import logging
 from unittest import TestCase
 import time
-import hmac
-import hashlib
 
 # Import Third-Party
 import requests
 
 # Import Homebrew
 from bitex.base import BaseAPI, RESTAPI
+<<<<<<< HEAD
 from bitex.rest import BitstampREST, BitfinexREST, BittrexREST
 from bitex.exceptions import IncompleteCredentialsWarning, IncompleteCredentialsError, IncompleteAPIConfigurationWarning, IncompleteCredentialConfigurationWarning
+=======
+from bitex.rest import BitstampREST, BitfinexREST
+from bitex.exceptions import IncompleteCredentialsWarning
+from bitex.exceptions import IncompleteCredentialsError
+from bitex.exceptions import IncompleteAPIConfigurationWarning
+from bitex.exceptions import IncompleteCredentialConfigurationWarning
+>>>>>>> 36a4bb24eb253bb240acc7dcb5a82ea310995ecd
 
 # Init Logging Facilities
 log = logging.getLogger(__name__)
@@ -44,7 +50,8 @@ class BaseAPITests(TestCase):
                   {'key': None, 'secret': 'SomeSecret'})
         for auth in kwargs:
             with self.assertWarns(IncompleteCredentialsWarning):
-                api = BaseAPI(addr='Bangarang', config=None, version=None, **auth)
+                api = BaseAPI(addr='Bangarang', config=None, version=None,
+                              **auth)
 
         # assert that no warning is raised if credential kwargs are incomplete
         # but a config is passed
@@ -62,7 +69,6 @@ class BaseAPITests(TestCase):
         for auth in kwargs:
             with self.assertRaises(ValueError, msg=auth):
                 BaseAPI(addr='Bangarang', config=None, version=None, **auth)
-
 
         # Make sure all attributes are correctly updated if a config file is
         # given
@@ -142,7 +148,7 @@ class RESTAPITests(TestCase):
         # assert that _query() silently returns an requests.Response() obj, if
         # the request was good
         try:
-            resp = api._query('GET', url='https://api.kraken.com/0/public/Time')
+            resp = RESTAPI()._query('GET', url='https://api.kraken.com/0/public/Time')
         except requests.exceptions.ConnectionError:
             self.fail("No Internet connection detected to ")
         self.assertIsInstance(resp, requests.Response)
@@ -150,7 +156,7 @@ class RESTAPITests(TestCase):
         # assert that _query() raises an appropriate error on status code other
         # than 200
         with self.assertRaises(requests.exceptions.HTTPError):
-            api._query('data', url='https://api.kraken.com/0/public/Wasabi')
+            RESTAPI()._query('data', url='https://api.kraken.com/0/public/Wasabi')
         self.fail("finish this test!")
 
 
@@ -186,8 +192,9 @@ class BitstampRESTTests(TestCase):
             api = BitstampREST(addr='Bangarang', user_id=None,
                                config='/home/nls/git/bitex/tests/configs/config.ini')
 
-        # check that user_id is loaded correctly, and no IncompleteCredentialsWarning
-        # is issued, if we dont pass a user_id kwarg but it is avaialable in the config file
+        # check that user_id is loaded correctly, and no
+        # IncompleteCredentialsWarning is issued, if we dont pass a user_id
+        # kwarg but it is avaialable in the config file
         config_path = '/home/nls/git/bitex/tests/auth/bitstamp.ini'
         with self.assertRaises(AssertionError):
             with self.assertWarns(IncompleteCredentialConfigurationWarning):
