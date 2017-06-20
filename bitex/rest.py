@@ -426,17 +426,17 @@ class OKCoinREST(RESTAPI):
         return req_kwargs
 
 
-class BTCERest(RESTAPI):
+class BTCEREST(RESTAPI):
     def __init__(self, key=None, secret=None, version=None,
                  addr=None, timeout=5, config=None):
         version = '3' if not version else version
         addr = 'https://btc-e.com/api' if not addr else addr
-        super(BTCERest, self).__init__(addr=addr, version=version, key=key,
+        super(BTCEREST, self).__init__(addr=addr, version=version, key=key,
                                        secret=secret, timeout=timeout,
                                        config=config)
 
     def sign_request_kwargs(self, endpoint, **kwargs):
-        req_kwargs = super(BTCERest, self).sign_request_kwargs(endpoint,
+        req_kwargs = super(BTCEREST, self).sign_request_kwargs(endpoint,
                                                                **kwargs)
 
         # Prepare POST payload
@@ -463,17 +463,17 @@ class BTCERest(RESTAPI):
         return req_kwargs
 
 
-class CCEXRest(RESTAPI):
+class CCEXREST(RESTAPI):
     def __init__(self, key=None, secret=None, version=None,
                  addr=None, timeout=5, config=None):
         addr = 'https://c-cex.com/t' if not addr else addr
 
-        super(CCEXRest, self).__init__(addr=addr, version=version, key=key,
+        super(CCEXREST, self).__init__(addr=addr, version=version, key=key,
                                        secret=secret, timeout=timeout,
                                        config=config)
 
     def sign_request_kwargs(self, endpoint, **kwargs):
-        req_kwargs = super(CCEXRest, self).sign_request_kwargs(endpoint,
+        req_kwargs = super(CCEXREST, self).sign_request_kwargs(endpoint,
                                                                **kwargs)
 
         # Prepare Payload arguments
