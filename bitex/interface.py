@@ -1,11 +1,12 @@
 # Import Built-Ins
 import logging
+import warnings
 
 # Import Third-Party
 
 # Import Homebrew
 from .pairs import PairFormatter
-from .exceptions import UnsupportedPairError
+from .exceptions import UnsupportedPairError, EmptySupportedPairListWarning
 # Init Logging Facilities
 log = logging.getLogger(__name__)
 
@@ -14,7 +15,10 @@ class Interface:
     def __init__(self, *, name, rest_api):
         self.REST = rest_api
         self.name = name
-        self._supported_pairs = self._get_supported_pairs()
+        try:
+            self._supported_pairs = self._get_supported_pairs()
+        except NotImplementedError:
+            self._supported_pairs = None
 
     @property
     def supported_pairs(self):
@@ -43,7 +47,6 @@ class Interface:
         :param pair: Str, or PairFormatter Object
         :return: Bool
         """
-
         if pair.format(self.name) in self._supported_pairs:
             return True
         else:
@@ -61,12 +64,18 @@ class Interface:
         :raise: UnsupportedPairError
         :return: requests.Response() Obj
         """
-        if self.is_supported(pair):
-            if authenticate:
-                return self.REST.private_query(verb, endpoint, **req_kwargs)
-            else:
-                return self.REST.public_query(verb, endpoint, **req_kwargs)
-        else:
+        if not self._supported_pairs:
+                warnings.warn("No list of valid pairs available! Check that "
+                              "_get_supported_pairs() is implemented and "
+                              "returns a Non-empty list!",
+                              EmptySupportedPairListWarning)
+        elif not self.is_supported(pair):
             raise UnsupportedPairError
+
+        if authenticate:
+            return self.REST.private_query(verb, endpoint, **req_kwargs)
+        else:
+            return self.REST.public_query(verb, endpoint, **req_kwargs)
+
 
 
