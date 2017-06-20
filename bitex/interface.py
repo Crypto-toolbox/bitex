@@ -50,11 +50,13 @@ class Interface:
             return False
 
     def request(self, verb, pair, endpoint, authenticate=False, **req_kwargs):
-        """Issue a call to self.API._query() and return its result.
+        """Query the API and return its result.
 
         :param verb: HTTP verb (GET, PUT, DELETE, etc)
         :param pair: Str or PairFormatter Obj
         :param endpoint: Str
+        :param authenticate: Bool, whether to call private_query or public_query
+                             method.
         :param req_kwargs: Kwargs to pass to _query / requests.request()
         :raise: UnsupportedPairError
         :return: requests.Response() Obj
