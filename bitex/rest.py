@@ -660,8 +660,6 @@ class PoloniexREST(RESTAPI):
 class QuoineREST(RESTAPI):
     def __init__(self, key=None, secret=None, version=None, config=None,
                  addr=None, timeout=5):
-        if not jwt:
-            raise SystemError("No JWT Installed! Quoine API Unavailable!")
         addr = 'https://api.quoine.com/' if not addr else addr
         version = '2' if not version else version
         super(QuoineREST, self).__init__(addr=addr, version=version,
@@ -708,10 +706,6 @@ class QuadrigaCXREST(RESTAPI):
             raise ValueError("Invalid client id - cannot be empty string! "
                              "Pass None instead!")
         self.client_id = client_id
-        if (not all(x is None for x in (client_id, key, secret)) or
-                not all(x is not None for x in (client_id, key, secret))):
-            warnings.warn("Incomplete Credentials were given - authentication "
-                          "may not work!", IncompleteCredentialsWarning)
         super(QuadrigaCXREST, self).__init__(addr=addr, version=version,
                                              key=key, secret=secret,
                                              timeout=timeout, config=config)
