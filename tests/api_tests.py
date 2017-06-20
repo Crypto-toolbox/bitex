@@ -8,7 +8,11 @@ import requests
 
 # Import Homebrew
 from bitex.base import BaseAPI, RESTAPI
-from bitex.rest import BitstampREST, BitfinexREST, BittrexREST
+from bitex.rest import BitstampREST, BitfinexREST, BittrexREST, BTCEREST
+from bitex.rest import HitBTCREST, CCEXREST, CoincheckREST, CryptopiaREST
+from bitex.rest import ITbitREST, GDAXREST, GeminiREST,  KrakenREST, OKCoinREST
+from bitex.rest import PoloniexREST, QuoineREST, QuadrigaCXREST, RockTradingREST
+from bitex.rest import VaultoroREST, YunbiREST, BterREST
 from bitex.exceptions import IncompleteCredentialsWarning
 from bitex.exceptions import IncompleteCredentialsError
 from bitex.exceptions import IncompleteAPIConfigurationWarning
@@ -165,7 +169,7 @@ class BitstampRESTTests(TestCase):
         self.assertIs(api.secret, None)
         self.assertIs(api.key, None)
         self.assertEqual(api.addr, 'https://www.bitstamp.net/api')
-        self.assertIs(api.version, '')
+        self.assertIs(api.version, None)
         self.assertIs(api.config_file, None)
         # Assert that a Warning is raised if user_id is None, and BaseAPI's
         # check mechanism is extended properly
@@ -225,7 +229,7 @@ class BitfinexRESTTests(TestCase):
         self.assertIs(api.secret, None)
         self.assertIs(api.key, None)
         self.assertEqual(api.addr, 'https://api.bitfinex.com')
-        self.assertIs(api.version, 'v1')
+        self.assertEqual(api.version, 'v1')
         self.assertIs(api.config_file, None)
 
     def test_sign_request_kwargs_method_and_signature(self):
@@ -246,13 +250,461 @@ class BittrexRESTTest(TestCase):
         self.assertIs(api.secret, None)
         self.assertIs(api.key, None)
         self.assertEqual(api.addr, 'https://bittrex.com/api')
-        self.assertIs(api.version, 'v1.1')
+        self.assertEqual(api.version, 'v1.1')
         self.assertIs(api.config_file, None)
 
     def test_sign_request_kwargs_method_and_signature(self):
         # Test that the sign_request_kwargs generate appropriate kwargs:
         config_path = '%s/auth/bittrex.ini' % tests_folder_dir
         api = BittrexREST(config=config_path)
+        self.assertEqual(api.config_file, config_path)
+
+        # Check signatured request kwargs
+        self.fail("Finish this test")
+
+
+class CoinCheckRESTTest(TestCase):
+    def test_initialization(self):
+        # test that all default values are assigned correctly if No kwargs are
+        # given
+        api = CoincheckREST()
+        self.assertIs(api.secret, None)
+        self.assertIs(api.key, None)
+        self.assertEqual(api.addr, 'https://coincheck.com')
+        self.assertEqual(api.version, 'api')
+        self.assertIs(api.config_file, None)
+
+    def test_sign_request_kwargs_method_and_signature(self):
+        # Test that the sign_request_kwargs generate appropriate kwargs:
+        config_path = '%s/auth/coincheck.ini' % tests_folder_dir
+        api = CoincheckREST(config=config_path)
+        self.assertEqual(api.config_file, config_path)
+
+        # Check signatured request kwargs
+        self.fail("Finish this test")
+
+
+class GDAXRESTTest(TestCase):
+    def test_initialization(self):
+        # test that all default values are assigned correctly if No kwargs are
+        # given
+        api = GDAXREST()
+        self.assertIs(api.secret, None)
+        self.assertIs(api.key, None)
+        self.assertIs(api.passphrase, None)
+        self.assertEqual(api.addr, 'https://api.gdax.com')
+        self.assertIs(api.version, None)
+        self.assertIs(api.config_file, None)
+        # Assert that a Warning is raised if passphrase is None, and BaseAPI's
+        # check mechanism is extended properly
+        with self.assertWarns(IncompleteCredentialsWarning):
+            api = GDAXREST(addr='Bangarang', passphrase=None, key='SomeKey',
+                           secret='SomeSecret', config=None, version=None)
+
+        # make sure an exception is raised if passphrase is passed as ''
+        with self.assertRaises(ValueError):
+            api = GDAXREST(addr='Bangarang', passphrase='', key='SomeKey',
+                           secret='SomeSecret', config=None, version=None)
+
+        # make sure user_id is assigned properly
+        api = GDAXREST(addr='Bangarang', passphrase='woloho')
+        self.assertIs(api.passphrase, 'woloho')
+
+        # Check that a IncompleteCredentialConfigurationWarning is issued if
+        # user_id isn't available in config, and no user_id was given.
+        with self.assertWarns(IncompleteCredentialConfigurationWarning):
+            api = GDAXREST(addr='Bangarang', passphrase=None,
+                           config='%s/configs/config.ini' % tests_folder_dir)
+
+        # check that passphrase is loaded correctly, and no
+        # IncompleteCredentialsWarning is issued, if we dont pass a passphrase
+        # kwarg but it is avaialable in the config file
+        config_path = '/home/nls/git/bitex/tests/auth/gdax.ini'
+        with self.assertRaises(AssertionError):
+            with self.assertWarns(IncompleteCredentialConfigurationWarning):
+                api = GDAXREST(config=config_path)
+        self.assertTrue(api.config_file == config_path)
+        self.assertEqual(api.passphrase, 'testuser')
+
+    def test_sign_request_kwargs_method_and_signature(self):
+        # Test that the sign_request_kwargs generate appropriate kwargs:
+        config_path = '%s/auth/gdax.ini' % tests_folder_dir
+        api = GDAXREST(config=config_path)
+        self.assertEqual(api.config_file, config_path)
+
+        # Check signatured request kwargs
+        self.fail("Finish this test")
+
+
+class KrakenRESTTest(TestCase):
+    def test_initialization(self):
+        # test that all default values are assigned correctly if No kwargs are
+        # given
+        api = KrakenREST()
+        self.assertIs(api.secret, None)
+        self.assertIs(api.key, None)
+        self.assertEqual(api.addr, 'https://api.kraken.com')
+        self.assertEqual(api.version, '0')
+        self.assertIs(api.config_file, None)
+
+    def test_sign_request_kwargs_method_and_signature(self):
+        # Test that the sign_request_kwargs generate appropriate kwargs:
+        config_path = '%s/auth/kraken.ini' % tests_folder_dir
+        api = KrakenREST(config=config_path)
+        self.assertEqual(api.config_file, config_path)
+
+        # Check signatured request kwargs
+        self.fail("Finish this test")
+
+
+class ITBitRESTTest(TestCase):
+    def test_initialization(self):
+        # test that all default values are assigned correctly if No kwargs are
+        # given
+        api = ITbitREST()
+        self.assertIs(api.secret, None)
+        self.assertIs(api.key, None)
+        self.assertEqual(api.addr, 'https://api.itbit.com')
+        self.assertEqual(api.version, 'v1')
+        self.assertIs(api.config_file, None)
+        # Assert that a Warning is raised if user_id is None, and BaseAPI's
+        # check mechanism is extended properly
+        with self.assertWarns(IncompleteCredentialsWarning):
+            api = ITbitREST(addr='Bangarang', user_id=None, key='SomeKey',
+                           secret='SomeSecret', config=None, version=None)
+
+        # make sure an exception is raised if user_id is passed as ''
+        with self.assertRaises(ValueError):
+            api = ITbitREST(addr='Bangarang', user_id='', key='SomeKey',
+                           secret='SomeSecret', config=None, version=None)
+
+        # make sure user_id is assigned properly
+        api = ITbitREST(addr='Bangarang', user_id='woloho')
+        self.assertIs(api.user_id, 'woloho')
+
+        # Check that a IncompleteCredentialConfigurationWarning is issued if
+        # user_id isn't available in config, and no user_id was given.
+        with self.assertWarns(IncompleteCredentialConfigurationWarning):
+            api = ITbitREST(addr='Bangarang', user_id=None,
+                            config='%s/configs/config.ini' % tests_folder_dir)
+
+        # check that passphrase is loaded correctly, and no
+        # IncompleteCredentialsWarning is issued, if we dont pass a user_id
+        # kwarg but it is avaialable in the config file
+        config_path = '/home/nls/git/bitex/tests/auth/itbit.ini'
+        with self.assertRaises(AssertionError):
+            with self.assertWarns(IncompleteCredentialConfigurationWarning):
+                api = ITbitREST(config=config_path)
+        self.assertTrue(api.config_file == config_path)
+        self.assertEqual(api.user_id, 'testuser')
+
+    def test_sign_request_kwargs_method_and_signature(self):
+        # Test that the sign_request_kwargs generate appropriate kwargs:
+        config_path = '%s/auth/itbit.ini' % tests_folder_dir
+        api = ITbitREST(config=config_path)
+        self.assertEqual(api.config_file, config_path)
+
+        # Check signatured request kwargs
+        self.fail("Finish this test")
+
+
+class OKCoinRESTTest(TestCase):
+    def test_initialization(self):
+        # test that all default values are assigned correctly if No kwargs are
+        # given
+        api = OKCoinREST()
+        self.assertIs(api.secret, None)
+        self.assertIs(api.key, None)
+        self.assertEqual(api.addr, 'https://www.okcoin.com/api')
+        self.assertEqual(api.version, 'v1')
+        self.assertIs(api.config_file, None)
+
+    def test_sign_request_kwargs_method_and_signature(self):
+        # Test that the sign_request_kwargs generate appropriate kwargs:
+        config_path = '%s/auth/okcoin.ini' % tests_folder_dir
+        api = OKCoinREST(config=config_path)
+        self.assertEqual(api.config_file, config_path)
+
+        # Check signatured request kwargs
+        self.fail("Finish this test")
+
+
+class BTCERESTTest(TestCase):
+    def test_initialization(self):
+        # test that all default values are assigned correctly if No kwargs are
+        # given
+        api = BTCEREST()
+        self.assertIs(api.secret, None)
+        self.assertIs(api.key, None)
+        self.assertEqual(api.addr, 'https://btc-e.com/api')
+        self.assertEqual(api.version, '3')
+        self.assertIs(api.config_file, None)
+
+    def test_sign_request_kwargs_method_and_signature(self):
+        # Test that the sign_request_kwargs generate appropriate kwargs:
+        config_path = '%s/auth/btce.ini' % tests_folder_dir
+        api = BTCEREST(config=config_path)
+        self.assertEqual(api.config_file, config_path)
+
+        # Check signatured request kwargs
+        self.fail("Finish this test")
+
+
+class CCEXRESTTest(TestCase):
+    def test_initialization(self):
+        # test that all default values are assigned correctly if No kwargs are
+        # given
+        api = CCEXREST()
+        self.assertIs(api.secret, None)
+        self.assertIs(api.key, None)
+        self.assertEqual(api.addr, 'https://c-cex.com/t')
+        self.assertIs(api.version, None)
+        self.assertIs(api.config_file, None)
+
+    def test_sign_request_kwargs_method_and_signature(self):
+        # Test that the sign_request_kwargs generate appropriate kwargs:
+        config_path = '%s/auth/ccex.ini' % tests_folder_dir
+        api = CCEXREST(config=config_path)
+        self.assertEqual(api.config_file, config_path)
+
+        # Check signatured request kwargs
+        self.fail("Finish this test")
+
+
+class CryptopiaRESTTest(TestCase):
+    def test_initialization(self):
+        # test that all default values are assigned correctly if No kwargs are
+        # given
+        api = CryptopiaREST()
+        self.assertIs(api.secret, None)
+        self.assertIs(api.key, None)
+        self.assertEqual(api.addr, 'https://www.cryptopia.co.nz/api')
+        self.assertIs(api.version, None)
+        self.assertIs(api.config_file, None)
+
+    def test_sign_request_kwargs_method_and_signature(self):
+        # Test that the sign_request_kwargs generate appropriate kwargs:
+        config_path = '%s/auth/cryptopia.ini' % tests_folder_dir
+        api = CryptopiaREST(config=config_path)
+        self.assertEqual(api.config_file, config_path)
+
+        # Check signatured request kwargs
+        self.fail("Finish this test")
+
+
+class GeminiRESTTest(TestCase):
+    def test_initialization(self):
+        # test that all default values are assigned correctly if No kwargs are
+        # given
+        api = GeminiREST()
+        self.assertIs(api.secret, None)
+        self.assertIs(api.key, None)
+        self.assertEqual(api.addr, 'https://api.gemini.com')
+        self.assertEqual(api.version, 'v1')
+        self.assertIs(api.config_file, None)
+
+    def test_sign_request_kwargs_method_and_signature(self):
+        # Test that the sign_request_kwargs generate appropriate kwargs:
+        config_path = '%s/auth/gemini.ini' % tests_folder_dir
+        api = GeminiREST(config=config_path)
+        self.assertEqual(api.config_file, config_path)
+
+        # Check signatured request kwargs
+        self.fail("Finish this test")
+
+
+class YunbiRESTTest(TestCase):
+    def test_initialization(self):
+        # test that all default values are assigned correctly if No kwargs are
+        # given
+        api = YunbiREST()
+        self.assertIs(api.secret, None)
+        self.assertIs(api.key, None)
+        self.assertEqual(api.addr, 'https://yunbi.com/api')
+        self.assertIs(api.version, 'v2')
+        self.assertIs(api.config_file, None)
+
+    def test_sign_request_kwargs_method_and_signature(self):
+        # Test that the sign_request_kwargs generate appropriate kwargs:
+        config_path = '%s/auth/yunbi.ini' % tests_folder_dir
+        api = YunbiREST(config=config_path)
+        self.assertEqual(api.config_file, config_path)
+
+        # Check signatured request kwargs
+        self.fail("Finish this test")
+
+
+class RockTradingRESTTest(TestCase):
+    def test_initialization(self):
+        # test that all default values are assigned correctly if No kwargs are
+        # given
+        api = RockTradingREST()
+        self.assertIs(api.secret, None)
+        self.assertIs(api.key, None)
+        self.assertEqual(api.addr, 'https://api.therocktrading.com')
+        self.assertEqual(api.version, 'v1')
+        self.assertIs(api.config_file, None)
+
+    def test_sign_request_kwargs_method_and_signature(self):
+        # Test that the sign_request_kwargs generate appropriate kwargs:
+        config_path = '%s/auth/rocktrading.ini' % tests_folder_dir
+        api = RockTradingREST(config=config_path)
+        self.assertEqual(api.config_file, config_path)
+
+        # Check signatured request kwargs
+        self.fail("Finish this test")
+
+
+class PoloniexRESTTest(TestCase):
+    def test_initialization(self):
+        # test that all default values are assigned correctly if No kwargs are
+        # given
+        api = PoloniexREST()
+        self.assertIs(api.secret, None)
+        self.assertIs(api.key, None)
+        self.assertEqual(api.addr, 'https://poloniex.com')
+        self.assertIs(api.version, None)
+        self.assertIs(api.config_file, None)
+
+    def test_sign_request_kwargs_method_and_signature(self):
+        # Test that the sign_request_kwargs generate appropriate kwargs:
+        config_path = '%s/auth/poloniex.ini' % tests_folder_dir
+        api = PoloniexREST(config=config_path)
+        self.assertEqual(api.config_file, config_path)
+
+        # Check signatured request kwargs
+        self.fail("Finish this test")
+
+
+class QuoineRESTTest(TestCase):
+    def test_initialization(self):
+        # test that all default values are assigned correctly if No kwargs are
+        # given
+        api = QuoineREST()
+        self.assertIs(api.secret, None)
+        self.assertIs(api.key, None)
+        self.assertEqual(api.addr, 'https://api.quoine.com/')
+        self.assertIs(api.version, '2')
+        self.assertIs(api.config_file, None)
+
+    def test_sign_request_kwargs_method_and_signature(self):
+        # Test that the sign_request_kwargs generate appropriate kwargs:
+        config_path = '%s/auth/quoine.ini' % tests_folder_dir
+        api = QuoineREST(config=config_path)
+        self.assertEqual(api.config_file, config_path)
+
+        # Check signatured request kwargs
+        self.fail("Finish this test")
+
+
+class QuadrigaCXRESTTest(TestCase):
+    def test_initialization(self):
+        # test that all default values are assigned correctly if No kwargs are
+        # given
+        api = QuadrigaCXREST()
+        self.assertIs(api.secret, None)
+        self.assertIs(api.key, None)
+        self.assertEqual(api.addr, 'https://api.quoine.com/')
+        self.assertEqual(api.version, 'v2')
+        self.assertIs(api.config_file, None)
+        # Assert that a Warning is raised if client_id is None, and BaseAPI's
+        # check mechanism is extended properly
+        with self.assertWarns(IncompleteCredentialsWarning):
+            api = QuadrigaCXREST(addr='Bangarang', client_id=None, key='SomeKey',
+                            secret='SomeSecret', config=None, version=None)
+
+        # make sure an exception is raised if client_id is passed as ''
+        with self.assertRaises(ValueError):
+            api = QuadrigaCXREST(addr='Bangarang', client_id='', key='SomeKey',
+                            secret='SomeSecret', config=None, version=None)
+
+        # make sure client_id is assigned properly
+        api = QuadrigaCXREST(addr='Bangarang', client_id='woloho')
+        self.assertIs(api.client_id, 'woloho')
+
+        # Check that a IncompleteCredentialConfigurationWarning is issued if
+        # client_id isn't available in config, and no client_id was given.
+        with self.assertWarns(IncompleteCredentialConfigurationWarning):
+            api = QuadrigaCXREST(addr='Bangarang', client_id=None,
+                            config='%s/configs/config.ini' % tests_folder_dir)
+
+        # check that passphrase is loaded correctly, and no
+        # IncompleteCredentialsWarning is issued, if we dont pass a client_id
+        # kwarg but it is avaialable in the config file
+        config_path = '/home/nls/git/bitex/tests/auth/quadrigacx.ini'
+        with self.assertRaises(AssertionError):
+            with self.assertWarns(IncompleteCredentialConfigurationWarning):
+                api = QuadrigaCXREST(config=config_path)
+        self.assertTrue(api.config_file == config_path)
+        self.assertEqual(api.client_id, 'testuser')
+
+    def test_sign_request_kwargs_method_and_signature(self):
+        # Test that the sign_request_kwargs generate appropriate kwargs:
+        config_path = '%s/auth/quadrigacx.ini' % tests_folder_dir
+        api = QuadrigaCXREST(config=config_path)
+        self.assertEqual(api.config_file, config_path)
+
+        # Check signatured request kwargs
+        self.fail("Finish this test")
+
+
+class HitBTCRESTTest(TestCase):
+    def test_initialization(self):
+        # test that all default values are assigned correctly if No kwargs are
+        # given
+        api = HitBTCREST()
+        self.assertIs(api.secret, None)
+        self.assertIs(api.key, None)
+        self.assertEqual(api.addr, 'http://api.hitbtc.com/api/')
+        self.assertEqual(api.version, '1')
+        self.assertIs(api.config_file, None)
+
+    def test_sign_request_kwargs_method_and_signature(self):
+        # Test that the sign_request_kwargs generate appropriate kwargs:
+        config_path = '%s/auth/hitbtc.ini' % tests_folder_dir
+        api = HitBTCREST(config=config_path)
+        self.assertEqual(api.config_file, config_path)
+
+        # Check signatured request kwargs
+        self.fail("Finish this test")
+
+
+class VaultoroRESTTest(TestCase):
+    def test_initialization(self):
+        # test that all default values are assigned correctly if No kwargs are
+        # given
+        api = VaultoroREST()
+        self.assertIs(api.secret, None)
+        self.assertIs(api.key, None)
+        self.assertEqual(api.addr, 'https://api.vaultoro.com')
+        self.assertIs(api.version, None)
+        self.assertIs(api.config_file, None)
+
+    def test_sign_request_kwargs_method_and_signature(self):
+        # Test that the sign_request_kwargs generate appropriate kwargs:
+        config_path = '%s/auth/vaultoro.ini' % tests_folder_dir
+        api = VaultoroREST(config=config_path)
+        self.assertEqual(api.config_file, config_path)
+
+        # Check signatured request kwargs
+        self.fail("Finish this test")
+
+
+class BterRESTTest(TestCase):
+    def test_initialization(self):
+        # test that all default values are assigned correctly if No kwargs are
+        # given
+        api = BterREST()
+        self.assertIs(api.secret, None)
+        self.assertIs(api.key, None)
+        self.assertEqual(api.addr, 'http://data.bter.com/api')
+        self.assertIs(api.version, '1')
+        self.assertIs(api.config_file, None)
+
+    def test_sign_request_kwargs_method_and_signature(self):
+        # Test that the sign_request_kwargs generate appropriate kwargs:
+        config_path = '%s/auth/bter.ini' % tests_folder_dir
+        api = BterREST(config=config_path)
         self.assertEqual(api.config_file, config_path)
 
         # Check signatured request kwargs
