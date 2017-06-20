@@ -54,7 +54,7 @@ class BaseAPI:
         self.addr = addr
         self.key = key if key else None
         self.secret = secret if secret else None
-        self.version = version if version else ''
+        self.version = version if version else None
         self.config_file = config
         if self.config_file:
             self.load_config(self.config_file)
