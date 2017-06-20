@@ -11,7 +11,7 @@ log = logging.getLogger(__name__)
 
 
 class Interface:
-    def __init__(self, name, rest_api):
+    def __init__(self, *, name, rest_api):
         self.REST = rest_api
         self.name = name
         self._supported_pairs = self._get_supported_pairs()
