@@ -47,7 +47,7 @@ class Interface:
         :param pair: Str, or PairFormatter Object
         :return: Bool
         """
-        if pair.format(self.name) in self._supported_pairs:
+        if pair.format(self.name) in self.supported_pairs:
             return True
         else:
             return False
@@ -64,7 +64,7 @@ class Interface:
         :raise: UnsupportedPairError
         :return: requests.Response() Obj
         """
-        if not self._supported_pairs:
+        if not self.supported_pairs:
                 warnings.warn("No list of valid pairs available! Check that "
                               "_get_supported_pairs() is implemented and "
                               "returns a Non-empty list!",
