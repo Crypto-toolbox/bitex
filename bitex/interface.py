@@ -40,18 +40,31 @@ class Interface:
         If the latter two, we'll call the format() method with the Interface's
         name attribute to acquire proper formatting.
         If it's not a pair, we'll raise an UnsupportedPairError.
-
         :param pair: Str, or PairFormatter Object
         :return: Bool
-        :raise: UnsupportedPairError
         """
-        if isinstance(pair, PairFormatter):
-            return True if pair.format(self.name) in self._supported_pairs else False
-        else:
-            return True if pair in self._supported_pairs else False
 
-    def _request(self, pair, endpoint, **req_kwargs):
-        self.is_supported(pair)
-        return self.REST._query(endpoint, **req_kwargs)
+        if pair.format(self.name) in self._supported_pairs:
+            return True
+        else:
+            return False
+
+    def request(self, verb, pair, endpoint, authenticate=False, **req_kwargs):
+        """Issue a call to self.API._query() and return its result.
+
+        :param verb: HTTP verb (GET, PUT, DELETE, etc)
+        :param pair: Str or PairFormatter Obj
+        :param endpoint: Str
+        :param req_kwargs: Kwargs to pass to _query / requests.request()
+        :raise: UnsupportedPairError
+        :return: requests.Response() Obj
+        """
+        if self.is_supported(pair):
+            if authenticate:
+                return self.REST.private_query(verb, endpoint, **req_kwargs)
+            else:
+                return self.REST.public_query(verb, endpoint, **req_kwargs)
+        else:
+            raise UnsupportedPairError
 
 
