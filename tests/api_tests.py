@@ -8,16 +8,11 @@ import requests
 
 # Import Homebrew
 from bitex.base import BaseAPI, RESTAPI
-<<<<<<< HEAD
 from bitex.rest import BitstampREST, BitfinexREST, BittrexREST
-from bitex.exceptions import IncompleteCredentialsWarning, IncompleteCredentialsError, IncompleteAPIConfigurationWarning, IncompleteCredentialConfigurationWarning
-=======
-from bitex.rest import BitstampREST, BitfinexREST
 from bitex.exceptions import IncompleteCredentialsWarning
 from bitex.exceptions import IncompleteCredentialsError
 from bitex.exceptions import IncompleteAPIConfigurationWarning
 from bitex.exceptions import IncompleteCredentialConfigurationWarning
->>>>>>> 36a4bb24eb253bb240acc7dcb5a82ea310995ecd
 
 # Init Logging Facilities
 log = logging.getLogger(__name__)
