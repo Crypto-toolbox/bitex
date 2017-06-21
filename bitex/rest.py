@@ -828,7 +828,7 @@ class VaultoroREST(RESTAPI):
 class BterREST(RESTAPI):
     def __init__(self, key=None, secret=None, version=None,
                  addr=None, timeout=5, config=None):
-        addr = 'http://data.bter.com/api' if not addr else addr
+        addr = 'http://data.bter.com/api2' if not addr else addr
         version = '1' if not version else version
         super(BterREST, self).__init__(addr=addr, version=version, key=key,
                                        secret=secret, timeout=timeout,
