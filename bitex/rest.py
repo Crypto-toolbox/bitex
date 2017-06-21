@@ -104,8 +104,8 @@ class BitstampREST(RESTAPI):
         # Generate Signature
         nonce = self.nonce()
         message = nonce + self.user_id + self.key
-        signature = hmac.new(self.secret.encode('utf-8'), message.encode('utf-8'),
-                             hashlib.sha256)
+        signature = hmac.new(self.secret.encode('utf-8'),
+                             message.encode('utf-8'), hashlib.sha256)
         signature = signature.hexdigest().upper()
 
         # Parameters go into the data kwarg, so move it there from 'params'
@@ -291,7 +291,7 @@ class KrakenREST(RESTAPI):
                    hashlib.sha256(encoded).digest())
 
         sig_hmac = hmac.new(base64.b64decode(self.secret),
-                             message, hashlib.sha512)
+                            message, hashlib.sha512)
         signature = base64.b64encode(sig_hmac.digest())
 
         # Update request kwargs
@@ -402,7 +402,8 @@ class OKCoinREST(RESTAPI):
 
         # Create Signature
         sig_string = (nonce + encoded_url).encode()
-        sig_hmac = hmac.new(self.secret.encode('utf8'), sig_string, hashlib.sha256)
+        sig_hmac = hmac.new(self.secret.encode('utf8'), sig_string,
+                            hashlib.sha256)
         signature = sig_hmac.hexdigest()
 
         # Update req_kwargs keys
@@ -432,7 +433,8 @@ class BTCEREST(RESTAPI):
         except KeyError:
             params = {}
         post_params = params
-        post_params.update({'nonce': nonce, 'method': endpoint.split('/', 1)[1]})
+        post_params.update({'nonce': nonce,
+                            'method': endpoint.split('/', 1)[1]})
         post_params = urllib.parse.urlencode(post_params)
 
         # Sign POST payload
@@ -509,7 +511,8 @@ class CryptopiaREST(RESTAPI):
 
         # generate signature
         md5 = base64.b64encode(hashlib.md5().updated(post_data).digest())
-        sig = self.key + 'POST' + urllib.parse.quote_plus(req_kwargs['url']).lower() + nonce + md5
+        sig = (self.key + 'POST' +
+               urllib.parse.quote_plus(req_kwargs['url']).lower() + nonce + md5)
         hmac_sig = base64.b64encode(hmac.new(base64.b64decode(self.secret),
                                               sig, hashlib.sha256).digest())
         header_data = 'amx' + self.key + ':' + hmac_sig + ':' + nonce
@@ -617,7 +620,8 @@ class RockTradingREST(RESTAPI):
 
         # generate signature
         msg = nonce + req_kwargs['url']
-        sig = hmac.new(self.secret.encode(), msg.encode(), hashlib.sha384).hexdigest()
+        sig = hmac.new(self.secret.encode(), msg.encode(),
+                       hashlib.sha384).hexdigest()
 
         # Update req_kwargs keys
         req_kwargs['headers'] = {'X-TRT-APIKEY': self.key, 'X-TRT-Nonce': nonce,
@@ -648,7 +652,8 @@ class PoloniexREST(RESTAPI):
 
         # generate signature
         msg = urllib.parse.urlencode(payload).encode('utf-8')
-        sig = hmac.new(self.secret.encode('utf-8'), msg, hashlib.sha512).hexdigest()
+        sig = hmac.new(self.secret.encode('utf-8'), msg,
+                       hashlib.sha512).hexdigest()
 
         # update req_kwargs keys
         req_kwargs['headers'] = {'Key': self.key, 'Sign': sig}
@@ -811,7 +816,8 @@ class VaultoroREST(RESTAPI):
 
         # generate signature
         signature = hmac.new(self.secret.encode(encoding='utf-8'),
-                             url.encode(encoding='utf-8'), hashlib.sha256).hexdigest()
+                             url.encode(encoding='utf-8'),
+                             hashlib.sha256).hexdigest()
 
         # update req_kwargs keys
         req_kwargs['headers'] = {'X-Signature': signature}
@@ -828,7 +834,7 @@ class BterREST(RESTAPI):
                                        secret=secret, timeout=timeout,
                                        config=config)
 
-    def sign_request_kwargs(self,endpoint, **kwargs):
+    def sign_request_kwargs(self, endpoint, **kwargs):
         req_kwargs = super(BterREST, self).sign_request_kwargs(endpoint,
                                                                **kwargs)
         # prepare Payload arguments
@@ -843,7 +849,8 @@ class BterREST(RESTAPI):
 
         # generate signature
         signature = hmac.new(self.secret.encode(encoding='utf-8'),
-                             encoded_params.encode(encoding='utf-8'), hashlib.sha512).hexdigest()
+                             encoded_params.encode(encoding='utf-8'),
+                             hashlib.sha512).hexdigest()
 
         # update req_kwargs keys
         req_kwargs['headers'] = {'Key': signature, 'Sign': signature}
