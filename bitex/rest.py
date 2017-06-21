@@ -817,7 +817,7 @@ class VaultoroREST(RESTAPI):
         nonce = self.nonce()
         kwargs['nonce'] = nonce
         kwargs['apikey'] = self.key
-        url = self.generate_url(urllib.parse.urlencode(params))
+        url = self.generate_url('/' + endpoint + '?' + urllib.parse.urlencode(params))
 
         # generate signature
         signature = hmac.new(self.secret.encode(encoding='utf-8'),
