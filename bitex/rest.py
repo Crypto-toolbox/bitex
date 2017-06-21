@@ -663,6 +663,7 @@ class PoloniexREST(RESTAPI):
         # update req_kwargs keys
         req_kwargs['headers'] = {'Key': self.key, 'Sign': sig}
         req_kwargs['data'] = params
+        req_kwargs['url'] = self.addr + 'tradingApi?command=' + endpoint
 
         return req_kwargs
 
