@@ -218,7 +218,9 @@ class BitstampRESTTests(TestCase):
         self.assertEqual(api.config_file, config_path)
 
         # Check signatured request kwargs
-        self.fail("Finish this test")
+        response = api.private_query('POST', 'balance/')
+        self.assertEqual(response.status_code, 200, msg=response.status_code)
+        self.assertIn('usd_balance', response.json(), msg=response.json())
 
 
 class BitfinexRESTTests(TestCase):
@@ -239,7 +241,8 @@ class BitfinexRESTTests(TestCase):
         self.assertEqual(api.config_file, config_path)
 
         # Check signatured request kwargs
-        self.fail("Finish this test")
+        response = api.private_query('POST', 'balances')
+        self.assertEqual(response.status_code, 200, msg=response.status_code)
 
 
 class BittrexRESTTest(TestCase):
@@ -260,7 +263,9 @@ class BittrexRESTTest(TestCase):
         self.assertEqual(api.config_file, config_path)
 
         # Check signatured request kwargs
-        self.fail("Finish this test")
+        response = api.private_query('GET', 'getbalances')
+        self.assertEqual(response.status_code, 200, msg=response.status_code)
+        self.assertTrue(response.json()['success'], msg=response.json())
 
 
 class CoinCheckRESTTest(TestCase):
@@ -281,7 +286,9 @@ class CoinCheckRESTTest(TestCase):
         self.assertEqual(api.config_file, config_path)
 
         # Check signatured request kwargs
-        self.fail("Finish this test")
+        response = api.private_query('GET', 'accounts/balance')
+        self.assertEqual(response.status_code, 200, msg=response.status_code)
+        self.assertTrue(response.json()['success'], msg=response.json())
 
 
 class GDAXRESTTest(TestCase):
@@ -333,7 +340,9 @@ class GDAXRESTTest(TestCase):
         self.assertEqual(api.config_file, config_path)
 
         # Check signatured request kwargs
-        self.fail("Finish this test")
+        response = api.private_query('GET', 'accounts')
+        self.assertEqual(response.status_code, 200, msg=response.status_code)
+        self.assertIn('id', response.json()[0], msg=response.json())
 
 
 class KrakenRESTTest(TestCase):
@@ -354,7 +363,9 @@ class KrakenRESTTest(TestCase):
         self.assertEqual(api.config_file, config_path)
 
         # Check signatured request kwargs
-        self.fail("Finish this test")
+        response = api.private_query('GET', 'private/TradeBalance')
+        self.assertEqual(response.status_code, 200, msg=response.status_code)
+        self.assertEqual(response.json()['error'], [], msg=response.json())
 
 
 class ITBitRESTTest(TestCase):
@@ -405,7 +416,9 @@ class ITBitRESTTest(TestCase):
         self.assertEqual(api.config_file, config_path)
 
         # Check signatured request kwargs
-        self.fail("Finish this test")
+        response = api.private_query('GET', 'wallets')
+        self.assertEqual(response.status_code, 200, msg=response.status_code)
+        self.assertNotIn('code', response.json(), msg=response.json())
 
 
 class OKCoinRESTTest(TestCase):
@@ -426,7 +439,9 @@ class OKCoinRESTTest(TestCase):
         self.assertEqual(api.config_file, config_path)
 
         # Check signatured request kwargs
-        self.fail("Finish this test")
+        response = api.private_query('GET', 'userinfo')
+        self.assertEqual(response.status_code, 200, msg=response.status_code)
+        self.assertTrue(response.json()['result'], msg=response.json())
 
 
 class BTCERESTTest(TestCase):
@@ -447,7 +462,9 @@ class BTCERESTTest(TestCase):
         self.assertEqual(api.config_file, config_path)
 
         # Check signatured request kwargs
-        self.fail("Finish this test")
+        response = api.private_query('GET', 'getInfo')
+        self.assertEqual(response.status_code, 200, msg=response.status_code)
+        self.assertEqual(response.json()['success'], 1, msg=response.json())
 
 
 class CCEXRESTTest(TestCase):
@@ -468,7 +485,9 @@ class CCEXRESTTest(TestCase):
         self.assertEqual(api.config_file, config_path)
 
         # Check signatured request kwargs
-        self.fail("Finish this test")
+        response = api.private_query('GET', 'getbalances')
+        self.assertEqual(response.status_code, 200, msg=response.status_code)
+        self.assertTrue(response.json()['success'], msg=response.json())
 
 
 class CryptopiaRESTTest(TestCase):
@@ -489,7 +508,9 @@ class CryptopiaRESTTest(TestCase):
         self.assertEqual(api.config_file, config_path)
 
         # Check signatured request kwargs
-        self.fail("Finish this test")
+        response = api.private_query('GET', 'GetBalance')
+        self.assertEqual(response.status_code, 200, msg=response.status_code)
+        self.assertTrue(response.json()['Success'], msg=response.json())
 
 
 class GeminiRESTTest(TestCase):
@@ -510,7 +531,9 @@ class GeminiRESTTest(TestCase):
         self.assertEqual(api.config_file, config_path)
 
         # Check signatured request kwargs
-        self.fail("Finish this test")
+        response = api.private_query('GET', 'balances')
+        self.assertEqual(response.status_code, 200, msg=response.status_code)
+        self.assertIn('currency', response.json(), msg=response.json())
 
 
 class YunbiRESTTest(TestCase):
@@ -531,7 +554,9 @@ class YunbiRESTTest(TestCase):
         self.assertEqual(api.config_file, config_path)
 
         # Check signatured request kwargs
-        self.fail("Finish this test")
+        response = api.private_query('GET', 'deposits.json')
+        self.assertEqual(response.status_code, 200, msg=response.status_code)
+        self.assertNotIn('error', response.json(), msg=response.json())
 
 
 class RockTradingRESTTest(TestCase):
@@ -552,7 +577,9 @@ class RockTradingRESTTest(TestCase):
         self.assertEqual(api.config_file, config_path)
 
         # Check signatured request kwargs
-        self.fail("Finish this test")
+        response = api.private_query('GET', 'balances')
+        self.assertEqual(response.status_code, 200, msg=response.status_code)
+        self.assertIn('balances', response.json(), msg=response.json())
 
 
 class PoloniexRESTTest(TestCase):
@@ -573,7 +600,9 @@ class PoloniexRESTTest(TestCase):
         self.assertEqual(api.config_file, config_path)
 
         # Check signatured request kwargs
-        self.fail("Finish this test")
+        response = api.private_query('POST', 'returnBalances')
+        self.assertEqual(response.status_code, 200, msg=response.status_code)
+        self.assertNotIn('error', response.json(), msg=response.json())
 
 
 class QuoineRESTTest(TestCase):
@@ -594,7 +623,9 @@ class QuoineRESTTest(TestCase):
         self.assertEqual(api.config_file, config_path)
 
         # Check signatured request kwargs
-        self.fail("Finish this test")
+        response = api.private_query('GET', 'fiat_accounts')
+        self.assertEqual(response.status_code, 200, msg=response.status_code)
+        self.assertIn('currency', response.json()[0], msg=response.json())
 
 
 class QuadrigaCXRESTTest(TestCase):
@@ -645,7 +676,9 @@ class QuadrigaCXRESTTest(TestCase):
         self.assertEqual(api.config_file, config_path)
 
         # Check signatured request kwargs
-        self.fail("Finish this test")
+        response = api.private_query('POST', 'balance')
+        self.assertEqual(response.status_code, 200, msg=response.status_code)
+        self.assertIn('cad_balance', response.json(), msg=response.json())
 
 
 class HitBTCRESTTest(TestCase):
@@ -666,7 +699,9 @@ class HitBTCRESTTest(TestCase):
         self.assertEqual(api.config_file, config_path)
 
         # Check signatured request kwargs
-        self.fail("Finish this test")
+        response = api.private_query('GET', 'trading/balance')
+        self.assertEqual(response.status_code, 200, msg=response.status_code)
+        self.assertIn('balance', response.json(), msg=response.json())
 
 
 class VaultoroRESTTest(TestCase):
@@ -677,7 +712,7 @@ class VaultoroRESTTest(TestCase):
         self.assertIs(api.secret, None)
         self.assertIs(api.key, None)
         self.assertEqual(api.addr, 'https://api.vaultoro.com')
-        self.assertIs(api.version, None)
+        self.assertEqual(api.version, '1')
         self.assertIs(api.config_file, None)
 
     def test_sign_request_kwargs_method_and_signature(self):
@@ -687,7 +722,10 @@ class VaultoroRESTTest(TestCase):
         self.assertEqual(api.config_file, config_path)
 
         # Check signatured request kwargs
-        self.fail("Finish this test")
+        response = api.private_query('GET', '1/balance')
+        self.assertEqual(response.status_code, 200, msg=response.status_code)
+        self.assertEqual(response.json()['status'], 'success',
+                         msg=response.json())
 
 
 class BterRESTTest(TestCase):
@@ -707,8 +745,10 @@ class BterRESTTest(TestCase):
         api = BterREST(config=config_path)
         self.assertEqual(api.config_file, config_path)
 
-        # Check signatured request kwargs
-        self.fail("Finish this test")
+        # Assert signatured request kwargs are valid and api call is succesful
+        response = api.private_query('POST', 'private/balances')
+        self.assertEqual(response.status_code, 200, msg=response.status_code)
+        self.assertTrue(response.json()['result'], msg=response.json())
 
 
 if __name__ == '__main__':
