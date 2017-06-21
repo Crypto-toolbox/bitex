@@ -114,7 +114,7 @@ class BaseAPI:
         try:
             self.version = conf['API']['version']
         except KeyError:
-            if self.version == '':
+            if self.version is None:
                 warnings.warn("API version was not present in config - "
                               "requests may not work!",
                               IncompleteAPIConfigurationWarning)
