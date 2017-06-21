@@ -620,7 +620,7 @@ class RockTradingREST(RESTAPI):
             params = {}
         payload = params
         payload['nonce'] = int(nonce)
-        payload['request'] = self.generate_uri(endpoint)
+        #payload['request'] = self.generate_uri(endpoint)
 
         # generate signature
         msg = nonce + req_kwargs['url']
@@ -631,6 +631,7 @@ class RockTradingREST(RESTAPI):
         req_kwargs['headers'] = {'X-TRT-APIKEY': self.key, 'X-TRT-Nonce': nonce,
                                  'X-TRT-SIGNATURE': sig,
                                  'Content-Type': 'application/json'}
+        req_kwargs['json'] = payload
         return req_kwargs
 
 
@@ -783,7 +784,7 @@ class HitBTCREST(RESTAPI):
         nonce = self.nonce()
         params['nonce'] = nonce
         params['apikey'] = self.key
-        msg = self.generate_uri(endpoint) + urllib.parse.urlencode(params)
+        msg = self.generate_uri(endpoint)+ '?' + urllib.parse.urlencode(params)
 
         # generate signature
         signature = hmac.new(self.secret.encode(encoding='utf-8'),
