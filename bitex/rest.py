@@ -425,7 +425,6 @@ class BTCEREST(RESTAPI):
     def sign_request_kwargs(self, endpoint, **kwargs):
         req_kwargs = super(BTCEREST, self).sign_request_kwargs(endpoint,
                                                                **kwargs)
-
         # Prepare POST payload
         nonce = self.nonce()
         try:
@@ -434,7 +433,7 @@ class BTCEREST(RESTAPI):
             params = {}
         post_params = params
         post_params.update({'nonce': nonce,
-                            'method': endpoint.split('/', 1)[1]})
+                            'method': endpoint})
         post_params = urllib.parse.urlencode(post_params)
 
         # Sign POST payload
@@ -446,7 +445,7 @@ class BTCEREST(RESTAPI):
                                  "Content-type": "application/x-www-form-urlencoded"}
 
         # update url for POST;
-        req_kwargs['url'] = self.address.replace('api/3'+endpoint, 'tapi')
+        req_kwargs['url'] = self.addr.replace('api/3'+endpoint, 'tapi')
 
         return req_kwargs
 
@@ -511,12 +510,15 @@ class CryptopiaREST(RESTAPI):
         post_data = json.dumps(params)
 
         # generate signature
-        md5 = base64.b64encode(hashlib.md5().update(post_data.encode()).digest())
+        md5 = hashlib.md5()
+        md5.update(post_data.encode('utf-8'))
+        md5 = base64.b64encode(md5.digest())
         sig = (self.key + 'POST' +
-               urllib.parse.quote_plus(req_kwargs['url']).lower() + nonce + md5)
+               urllib.parse.quote_plus(req_kwargs['url']).lower() + nonce + md5.decode('utf-8'))
         hmac_sig = base64.b64encode(hmac.new(base64.b64decode(self.secret),
-                                              sig, hashlib.sha256).digest())
-        header_data = 'amx' + self.key + ':' + hmac_sig + ':' + nonce
+                                             sig.encode('utf-8'),
+                                             hashlib.sha256).digest())
+        header_data = 'amx' + self.key + ':' + hmac_sig.decode('utf-8') + ':' + nonce
 
         # Update req_kwargs keys
         req_kwargs['headers'] = {'Authorization': header_data,
