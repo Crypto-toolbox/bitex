@@ -761,7 +761,7 @@ class HitBTCREST(RESTAPI):
     def __init__(self, key=None, secret=None, version=None,
                  addr=None, timeout=5, config=None):
         version = '1' if not version else version
-        addr = 'http://api.hitbtc.com/api/' if not addr else addr
+        addr = 'http://api.hitbtc.com/api' if not addr else addr
         super(HitBTCREST, self).__init__(addr=addr, version=version,
                                          key=key, secret=secret,
                                          timeout=timeout, config=config)
