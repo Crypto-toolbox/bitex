@@ -755,7 +755,7 @@ class QuadrigaCXREST(RESTAPI):
                              hashlib.sha256).hexdigest()
 
         # update req_kwargs keys
-        req_kwargs['headers'] = {'key': self.key, 'signature': signature,
+        req_kwargs['json'] = {'key': self.key, 'signature': signature,
                                  'nonce': nonce}
         req_kwargs['data'] = params
         return req_kwargs
