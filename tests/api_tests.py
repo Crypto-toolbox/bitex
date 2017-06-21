@@ -36,7 +36,7 @@ class BaseAPITests(TestCase):
                       version=None)
 
         # if version is None, make version an empty string
-        self.assertEqual(api.version, '')
+        self.assertIs(api.version, None)
 
         # if key is None, make key None
         self.assertIs(api.key, None)
@@ -191,7 +191,8 @@ class BitstampRESTTests(TestCase):
         # user_id isn't available in config, and no user_id was given.
         with self.assertWarns(IncompleteCredentialConfigurationWarning):
             api = BitstampREST(addr='Bangarang', user_id=None,
-                               config='/home/nls/git/bitex/tests/configs/config.ini')
+                               config='%s/configs/config.ini' %
+                               tests_folder_dir)
 
         # check that user_id is loaded correctly, and no
         # IncompleteCredentialsWarning is issued, if we dont pass a user_id
@@ -201,7 +202,7 @@ class BitstampRESTTests(TestCase):
             with self.assertWarns(IncompleteCredentialConfigurationWarning):
                 api = BitstampREST(config=config_path)
         self.assertTrue(api.config_file == config_path)
-        self.assertEqual(api.user_id, 'testuser')
+        self.assertEqual(api.user_id, '267705')
 
     def test_private_query_raises_error_on_incomplete_credentials(self):
         # config.ini is missing the key 'user_id' and hence should raise
@@ -218,7 +219,9 @@ class BitstampRESTTests(TestCase):
         self.assertEqual(api.config_file, config_path)
 
         # Check signatured request kwargs
-        response = api.private_query('POST', 'balance/')
+        with self.assertRaises(AssertionError):
+            with self.assertRaises(requests.HTTPError):
+                response = api.private_query('POST', 'balance/')
         self.assertEqual(response.status_code, 200, msg=response.status_code)
         self.assertIn('usd_balance', response.json(), msg=response.json())
 
@@ -241,7 +244,9 @@ class BitfinexRESTTests(TestCase):
         self.assertEqual(api.config_file, config_path)
 
         # Check signatured request kwargs
-        response = api.private_query('POST', 'balances')
+        with self.assertRaises(AssertionError):
+            with self.assertRaises(requests.HTTPError):
+                response = api.private_query('POST', 'auth/r/wallets')
         self.assertEqual(response.status_code, 200, msg=response.status_code)
 
 
@@ -263,7 +268,9 @@ class BittrexRESTTest(TestCase):
         self.assertEqual(api.config_file, config_path)
 
         # Check signatured request kwargs
-        response = api.private_query('GET', 'getbalances')
+        with self.assertRaises(AssertionError):
+            with self.assertRaises(requests.HTTPError):
+                response = api.private_query('GET', 'account/getbalances')
         self.assertEqual(response.status_code, 200, msg=response.status_code)
         self.assertTrue(response.json()['success'], msg=response.json())
 
@@ -286,7 +293,9 @@ class CoinCheckRESTTest(TestCase):
         self.assertEqual(api.config_file, config_path)
 
         # Check signatured request kwargs
-        response = api.private_query('GET', 'accounts/balance')
+        with self.assertRaises(AssertionError):
+            with self.assertRaises(requests.HTTPError):
+                response = api.private_query('GET', 'accounts/balance')
         self.assertEqual(response.status_code, 200, msg=response.status_code)
         self.assertTrue(response.json()['success'], msg=response.json())
 
@@ -334,13 +343,16 @@ class GDAXRESTTest(TestCase):
         self.assertEqual(api.passphrase, 'testuser')
 
     def test_sign_request_kwargs_method_and_signature(self):
+        self.fail("Add config ini first!")
         # Test that the sign_request_kwargs generate appropriate kwargs:
         config_path = '%s/auth/gdax.ini' % tests_folder_dir
         api = GDAXREST(config=config_path)
         self.assertEqual(api.config_file, config_path)
 
         # Check signatured request kwargs
-        response = api.private_query('GET', 'accounts')
+        with self.assertRaises(AssertionError):
+            with self.assertRaises(requests.HTTPError):
+                response = api.private_query('GET', 'accounts')
         self.assertEqual(response.status_code, 200, msg=response.status_code)
         self.assertIn('id', response.json()[0], msg=response.json())
 
@@ -363,7 +375,9 @@ class KrakenRESTTest(TestCase):
         self.assertEqual(api.config_file, config_path)
 
         # Check signatured request kwargs
-        response = api.private_query('GET', 'private/TradeBalance')
+        with self.assertRaises(AssertionError):
+            with self.assertRaises(requests.HTTPError):
+                response = api.private_query('GET', 'private/TradeBalance')
         self.assertEqual(response.status_code, 200, msg=response.status_code)
         self.assertEqual(response.json()['error'], [], msg=response.json())
 
@@ -410,13 +424,16 @@ class ITBitRESTTest(TestCase):
         self.assertEqual(api.user_id, 'testuser')
 
     def test_sign_request_kwargs_method_and_signature(self):
+        self.fail("Add config ini first!")
         # Test that the sign_request_kwargs generate appropriate kwargs:
         config_path = '%s/auth/itbit.ini' % tests_folder_dir
         api = ITbitREST(config=config_path)
         self.assertEqual(api.config_file, config_path)
 
         # Check signatured request kwargs
-        response = api.private_query('GET', 'wallets')
+        with self.assertRaises(AssertionError):
+            with self.assertRaises(requests.HTTPError):
+                response = api.private_query('GET', 'wallets')
         self.assertEqual(response.status_code, 200, msg=response.status_code)
         self.assertNotIn('code', response.json(), msg=response.json())
 
@@ -439,7 +456,9 @@ class OKCoinRESTTest(TestCase):
         self.assertEqual(api.config_file, config_path)
 
         # Check signatured request kwargs
-        response = api.private_query('GET', 'userinfo')
+        with self.assertRaises(AssertionError):
+            with self.assertRaises(requests.HTTPError):
+                response = api.private_query('GET', 'userinfo.do')
         self.assertEqual(response.status_code, 200, msg=response.status_code)
         self.assertTrue(response.json()['result'], msg=response.json())
 
@@ -462,7 +481,9 @@ class BTCERESTTest(TestCase):
         self.assertEqual(api.config_file, config_path)
 
         # Check signatured request kwargs
-        response = api.private_query('GET', 'getInfo')
+        with self.assertRaises(AssertionError):
+            with self.assertRaises(requests.HTTPError):
+                response = api.private_query('GET', 'getInfo')
         self.assertEqual(response.status_code, 200, msg=response.status_code)
         self.assertEqual(response.json()['success'], 1, msg=response.json())
 
@@ -485,7 +506,9 @@ class CCEXRESTTest(TestCase):
         self.assertEqual(api.config_file, config_path)
 
         # Check signatured request kwargs
-        response = api.private_query('GET', 'getbalances')
+        with self.assertRaises(AssertionError):
+            with self.assertRaises(requests.HTTPError):
+                response = api.private_query('GET', 'getbalances')
         self.assertEqual(response.status_code, 200, msg=response.status_code)
         self.assertTrue(response.json()['success'], msg=response.json())
 
@@ -508,7 +531,9 @@ class CryptopiaRESTTest(TestCase):
         self.assertEqual(api.config_file, config_path)
 
         # Check signatured request kwargs
-        response = api.private_query('GET', 'GetBalance')
+        with self.assertRaises(AssertionError):
+            with self.assertRaises(requests.HTTPError):
+                response = api.private_query('GET', 'GetBalance')
         self.assertEqual(response.status_code, 200, msg=response.status_code)
         self.assertTrue(response.json()['Success'], msg=response.json())
 
@@ -525,13 +550,16 @@ class GeminiRESTTest(TestCase):
         self.assertIs(api.config_file, None)
 
     def test_sign_request_kwargs_method_and_signature(self):
+        self.fail("Add config ini first!")
         # Test that the sign_request_kwargs generate appropriate kwargs:
         config_path = '%s/auth/gemini.ini' % tests_folder_dir
         api = GeminiREST(config=config_path)
         self.assertEqual(api.config_file, config_path)
 
         # Check signatured request kwargs
-        response = api.private_query('GET', 'balances')
+        with self.assertRaises(AssertionError):
+            with self.assertRaises(requests.HTTPError):
+                response = api.private_query('GET', 'balances')
         self.assertEqual(response.status_code, 200, msg=response.status_code)
         self.assertIn('currency', response.json(), msg=response.json())
 
@@ -548,13 +576,16 @@ class YunbiRESTTest(TestCase):
         self.assertIs(api.config_file, None)
 
     def test_sign_request_kwargs_method_and_signature(self):
+        self.fail("Add config ini first!")
         # Test that the sign_request_kwargs generate appropriate kwargs:
         config_path = '%s/auth/yunbi.ini' % tests_folder_dir
         api = YunbiREST(config=config_path)
         self.assertEqual(api.config_file, config_path)
 
         # Check signatured request kwargs
-        response = api.private_query('GET', 'deposits.json')
+        with self.assertRaises(AssertionError):
+            with self.assertRaises(requests.HTTPError):
+                response = api.private_query('GET', 'deposits.json')
         self.assertEqual(response.status_code, 200, msg=response.status_code)
         self.assertNotIn('error', response.json(), msg=response.json())
 
@@ -577,7 +608,9 @@ class RockTradingRESTTest(TestCase):
         self.assertEqual(api.config_file, config_path)
 
         # Check signatured request kwargs
-        response = api.private_query('GET', 'balances')
+        with self.assertRaises(AssertionError):
+            with self.assertRaises(requests.HTTPError):
+                response = api.private_query('GET', 'balances')
         self.assertEqual(response.status_code, 200, msg=response.status_code)
         self.assertIn('balances', response.json(), msg=response.json())
 
@@ -600,7 +633,9 @@ class PoloniexRESTTest(TestCase):
         self.assertEqual(api.config_file, config_path)
 
         # Check signatured request kwargs
-        response = api.private_query('POST', 'returnBalances')
+        with self.assertRaises(AssertionError):
+            with self.assertRaises(requests.HTTPError):
+                response = api.private_query('POST', 'tradingApi/returnBalances')
         self.assertEqual(response.status_code, 200, msg=response.status_code)
         self.assertNotIn('error', response.json(), msg=response.json())
 
@@ -617,13 +652,16 @@ class QuoineRESTTest(TestCase):
         self.assertIs(api.config_file, None)
 
     def test_sign_request_kwargs_method_and_signature(self):
+        self.fail("Add config ini first!")
         # Test that the sign_request_kwargs generate appropriate kwargs:
         config_path = '%s/auth/quoine.ini' % tests_folder_dir
         api = QuoineREST(config=config_path)
         self.assertEqual(api.config_file, config_path)
 
         # Check signatured request kwargs
-        response = api.private_query('GET', 'fiat_accounts')
+        with self.assertRaises(AssertionError):
+            with self.assertRaises(requests.HTTPError):
+                response = api.private_query('GET', 'fiat_accounts')
         self.assertEqual(response.status_code, 200, msg=response.status_code)
         self.assertIn('currency', response.json()[0], msg=response.json())
 
@@ -635,7 +673,7 @@ class QuadrigaCXRESTTest(TestCase):
         api = QuadrigaCXREST()
         self.assertIs(api.secret, None)
         self.assertIs(api.key, None)
-        self.assertEqual(api.addr, 'https://api.quoine.com/')
+        self.assertEqual(api.addr, 'https://api.quadrigacx.com')
         self.assertEqual(api.version, 'v2')
         self.assertIs(api.config_file, None)
         # Assert that a Warning is raised if client_id is None, and BaseAPI's
@@ -676,7 +714,9 @@ class QuadrigaCXRESTTest(TestCase):
         self.assertEqual(api.config_file, config_path)
 
         # Check signatured request kwargs
-        response = api.private_query('POST', 'balance')
+        with self.assertRaises(AssertionError):
+            with self.assertRaises(requests.HTTPError):
+                response = api.private_query('POST', 'balance')
         self.assertEqual(response.status_code, 200, msg=response.status_code)
         self.assertIn('cad_balance', response.json(), msg=response.json())
 
@@ -688,7 +728,7 @@ class HitBTCRESTTest(TestCase):
         api = HitBTCREST()
         self.assertIs(api.secret, None)
         self.assertIs(api.key, None)
-        self.assertEqual(api.addr, 'http://api.hitbtc.com/api/')
+        self.assertEqual(api.addr, 'http://api.hitbtc.com/api')
         self.assertEqual(api.version, '1')
         self.assertIs(api.config_file, None)
 
@@ -699,7 +739,9 @@ class HitBTCRESTTest(TestCase):
         self.assertEqual(api.config_file, config_path)
 
         # Check signatured request kwargs
-        response = api.private_query('GET', 'trading/balance')
+        with self.assertRaises(AssertionError):
+            with self.assertRaises(requests.HTTPError):
+                response = api.private_query('GET', 'trading/balance')
         self.assertEqual(response.status_code, 200, msg=response.status_code)
         self.assertIn('balance', response.json(), msg=response.json())
 
@@ -712,7 +754,7 @@ class VaultoroRESTTest(TestCase):
         self.assertIs(api.secret, None)
         self.assertIs(api.key, None)
         self.assertEqual(api.addr, 'https://api.vaultoro.com')
-        self.assertEqual(api.version, '1')
+        self.assertIs(api.version, None)
         self.assertIs(api.config_file, None)
 
     def test_sign_request_kwargs_method_and_signature(self):
@@ -722,7 +764,9 @@ class VaultoroRESTTest(TestCase):
         self.assertEqual(api.config_file, config_path)
 
         # Check signatured request kwargs
-        response = api.private_query('GET', '1/balance')
+        with self.assertRaises(AssertionError):
+            with self.assertRaises(requests.HTTPError):
+                response = api.private_query('GET', '1/balance')
         self.assertEqual(response.status_code, 200, msg=response.status_code)
         self.assertEqual(response.json()['status'], 'success',
                          msg=response.json())
@@ -735,7 +779,7 @@ class BterRESTTest(TestCase):
         api = BterREST()
         self.assertIs(api.secret, None)
         self.assertIs(api.key, None)
-        self.assertEqual(api.addr, 'http://data.bter.com/api')
+        self.assertEqual(api.addr, 'http://data.bter.com/api2')
         self.assertIs(api.version, '1')
         self.assertIs(api.config_file, None)
 
@@ -746,7 +790,9 @@ class BterRESTTest(TestCase):
         self.assertEqual(api.config_file, config_path)
 
         # Assert signatured request kwargs are valid and api call is succesful
-        response = api.private_query('POST', 'private/balances')
+        with self.assertRaises(AssertionError):
+            with self.assertRaises(requests.HTTPError):
+                response = api.private_query('POST', 'private/balances')
         self.assertEqual(response.status_code, 200, msg=response.status_code)
         self.assertTrue(response.json()['result'], msg=response.json())
 
