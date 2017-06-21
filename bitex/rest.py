@@ -438,14 +438,15 @@ class BTCEREST(RESTAPI):
 
         # Sign POST payload
         signature = hmac.new(self.secret.encode('utf-8'),
-                             post_params.encode('utf-8'), hashlib.sha512)
+                             post_params.encode('utf-8'),
+                             hashlib.sha512).hexdigest()
 
         # update req_kwargs keys
-        req_kwargs['headers'] = {'Key': self.key, 'Sign': signature.hexdigest(),
+        req_kwargs['headers'] = {'Key': self.key, 'Sign': signature,
                                  "Content-type": "application/x-www-form-urlencoded"}
 
         # update url for POST;
-        req_kwargs['url'] = self.addr.replace('api/3'+endpoint, 'tapi')
+        req_kwargs['url'] = req_kwargs['url'].replace('api/3', 'tapi')
 
         return req_kwargs
 
