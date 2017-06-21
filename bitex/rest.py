@@ -479,8 +479,8 @@ class CCEXREST(RESTAPI):
         url = self.generate_url(post_params)
 
         # generate signature
-        sig = hmac.new(url.encode('uft-8'), self.secret.encode('utf-8'),
-                       hashlib.sha512)
+        sig = hmac.new(url.encode('utf-8'), self.secret.encode('utf-8'),
+                       hashlib.sha512).hexdigest()
 
         # update req_kwargs keys
         req_kwargs['headers'] = {'apisign': sig}
@@ -784,7 +784,8 @@ class HitBTCREST(RESTAPI):
 
         # generate signature
         signature = hmac.new(self.secret.encode(encoding='utf-8'),
-                             msg.encode(encoding='utf-8'), hashlib.sha512)
+                             msg.encode(encoding='utf-8'),
+                             hashlib.sha512).hexdigest()
 
         # update req_kwargs keys
         req_kwargs['headers'] = {'Api-signature': signature}
