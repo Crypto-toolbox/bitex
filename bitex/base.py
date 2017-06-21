@@ -85,7 +85,7 @@ class BaseAPI:
         if not os.path.exists(fname):
             raise FileNotFoundError
 
-        conf = configparser.ConfigParser()
+        conf = configparser.ConfigParser(allow_no_value=True)
         conf.read(fname)
         try:
             self.key = conf['AUTH']['key']
