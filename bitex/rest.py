@@ -796,7 +796,6 @@ class VaultoroREST(RESTAPI):
     def __init__(self, key=None, secret=None, version=None,
                  addr=None, timeout=5, config=None):
         addr = 'https://api.vaultoro.com' if not addr else addr
-        version = '1' if not version else version
         super(VaultoroREST, self).__init__(addr=addr, version=version,
                                            key=key, secret=secret,
                                            timeout=timeout, config=config)
