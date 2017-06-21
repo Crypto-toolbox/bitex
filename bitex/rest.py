@@ -749,7 +749,8 @@ class QuadrigaCXREST(RESTAPI):
 
         # generate signature
         signature = hmac.new(self.secret.encode(encoding='utf-8'),
-                             msg.encode(encoding='utf-8'), hashlib.sha256)
+                             msg.encode(encoding='utf-8'),
+                             hashlib.sha256).hexdigest()
 
         # update req_kwargs keys
         req_kwargs['headers'] = {'key': self.key, 'signature': signature,
