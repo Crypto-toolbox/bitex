@@ -1,6 +1,6 @@
 from .pairs import BTCUSD, ZECUSD, XMRUSD, ETCUSD, ETHUSD, DASHUSD
-from .rest import BitstampREST, BterREST, BTCEREST, BTCEREST, BitfinexREST
-from .rest import CryptopiaREST, CoincheckREST, CCEXRest
+from .rest import BitstampREST, BterREST, BTCEREST, BitfinexREST
+from .rest import CryptopiaREST, CoincheckREST, CCEXREST
 from .rest import GDAXREST, GeminiREST
 from .rest import HitBTCREST
 from .rest import ITbitREST
