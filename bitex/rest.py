@@ -249,8 +249,8 @@ class GDAXREST(RESTAPI):
         try:
             self.passphrase = conf['AUTH']['passphrase']
         except KeyError:
-            warnings.warn(IncompleteCredentialConfigurationWarning,
-                          "'passphrase' not found in config!")
+            warnings.warn("'passphrase' not found in config!",
+                          IncompleteCredentialConfigurationWarning)
 
     def sign_request_kwargs(self, endpoint, **kwargs):
         req_kwargs = super(GDAXREST, self).sign_request_kwargs(endpoint,
@@ -333,8 +333,8 @@ class ITbitREST(RESTAPI):
         try:
             self.user_id = conf['AUTH']['user_id']
         except KeyError:
-            warnings.warn(IncompleteCredentialConfigurationWarning,
-                          "'user_id' not found in config!")
+            warnings.warn("'user_id' not found in config!",
+                          IncompleteCredentialConfigurationWarning)
 
     def sign_request_kwargs(self, endpoint, **kwargs):
         """Requires that the HTTP request VERB is passed along in kwargs as
@@ -479,7 +479,8 @@ class CCEXREST(RESTAPI):
         url = self.generate_url(post_params)
 
         # generate signature
-        sig = hmac.new(url, self.secret, hashlib.sha512)
+        sig = hmac.new(url, self.secret.encode('utf-8'),
+                       hashlib.sha512)
 
         # update req_kwargs keys
         req_kwargs['headers'] = {'apisign': sig}
@@ -510,7 +511,7 @@ class CryptopiaREST(RESTAPI):
         post_data = json.dumps(params)
 
         # generate signature
-        md5 = base64.b64encode(hashlib.md5().updated(post_data).digest())
+        md5 = base64.b64encode(hashlib.md5().update(post_data).digest())
         sig = (self.key + 'POST' +
                urllib.parse.quote_plus(req_kwargs['url']).lower() + nonce + md5)
         hmac_sig = base64.b64encode(hmac.new(base64.b64decode(self.secret),
@@ -731,8 +732,8 @@ class QuadrigaCXREST(RESTAPI):
         try:
             self.client_id = conf['AUTH']['client_id']
         except KeyError:
-            warnings.warn(IncompleteCredentialConfigurationWarning,
-                          "'client_id' not found in config!")
+            warnings.warn("'client_id' not found in config!",
+                          IncompleteCredentialConfigurationWarning)
 
     def sign_request_kwargs(self, endpoint, **kwargs):
         req_kwargs = super(QuadrigaCXREST, self).sign_request_kwargs(endpoint,
