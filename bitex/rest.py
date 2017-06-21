@@ -479,7 +479,7 @@ class CCEXREST(RESTAPI):
         url = self.generate_url(post_params)
 
         # generate signature
-        sig = hmac.new(url, self.secret.encode('utf-8'),
+        sig = hmac.new(url.encode('uft-8'), self.secret.encode('utf-8'),
                        hashlib.sha512)
 
         # update req_kwargs keys
@@ -511,7 +511,7 @@ class CryptopiaREST(RESTAPI):
         post_data = json.dumps(params)
 
         # generate signature
-        md5 = base64.b64encode(hashlib.md5().update(post_data).digest())
+        md5 = base64.b64encode(hashlib.md5().update(post_data.encode()).digest())
         sig = (self.key + 'POST' +
                urllib.parse.quote_plus(req_kwargs['url']).lower() + nonce + md5)
         hmac_sig = base64.b64encode(hmac.new(base64.b64decode(self.secret),
