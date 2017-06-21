@@ -43,6 +43,13 @@ class BaseAPI:
             raise ValueError("Invalid key or secret - cannot be empty string! "
                              "Pass None instead!")
 
+
+
+        self.addr = addr
+        self.key = key if key else None
+        self.secret = secret if secret else None
+        self.version = version if version else None
+
         try:
             self.check_auth_requirements()
         except IncompleteCredentialsError:
@@ -51,10 +58,6 @@ class BaseAPI:
                               "authentication may not work!",
                               IncompleteCredentialsWarning)
 
-        self.addr = addr
-        self.key = key if key else None
-        self.secret = secret if secret else None
-        self.version = version if version else None
         self.config_file = config
         if self.config_file:
             self.load_config(self.config_file)
