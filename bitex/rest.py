@@ -705,7 +705,7 @@ class QuadrigaCXREST(RESTAPI):
                  addr=None, timeout=5, config=None):
 
         version = 'v2' if not version else version
-        addr = 'https://api.quoine.com/' if not addr else addr
+        addr = 'https://api.quoine.com' if not addr else addr
 
         if client_id == '':
             raise ValueError("Invalid client id - cannot be empty string! "
