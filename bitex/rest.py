@@ -422,7 +422,6 @@ class OKCoinREST(RESTAPI):
         return req_kwargs
 
 
-
 class BTCEREST(RESTAPI):
     def __init__(self, key=None, secret=None, version=None,
                  addr=None, timeout=5, config=None):
@@ -490,7 +489,7 @@ class CCEXREST(RESTAPI):
 
         # generate signature
         sig = hmac.new(self.secret.encode('utf-8'), url.encode('utf-8'),
-                       hashlib.sha512).digest()
+                       hashlib.sha512).hexdigest()
 
         # update req_kwargs keys
         req_kwargs['headers'] = {'apisign': sig}
