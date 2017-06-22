@@ -390,28 +390,37 @@ class OKCoinREST(RESTAPI):
                                          timeout=timeout)
 
     def sign_request_kwargs(self, endpoint, **kwargs):
+        """ OKCoin requires the parameters in the signature string and url to
+        be appended in alphabetical order. This means we cannot rely on urllib's
+        encode() method and need to do this ourselves.
+        """
+
         req_kwargs = super(OKCoinREST, self).sign_request_kwargs(endpoint,
                                                                  **kwargs)
         # Prepare payload arguments
         nonce = self.nonce()
         try:
-            params = kwargs['params']
+            payload = kwargs['params']
         except KeyError:
-            params = {}
+            payload = {}
+        payload['api_key'] = self.key
 
-        encoded_url = req_kwargs['url'] + urllib.parse.urlencode(params)
+        # Create the signature from payload and add it to params
+        encoded_payload = ''
+        for k in sorted(payload.keys()):
+            encoded_payload += k + '=' + payload[k] + '&'
+        sign = encoded_payload + 'secret_key=' + self.secret
+        hash_sign = hashlib.md5(sign.encode('utf-8')).hexdigest().upper()
 
-        # Create Signature
-        sig_string = (nonce + encoded_url).encode()
-        sig_hmac = hmac.new(self.secret.encode('utf8'), sig_string,
-                            hashlib.sha256)
-        signature = sig_hmac.hexdigest()
+        # create params dict for body
+        body = {'api_key': self.key, 'sign': hash_sign}
 
         # Update req_kwargs keys
-        req_kwargs['headers'] = {"ACCESS-KEY": self.key, "ACCESS-NONCE": nonce,
-                                 "ACCESS-SIGNATURE": signature}
-        req_kwargs['url'] = encoded_url
+        req_kwargs['data'] = urllib.parse.urlencode(body)
+        req_kwargs['headers'] = {"Content-type": 'application/x-www-form-urlencoded'}
+        #req_kwargs['url'] = encoded_url
         return req_kwargs
+
 
 
 class BTCEREST(RESTAPI):
