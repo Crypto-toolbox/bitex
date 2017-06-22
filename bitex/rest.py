@@ -186,7 +186,8 @@ class CoincheckREST(RESTAPI):
 
         # Create signature
         # sig = nonce + url + req
-        data = (nonce + self.generate_uri(endpoint) + params).encode('utf-8')
+
+        data = (nonce + req_kwargs['url'] + params).encode('utf-8')
         h = hmac.new(self.secret.encode('utf8'), data, hashlib.sha256)
         signature = h.hexdigest()
 
