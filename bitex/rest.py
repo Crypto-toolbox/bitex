@@ -625,11 +625,11 @@ class RockTradingREST(RESTAPI):
         # generate signature
         msg = nonce + req_kwargs['url']
         sig = hmac.new(self.secret.encode(), msg.encode(),
-                       hashlib.sha384).hexdigest()
+                       hashlib.sha512).hexdigest()
 
         # Update req_kwargs keys
-        req_kwargs['headers'] = {'X-TRT-APIKEY': self.key, 'X-TRT-Nonce': nonce,
-                                 'X-TRT-SIGNATURE': sig,
+        req_kwargs['headers'] = {'X-TRT-KEY': self.key, 'X-TRT-Nonce': nonce,
+                                 'X-TRT-SIGN': sig,
                                  'Content-Type': 'application/json'}
         req_kwargs['json'] = payload
         return req_kwargs
