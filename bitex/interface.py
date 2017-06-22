@@ -78,4 +78,37 @@ class Interface:
             return self.REST.public_query(verb, endpoint, **req_kwargs)
 
 
+class RESTInterface(Interface):
+    def __init__(name, rest_api):
+        super(RESTInterface, self).__init__(name=name, rest_api=rest_api)
 
+
+    # Public Endpoints
+
+    def ticker(self, pair):
+        raise NotImplementedError
+
+    def order_book(self, pair):
+        raise NotImplementedError
+
+    def trades(self, pair):
+        raise NotImplementedError
+
+    # Private Endpoints
+    def ask(self, pair, price, size):
+        raise NotImplementedError
+
+    def bid(self, pair, price, size):
+        raise NotImplementedError
+
+    def order_status(self, order_id):
+        raise NotImplementedError
+
+    def open_orders(self):
+        raise NotImplementedError
+
+    def cancel_order(self, *order_ids):
+        raise NotImplementedError
+
+    def wallet(self, currency):
+        raise NotImplementedError
