@@ -443,7 +443,7 @@ class BTCEREST(RESTAPI):
         post_params = params
         post_params.update({'nonce': nonce,
                             'method': endpoint})
-        post_params = urllib.parse.urlencode(post_params)
+        post_params = '?' + urllib.parse.urlencode(post_params)
 
         # Sign POST payload
         signature = hmac.new(self.secret.encode('utf-8'),
@@ -455,8 +455,8 @@ class BTCEREST(RESTAPI):
                                  "Content-type": "application/x-www-form-urlencoded"}
 
         # update url for POST;
-        req_kwargs['url'] = req_kwargs['url'].replace('api/3', 'tapi')
-
+        req_kwargs['url'] = self.addr.replace('/api', '/tapi')
+        req_kwargs['data'] = post_params
         return req_kwargs
 
 
