@@ -484,13 +484,13 @@ class CCEXREST(RESTAPI):
         params['apikey'] = self.key
         params['nonce'] = nonce
         post_params = params
-        post_params.update({'nonce': nonce, 'method': endpoint})
-        post_params = urllib.parse.urlencode(post_params)
-        url = self.generate_url(post_params)
+        post_params.update({'nonce': nonce, 'a': endpoint})
+        url_params = urllib.parse.urlencode(post_params)
+        url = self.addr + '/api.html?' + url_params
 
         # generate signature
-        sig = hmac.new(url.encode('utf-8'), self.secret.encode('utf-8'),
-                       hashlib.sha512).hexdigest()
+        sig = hmac.new(self.secret.encode('utf-8'), url.encode('utf-8'),
+                       hashlib.sha512).digest()
 
         # update req_kwargs keys
         req_kwargs['headers'] = {'apisign': sig}
@@ -523,11 +523,13 @@ class CryptopiaREST(RESTAPI):
         # generate signature
         md5 = hashlib.md5()
         md5.update(post_data.encode('utf-8'))
-        md5 = base64.b64encode(md5.digest())
-        sig = (self.key + 'POST' +
-               urllib.parse.quote_plus(req_kwargs['url']).lower() + nonce + md5.decode('utf-8'))
+        request_content_b64_string = base64.b64encode(md5.digest()).decode('utf-8')
+        signature = (self.key + 'POST' +
+                     urllib.parse.quote_plus(req_kwargs['url']).lower() +
+                     nonce + request_content_b64_string)
+
         hmac_sig = base64.b64encode(hmac.new(base64.b64decode(self.secret),
-                                             sig.encode('utf-8'),
+                                             signature.encode('utf-8'),
                                              hashlib.sha256).digest())
         header_data = 'amx' + self.key + ':' + hmac_sig.decode('utf-8') + ':' + nonce
 
@@ -663,6 +665,7 @@ class PoloniexREST(RESTAPI):
         except KeyError:
             params = {}
         params['nonce'] = self.nonce()
+        params['command'] = endpoint
         payload = params
 
         # generate signature
@@ -673,7 +676,7 @@ class PoloniexREST(RESTAPI):
         # update req_kwargs keys
         req_kwargs['headers'] = {'Key': self.key, 'Sign': sig}
         req_kwargs['data'] = params
-        req_kwargs['url'] = self.addr + '/tradingApi?command=' + endpoint
+        req_kwargs['url'] = self.addr + '/tradingApi'
 
         return req_kwargs
 
@@ -795,17 +798,16 @@ class HitBTCREST(RESTAPI):
         nonce = self.nonce()
         params['nonce'] = nonce
         params['apikey'] = self.key
-        msg = self.generate_uri(endpoint)+ '?' + urllib.parse.urlencode(params)
+        path = self.generate_uri(endpoint) + '?' + urllib.parse.urlencode(params)
 
         # generate signature
         signature = hmac.new(self.secret.encode(encoding='utf-8'),
-                             msg.encode(encoding='utf-8'),
+                             path.encode(encoding='utf-8'),
                              hashlib.sha512).hexdigest()
 
         # update req_kwargs keys
         req_kwargs['headers'] = {'Api-signature': signature}
-        req_kwargs['url'] = self.generate_url(msg)
-        req_kwargs['data'] = params
+        req_kwargs['url'] = self.generate_url(path)
 
         return req_kwargs
 
