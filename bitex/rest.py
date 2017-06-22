@@ -818,8 +818,8 @@ class VaultoroREST(RESTAPI):
         except KeyError:
             params = {}
         nonce = self.nonce()
-        kwargs['nonce'] = nonce
-        kwargs['apikey'] = self.key
+        params['nonce'] = nonce
+        params['apikey'] = self.key
         url = self.generate_url('/' + endpoint + '?' + urllib.parse.urlencode(params))
 
         # generate signature
