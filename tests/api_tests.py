@@ -2,7 +2,7 @@
 import logging
 from unittest import TestCase
 import time
-
+from json import JSONDecodeError
 # Import Third-Party
 import requests
 from requests import HTTPError
@@ -387,7 +387,7 @@ class KrakenRESTTest(TestCase):
 
         # Check signatured request kwargs
         try:
-            response = api.private_query('GET', 'private/TradeBalance')
+            response = api.private_query('POST', 'private/Balance')
         except HTTPError as e:
             self.fail("test_sign_request_kwargs_method_and_signature(): HTTPError: %s" % e)
 
@@ -473,12 +473,12 @@ class OKCoinRESTTest(TestCase):
 
         # Check signatured request kwargs
         try:
-            response = api.private_query('GET', 'userinfo.do')
+            response = api.private_query('POST', 'userinfo.do')
         except HTTPError as e:
             self.fail("test_sign_request_kwargs_method_and_signature(): HTTPError: %s" % e)
 
         self.assertEqual(response.status_code, 200, msg=response.status_code)
-        self.assertTrue(response.json()['result'], msg=response.json())
+        self.assertTrue(response.json()['result'], msg=(response.json(), api.sign_request_kwargs('userinfo.do')))
 
 
 class BTCERESTTest(TestCase):
@@ -532,8 +532,10 @@ class CCEXRESTTest(TestCase):
             self.fail("test_sign_request_kwargs_method_and_signature(): HTTPError: %s" % e)
 
         self.assertEqual(response.status_code, 200, msg=response.status_code)
-        self.assertTrue(response.json()['success'], msg=response.json())
-
+        try:
+            self.assertTrue(response.json()['success'], msg=response.json())
+        except JSONDecodeError:
+            self.fail("Shit happened during decoding! %s" % api.sign_request_kwargs('getbalances'))
 
 class CryptopiaRESTTest(TestCase):
     def test_initialization(self):
@@ -554,7 +556,7 @@ class CryptopiaRESTTest(TestCase):
 
         # Check signatured request kwargs
         try:
-            response = api.private_query('GET', 'GetBalance')
+            response = api.private_query('POST', 'GetBalance')
         except HTTPError as e:
             self.fail("test_sign_request_kwargs_method_and_signature(): HTTPError: %s" % e)
 
@@ -639,7 +641,7 @@ class RockTradingRESTTest(TestCase):
         try:
             response = api.private_query('GET', 'balances')
         except HTTPError as e:
-            self.fail("test_sign_request_kwargs_method_and_signature(): HTTPError: %s" % e)
+            self.fail("test_sign_request_kwargs_method_and_signature(): HTTPError: %s, %s" % (e, api.sign_request_kwargs('balances')))
 
         self.assertEqual(response.status_code, 200, msg=response.status_code)
         self.assertIn('balances', response.json(), msg=response.json())
