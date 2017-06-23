@@ -56,11 +56,10 @@ class Interface:
         else:
             return False
 
-    def request(self, verb, pair, endpoint, authenticate=False, **req_kwargs):
+    def request(self, verb, endpoint, authenticate=False, **req_kwargs):
         """Query the API and return its result.
 
         :param verb: HTTP verb (GET, PUT, DELETE, etc)
-        :param pair: Str or PairFormatter Obj
         :param endpoint: Str
         :param authenticate: Bool, whether to call private_query or public_query
                              method.
@@ -68,13 +67,6 @@ class Interface:
         :raise: UnsupportedPairError
         :return: requests.Response() Obj
         """
-        if not self.supported_pairs:
-                warnings.warn("No list of valid pairs available! Check that "
-                              "_get_supported_pairs() is implemented and "
-                              "returns a Non-empty list!",
-                              EmptySupportedPairListWarning)
-        elif not self.is_supported(pair):
-            raise UnsupportedPairError
 
         if authenticate:
             return self.REST.private_query(verb, endpoint, **req_kwargs)
@@ -120,6 +112,199 @@ class Bitfinex(RESTInterface):
     def __init__(self, **APIKwargs):
         super(Bitfinex, self).__init__('Bitfinex', BitfinexREST(**APIKwargs))
 
+    def request(endpoint, authenticate=False, **req_kwargs):
+        if not authenticate:
+            super(Bitfinex, self).request('GET', pair, endpoint,
+                                          authenticate=authenticate,
+                                          **req_kwargs)
+        else:
+            super(Bitfinex, self).request('POST', pair, endpoint,
+                                          authenticate=authenticate,
+                                          **req_kwargs)
+
+    ###############
+    # Basic Methods
+    ###############
+    def ticker(self, pair):
+        self.is_supported(pair)
+        return self.request('pubticker/%s' % pair.format(self.name))
+
+    def order_book(self, pair, **endpoint_kwargs):
+        self.is_supported(pair)
+        return self.request('book/%s' % pair.format(self.name),
+                            params=endpoint_kwargs)
+
+    def trades(self, pair, **endpoint_kwargs):
+        self.is_supported(pair)
+        return self.request('trades/%s' % pair.format(self.name),
+                            params=endpoint_kwargs)
+
+    def ask(self, pair, price, size, *args, **kwargs):
+        return self._place_order(pair, price, size, 'sell', **kwargs)
+
+    def bid(self, pair, price, size, *args, **kwargs):
+        return self._place_order(pair, price, size, 'buy', **kwargs)
+
+    def _place_order(self, pair, price, size, side, **kwargs):
+        payload = {'symbol': pair.format(self.name), 'price': price,
+                   'amount': size, 'side': side, 'type': 'exchange-limit'}
+        payload.update(kwargs)
+        self.new_order(pair, **payload)
+
+    def order_status(self, order_id, *args, **kwargs):
+        return self.request('order/status', authenticate=True,
+                            params={'order_id': order_id})
+
+    def open_orders(self, *args, **kwargs):
+        return self.active_orders(*args, **kwargs)
+
+    def cancel_order(self, order_id, **kwargs):
+        self.request('order/cancel', authenticate=True,
+                     params={'order_id': order_id})
+
+    def wallet(self, *args, **kwargs):
+        return self.balances()
+
+
+    ###########################
+    # Exchange Specific Methods
+    ###########################
+    def symbols(self, verbose=False):
+        if verbose:
+            return self.request('symbols_details')
+        else:
+            return self.request('symbols')
+
+    def symbols_details(self,):
+        return self.request('symbols_details')
+
+    def stats(self, pair):
+        self.is_supported(pair)
+        return self.request('stats/%s' % pair.format(self.name))
+
+    def lends(self, currency, **endpoint_kwargs):
+        return self.request('lends/%s' % currency,
+                            params=endpoint_kwargs)
+
+    def funding_book(self, currency, **endpoint_kwargs):
+        return self.request('lendbook/%s' % currency,
+                            params=endpoint_kwargs)
+
+    def account_info(self):
+        return self.request('account_infos', authenticate=True)
+
+    def account_fees(self):
+        return self.request('account_fees', authenticate=True)
+
+    def summary(self):
+        return self.request('summary', authenticate=True)
+
+    def deposit(self, **endpoint_kwargs):
+        return self.request('deposit', authenticate=True,
+                            params=endpoint_kwargs)
+
+    def key_info(self):
+        return self.request('key_info', authenticate=True)
+
+    def margin_info(self):
+        return self.request('margin_info', authenticate=True)
+
+    def balances(self):
+        return self.request('balances', authenticate=True)
+
+    def transfer(self, **endpoint_kwargs):
+        return self.request('transfer', authenticate=True,
+                            params=endpoint_kwargs)
+
+    def withdrawal(self, **endpoint_kwargs):
+        return self.request('withdraw', authenticate=True,
+                            params=endpoint_kwargs)
+
+    def new_order(self, pair, **endpoint_kwargs):
+        self.is_supported(pair)
+        payload = {'symbol': pair.format(self.name)}
+        payload.update(endpoint_kwargs)
+        return self.request('order/new', authenticate=True,
+                            params=payload)
+
+    def multiple_new_orders(self, *orders):
+        raise NotImplementedError
+
+    def cancel_multiple_orders(self, *order_ids):
+        return self.request('order/cancel/multi', authenticate=True,
+                            params={'order_ids': order_ids})
+
+    def cancel_all_orders(self):
+        return self.request('order/cancel/all', authenticate=True)
+
+    def replace_order(self, **endpoint_kwargs):
+        return self.request('order/cancel/replace', authenticate=True,
+                            params=endpoint_kwargs)
+
+    def active_orders(self, *args, **kwargs):
+        return self.request('orders', authenticate=True)
+
+    def active_positions(self):
+        return self.request('positions', authenticate=True)
+
+    def claim_position(self, **endpoint_kwargs):
+        return self.request('position/claim', authenticate=True,
+                            params=endpoint_kwargs)
+
+    def balance_history(self, **endpoint_kwargs):
+        return self.request('history', authenticate=True,
+                            params=endpoint_kwargs)
+
+    def deposit_withdrawal_history(self, **endpoint_kwargs):
+        return self.request('history/movement', authenticate=True,
+                            params=endpoint_kwargs)
+
+    def past_trades(self, pair, **endpoint_kwargs):
+        self.is_supported(pair)
+        payload = {'symbol': pair.format(self.name)}
+        payload.update(endpoint_kwargs)
+        return self.request('mytrades', authenticate=True,
+                            params=payload)
+
+    def new_offer(self, **endpoint_kwargs):
+        return self.request('offer/new', authenticate=True,
+                            params=**endpoint_kwargs)
+
+    def cancel_offer(self, **endpoint_kwargs):
+        return self.request('offer/cancel', authenticate=False,
+                            params=endpoint_kwargs)
+
+    def offer_status(self, **endpoint_kwargs):
+        return self.request('offer/status', authenticate=True,
+                            params=endpoint_kwargs)
+
+    def active_credits(self, **endpoint_kwargs):
+        return self.request('credits', authenticate=True,
+                            params=endpoint_kwargs)
+
+    def offers(self, **endpoint_kwargs):
+        return self.request('offers', authenticate=True,
+                            params=endpoint_kwargs)
+
+    def taken_funds(self, **endpoint_kwargs):
+        return self.request('taken_funds', authenticate=True,
+                            params=endpoint_kwargs)
+
+    def unused_taken_funds(self, **endpoint_kwargs):
+        return self.request('unused_taken_funds', authenticate=True,
+                            params=endpoint_kwargs)
+
+    def total_taken_funds(self, **endpoint_kwargs):
+        return self.request('total_taken_funds', authenticate=True,
+                            params=endpoint_kwargs)
+
+    def close_funding(self, **endpoint_kwargs):
+        return self.request('funding/close', authenticate=True,
+                            params=endpoint_kwargs)
+
+    def basket_manage(self, **endpoint_kwargs):
+        return self.request('basket_manage', authenticate=True,
+                            params=endpoint_kwargs)
 
 class Bitstamp(RESTInterface):
     def __init__(self, **APIKwargs):
