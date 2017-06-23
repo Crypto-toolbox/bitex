@@ -52,11 +52,8 @@ class Interface:
         :param pair: Str, or PairFormatter Object
         :return: Bool
         """
-        pair = (PairFormatter.format(pair, self.name) if
-                isinstance(pair, PairFormatter) else
-                pair)
 
-        if pair in self.supported_pairs:
+        if pair.format(self.name) in self.supported_pairs:
             return True
         else:
             return False
