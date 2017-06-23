@@ -268,7 +268,7 @@ class Bitfinex(RESTInterface):
 
     def new_offer(self, **endpoint_kwargs):
         return self.request('offer/new', authenticate=True,
-                            params=**endpoint_kwargs)
+                            params=endpoint_kwargs)
 
     def cancel_offer(self, **endpoint_kwargs):
         return self.request('offer/cancel', authenticate=False,
