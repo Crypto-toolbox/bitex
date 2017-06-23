@@ -259,7 +259,7 @@ class Bitfinex(RESTInterface):
     @Bitfinex.check_version_compatibility
     def market_average_price(self, pair, **endpoint_kwargs):
         self.is_supported(pair)
-        return self.request('calc/trade/avg', data=**endpoint_kwargs)
+        return self.request('calc/trade/avg', data=endpoint_kwargs)
 
     @Bitfinex.check_version_compatibility
     def wallets(self):
@@ -296,7 +296,7 @@ class Bitfinex(RESTInterface):
 
     @Bitfinex.check_version_compatibility
     def funding_info(self, **endpoint_kwargs):
-        return self.request('auth/r/funding/%s' key, authenticate=True,
+        return self.request('auth/r/funding/%s' % key, authenticate=True,
                             params=endpoint_kwargs)
 
     @Bitfinex.check_version_compatibility
@@ -466,7 +466,7 @@ class Bitfinex(RESTInterface):
                             authenticate=True)
 
     @Bitfinex.check_version_compatibility
-    def calc_available_balance(self, pair, **endpoint_kwargs)
+    def calc_available_balance(self, pair, **endpoint_kwargs):
         self.is_supported(pair)
         endpoint_kwargs['symbol'] = pair.format_for(self.name)
         return self.request('auth/calc/order/avail', authenticate=True,
