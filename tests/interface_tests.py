@@ -5,7 +5,7 @@ import unittest
 # Import Third-Party
 
 # Import Homebrew
-from bitex.interface import Interface
+from bitex.interface import Interface, RESTInterface
 from bitex.exceptions import UnsupportedPairError, EmptySupportedPairListWarning
 
 # Init Logging Facilities
@@ -39,6 +39,19 @@ class InterfaceTests(unittest.TestCase):
         # NotImplementedError
         with self.assertRaises(NotImplementedError):
             iface._get_supported_pairs()
+
+
+class RESTInterfaceTests(unittest.TestCase):
+    def test_that_all_methods_raise_not_implemented_errors(self):
+        riface = RESTInterface('Test', None)
+        funcs = [riface.ticker, riface.order_book, riface.trades,
+                 riface.order_status, riface.open_orders, riface.cancel_order,
+                 riface.ask, riface.bid]
+        for f in funcs:
+            # Pass three Nones, since the max expected number of args is 3
+            with self.assertRaises(NotImplementedError, msg=f.__name__):
+                f(None, None, None)
+
 
 if __name__ == '__main__':
     unittest.main()
