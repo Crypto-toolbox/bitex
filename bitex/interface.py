@@ -47,7 +47,8 @@ class Interface:
         Input can either be a string or a PairFormatter Obj (or child thereof).
         If the latter two, we'll call the format() method with the Interface's
         name attribute to acquire proper formatting.
-        If it's not a pair, we'll raise an UnsupportedPairError.
+        Since str.format() doesn't raise an error if a string isnt used,
+        this works for both PairFormatter objects and strings.
         :param pair: Str, or PairFormatter Object
         :return: Bool
         """
@@ -112,15 +113,18 @@ class Bitfinex(RESTInterface):
     def __init__(self, **APIKwargs):
         super(Bitfinex, self).__init__('Bitfinex', BitfinexREST(**APIKwargs))
 
-    def request(endpoint, authenticate=False, **req_kwargs):
+    def request(self, endpoint, authenticate=False, **req_kwargs):
         if not authenticate:
-            super(Bitfinex, self).request('GET', pair, endpoint,
-                                          authenticate=authenticate,
+            return super(Bitfinex, self).request('GET', endpoint,
+                                                 authenticate=authenticate,
                                           **req_kwargs)
         else:
-            super(Bitfinex, self).request('POST', pair, endpoint,
-                                          authenticate=authenticate,
-                                          **req_kwargs)
+            return super(Bitfinex, self).request('POST', endpoint,
+                                                 authenticate=authenticate,
+                                                 **req_kwargs)
+
+    def _get_supported_pairs(self):
+        return self.symbols()
 
     ###############
     # Basic Methods
@@ -149,7 +153,7 @@ class Bitfinex(RESTInterface):
         payload = {'symbol': pair.format(self.name), 'price': price,
                    'amount': size, 'side': side, 'type': 'exchange-limit'}
         payload.update(kwargs)
-        self.new_order(pair, **payload)
+        return self.new_order(pair, **payload)
 
     def order_status(self, order_id, *args, **kwargs):
         return self.request('order/status', authenticate=True,
@@ -159,8 +163,8 @@ class Bitfinex(RESTInterface):
         return self.active_orders(*args, **kwargs)
 
     def cancel_order(self, order_id, **kwargs):
-        self.request('order/cancel', authenticate=True,
-                     params={'order_id': order_id})
+        return self.request('order/cancel', authenticate=True,
+                            params={'order_id': order_id})
 
     def wallet(self, *args, **kwargs):
         return self.balances()
