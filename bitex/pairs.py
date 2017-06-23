@@ -10,7 +10,7 @@ you want:
 
     my_pair = PairFormatter('BaseCurrency', 'QuoteCurrency')
 
-This object now takes care of all formatting of any exchange, supported by 
+This object now takes care of all formatting of any exchange, supported by
 Bitex, you pass it to.
 """
 # Import Built-Ins
@@ -29,7 +29,7 @@ class PairFormatter:
     exchanges. These Formatter functions apply any changes to make a given
     pair, pased as quote and base currency, compatible with an exchange.
     This does NOT include an availability check of the pair.
-    It is therefore possible, to format a given pair, even though it is not
+    It is therefore possible to format a given pair, even though it is not
     supported by the requested exchange.
     """
     def __init__(self, base, quote):
@@ -56,81 +56,81 @@ class PairFormatter:
                            'Bter':                  self.bter_formatter,
                            'Yunbi':                 self.yunbi_formatter}
 
-    def __call__(self, *args, **kwargs):
+    def __str__(self, *args, **kwargs):
         return self._base + self._quote
 
-    def format(self, exchange_name):
+    def format_for(self, exchange_name):
         return self.formatters[exchange_name](self._base, self._quote)
 
     @staticmethod
     def kraken_formatter(base, quote):
         base = 'XBT' if base == 'BTC' else base
         quote = 'XBT' if base == 'BTC' else quote
-    
+
         def add_prefix(cur):
             if cur in ('USD', 'EUR', 'GBP', 'JPY', 'CAD'):
                 return 'Z' + cur
             else:
                 return 'X' + cur
-    
+
         return add_prefix(base) + add_prefix(quote)
 
     @staticmethod
     def bitstamp_formatter(base, quote):
         return base.lower() + quote.lower()
-    
+
     @staticmethod
     def bitfinex_formatter(base, quote):
         base = 'DSH' if base == 'DASH' else base
         quote = 'DSH' if quote == 'DASH' else quote
         return base + quote
-    
+
     @staticmethod
     def bittrex_formatter(base, quote):
         return base + '-' + quote
-    
+
     @staticmethod
     def coincheck_formatter(base, quote):
         return base + quote
-    
+
     @staticmethod
     def gdax_formatter(base, quote):
         return base + '-' + quote
-    
+
     @staticmethod
     def itbit_formatter(base, quote):
         base = 'XBT' if base == 'BTC' else base
         quote = 'XBT' if base == 'BTC' else quote
         return base + quote
-    
+
     @staticmethod
     def okcoin_formatter(base, quote):
         return base.lower() + '_' + quote.lower()
-    
+
     @staticmethod
     def btce_formatter(base, quote):
         return base.lower() + '_' + quote.lower()
-    
+
     @staticmethod
     def ccex_formatter(base, quote):
         return base + '/' + quote
-    
+
     @staticmethod
     def cryptopia_formatter(base, quote):
         return base + '_' + quote
-    
+
     @staticmethod
     def gemini_formatter(base, quote):
         return base.lower() + quote.lower()
-    
+
     @staticmethod
     def yunbi_formatter(base, quote):
         return base.lower() + quote.lower()
-    
+
     @staticmethod
     def rocktrading_formatter(base, quote):
         return base + quote
-    
+
     @staticmethod
     def poloniex_formatter(base, quote):
         if ((quote == 'BTC') or (quote == 'USDT') or
@@ -138,54 +138,60 @@ class PairFormatter:
             return quote + '_' + base
         else:
             return base + '_' + quote
-    
+
     @staticmethod
     def quoine_formatter(base, quote):
         return base + quote
-    
+
     @staticmethod
     def quadriga_formatter(base, quote):
         return base.lower() + '_' + quote.lower()
-    
+
     @staticmethod
     def hitbtc_formatter(base, quote):
         return base + quote
-    
+
     @staticmethod
     def vaultoro_formatter(base, quote):
         return base + '-' + quote
-    
+
     @staticmethod
     def bter_formatter(base, quote):
         return base.lower() + '_' + quote.lower()
 
 
-class BTCUSD(PairFormatter):
+class BTCUSDFormatter(PairFormatter):
     def __init__(self):
-        super(BTCUSD, self).__init__('BTC', 'USD')
+        super(BTCUSDFormatter, self).__init__('BTC', 'USD')
 
 
-class ETHUSD(PairFormatter):
+class ETHUSDFormatter(PairFormatter):
     def __init__(self):
-        super(ETHUSD, self).__init__('ETH', 'USD')
+        super(ETHUSDFormatter, self).__init__('ETH', 'USD')
 
 
-class XMRUSD(PairFormatter):
+class XMRUSDFormatter(PairFormatter):
     def __init__(self):
-        super(XMRUSD, self).__init__('XMR', 'USD')
-        
+        super(XMRUSDFormatter, self).__init__('XMR', 'USD')
 
-class ETCUSD(PairFormatter):
+
+class ETCUSDFormatter(PairFormatter):
     def __init__(self):
-        super(ETCUSD, self).__init__('ETC', 'USD')
-        
+        super(ETCUSDFormatter, self).__init__('ETC', 'USD')
 
-class ZECUSD(PairFormatter):
+
+class ZECUSDFormatter(PairFormatter):
     def __init__(self):
-        super(ZECUSD, self).__init__('ZEC', 'USD')
-        
+        super(ZECUSDFormatter, self).__init__('ZEC', 'USD')
 
-class DASHUSD(PairFormatter):
+
+class DASHUSDFormatter(PairFormatter):
     def __init__(self):
-        super(DASHUSD, self).__init__('DASH', 'USD')
+        super(DASHUSDFormatter, self).__init__('DASH', 'USD')
 
+BTCUSD = BTCUSDFormatter()
+ETHUSD = ETHUSDFormatter()
+XMRUSD = XMRUSDFormatter()
+ETCUSD = ETCUSDFormatter()
+ZECUSD = ZECUSDFormatter()
+DASHUSD = DASHUSDFormatter()

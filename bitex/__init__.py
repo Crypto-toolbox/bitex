@@ -11,3 +11,6 @@ from .rest import QuadrigaCXREST, QuoineREST
 from .rest import RockTradingREST
 from .rest import VaultoroREST
 from .rest import YunbiREST
+from .interface import BTCE, Bter, Bitfinex, Bittrex, Bitstamp, CCEX, CoinCheck
+from .interface import Cryptopia, HitBTC, Kraken, OKCoin, Poloniex, QuadrigaCX
+from .interface import TheRockTrading, Vaultoro

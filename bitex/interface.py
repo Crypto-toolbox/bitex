@@ -45,14 +45,18 @@ class Interface:
         """Checks if the given pair is present in self._supported_pairs.
 
         Input can either be a string or a PairFormatter Obj (or child thereof).
-        If the latter two, we'll call the format() method with the Interface's
+        If the latter two, we'll call the format_for() method with the Interface's
         name attribute to acquire proper formatting.
-        Since str.format() doesn't raise an error if a string isnt used,
+        Since str.format_for() doesn't raise an error if a string isnt used,
         this works for both PairFormatter objects and strings.
         :param pair: Str, or PairFormatter Object
         :return: Bool
         """
-        if pair.format(self.name) in self.supported_pairs:
+        pair = (PairFormatter.format_for(pair, self.name) if
+                isinstance(pair, PairFormatter) else
+                pair)
+
+        if pair in self.supported_pairs:
             return True
         else:
             return False
@@ -131,16 +135,16 @@ class Bitfinex(RESTInterface):
     ###############
     def ticker(self, pair):
         self.is_supported(pair)
-        return self.request('pubticker/%s' % pair.format(self.name))
+        return self.request('pubticker/%s' % pair.format_for(self.name))
 
     def order_book(self, pair, **endpoint_kwargs):
         self.is_supported(pair)
-        return self.request('book/%s' % pair.format(self.name),
+        return self.request('book/%s' % pair.format_for(self.name),
                             params=endpoint_kwargs)
 
     def trades(self, pair, **endpoint_kwargs):
         self.is_supported(pair)
-        return self.request('trades/%s' % pair.format(self.name),
+        return self.request('trades/%s' % pair.format_for(self.name),
                             params=endpoint_kwargs)
 
     def ask(self, pair, price, size, *args, **kwargs):
@@ -150,7 +154,7 @@ class Bitfinex(RESTInterface):
         return self._place_order(pair, price, size, 'buy', **kwargs)
 
     def _place_order(self, pair, price, size, side, **kwargs):
-        payload = {'symbol': pair.format(self.name), 'price': price,
+        payload = {'symbol': pair.format_for(self.name), 'price': price,
                    'amount': size, 'side': side, 'type': 'exchange-limit'}
         payload.update(kwargs)
         return self.new_order(pair, **payload)
@@ -184,7 +188,7 @@ class Bitfinex(RESTInterface):
 
     def stats(self, pair):
         self.is_supported(pair)
-        return self.request('stats/%s' % pair.format(self.name))
+        return self.request('stats/%s' % pair.format_for(self.name))
 
     def lends(self, currency, **endpoint_kwargs):
         return self.request('lends/%s' % currency,
@@ -226,7 +230,7 @@ class Bitfinex(RESTInterface):
 
     def new_order(self, pair, **endpoint_kwargs):
         self.is_supported(pair)
-        payload = {'symbol': pair.format(self.name)}
+        payload = {'symbol': pair.format_for(self.name)}
         payload.update(endpoint_kwargs)
         return self.request('order/new', authenticate=True,
                             params=payload)
@@ -265,7 +269,7 @@ class Bitfinex(RESTInterface):
 
     def past_trades(self, pair, **endpoint_kwargs):
         self.is_supported(pair)
-        payload = {'symbol': pair.format(self.name)}
+        payload = {'symbol': pair.format_for(self.name)}
         payload.update(endpoint_kwargs)
         return self.request('mytrades', authenticate=True,
                             params=payload)

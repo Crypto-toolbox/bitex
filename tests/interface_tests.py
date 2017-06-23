@@ -15,7 +15,7 @@ log = logging.getLogger(__name__)
 
 class InterfaceTests(unittest.TestCase):
     def test_init_raises_NotImplementedError_for_basic_interface(self):
-        iface = Interface(name='TestInterface', rest_api=None)
+        iface = Interface(name='CoinCheck', rest_api=None)
         self.assertIs(iface.supported_pairs, None)
 
         # Assert that the supported_pairs attribute cannot be set
@@ -27,6 +27,7 @@ class InterfaceTests(unittest.TestCase):
         iface._supported_pairs = ['BTCUSD', 'LTCBTC']
 
         self.assertTrue(iface.is_supported('BTCUSD'))
+        self.assertTrue(iface.is_supported(BTCUSD))
         self.assertTrue(iface.is_supported('LTCBTC'))
         self.assertFalse(iface.is_supported('LTCUSD'))
 
