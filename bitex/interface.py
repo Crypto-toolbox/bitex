@@ -169,7 +169,7 @@ class Bitfinex(RESTInterface):
             return self.request('book/%s' % pair.format_for(self.name),
                                 params=endpoint_kwargs)
         else:
-            prec = ('P0' if 'Precision' not in **endpoint_kwargs else
+            prec = ('P0' if 'Precision' not in endpoint_kwargs else
                     endpoint_kwargs.pop('Precision')
             return self.request('book/%s/%s' % (pair.format_for(self.name), prec),
                                 params=endpoint_kwargs)
