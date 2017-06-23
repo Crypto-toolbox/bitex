@@ -7,6 +7,10 @@ import warnings
 # Import Homebrew
 from .pairs import PairFormatter
 from .exceptions import UnsupportedPairError, EmptySupportedPairListWarning
+from .rest import BitfinexREST, BittrexREST, BitstampREST, BTCEREST, BterREST
+from .rest import CCEXREST, CoincheckREST, CryptopiaREST
+from .rest import HitBTCREST, KrakenREST, OKCoinREST, PoloniexREST
+from .rest import QuadrigaCXREST, RockTradingREST, VaultoroREST
 # Init Logging Facilities
 log = logging.getLogger(__name__)
 
@@ -113,60 +117,78 @@ class RESTInterface(Interface):
 
 
 class Bitfinex(RESTInterface):
-    pass
+    def __init__(self, **APIKwargs):
+        super(Bitfinex, self).__init__('Bitfinex', BitfinexREST(**APIKwargs))
 
 
 class Bitstamp(RESTInterface):
-    pass
+    def __init__(self, **APIKwargs):
+        super(Bitstamp, self).__init__('Bitstamp', BitstampREST(**APIKwargs))
 
 
 class Bittrex(RESTInterface):
-    pass
+    def __init__(self, **APIKwargs):
+        super(Bittrex, self).__init__('Bittrex', BittrexREST(**APIKwargs))
 
 
 class BTCE(RESTInterface):
-    pass
+    def __init__(self, **APIKwargs):
+        super(BTCE, self).__init__('BTC-E', BTCEREST(**APIKwargs))
 
 
-class BTer(RESTInterface):
-    pass
+class Bter(RESTInterface):
+    def __init__(self, **APIKwargs):
+        super(Bter, self).__init__('Bter', BterREST(**APIKwargs))
 
 
 class CCEX(RESTInterface):
-    pass
+    def __init__(self, **APIKwargs):
+        super(CCEX, self).__init__('C-CEX', CCEXREST(**APIKwargs))
 
 
 class CoinCheck(RESTInterface):
-    pass
+    def __init__(self, **APIKwargs):
+        super(CoincheckREST, self).__init__('CoinCheck',
+                                            CoincheckREST(**APIKwargs))
 
 
 class Cryptopia(RESTInterface):
-    pass
+    def __init__(self, **APIKwargs):
+        super(Cryptopia, self).__init__('Cryptopia', CryptopiaREST(**APIKwargs))
 
 
 class HitBTC(RESTInterface):
-    pass
+    def __init__(self, **APIKwargs):
+        super(HitBTC, self).__init__('HitBTC', HitBTCREST(**APIKwargs))
 
 
 class Kraken(RESTInterface):
-    pass
+    def __init__(self, **APIKwargs):
+        super(Kraken, self).__init__('Kraken', KrakenREST(**APIKwargs))
 
 
 class OKCoin(RESTInterface):
-    pass
+    def __init__(self, **APIKwargs):
+        super(OKCoin, self).__init__('OKCoin', OKCoinREST(**APIKwargs))
 
 
 class Poloniex(RESTInterface):
-    pass
+    def __init__(self, **APIKwargs):
+        super(Poloniex, self).__init__('Poloniex', PoloniexREST(**APIKwargs))
 
 
 class QuadrigaCX(RESTInterface):
-    pass
+    def __init__(self, **APIKwargs):
+        super(QuadrigaCX, self).__init__('QuadrigaCX',
+                                         QuadrigaCXREST(**APIKwargs))
 
 
 class TheRockTrading(RESTInterface):
-    pass
+    def __init__(self, **APIKwargs):
+        super(TheRockTrading, self).__init__('The Rock Trading Ltd.',
+                                             RockTradingREST(**APIKwargs))
 
 
 class Vaultoro(RESTInterface):
-    pass
+    def __init__(self, **APIKwargs):
+        super(Vaultoro, self).__init__('Vaultoro', VaultoroREST(**APIKwargs))
