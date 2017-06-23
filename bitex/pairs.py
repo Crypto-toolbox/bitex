@@ -59,7 +59,7 @@ class PairFormatter:
     def __str__(self, *args, **kwargs):
         return self._base + self._quote
 
-    def format(self, exchange_name):
+    def format_for(self, exchange_name):
         return self.formatters[exchange_name](self._base, self._quote)
 
     @staticmethod

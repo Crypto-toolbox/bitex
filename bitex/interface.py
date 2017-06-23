@@ -53,8 +53,12 @@ class Interface:
         :param pair: Str, or PairFormatter Object
         :return: Bool
         """
+        try:
+            pair = pair.format_for(self.name)
+        except AttributeError:
+            pair = pair
 
-        if pair.format(self.name) in self.supported_pairs:
+        if pair in self.supported_pairs:
             return True
         else:
             return False
@@ -150,29 +154,29 @@ class Bitfinex(RESTInterface):
     def ticker(self, pair):
         self.is_supported(pair)
         if self.api.version == 'v1':
-            return self.request('pubticker/%s' % pair.format(self.name))
+            return self.request('pubticker/%s' % pair.format_for(self.name))
         else:
-            return self.request('ticker/%s' % pair.format(self.name),
+            return self.request('ticker/%s' % pair.format_for(self.name),
                                 params=endpoint_kwargs)
 
     def order_book(self, pair, **endpoint_kwargs):
         self.is_supported(pair)
         if self.api.version == 'v1':
-            return self.request('book/%s' % pair.format(self.name),
+            return self.request('book/%s' % pair.format_for(self.name),
                                 params=endpoint_kwargs)
         else:
             prec = ('P0' if 'Precision' not in **endpoint_kwargs else
                     endpoint_kwargs.pop('Precision')
-            return self.request('book/%s/%s' % (pair.format(self.name), prec),
+            return self.request('book/%s/%s' % (pair.format_for(self.name), prec),
                                 params=endpoint_kwargs)
 
     def trades(self, pair, **endpoint_kwargs):
         self.is_supported(pair)
         if self.api.version == 'v1':
-            return self.request('trades/%s' % pair.format(self.name),
+            return self.request('trades/%s' % pair.format_for(self.name),
                                 params=endpoint_kwargs)
         else:
-            return self.request('trades/%s/hist' % pair.format(self.name),
+            return self.request('trades/%s/hist' % pair.format_for(self.name),
                                 params=endpoint_kwargs)
 
     def ask(self, pair, price, size, *args, **kwargs):
@@ -182,7 +186,7 @@ class Bitfinex(RESTInterface):
         return self._place_order(pair, price, size, 'buy', **kwargs)
 
     def _place_order(self, pair, price, size, side, **kwargs):
-        payload = {'symbol': pair.format(self.name), 'price': price,
+        payload = {'symbol': pair.format_for(self.name), 'price': price,
                    'amount': size, 'side': side, 'type': 'exchange-limit'}
         payload.update(kwargs)
         return self.new_order(pair, **payload)
@@ -220,7 +224,7 @@ class Bitfinex(RESTInterface):
     def stats(self, pair, **endpoint_kwargs):
         self.is_supported(pair)
         if self.api.version == 'v1':
-            return self.request('stats/%s' % pair.format(self.name))
+            return self.request('stats/%s' % pair.format_for(self.name))
         else:
             key = endpoint_kwargs.pop('key')
             size = endpoint_kwargs.pop('size')
@@ -235,7 +239,7 @@ class Bitfinex(RESTInterface):
         time_frame = endpoint_kwargs.pop('time_frame')
         section = endpoint_kwargs.pop('section')
         return self.request('candles/trade:%s:%s/%s' %
-                            (time_frame, pair.format(self.name), section),
+                            (time_frame, pair.format_for(self.name), section),
                             params=endpoint_kwargs)
 
     @Bitfinex.check_version_compatibility
@@ -308,7 +312,7 @@ class Bitfinex(RESTInterface):
     @Bitfinex.check_version_compatibility
     def new_order(self, pair, **endpoint_kwargs):
         self.is_supported(pair)
-        payload = {'symbol': pair.format(self.name)}
+        payload = {'symbol': pair.format_for(self.name)}
         payload.update(endpoint_kwargs)
         return self.request('order/new', authenticate=True,
                             params=payload)
@@ -357,7 +361,7 @@ class Bitfinex(RESTInterface):
     @Bitfinex.check_version_compatibility
     def past_trades(self, pair, **endpoint_kwargs):
         self.is_supported(pair)
-        payload = {'symbol': pair.format(self.name)}
+        payload = {'symbol': pair.format_for(self.name)}
         payload.update(endpoint_kwargs)
         return self.request('mytrades', authenticate=True,
                             params=payload)
@@ -422,7 +426,7 @@ class Bitfinex(RESTInterface):
     @Bitfinex.check_version_compatibility
     def order_trades(self, pair, order_id, **endpoint_kwargs):
         return self.request('auth/r/order/%s:%s/trades' %
-                            (pair.format(self.names), order_id),
+                            (pair.format_for(self.names), order_id),
                             authenticate=True, params=endpoint_kwargs)
 
     @Bitfinex.check_version_compatibility
@@ -445,7 +449,7 @@ class Bitfinex(RESTInterface):
     @Bitfinex.check_version_compatibility
     def alert_set(self, pair, **endpoint_kwargs):
         self.is_supported(pair)
-        endpoint_kwargs['symbol'] = pair.format(self.name)
+        endpoint_kwargs['symbol'] = pair.format_for(self.name)
         return self.request('auth/w/alert/set', authenticate=True,
                             params=endpoint_kwargs)
 
@@ -454,13 +458,13 @@ class Bitfinex(RESTInterface):
         self.is_supported(pair)
         symbol = endpoint_kwargs.pop('price')
         return self.request('auth/w/alert/price:%s:%s/del' %
-                            (pair.format(self.name), price),
+                            (pair.format_for(self.name), price),
                             authenticate=True)
 
     @Bitfinex.check_version_compatibility
     def calc_available_balance(self, pair, **endpoint_kwargs)
         self.is_supported(pair)
-        endpoint_kwargs['symbol'] = pair.format(self.name)
+        endpoint_kwargs['symbol'] = pair.format_for(self.name)
         return self.request('auth/calc/order/avail', authenticate=True,
                             params=endpoint_kwargs)
 
