@@ -44,3 +44,8 @@ class EmptySupportedPairListWarning(UserWarning):
 
 class UnsupportedPairError(ValueError):
     """Raised if a given pair isn't supported by an Interface / API."""
+
+
+class UnsupportedEndpointError(AttributeError):
+    """Raised if a call to an API method, which is not supported by the currently
+    configured API Version, is made"""
