@@ -79,36 +79,94 @@ class Interface:
 
 
 class RESTInterface(Interface):
-    def __init__(name, rest_api):
+    def __init__(self, name, rest_api):
         super(RESTInterface, self).__init__(name=name, rest_api=rest_api)
 
-
     # Public Endpoints
-
-    def ticker(self, pair):
+    def ticker(self, pair, *args, **kwargs):
         raise NotImplementedError
 
-    def order_book(self, pair):
+    def order_book(self, pair, *args, **kwargs):
         raise NotImplementedError
 
-    def trades(self, pair):
+    def trades(self, pair, *args, **kwargs):
         raise NotImplementedError
 
     # Private Endpoints
-    def ask(self, pair, price, size):
+    def ask(self, pair, price, size, *args, **kwargs):
         raise NotImplementedError
 
-    def bid(self, pair, price, size):
+    def bid(self, pair, price, size, *args, **kwargs):
         raise NotImplementedError
 
-    def order_status(self, order_id):
+    def order_status(self, order_id, *args, **kwargs):
         raise NotImplementedError
 
-    def open_orders(self):
+    def open_orders(self, *args, **kwargs):
         raise NotImplementedError
 
-    def cancel_order(self, *order_ids):
+    def cancel_order(self, *order_ids, **kwargs):
         raise NotImplementedError
 
-    def wallet(self, currency):
+    def wallet(self, currency, *args, **kwargs):
         raise NotImplementedError
+
+
+class Bitfinex(RESTInterface):
+    pass
+
+
+class Bitstamp(RESTInterface):
+    pass
+
+
+class Bittrex(RESTInterface):
+    pass
+
+
+class BTCE(RESTInterface):
+    pass
+
+
+class BTer(RESTInterface):
+    pass
+
+
+class CCEX(RESTInterface):
+    pass
+
+
+class CoinCheck(RESTInterface):
+    pass
+
+
+class Cryptopia(RESTInterface):
+    pass
+
+
+class HitBTC(RESTInterface):
+    pass
+
+
+class Kraken(RESTInterface):
+    pass
+
+
+class OKCoin(RESTInterface):
+    pass
+
+
+class Poloniex(RESTInterface):
+    pass
+
+
+class QuadrigaCX(RESTInterface):
+    pass
+
+
+class TheRockTrading(RESTInterface):
+    pass
+
+
+class Vaultoro(RESTInterface):
+    pass
