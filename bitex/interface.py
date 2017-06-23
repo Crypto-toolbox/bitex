@@ -138,7 +138,7 @@ class Bitfinex(RESTInterface):
     ###############
     def ticker(self, pair):
         self.is_supported(pair)
-        if self.api.version == 'v1':
+        if self.REST.version == 'v1':
             return self.request('pubticker/%s' % pair.format_for(self.name))
         else:
             return self.request('ticker/%s' % pair.format_for(self.name),
@@ -146,7 +146,7 @@ class Bitfinex(RESTInterface):
 
     def order_book(self, pair, **endpoint_kwargs):
         self.is_supported(pair)
-        if self.api.version == 'v1':
+        if self.REST.version == 'v1':
             return self.request('book/%s' % pair.format_for(self.name),
                                 params=endpoint_kwargs)
         else:
@@ -157,7 +157,7 @@ class Bitfinex(RESTInterface):
 
     def trades(self, pair, **endpoint_kwargs):
         self.is_supported(pair)
-        if self.api.version == 'v1':
+        if self.REST.version == 'v1':
             return self.request('trades/%s' % pair.format_for(self.name),
                                 params=endpoint_kwargs)
         else:
@@ -195,6 +195,10 @@ class Bitfinex(RESTInterface):
     # Exchange Specific Methods
     ###########################
     @check_bitfinex_version_compatibility
+    def tickers(self):
+        return self.request('tickers')
+
+    @check_bitfinex_version_compatibility
     def symbols(self, verbose=False):
         if verbose:
             return self.request('symbols_details')
@@ -205,10 +209,9 @@ class Bitfinex(RESTInterface):
     def symbols_details(self):
         return self.request('symbols_details')
 
-
     def stats(self, pair, **endpoint_kwargs):
         self.is_supported(pair)
-        if self.api.version == 'v1':
+        if self.REST.version == 'v1':
             return self.request('stats/%s' % pair.format_for(self.name))
         else:
             key = endpoint_kwargs.pop('key')
@@ -268,7 +271,7 @@ class Bitfinex(RESTInterface):
         return self.request('key_info', authenticate=True)
 
     def margin_info(self, **endpoint_kwargs):
-        if self.api.version == 'v1':
+        if self.REST.version == 'v1':
             return self.request('margin_info', authenticate=True)
         else:
             key = endpoint_kwargs.pop('key')
@@ -372,7 +375,7 @@ class Bitfinex(RESTInterface):
                             params=endpoint_kwargs)
 
     def offers(self, **endpoint_kwargs):
-        if self.api.version == 'v1':
+        if self.REST.version == 'v1':
             return self.request('offers', authenticate=True,
                                 params=endpoint_kwargs)
         else:
