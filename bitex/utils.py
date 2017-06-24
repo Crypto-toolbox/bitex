@@ -11,11 +11,6 @@ def check_compatibility(**version_func_pairs):
     If the api version required contains '.', replace this with an
     underscore ('_') - the decorator will take care of it.
     """
-    method_compatibility = {}
-    for k in version_func_pairs:
-        d = {value: k for value in version_func_pairs[k]}
-        method_compatibility.update(d)
-
 
     def decorator(func):
         def wrapped(*args, **kwargs):
