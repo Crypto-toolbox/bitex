@@ -34,7 +34,8 @@ def check_compatibility(**version_func_pairs):
     def decorator(func):
         def wrapped(*args, **kwargs):
             interface = args[0]
-            if method_compatibility[func.__name__] != interface.api.version:
+            if (method_compatibility[func.__name__].replace('_', '.') !=
+                interface.api.version):
                 raise UnsupportedEndpointError("Method not available on this API"
                                                "version (current is %s, "
                                                "supported is %s)" %
