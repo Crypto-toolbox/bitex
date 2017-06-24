@@ -25,6 +25,9 @@ def check_compatibility(**version_func_pairs):
     version_num=[list of compatible funcs] pairs, and checks if the
     decorated function is compatible with the currently set API version.
     Should this not be the case, an UnsupportedEndpointError is raised.
+
+    If the api version required contains '.', replace this with an
+    underscore ('_') - the decorator will take care of it.
     """
     method_compatibility = {}
     for k in version_func_pairs:
