@@ -19,7 +19,7 @@ def check_bitfinex_version_compatibility(func, *args, **kwargs):
             return func(*args, **kwargs)
     return wrapper
 
-@wraps
+#@wraps
 def check_compatibility(**version_func_pairs):
     """This Decorator maker takes any number of
     version_num=[list of compatible funcs] pairs, and checks if the
@@ -38,11 +38,11 @@ def check_compatibility(**version_func_pairs):
         def wrapped(*args, **kwargs):
             interface = args[0]
             if (method_compatibility[func.__name__].replace('_', '.') !=
-                interface.api.version):
+                interface.REST.version):
                 raise UnsupportedEndpointError("Method not available on this API"
                                                "version (current is %s, "
                                                "supported is %s)" %
-                                               (interface.api.version,
+                                               (interface.REST.version,
                                                 method_compatibility[func.__name__]))
             return func(*args, **kwargs)
         return wrapped
