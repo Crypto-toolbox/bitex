@@ -13,6 +13,7 @@ from bitex.exceptions import UnsupportedEndpointError
 # Init Logging Facilities
 log = logging.getLogger(__name__)
 
+tests_folder_dir = '/home/nls/git/bitex/tests'
 
 class InterfaceTests(unittest.TestCase):
     def test_init_raises_NotImplementedError_for_basic_interface(self):
@@ -161,6 +162,22 @@ class BitfinexInterfacTests(unittest.TestCase):
             api.symbols()
         with self.assertRaises(UnsupportedEndpointError):
             api.symbols(verbose=True)
+
+    def test_and_validate_data_for_wallets_endpoint_method_working_correctly(self):
+        api = Bitfinex(config='%s/auth/bitfinex.ini')
+        # Assert that Bitfinex().wallet() returns a list of dicts with expected
+        # keys
+        resp = api.wallet()
+        self.assertEqual(resp.status_code, 200)
+        self.assertIsInstance(resp.json(), list)
+        for d in resp.json():
+            for k in ['type', 'currency', 'amount', 'available']:
+                self.assertIn(k, d, msg=(k, d, resp.json()))
+        # Assert that an error is raised if the API version isn't v1
+        api = Bitfinex(config='%s/auth/bitfinex.ini')
+        api.REST.version = 'v2'
+        with self.assertRaises(UnsupportedEndpointError):
+            api.wallet()
 
 
 if __name__ == '__main__':
