@@ -153,7 +153,10 @@ class Bitfinex(RESTInterface):
                                                  **req_kwargs)
 
     def _get_supported_pairs(self):
-        return self.symbols()
+        if self.REST.version == 'v1':
+            return self.symbols().json()
+        else:
+            return Bitfinex().symbols().json()
 
     ###############
     # Basic Methods
