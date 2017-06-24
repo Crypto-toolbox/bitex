@@ -146,7 +146,7 @@ class Bitfinex(RESTInterface):
         if not authenticate:
             return super(Bitfinex, self).request('GET', endpoint,
                                                  authenticate=authenticate,
-                                          **req_kwargs)
+                                                 **req_kwargs)
         else:
             return super(Bitfinex, self).request('POST', endpoint,
                                                  authenticate=authenticate,
@@ -218,14 +218,13 @@ class Bitfinex(RESTInterface):
     def wallet(self, *args, **kwargs):
         return self.balances()
 
-
     ###########################
     # Exchange Specific Methods
     ###########################
 
-    ###########################
-    # Version Neutral Endpoints
-    ###########################
+    #########################
+    # Version Neutral Methods
+    #########################
 
     def stats(self, pair, **endpoint_kwargs):
         self.is_supported(pair)
