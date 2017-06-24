@@ -111,7 +111,8 @@ class BitfinexInterfacTests(unittest.TestCase):
         # Assert that this method works on v2 as well
         api = Bitfinex(version='v2')
         try:
-            api.stats(BTCUSD)
+            api.stats(BTCUSD, key='funding.size', size='1m', side='long',
+                      section='last')
         except UnsupportedEndpointError:
             self.fail('Version 2 not supported!')
 
@@ -163,8 +164,8 @@ class BitfinexInterfacTests(unittest.TestCase):
         with self.assertRaises(UnsupportedEndpointError):
             api.symbols(verbose=True)
 
-    def test_and_validate_data_for_wallets_endpoint_method_working_correctly(self):
-        api = Bitfinex(config='%s/auth/bitfinex.ini')
+    def test_and_validate_data_for_wallet_endpoint_method_working_correctly(self):
+        api = Bitfinex(config='%s/auth/bitfinex.ini' % tests_folder_dir)
         # Assert that Bitfinex().wallet() returns a list of dicts with expected
         # keys
         resp = api.wallet()
@@ -174,7 +175,7 @@ class BitfinexInterfacTests(unittest.TestCase):
             for k in ['type', 'currency', 'amount', 'available']:
                 self.assertIn(k, d, msg=(k, d, resp.json()))
         # Assert that an error is raised if the API version isn't v1
-        api = Bitfinex(config='%s/auth/bitfinex.ini')
+        api = Bitfinex(config='%s/auth/bitfinex.ini' % tests_folder_dir)
         api.REST.version = 'v2'
         with self.assertRaises(UnsupportedEndpointError):
             api.wallet()
