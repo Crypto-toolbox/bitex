@@ -127,7 +127,7 @@ class Bitfinex(RESTInterface):
                        'order_trades', 'positions', 'offers', 'funding_info',
                         'performance', 'alert_set', 'alert_list',
                         'alert_delete', 'calc_available_balance']
-    v = ['new_order', 'tickers', 'symbols', 'symbols_details',
+    v1_only_methods = ['new_order', 'tickers', 'symbols', 'symbols_details',
                        'account_info', 'account_fees', 'summary', 'deposit',
                        'key_info', 'balances', 'transfer', 'withdrawal',
                        'cancel_order', 'order_status', 'open_orders',
@@ -136,7 +136,8 @@ class Bitfinex(RESTInterface):
                        'active_credits', 'balance_history', 'past_trades',
                        'deposit_withdrawal_history', 'new_offer', 'cancel_offer',
                        'offer_status', 'unused_taken_funds', 'taken_funds',
-                       'total_taken_funds', 'close_funding', 'basket_manage']
+                       'total_taken_funds', 'close_funding', 'basket_manage',
+                       'lends', 'funding_book']
 
     def __init__(self, **APIKwargs):
         super(Bitfinex, self).__init__('Bitfinex', BitfinexREST(**APIKwargs))
