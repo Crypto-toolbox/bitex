@@ -1,12 +1,13 @@
 # Import Built-Ins
 import logging
 import unittest
+import time
 
 # Import Third-Party
 
 # Import Homebrew
 from bitex.pairs import BTCUSD
-from bitex.interface import Interface, RESTInterface, Bitfinex
+from bitex.interface import Interface, RESTInterface, Bitfinex, Bitstamp
 from bitex.exceptions import UnsupportedPairError, EmptySupportedPairListWarning
 from bitex.exceptions import UnsupportedEndpointError
 
@@ -53,6 +54,10 @@ class RESTInterfaceTests(unittest.TestCase):
 
 
 class BitfinexInterfacTests(unittest.TestCase):
+    def tearDown(self):
+        # Wait one second to reduce load on API
+        time.sleep(1)
+
     # PUBLIC ENDPOINT TESTS
     def test_and_validate_data_for_ticker_endpoint_method_working_correctly(self):
         api = Bitfinex()
@@ -164,6 +169,7 @@ class BitfinexInterfacTests(unittest.TestCase):
         with self.assertRaises(UnsupportedEndpointError):
             api.symbols(verbose=True)
 
+    # Test Private Endpoints
     def test_and_validate_data_for_wallet_endpoint_method_working_correctly(self):
         api = Bitfinex(config='%s/auth/bitfinex.ini' % tests_folder_dir)
         # Assert that Bitfinex().wallet() returns a list of dicts with expected
@@ -181,5 +187,69 @@ class BitfinexInterfacTests(unittest.TestCase):
             api.wallet()
 
 
+class BitstampInterfaceTests(unittest.TestCase):
+    def tearDown(self):
+        # Wait one second to reduce load on API
+        time.sleep(1)
+
+    # PUBLIC ENDPOINT TESTS
+    def test_and_validate_data_for_ticker_endpoint_method_working_correctly(self):
+        api = Bitstamp()
+        resp = api.ticker(BTCUSD)
+        self.assertEqual(resp.status_code, 200)
+        # Assert that data is in expected format
+        for k in ['last', 'bid', 'ask', 'vwap', 'low', 'high', 'volume',
+                  'open', 'timestamp']:
+            self.assertIn(k, resp.json(), msg=(k, resp.json()))
+
+    def test_and_validate_data_for_order_book_endpoint_method_working_correctly(self):
+        api = Bitstamp()
+        resp = api.order_book(BTCUSD)
+        self.assertEqual(resp.status_code, 200)
+        # Assert that data is in expected format
+        for side in ('bids', 'asks'):
+            self.assertIn(side, resp.json())
+            for l in resp.json()[side]:
+                self.assertIsInstance(l, list, msg=(l, side, resp.json()))
+                self.assertEqual(len(l), 2, msg=(l, side, resp.json()))
+
+
+    def test_and_validate_data_for_trades_endpoint_method_working_correctly(self):
+        api = Bitstamp()
+        resp = api.trades(BTCUSD)
+        self.assertEqual(resp.status_code, 200)
+        # Assert that data is in expected format
+        for d in resp.json():
+            for k in ['date', 'tid', 'price', 'amount', 'type']:
+                self.assertIn(k, d, msg=(k, d, resp.json()))
+
+    # Test Private Endpoints
+    def test_and_validate_data_for_wallet_endpoint_method_working_correctly(self):
+        api = Bitstamp(config='%s/auth/bitstamp.ini' % tests_folder_dir)
+        # Assert that Bitstamp().wallet(pair=BTCUSD) returns a list of dicts with expected
+        # keys
+        resp = api.wallet(pair=BTCUSD)
+        self.assertEqual(resp.status_code, 200)
+        self.assertIsInstance(resp.json(), dict)
+        for k in resp.json():
+            self.assertIn(k, ['usd_reserved', 'usd_balance', 'usd_available',
+                              'btc_balance', 'btc_reserved', 'btc_available',
+                              'fee'], msg=(resp.request.url, resp.json()))
+
+        # Assert that if no pair is passed, we get a snapshot of all wallets:
+        resp = api.wallet()
+        self.assertEqual(resp.status_code, 200)
+        self.assertIsInstance(resp.json(), list)
+        currencies = ['ltc', 'btc', 'xrp', 'usd', 'eur']
+        suffixes = ['balance', 'reserved', 'available']
+        keys = ['btcusd_fee', 'btceur_fee', 'eurusd_fee',
+                'xrpusd_fee', 'xrpeur_fee', 'xrpbtc_fee',
+                'ltceur_fee', 'ltcusd_fee', 'ltcbtc_fee']
+        for cur in currencies:
+            for suffix in suffixes:
+                keys.append(cur + '_' + suffix)
+        for k in resp.json():
+            self.assertIn(k, keys)
+
 if __name__ == '__main__':
-    unittest.main()
+    unittest.main(verbosity=2)
