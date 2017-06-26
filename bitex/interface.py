@@ -511,6 +511,10 @@ class Bitstamp(RESTInterface):
         else:
             super(Bitstamp, self).generate_uri(endpoint)
 
+    def _get_supported_pairs(self):
+        return ['btceur', 'btcusd', 'eurusd', 'xrpusd', 'xrpeur', 'xrpbtc',
+                'ltcusd', 'ltceur', 'ltcbtc']
+
     def request(endpoint, authenticate=False, **kwargs):
         if authenticate:
             super(Bitstamp, self).request('POST', endpoint, **kwargs)
