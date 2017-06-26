@@ -161,7 +161,7 @@ class Bitfinex(RESTInterface):
     ###############
     # Basic Methods
     ###############
-    def ticker(self, pair):
+    def ticker(self, pair, **endpoint_kwargs):
         self.is_supported(pair)
         if self.REST.version == 'v1':
             return self.request('pubticker/%s' % pair.format_for(self.name))
