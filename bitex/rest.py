@@ -515,6 +515,13 @@ class CryptopiaREST(RESTAPI):
                                             config=config)
 
     def _query(self, *args, **kwargs):
+        """Modified _query() method for CryptopiaREST.
+
+        For whatever reason, Cryptopia Sends a BOM Header. This is a 3 Byte
+        header, which prevents requests.Request.json() to properly decode
+        the response's content. We thus remove the first 3 bytes if Response.json()
+        fails.
+        """
         resp = super(CryptopiaREST, self)._query(*args, **kwargs)
         try:
             resp.json()
@@ -523,7 +530,11 @@ class CryptopiaREST(RESTAPI):
             BOM_str = io.BytesIO(resp._content)
             BOM_str.read(3)
             BOM_removed_str = BOM_str.read(len(resp._content))
-
+            try:
+                json.loads(BOM_removed_str.decode('utf-8'))
+            except json.JSONDecodeError:
+                return resp
+            
             resp._content = BOM_removed_str
             return resp
 
