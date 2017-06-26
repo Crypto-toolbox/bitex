@@ -162,7 +162,6 @@ class RESTAPITests(TestCase):
             resp.raise_for_status()
 
 
-
 class BitstampRESTTests(TestCase):
     def test_initialization(self):
         # test that all default values are assigned correctly if No kwargs are

@@ -62,7 +62,7 @@ class BitfinexInterfacTests(unittest.TestCase):
     def test_and_validate_data_for_ticker_endpoint_method_working_correctly(self):
         api = Bitfinex()
         resp = api.ticker(BTCUSD)
-        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.status_code, 200, msg=resp.json())
         # Assert that data is in expected format
         for k in ['mid', 'bid', 'ask', 'last_price', 'low', 'high', 'volume', 'timestamp']:
             self.assertIn(k, resp.json(), msg=(k, resp.json()))
@@ -76,7 +76,7 @@ class BitfinexInterfacTests(unittest.TestCase):
     def test_and_validate_data_for_order_book_endpoint_method_working_correctly(self):
         api = Bitfinex()
         resp = api.order_book(BTCUSD)
-        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.status_code, 200, msg=resp.json())
         # Assert that data is in expected format
         for side in ('bids', 'asks'):
             self.assertIn(side, resp.json())
@@ -93,7 +93,7 @@ class BitfinexInterfacTests(unittest.TestCase):
     def test_and_validate_data_for_trades_endpoint_method_working_correctly(self):
         api = Bitfinex()
         resp = api.trades(BTCUSD)
-        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.status_code, 200, msg=resp.json())
         # Assert that data is in expected format
         for d in resp.json():
             for k in ['timestamp', 'tid', 'price', 'amount', 'exchange', 'type']:
@@ -108,7 +108,7 @@ class BitfinexInterfacTests(unittest.TestCase):
     def test_and_validate_data_for_stats_endpoint_method_working_correctly(self):
         api = Bitfinex()
         resp = api.stats(BTCUSD)
-        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.status_code, 200, msg=resp.json())
         # Assert that data is in expected format
         for d in resp.json():
             for k in ['period', 'volume']:
@@ -124,7 +124,7 @@ class BitfinexInterfacTests(unittest.TestCase):
     def test_and_validate_data_for_lends_endpoint_method_working_correctly(self):
         api = Bitfinex()
         resp = api.lends('BTC')
-        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.status_code, 200, msg=resp.json())
         # Assert that data is in expected format
         for d in resp.json():
             for k in ['rate', 'amount_lent', 'amount_used', 'timestamp']:
@@ -137,7 +137,7 @@ class BitfinexInterfacTests(unittest.TestCase):
     def test_and_validate_data_for_funding_book_endpoint_method_working_correctly(self):
         api = Bitfinex()
         resp = api.funding_book('BTC')
-        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.status_code, 200, msg=resp.json())
         # Assert that we have bids and asks, and that their entries are in the
         # expected format
         for side in ('bids', 'asks'):
@@ -154,14 +154,14 @@ class BitfinexInterfacTests(unittest.TestCase):
         api = Bitfinex()
         # Assert that Bitfinex().symbols() returns a list
         resp = api.symbols()
-        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.status_code, 200, msg=resp.json())
         self.assertIsInstance(resp.json(), list)
         # Assert that if verbose=True is passed, symbols returns dicts
         resp = api.symbols(verbose=True)
         for d in resp.json():
             for k in ['pair', 'price_precision', 'initial_margin', 'minimum_margin',
                       'maximum_order_size', 'minimum_order_size', 'expiration']:
-                self.assertIn(k, d, msg=(k, d, resp.json()))#
+                self.assertIn(k, d, msg=(k, d, resp.json()))
         # Assert that an error is raised if the API version isn't v1
         api = Bitfinex(version='v2')
         with self.assertRaises(UnsupportedEndpointError):
@@ -175,7 +175,7 @@ class BitfinexInterfacTests(unittest.TestCase):
         # Assert that Bitfinex().wallet() returns a list of dicts with expected
         # keys
         resp = api.wallet()
-        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.status_code, 200, msg=resp.json())
         self.assertIsInstance(resp.json(), list)
         for d in resp.json():
             for k in ['type', 'currency', 'amount', 'available']:
@@ -239,7 +239,7 @@ class BitstampInterfaceTests(unittest.TestCase):
         # Assert that if no pair is passed, we get a snapshot of all wallets:
         resp = api.wallet()
         self.assertEqual(resp.status_code, 200)
-        self.assertIsInstance(resp.json(), list)
+        self.assertIsInstance(resp.json(), dict)
         currencies = ['ltc', 'btc', 'xrp', 'usd', 'eur']
         suffixes = ['balance', 'reserved', 'available']
         keys = ['btcusd_fee', 'btceur_fee', 'eurusd_fee',
