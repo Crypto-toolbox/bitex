@@ -193,7 +193,7 @@ class RESTAPI(BaseAPI):
         """
         resp = requests.request(method_verb, **request_kwargs,
                                 timeout=self.timeout)
-        resp.raise_for_status()
+        #resp.raise_for_status()
         return resp
 
     def private_query(self, method_verb, endpoint, **request_kwargs):
