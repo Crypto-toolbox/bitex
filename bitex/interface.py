@@ -497,8 +497,170 @@ class Bitfinex(RESTInterface):
 
 
 class Bitstamp(RESTInterface):
+    """Bitstamp REST API Interface Class.
+
+    Since Bitstamp doesn't make an explicit differentiation between api versions,
+    we do not use a version checker for this interface.
+    """
     def __init__(self, **APIKwargs):
         super(Bitstamp, self).__init__('Bitstamp', BitstampREST(**APIKwargs))
+
+    def generate_uri(self, endpoint):
+        if endpoint.startswith('api'):
+            return endpoint[3:]
+        else:
+            super(Bitstamp, self).generate_uri(endpoint)
+
+    def request(endpoint, authenticate=False, **kwargs):
+        if authenticate:
+            super(Bitstamp, self).request('POST', endpoint, **kwargs)
+        else:
+            super(Bitstamp, self).request('GET', endpoint, **kwargs)
+
+    ###############
+    # Basic Methods
+    ###############
+
+    # Public Endpoints
+    def ticker(self, pair, *args, **kwargs):
+        return self.request('ticker/%s/' % pair.format_for('Bitstamp'),
+                            authenticate=False, params=kwargs)
+
+    def order_book(self, pair, *args, **kwargs):
+        return self.request('order_book/%s/' % pair.format_for('Bitstamp'),
+                            authenticate=False, params=kwargs)
+
+    def trades(self, pair, *args, **kwargs):
+        return self.request('transactions/%s/' % pair.format_for('Bitstamp'),
+                            authenticate=False, params=kwargs)
+
+    # Private Endpoints
+    def ask(self, pair, price, size, *args, market=False, **kwargs):
+        return self._place_order(pair, price, size, 'buy', market=market,
+                                 **kwargs)
+
+    def bid(self, pair, price, size, *args, market=False, **kwargs):
+        return self._place_order(pair, price, size, 'buy', market=False,
+                                 **kwargs)
+
+    def _place_order(self, pair, size, price, side, market=market):
+        payload = {'amount': size, 'price': price}
+        payload.update(kwargs)
+        if market:
+                    return self.request('%s/market/%s/' %
+                                        (side, pair.format_for('Bitstamp')),
+                                         authenticate=True, body=payload))
+        else:
+            return self.request('%s/%s/' % (side, pair.format_for('Bitstamp')),
+                                authenticate=True, body=payload))
+
+    def order_status(self, order_id, *args, **kwargs):
+        payload = {'id': order_id}
+        payload.update(kwargs)
+        return self.request('api/order_status/', authenticate=True,
+                            body=payload)
+
+    def open_orders(self, *args, pair=None, **kwargs):
+        if pair:
+            return self.request('open_orders/%s/' % pair.format_for('Bitstamp'),
+                                authenticate=True, body=kwargs)
+        else:
+            return self.request('open_orders/all/', authenticate=True,
+                                body=kwargs)
+
+    def cancel_order(self, *order_ids, **kwargs):
+        payload = {'id': order_id}
+        payload.update(kwargs)
+        return self.request('cancel_order/', authenticate=True, body=payload)
+
+    def wallet(self, pair, *args, **kwargs):
+        if pair:
+            return self.request('balance/%s/' % pair.format_for('Bitstamp'),
+                                authenticate=True, body=kwargs)
+        else:
+            return self.request('balance/', authenticate=True, body=kwargs)
+
+    ###########################
+    # Exchange Specific Methods
+    ###########################
+
+    def hourly_ticker(self, pair, **kwargs):
+        if pair:
+            return self.request('ticker_hour/%s/' % pair.format_for('Bitstamp'),
+                                params=kwargs)
+        else:
+            return self.request('api/ticker_hour/')
+
+    def eur_usd_conversion_rate(self, **kwargs):
+        return self.request('api/eur_usd/', params=**kwargs)
+
+    def user_transactions(self, pair, **kwargs):
+        if pair:
+            return self.request('user_transactions/%s/' %
+                                pair.format_for('Bitstamp'), authenticate=True,
+                                body=kwargs)
+        else:
+            return self.request('api/user_transactions/', authenticate=True,
+                                body=kwargs)
+
+    def cancel_all_orders(self, **kwargs):
+        return self.request('api/cancel_all_orders/', authenticate=True,
+                            body=kwargs)
+
+    def withdrawal_request(self, **kwargs):
+        return self.request('api/withdrawal_request', authenticate=True,
+                            body=kwargs)
+
+    def withdraw(self, currency, **kwargs):
+        if currency in ('LTC', 'ltc'):
+            return self.request('ltc_withdrawal', authenticate=True)
+        elif currency in ('BTC', 'btc'):
+            return self.request('api/bitcoin_widthdrawal', authenticate=True)
+        elif currency in ('XRP', 'xrp'):
+            return self.request('xrp_withdrawal/', authenticate=True)
+        else:
+            raise UnsupportedPairError('Currency must be LTC/ltc,'
+                                       'BTC/btc or XRP/xrp!')
+
+    def deposit_address(self, currency):
+        if currency in ('LTC', 'ltc'):
+            return self.request('ltc_address/', authenticate=True)
+        elif currency in ('BTC', 'btc'):
+            return self.request('api/bitcoin_deposit_address', authenticate=True)
+        elif currency in ('XRP', 'xrp'):
+            return self.request('xrp_address/', authenticate=True)
+        else:
+            raise UnsupportedPairError('Currency must be LTC/ltc or BTC/btc!')
+
+    def unconfirmed_bitcoin_deposits(self):
+        return self.request('api/unconfirmed_btc/', authenticate=True)
+
+    def transfer_sub_to_main(self, **kwargs):
+        return self.request('transfer_to_main/', authenticate=True,
+                            body=kwargs)
+
+    def transfer_main_to_sub(self, **kwargs):
+        return self.request('transfer_from_main/', authenticate=True,
+                            body=kwargs)
+
+    def open_bank_withdrawal(self, **kwargs):
+        return self.request('withdrawal/open/', authenticate=True, body=kwargs)
+
+    def bank_withdrawal_status(self, **kwargs):
+        return self.request('withdrawal/status/', authenticate=True,
+                            body=kwargs)
+
+    def cancel_bank_withdrawal(self, **kwargs):
+        return self.request('withdrawal/cancel/', authenticate=True,
+                            body=kwargs)
+
+    def liquidate(self, **kwargs):
+        return self.request('liquidation_address/new/', authenticate=True,
+                            body=kwargs)
+
+    def liquidation_info(self, **kwargs):
+        return self.request('liquidation_address/info/', authenticate=True,
+                            body=kwargs)
 
 
 class Bittrex(RESTInterface):
