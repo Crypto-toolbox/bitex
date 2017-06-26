@@ -158,8 +158,9 @@ class RESTAPITests(TestCase):
         # assert that _query() raises an appropriate error on status code other
         # than 200
         with self.assertRaises(requests.exceptions.HTTPError):
-            RESTAPI('http://test.com')._query('data',
-                                              url='https://api.kraken.com/0/public/Wasabi')
+            resp = RESTAPI('http://test.com')._query('data', url='https://api.kraken.com/0/public/Wasabi')
+            resp.raise_for_status()
+
 
 
 class BitstampRESTTests(TestCase):
@@ -170,7 +171,7 @@ class BitstampRESTTests(TestCase):
         self.assertIs(api.secret, None)
         self.assertIs(api.key, None)
         self.assertEqual(api.addr, 'https://www.bitstamp.net/api')
-        self.assertIs(api.version, None)
+        self.assertEqual(api.version, 'v2')
         self.assertIs(api.config_file, None)
         # Assert that a Warning is raised if user_id is None, and BaseAPI's
         # check mechanism is extended properly
@@ -248,7 +249,8 @@ class BitfinexRESTTests(TestCase):
 
         # Check signatured request kwargs
         try:
-            response = api.private_query('POST', 'auth/r/wallets')
+            response = api.private_query('POST', 'balances')
+            response.raise_for_status()
         except HTTPError as e:
             self.fail("test_sign_request_kwargs_method_and_signature(): HTTPError: %s" % e)
 
@@ -787,12 +789,13 @@ class HitBTCRESTTest(TestCase):
 
         # Check signatured request kwargs
         try:
-            response = api.private_query('GET', 'trading/balance')
+            response = api.private_query('GET', 'account/balance')
+            response.raise_for_status()
         except HTTPError as e:
-            self.fail("test_sign_request_kwargs_method_and_signature(): HTTPError: %s" % e)
+            self.fail("test_sign_request_kwargs_method_and_signature(): HTTPError: %s, %s" % (e, response.json()))
 
         self.assertEqual(response.status_code, 200, msg=response.status_code)
-        self.assertIn('balance', response.json(), msg=response.json())
+        self.assertIn('balance', response.text, msg=response.request.url)
 
 
 class VaultoroRESTTest(TestCase):
