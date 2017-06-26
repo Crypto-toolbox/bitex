@@ -534,9 +534,9 @@ class CryptopiaREST(RESTAPI):
                 json.loads(BOM_removed_str.decode('utf-8'))
             except json.JSONDecodeError:
                 return resp
-            
+
             resp._content = BOM_removed_str
-            return resp
+        return resp
 
     def sign_request_kwargs(self, endpoint, **kwargs):
         req_kwargs = super(CryptopiaREST, self).sign_request_kwargs(endpoint,
@@ -562,7 +562,7 @@ class CryptopiaREST(RESTAPI):
         hmac_sig = base64.b64encode(hmac.new(base64.b64decode(self.secret),
                                              signature.encode('utf-8'),
                                              hashlib.sha256).digest())
-        header_data = 'amx' + self.key + ':' + hmac_sig.decode('utf-8') + ':' + nonce
+        header_data = 'amx ' + self.key + ':' + hmac_sig.decode('utf-8') + ':' + nonce
 
         # Update req_kwargs keys
         req_kwargs['headers'] = {'Authorization': header_data,
