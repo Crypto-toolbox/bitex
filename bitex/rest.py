@@ -12,6 +12,7 @@ import time
 import urllib
 import urllib.parse
 import warnings
+import io
 
 # Import Third-Party
 from requests.auth import AuthBase
@@ -512,6 +513,19 @@ class CryptopiaREST(RESTAPI):
         super(CryptopiaREST, self).__init__(addr=addr, version=version, key=key,
                                             secret=secret, timeout=timeout,
                                             config=config)
+
+    def _query(self, *args, **kwargs):
+        resp = super(CryptopiaREST, self)._query(*args, **kwargs)
+        try:
+            resp.json()
+        except json.JSONDecodeError:
+
+            BOM_str = io.BytesIO(resp._content)
+            BOM_str.read(3)
+            BOM_removed_str = BOM_str.read(len(resp._content))
+
+            resp._content = BOM_removed_str
+            return resp
 
     def sign_request_kwargs(self, endpoint, **kwargs):
         req_kwargs = super(CryptopiaREST, self).sign_request_kwargs(endpoint,
