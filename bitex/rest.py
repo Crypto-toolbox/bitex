@@ -71,6 +71,7 @@ class BitstampREST(RESTAPI):
         if user_id == '':
             raise ValueError("Invalid user id - cannot be empty string! "
                              "Pass None instead!")
+        version = 'v2' if not version else version
         self.user_id = user_id
         super(BitstampREST, self).__init__(addr=addr, version=version,
                                            key=key, secret=secret,
@@ -86,6 +87,12 @@ class BitstampREST(RESTAPI):
             raise IncompleteCredentialsError
         else:
             return
+
+    def generate_uri(self, endpoint):
+        if endpoint.startswith('api'):
+            return endpoint[3:]
+        else:
+            return super(BitstampREST, self).generate_uri(endpoint)
 
     def load_config(self, fname):
         conf = super(BitstampREST, self).load_config(fname)
