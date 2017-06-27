@@ -186,6 +186,26 @@ class BitfinexInterfacTests(unittest.TestCase):
         with self.assertRaises(UnsupportedEndpointError):
             api.wallet()
 
+    def test_and_validate_data_for_open_orders_endpoint_method_working_correctly(self):
+        api = Bitfinex(config='%s/auth/bitfinex.ini' % tests_folder_dir)
+        # Assert that Bitfinex().wallet() returns a list of dicts with expected
+        # keys
+        resp = api.open_orders()
+        self.assertEqual(resp.status_code, 200, msg=resp.json())
+        self.assertIsInstance(resp.json(), list)
+        if resp.json():
+            for d in resp.json():
+                for k in ['id', 'symbol', 'exchange', 'price', 'timestamp',
+                          'is_alive', 'is_cancelled', 'is_hidden', 'was_forced',
+                          'original_amount', 'remaining_amount', 'executed_amount',
+                          'avg_execution_price', 'side', 'type']:
+                    self.assertIn(k, d, msg=(k, d, resp.json()))
+        # Assert that an error is raised if the API version isn't v1
+        api = Bitfinex(config='%s/auth/bitfinex.ini' % tests_folder_dir)
+        api.REST.version = 'v2'
+        with self.assertRaises(UnsupportedEndpointError):
+            api.open_orders()
+
 
 class BitstampInterfaceTests(unittest.TestCase):
     def tearDown(self):
