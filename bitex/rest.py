@@ -438,7 +438,12 @@ class BTCEREST(RESTAPI):
         super(BTCEREST, self).__init__(addr=addr, version=version, key=key,
                                        secret=secret, timeout=timeout,
                                        config=config)
+        self._nonce_counter = 0
 
+    def nonce(self):
+        self._nonce_counter += 1
+        return self._nonce_counter
+    
     def sign_request_kwargs(self, endpoint, **kwargs):
         req_kwargs = super(BTCEREST, self).sign_request_kwargs(endpoint,
                                                                **kwargs)
@@ -451,7 +456,7 @@ class BTCEREST(RESTAPI):
         post_params = params
         post_params.update({'nonce': nonce,
                             'method': endpoint})
-        post_params = '?' + urllib.parse.urlencode(post_params)
+        post_params = urllib.parse.urlencode(post_params)
 
         # Sign POST payload
         signature = hmac.new(self.secret.encode('utf-8'),
