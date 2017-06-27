@@ -233,7 +233,6 @@ class BitstampInterfaceTests(unittest.TestCase):
                 self.assertIsInstance(l, list, msg=(l, side, resp.json()))
                 self.assertEqual(len(l), 2, msg=(l, side, resp.json()))
 
-
     def test_and_validate_data_for_trades_endpoint_method_working_correctly(self):
         api = Bitstamp()
         resp = api.trades(BTCUSD)
@@ -270,6 +269,20 @@ class BitstampInterfaceTests(unittest.TestCase):
                 keys.append(cur + '_' + suffix)
         for k in resp.json():
             self.assertIn(k, keys)
+
+    def test_and_validate_data_for_open_orders_endpoint_method_working_correctly(self):
+        api = Bitstamp(config='%s/auth/bitstamp.ini' % tests_folder_dir)
+        # Assert that Bitstamp().open_orders() returns a list of dicts with expected
+        # keys
+        resp = api.open_orders()
+        self.assertEqual(resp.status_code, 200, msg=resp.json())
+        self.assertIsInstance(resp.json(), list)
+        if resp.json():
+            for d in resp.json():
+                for k in ['id', 'currency_pair', 'price', 'datetime',
+                          'amount', 'side', 'type']:
+                    self.assertIn(k, d, msg=(k, d, resp.json()))
+
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)
