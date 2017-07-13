@@ -15,26 +15,26 @@ class PairTests(unittest.TestCase):
 
         # Assert All exchanges are supported and format correctly;
         # This excludes edge cases, which are tested separately
-        self.assertEqual(pair.format('Kraken'), 'XXBTZUSD')
-        self.assertEqual(pair.format('Bitstamp'), 'btcusd')
-        self.assertEqual(pair.format('Bitfinex'), 'BTCUSD')
-        self.assertEqual(pair.format('Bittrex'), 'BTC-USD')
-        self.assertEqual(pair.format('CoinCheck'), 'BTCUSD')
-        self.assertEqual(pair.format('GDAX'), 'BTC-USD')
-        self.assertEqual(pair.format('ITBit'), 'XBTUSD')
-        self.assertEqual(pair.format('OKCoin'), 'btc_usd')
-        self.assertEqual(pair.format('BTC-E'), 'btc_usd')
-        self.assertEqual(pair.format('C-CEX'), 'BTC/USD')
-        self.assertEqual(pair.format('Cryptopia'), 'BTC_USD')
-        self.assertEqual(pair.format('Gemini'), 'btcusd')
-        self.assertEqual(pair.format('Yunbi'), 'btcusd')
-        self.assertEqual(pair.format('The Rock Trading Ltd.'), 'BTCUSD')
-        self.assertEqual(pair.format('Poloniex'), 'BTC_USD')
-        self.assertEqual(pair.format('Quoine'), 'BTCUSD')
-        self.assertEqual(pair.format('QuadrigaCX'), 'btc_usd')
-        self.assertEqual(pair.format('HitBTC'), 'BTCUSD')
-        self.assertEqual(pair.format('Vaultoro'), 'BTC-USD')
-        self.assertEqual(pair.format('Bter'), 'btc_usd')
+        self.assertEqual(pair.format_for('Kraken'), 'XXBTZUSD')
+        self.assertEqual(pair.format_for('Bitstamp'), 'btcusd')
+        self.assertEqual(pair.format_for('Bitfinex'), 'BTCUSD')
+        self.assertEqual(pair.format_for('Bittrex'), 'BTC-USD')
+        self.assertEqual(pair.format_for('CoinCheck'), 'BTCUSD')
+        self.assertEqual(pair.format_for('GDAX'), 'BTC-USD')
+        self.assertEqual(pair.format_for('ITBit'), 'XBTUSD')
+        self.assertEqual(pair.format_for('OKCoin'), 'btc_usd')
+        self.assertEqual(pair.format_for('BTC-E'), 'btc_usd')
+        self.assertEqual(pair.format_for('C-CEX'), 'BTC/USD')
+        self.assertEqual(pair.format_for('Cryptopia'), 'BTC_USD')
+        self.assertEqual(pair.format_for('Gemini'), 'btcusd')
+        self.assertEqual(pair.format_for('Yunbi'), 'btcusd')
+        self.assertEqual(pair.format_for('The Rock Trading Ltd.'), 'BTCUSD')
+        self.assertEqual(pair.format_for('Poloniex'), 'BTC_USD')
+        self.assertEqual(pair.format_for('Quoine'), 'BTCUSD')
+        self.assertEqual(pair.format_for('QuadrigaCX'), 'btc_usd')
+        self.assertEqual(pair.format_for('HitBTC'), 'BTCUSD')
+        self.assertEqual(pair.format_for('Vaultoro'), 'BTC-USD')
+        self.assertEqual(pair.format_for('Bter'), 'btc_usd')
 
         # Assert that calling the formatter returns the standard presentation
         self.assertEqual(pair(), 'BTCUSD')
@@ -42,30 +42,30 @@ class PairTests(unittest.TestCase):
     def test_poloniex_formatter_edge_case(self):
         # Assert that BTC in quote is swapped to base
         pair = PairFormatter('LTC', 'BTC')
-        self.assertEqual(pair.format('Poloniex'), 'BTC_LTC')
+        self.assertEqual(pair.format_for('Poloniex'), 'BTC_LTC')
 
         # Assert that USDT is swapped from quote to base
         pair = PairFormatter('LTC', 'USDT')
-        self.assertEqual(pair.format('Poloniex'), 'USDT_LTC')
+        self.assertEqual(pair.format_for('Poloniex'), 'USDT_LTC')
 
         # Assert that XMR is only swapped to base if current base is not BTC or
         # USDT
         pair = PairFormatter('BTC', 'XMR')
-        self.assertEqual(pair.format('Poloniex'), 'BTC_XMR')
+        self.assertEqual(pair.format_for('Poloniex'), 'BTC_XMR')
         pair = PairFormatter('USDT', 'XMR')
-        self.assertEqual(pair.format('Poloniex'), 'USDT_XMR')
+        self.assertEqual(pair.format_for('Poloniex'), 'USDT_XMR')
         pair = PairFormatter('ETH', 'XMR')
-        self.assertEqual(pair.format('Poloniex'), 'XMR_ETH')
+        self.assertEqual(pair.format_for('Poloniex'), 'XMR_ETH')
 
 
     def test_bitfinex_formatter_edge_case(self):
         # The DASH symbol is shortened in the Bitfinex API standard, hence
         # our formatter should take this into consideration
         pair = PairFormatter('DASH', 'USD')
-        self.assertEqual(pair.format('Bitfinex'), 'DSHUSD')
+        self.assertEqual(pair.format_for('Bitfinex'), 'DSHUSD')
 
         pair = PairFormatter('USD', 'DASH')
-        self.assertEqual(pair.format('Bitfinex'), 'USDDSH')
+        self.assertEqual(pair.format_for('Bitfinex'), 'USDDSH')
 
 if __name__ == '__main__':
     unittest.main()
