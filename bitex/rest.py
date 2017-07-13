@@ -443,7 +443,7 @@ class BTCEREST(RESTAPI):
     def nonce(self):
         self._nonce_counter += 1
         return self._nonce_counter
-    
+
     def sign_request_kwargs(self, endpoint, **kwargs):
         req_kwargs = super(BTCEREST, self).sign_request_kwargs(endpoint,
                                                                **kwargs)
@@ -842,7 +842,7 @@ class HitBTCREST(RESTAPI):
                              hashlib.sha512).hexdigest()
 
         # update req_kwargs keys
-        req_kwargs['headers'] = {'Api-signature': signature}
+        req_kwargs['headers'] = {'Api-Signature': signature}
         req_kwargs['url'] = self.generate_url(path)
 
         return req_kwargs
