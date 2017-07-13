@@ -568,7 +568,10 @@ class CryptopiaRESTTest(TestCase):
             self.fail("test_sign_request_kwargs_method_and_signature(): HTTPError: %s" % e)
 
         self.assertEqual(response.status_code, 200, msg=response.status_code)
-        self.assertTrue(response.json()['Success'], msg=response.json())
+        try:
+            self.assertTrue(response.json()['Success'], msg=response.json())
+        except JSONDecodeError:
+            self.fail('test_sign_request_kwargs_method_and_signature(): JSONDecodeError for %s' % response._content)
 
 
 class GeminiRESTTest(TestCase):
