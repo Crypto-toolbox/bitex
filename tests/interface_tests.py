@@ -284,5 +284,90 @@ class BitstampInterfaceTests(unittest.TestCase):
                     self.assertIn(k, d, msg=(k, d, resp.json()))
 
 
+class BittrexInterfaceTests(unittest.TestCase):
+    def tearDown(self):
+        # Wait one second to reduce load on API
+        time.sleep(1)
+
+    # PUBLIC ENDPOINT TESTS
+    def test_and_validate_data_for_ticker_endpoint_method_working_correctly(self):
+        api = Bittrex()
+        resp = api.ticker(BTCUSD)
+        self.assertEqual(resp.status_code, 200)
+        self.assertTrue(resp.json()['success'])
+        # Assert that data is in expected format
+        for k in ['Last', 'Bid', 'Ask', 'High', 'Low', 'MarketName', 'Created',
+                  'Volume', 'BaseVolume', 'TimeStamp', 'OpenBuyOrders',
+                  'OpenSellOrders', 'PrevDay', 'DisplayMarketName']:
+            self.assertIn(k, resp.json()['result'], msg=(k, resp.json()))
+
+    def test_and_validate_data_for_order_book_endpoint_method_working_correctly(self):
+        api = Bittrex()
+        resp = api.order_book(BTCUSD)
+        self.assertEqual(resp.status_code, 200)
+        self.assertTrue(resp.json()['success'])
+        # Assert that data is in expected format
+        result = resp.json()['result']
+        for side in ('buy', 'sell'):
+            self.assertIn(side, result)
+            for d in result[side]:
+                self.assertIsInstance(d, dict, msg=(l, side, resp.json()))
+                expected_keys = ['Quantity', 'Rate']
+                for k in d:
+                    self.assertIn(k, expected_keys, msg=(d, side, resp.json()))
+
+    def test_and_validate_data_for_trades_endpoint_method_working_correctly(self):
+        api = Bittrex()
+        resp = api.trades(BTCUSD)
+        self.assertEqual(resp.status_code, 200)
+        self.assertTrue(resp.json()['success'])
+        # Assert that data is in expected format
+        for d in resp.json()['result']:
+            for k in ['Id', 'TimeStamp', 'Price', 'Quantity', 'OrderType',
+                      'FillType', 'Total']:
+                self.assertIn(k, d, msg=(k, d, resp.json()))
+
+    # Test Private Endpoints
+    def test_and_validate_data_for_wallet_endpoint_method_working_correctly(self):
+        api = Bittrex(config='%s/auth/bittrex.ini' % tests_folder_dir)
+        # Assert that Bittrex().wallet(currency=BTC) returns a dict with expected
+        # keys
+        resp = api.wallet(pair=BTCUSD)
+        self.assertEqual(resp.status_code, 200)
+        self.assertTrue(resp.json()['success'])
+        self.assertIsInstance(resp.json(), dict)
+        for k in resp.json()['result']:
+            self.assertIn(k, ['Currency', 'Balance', 'Available', 'Pending',
+                              'CryptoAddress', 'Requested', 'Uuid'],
+                          msg=(resp.request.url, resp.json()))
+
+        # Assert that if no pair is passed, we get a snapshot of all wallets:
+        resp = api.wallet()
+        self.assertEqual(resp.status_code, 200)
+        self.assertTrue(resp.json()['success'])
+        self.assertIsInstance(resp.json(), list)
+        for d in resp.json()['result']:
+            for k in d:
+                self.assertIn(k, ['Currency', 'Balance', 'Available', 'Pending',
+                                  'CryptoAddress', 'Requested', 'Uuid'],
+                              msg=(d, k, resp.json()))
+
+    def test_and_validate_data_for_open_orders_endpoint_method_working_correctly(self):
+        api = Bittrex(config='%s/auth/bittrex.ini' % tests_folder_dir)
+        # Assert that Bittrex().open_orders() returns a list of dicts with expected
+        # keys
+        resp = api.open_orders()
+        self.assertEqual(resp.status_code, 200, msg=resp.json())
+        self.assertTrue(resp.json()['success'])
+        for d in resp.json()['result']:
+            for k in ['Uuid', 'OrderUuid', 'Exchange', 'OrderType', 'Quantity',
+                      'QuantityRemaining', 'Limit', 'CommissionPaid', 'Price',
+                      'PricePerUnit', 'Opened', 'Closed', 'CancelInitiated',
+                      'ImmediateOrCancel', 'IsConditional', 'Condition',
+                      'ConditionTarget']:
+                self.assertIn(k, d, msg=(k, d, resp.json()))
+
+
+
 if __name__ == '__main__':
     unittest.main(verbosity=2)
