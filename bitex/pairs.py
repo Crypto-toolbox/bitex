@@ -87,7 +87,7 @@ class PairFormatter:
 
     @staticmethod
     def bittrex_formatter(base, quote):
-        return base + '-' + quote
+        return quote.lower() + '-' + base.lower()
 
     @staticmethod
     def coincheck_formatter(base, quote):
@@ -189,9 +189,15 @@ class DASHUSDFormatter(PairFormatter):
     def __init__(self):
         super(DASHUSDFormatter, self).__init__('DASH', 'USD')
 
+
+class ETHBTCFormatter(PairFormatter):
+    def __init__(self):
+        super(ETHBTCFormatter, self).__init__('ETH', 'BTC')
+
 BTCUSD = BTCUSDFormatter()
 ETHUSD = ETHUSDFormatter()
 XMRUSD = XMRUSDFormatter()
 ETCUSD = ETCUSDFormatter()
 ZECUSD = ZECUSDFormatter()
 DASHUSD = DASHUSDFormatter()
+ETHBTC = ETHBTCFormatter()
