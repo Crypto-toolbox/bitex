@@ -6,8 +6,8 @@ import time
 # Import Third-Party
 
 # Import Homebrew
-from bitex.pairs import BTCUSD
-from bitex.interface import Interface, RESTInterface, Bitfinex, Bitstamp
+from bitex.pairs import BTCUSD, ETHBTC
+from bitex.interface import Interface, RESTInterface, Bitfinex, Bitstamp, Bittrex
 from bitex.exceptions import UnsupportedPairError, EmptySupportedPairListWarning
 from bitex.exceptions import UnsupportedEndpointError
 
@@ -15,6 +15,7 @@ from bitex.exceptions import UnsupportedEndpointError
 log = logging.getLogger(__name__)
 
 tests_folder_dir = '/home/nls/git/bitex/tests'
+
 
 class InterfaceTests(unittest.TestCase):
     def test_init_raises_NotImplementedError_for_basic_interface(self):
@@ -292,9 +293,9 @@ class BittrexInterfaceTests(unittest.TestCase):
     # PUBLIC ENDPOINT TESTS
     def test_and_validate_data_for_ticker_endpoint_method_working_correctly(self):
         api = Bittrex()
-        resp = api.ticker(BTCUSD)
+        resp = api.ticker(ETHBTC)
         self.assertEqual(resp.status_code, 200)
-        self.assertTrue(resp.json()['success'])
+        self.assertTrue(resp.json()['success'], msg=resp.json())
         # Assert that data is in expected format
         for k in ['Last', 'Bid', 'Ask', 'High', 'Low', 'MarketName', 'Created',
                   'Volume', 'BaseVolume', 'TimeStamp', 'OpenBuyOrders',
@@ -303,9 +304,9 @@ class BittrexInterfaceTests(unittest.TestCase):
 
     def test_and_validate_data_for_order_book_endpoint_method_working_correctly(self):
         api = Bittrex()
-        resp = api.order_book(BTCUSD)
+        resp = api.order_book(ETHBTC)
         self.assertEqual(resp.status_code, 200)
-        self.assertTrue(resp.json()['success'])
+        self.assertTrue(resp.json()['success'], msg=resp.json())
         # Assert that data is in expected format
         result = resp.json()['result']
         for side in ('buy', 'sell'):
@@ -318,9 +319,9 @@ class BittrexInterfaceTests(unittest.TestCase):
 
     def test_and_validate_data_for_trades_endpoint_method_working_correctly(self):
         api = Bittrex()
-        resp = api.trades(BTCUSD)
+        resp = api.trades(ETHBTC)
         self.assertEqual(resp.status_code, 200)
-        self.assertTrue(resp.json()['success'])
+        self.assertTrue(resp.json()['success'], msg=resp.json())
         # Assert that data is in expected format
         for d in resp.json()['result']:
             for k in ['Id', 'TimeStamp', 'Price', 'Quantity', 'OrderType',
@@ -332,9 +333,9 @@ class BittrexInterfaceTests(unittest.TestCase):
         api = Bittrex(config='%s/auth/bittrex.ini' % tests_folder_dir)
         # Assert that Bittrex().wallet(currency=BTC) returns a dict with expected
         # keys
-        resp = api.wallet(pair=BTCUSD)
+        resp = api.wallet(BTCUSD)
         self.assertEqual(resp.status_code, 200)
-        self.assertTrue(resp.json()['success'])
+        self.assertTrue(resp.json()['success'], msg=resp.json())
         self.assertIsInstance(resp.json(), dict)
         for k in resp.json()['result']:
             self.assertIn(k, ['Currency', 'Balance', 'Available', 'Pending',
@@ -344,7 +345,7 @@ class BittrexInterfaceTests(unittest.TestCase):
         # Assert that if no pair is passed, we get a snapshot of all wallets:
         resp = api.wallet()
         self.assertEqual(resp.status_code, 200)
-        self.assertTrue(resp.json()['success'])
+        self.assertTrue(resp.json()['success'], msg=resp.json())
         self.assertIsInstance(resp.json(), list)
         for d in resp.json()['result']:
             for k in d:
@@ -358,7 +359,7 @@ class BittrexInterfaceTests(unittest.TestCase):
         # keys
         resp = api.open_orders()
         self.assertEqual(resp.status_code, 200, msg=resp.json())
-        self.assertTrue(resp.json()['success'])
+        self.assertTrue(resp.json()['success'], msg=resp.json())
         for d in resp.json()['result']:
             for k in ['Uuid', 'OrderUuid', 'Exchange', 'OrderType', 'Quantity',
                       'QuantityRemaining', 'Limit', 'CommissionPaid', 'Price',
