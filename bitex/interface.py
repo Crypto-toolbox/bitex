@@ -787,8 +787,8 @@ class CCEX(RESTInterface):
 
 class CoinCheck(RESTInterface):
     def __init__(self, **APIKwargs):
-        super(CoincheckREST, self).__init__('CoinCheck',
-                                            CoincheckREST(**APIKwargs))
+        super(CoinCheck, self).__init__('CoinCheck',
+                                        CoincheckREST(**APIKwargs))
 
 
 class Cryptopia(RESTInterface):
