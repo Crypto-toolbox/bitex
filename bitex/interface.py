@@ -669,6 +669,11 @@ class Bittrex(RESTInterface):
         return super(Bittrex, self).request('GET', endpoint, authenticate,
                                             **req_kwargs)
 
+    def _get_supported_pairs(self):
+        r = self.pairs()
+        pairs = [item['MarketName'] for item in r['result']]
+        return pairs
+
     ###############
     # Basic Methods
     ###############
@@ -754,6 +759,15 @@ class Bittrex(RESTInterface):
 
     def deposit_history(self, *args, **kwargs):
         return self.request('account/getdeposithistory', params=kwargs)
+
+    def pairs(self, **kwargs):
+        return self.request('public/getmarkets', params=kwargs)
+
+    def currencies(self, **kwargs):
+        return self.request('public/getcurrencies', params=kwargs)
+
+    def simple_ticker(self, **kwargs):
+        return self.request('public/getticker', params=kwargs)
 
 
 class BTCE(RESTInterface):
