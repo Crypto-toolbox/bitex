@@ -87,7 +87,7 @@ class PairFormatter:
 
     @staticmethod
     def bittrex_formatter(base, quote):
-        return quote.lower() + '-' + base.lower()
+        return quote + '-' + base
 
     @staticmethod
     def coincheck_formatter(base, quote):
