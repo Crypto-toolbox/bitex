@@ -665,6 +665,96 @@ class Bittrex(RESTInterface):
     def __init__(self, **APIKwargs):
         super(Bittrex, self).__init__('Bittrex', BittrexREST(**APIKwargs))
 
+    def request(self, endpoint, authenticate=False, **req_kwargs):
+        return super(Bittrex, self).request('GET', endpoint, authenticate,
+                                            **req_kwargs)
+
+    ###############
+    # Basic Methods
+    ###############
+    def ticker(self, pair, *args, **kwargs):
+        payload = {'market': pair}
+        payload.update(kwargs)
+        return self.request('public/getmarketsummary', params=payload)
+
+    def order_book(self, pair, *args, **kwargs):
+        payload = {'market': pair, 'type': 'both'}
+        payload.update(kwargs)
+        return self.request('public/getorderbook', params=payload)
+
+    def trades(self, pair, *args, **kwargs):
+        payload = {'market': pair}
+        payload.update(kwargs)
+        return self.request('public/getmarkethistory', params=payload)
+
+    # Private Endpoints
+    def ask(self, pair, price, size, *args, **kwargs):
+        payload = {'market': pair, 'quantity': size, 'rate': price}
+        payload.update(kwargs)
+        return self.request('market/selllimit', params=payload,
+                            authenticate=True)
+
+    def bid(self, pair, price, size, *args, **kwargs):
+        payload = {'market': pair, 'quantity': size, 'rate': price}
+        payload.update(kwargs)
+        return self.request('market/buylimit', params=payload,
+                            authenticate=True)
+
+    def order_status(self, order_id, *args, **kwargs):
+        payload = {'uuid': order_id}
+        payload.update(kwargs)
+        return self.request('account/getorder', params=payload,
+                            authenticate=True)
+
+    def open_orders(self, *args, **kwargs):
+        return self.request('market/getopenorders', params=kwargs,
+                            authenticate=True)
+
+    def cancel_order(self, *order_ids, **kwargs):
+        if isinstance(order_ids, (tuple, list)):
+            results = []
+            for uuid in order_ids:
+                results.append(self.cancel_order(uuid, **kwargs))
+            return results
+        else:
+            payload = {'uuid': order_ids}
+            payload.update(kwargs)
+            return self.request('market/cancel', params=payload,
+                                authenticate=True)
+
+    def wallet(self, currency, *args, **kwargs):
+        if currency:
+            payload = {'currency': currency}
+            payload.update(kwargs)
+            return self.request('account/getbalance', params=payload,
+                                authenticate=True)
+        else:
+            payload = kwargs
+            return self.request('account/getbalances', params=payload,
+                                authenticate=True)
+
+    ###########################
+    # Exchange Specific Methods
+    ###########################
+
+    def deposit_address(self, currency, **kwargs):
+        payload = {'currency': currency}
+        payload.update(kwargs)
+        return self.request('account/getdepositaddress', params=payload,
+                            authenticate=True)
+
+    def withdraw(self, **kwargs):
+        return self.request('account/withdraw', params=kwargs)
+
+    def trade_history(self, *args, **kwargs):
+        return self.request('account/getorderhistory', params=kwargs)
+
+    def withdrawal_history(self, *args, **kwargs):
+        return self.request('account/getwithdrawalhistory', params=kwargs)
+
+    def deposit_history(self, *args, **kwargs):
+        return self.request('account/getdeposithistory', params=kwargs)
+
 
 class BTCE(RESTInterface):
     def __init__(self, **APIKwargs):
