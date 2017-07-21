@@ -671,36 +671,36 @@ class Bittrex(RESTInterface):
 
     def _get_supported_pairs(self):
         r = self.pairs()
-        pairs = [item['MarketName'] for item in r['result']]
+        pairs = [item['MarketName'] for item in r.json()['result']]
         return pairs
 
     ###############
     # Basic Methods
     ###############
     def ticker(self, pair, *args, **kwargs):
-        payload = {'market': pair}
+        payload = {'market': pair.format_for(self.name)}
         payload.update(kwargs)
         return self.request('public/getmarketsummary', params=payload)
 
     def order_book(self, pair, *args, **kwargs):
-        payload = {'market': pair, 'type': 'both'}
+        payload = {'market': pair.format_for(self.name), 'type': 'both'}
         payload.update(kwargs)
         return self.request('public/getorderbook', params=payload)
 
     def trades(self, pair, *args, **kwargs):
-        payload = {'market': pair}
+        payload = {'market': pair.format_for(self.name)}
         payload.update(kwargs)
         return self.request('public/getmarkethistory', params=payload)
 
     # Private Endpoints
     def ask(self, pair, price, size, *args, **kwargs):
-        payload = {'market': pair, 'quantity': size, 'rate': price}
+        payload = {'market': pair.format_for(self.name), 'quantity': size, 'rate': price}
         payload.update(kwargs)
         return self.request('market/selllimit', params=payload,
                             authenticate=True)
 
     def bid(self, pair, price, size, *args, **kwargs):
-        payload = {'market': pair, 'quantity': size, 'rate': price}
+        payload = {'market': pair.format_for(self.name), 'quantity': size, 'rate': price}
         payload.update(kwargs)
         return self.request('market/buylimit', params=payload,
                             authenticate=True)
