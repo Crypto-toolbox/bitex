@@ -36,8 +36,11 @@ def format_pair(func):
     :return:
     """
     def wrapped(self, *args, **kwargs):
-        if isinstance(args[0], PairFormatter):
-            args = list(args)
-            args[0] = args[0].format_for(self.name)
+        try:
+            if isinstance(args[0], PairFormatter):
+                args = list(args)
+                args[0] = args[0].format_for(self.name)
+        except IndexError:
+            pass
         return func(self, *args, **kwargs)
     return wrapped
