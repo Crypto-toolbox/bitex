@@ -535,17 +535,17 @@ class Bitstamp(RESTInterface):
     # Public Endpoints
     @format_pair
     def ticker(self, pair, *args, **kwargs):
-        return self.request('ticker/%s/' % pair.format_for('Bitstamp'),
+        return self.request('ticker/%s/' % pair,
                             params=kwargs)
 
     @format_pair
     def order_book(self, pair, *args, **kwargs):
-        return self.request('order_book/%s/' % pair.format_for('Bitstamp'),
+        return self.request('order_book/%s/' % pair,
                             params=kwargs)
 
     @format_pair
     def trades(self, pair, *args, **kwargs):
-        return self.request('transactions/%s/' % pair.format_for('Bitstamp'),
+        return self.request('transactions/%s/' % pair,
                             params=kwargs)
 
     # Private Endpoints
@@ -564,10 +564,10 @@ class Bitstamp(RESTInterface):
         payload.update(kwargs)
         if market:
                     return self.request('%s/market/%s/' %
-                                        (side, pair.format_for('Bitstamp')),
+                                        (side, pair),
                                          authenticate=True, data=payload)
         else:
-            return self.request('%s/%s/' % (side, pair.format_for('Bitstamp')),
+            return self.request('%s/%s/' % (side, pair),
                                 authenticate=True, data=payload)
 
     def order_status(self, order_id, *args, **kwargs):
@@ -578,7 +578,7 @@ class Bitstamp(RESTInterface):
 
     def open_orders(self, *args, pair=None, **kwargs):
         if pair:
-            return self.request('open_orders/%s/' % pair.format_for('Bitstamp'),
+            return self.request('open_orders/%s/' % pair,
                                 authenticate=True, data=kwargs)
         else:
             return self.request('open_orders/all/', authenticate=True,
@@ -592,7 +592,7 @@ class Bitstamp(RESTInterface):
     def wallet(self, *args, **kwargs):
         pair = kwargs['pair'] if 'pair' in kwargs else None
         if pair:
-            return self.request('balance/%s/' % pair.format_for('Bitstamp'),
+            return self.request('balance/%s/' % pair,
                                 authenticate=True, data=kwargs)
         else:
             return self.request('balance/', authenticate=True, data=kwargs)
@@ -604,7 +604,7 @@ class Bitstamp(RESTInterface):
     @format_pair
     def hourly_ticker(self, pair, **kwargs):
         if pair:
-            return self.request('ticker_hour/%s/' % pair.format_for('Bitstamp'),
+            return self.request('ticker_hour/%s/' % pair,
                                 params=kwargs)
         else:
             return self.request('api/ticker_hour/')
@@ -616,7 +616,7 @@ class Bitstamp(RESTInterface):
     def user_transactions(self, pair, **kwargs):
         if pair:
             return self.request('user_transactions/%s/' %
-                                pair.format_for('Bitstamp'), authenticate=True,
+                                pair, authenticate=True,
                                 data=kwargs)
         else:
             return self.request('api/user_transactions/', authenticate=True,
