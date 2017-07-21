@@ -859,6 +859,70 @@ class Bter(RESTInterface):
     def __init__(self, **APIKwargs):
         super(Bter, self).__init__('Bter', BterREST(**APIKwargs))
 
+    def _get_supported_pairs(self):
+        return self.request('GET', 'pairs').json()
+
+    # Public Endpoints
+    @format_pair
+    def ticker(self, pair, *args, **kwargs):
+        return self.request('GET', 'ticker/%s' % pair)
+
+    @format_pair
+    def order_book(self, pair, *args, **kwargs):
+        return self.request('GET', 'orderBook/%s' % pair)
+
+    @format_pair
+    def trades(self, pair, *args, **kwargs):
+        tid = '' if not 'TID' in kwargs else '/' + str(kwargs['TID'])
+        return self.request('GET', 'tradeHistory' + tid)
+
+    # Private Endpoints
+    @format_pair
+    def ask(self, pair, price, size, *args, **kwargs):
+        return self._place_orde(pair, price, size, 'sell', **kwargs)
+
+    @format_pair
+    def bid(self, pair, price, size, *args, **kwargs):
+        return self._place_orde(pair, price, size, 'buy', **kwargs)
+
+    def _place_orde(self, pair, price, size, side, **kwargs):
+        payload = {'currencyPair': pair, 'rate': price, 'amount': size}
+        payload.update(kwargs)
+        return self.request('POST', 'private/%s' % side, authenticate=True,
+                            params=payload)
+
+    def order_status(self, order_id, *args, **kwargs):
+        payload = {'orderNumber': order_id}
+        payload.update(kwargs)
+        return self.request('POST', 'private/getOrder', params=payload,
+                            authenticate=True)
+
+    def open_orders(self, *args, **kwargs):
+        return self.request('POST', 'private/openOrders', authenticate=True)
+
+    def cancel_order(self, *order_ids, cancel_all=False, **kwargs):
+        if cancel_all:
+            return self.request('POST', 'private/cancelAllOrders', params=kwargs,
+                                authenticate=True)
+        else:
+            if isinstance(order_ids, tuple) and len(order_ids) > 1:
+                results = []
+                for oid in order_ids:
+                    payload = {'orderNumber': oid}
+                    payload.update(kwargs)
+                    results.append(self.request('POST', 'private/cancelOrder',
+                                                params=payload, authenticate=True))
+                return results
+
+            else:
+                payload = {'orderNumber': order_ids[0]}
+                payload.update(kwargs)
+                return self.request('POST', 'private/cancelOrder', params=payload,
+                                    authenticate=True)
+
+    def wallet(self, *args, **kwargs):
+        return self.request('POST', 'private/balances', authenticate=True)
+
 
 class CCEX(RESTInterface):
     def __init__(self, **APIKwargs):
