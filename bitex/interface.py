@@ -799,6 +799,61 @@ class BTCE(RESTInterface):
     def __init__(self, **APIKwargs):
         super(BTCE, self).__init__('BTC-E', BTCEREST(**APIKwargs))
 
+    # Public Endpoints
+    @format_pair
+    def ticker(self, pair, *args, **kwargs):
+        return self.request('GET', 'ticker/%s' % pair)
+
+    @format_pair
+    def order_book(self, pair, *args, **kwargs):
+        return self.request('GET', 'depth/%s' % pair)
+
+    @format_pair
+    def trades(self, pair, *args, **kwargs):
+        return self.request('GET', 'trades/%s' % pair)
+
+    # Private Endpoints
+    @format_pair
+    def ask(self, pair, price, size, *args, **kwargs):
+        return self._place_order(pair, price, size, 'sell')
+
+    @format_pair
+    def bid(self, pair, price, size, *args, **kwargs):
+        return self._place_order(pair, price, size, 'buy')
+
+    def _place_order(self, pair, price, size, side, **kwargs):
+        payload = {'pair': pair, 'type': side, 'rate': price, 'amount': size}
+        payload.update(kwargs)
+        return self.request('POST', 'Trade', params=payload, authenticate=True)
+
+    def order_status(self, order_id, *args, **kwargs):
+        payload = {'order_id': order_id}
+        payload.update(kwargs)
+        return self.request('POST', 'OrderInfo', params=payload,
+                            authenticate=True)
+
+    @format_pair
+    def open_orders(self, *args, **kwargs):
+        return self.request('POST', 'ActiveOrders', params=kwargs,
+                            authenticate=True)
+
+    def cancel_order(self, *order_ids, **kwargs):
+        if isinstance(order_ids, tuple):
+            result = []
+            for oid in order_ids:
+                payload = {'order_id': oid}
+                r = self.request('POST', 'CancelOrder', params=payload,
+                                 authenticate=True)
+                result.append(r)
+            return r if len(r) > 1 else r[0]
+        else:
+            payload = {'order_id': order_ids}
+            return self.request('POST', 'CancelOrder', params=payload,
+                                authenticate=True)
+
+    def wallet(self, *args, **kwargs):
+        return self.request('POST', 'getInfo', authenticate=True)
+
 
 class Bter(RESTInterface):
     def __init__(self, **APIKwargs):
