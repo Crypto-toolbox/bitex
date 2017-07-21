@@ -146,7 +146,7 @@ class BittrexREST(RESTAPI):
         """
         req_kwargs = super(BittrexREST, self).sign_request_kwargs(endpoint,
                                                                   **kwargs)
-
+        req_kwargs['params'] = {}
         # Prepare arguments for query request.
         try:
             params = kwargs.pop('params')

@@ -752,7 +752,7 @@ class Bittrex(RESTInterface):
             return self.request('market/cancel', params=payload,
                                 authenticate=True)
 
-    def wallet(self, currency, *args, **kwargs):
+    def wallet(self, currency=None, *args, **kwargs):
         if currency:
             payload = {'currency': currency}
             payload.update(kwargs)
