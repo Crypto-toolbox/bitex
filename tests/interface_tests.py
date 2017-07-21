@@ -14,7 +14,7 @@ from bitex.exceptions import UnsupportedEndpointError
 # Init Logging Facilities
 log = logging.getLogger(__name__)
 
-tests_folder_dir = '/home/nls/git/bitex/tests'
+tests_folder_dir = '/home/nils/git/bitex/tests'
 
 
 class InterfaceTests(unittest.TestCase):
@@ -299,8 +299,8 @@ class BittrexInterfaceTests(unittest.TestCase):
         # Assert that data is in expected format
         for k in ['Last', 'Bid', 'Ask', 'High', 'Low', 'MarketName', 'Created',
                   'Volume', 'BaseVolume', 'TimeStamp', 'OpenBuyOrders',
-                  'OpenSellOrders', 'PrevDay', 'DisplayMarketName']:
-            self.assertIn(k, resp.json()['result'], msg=(k, resp.json()))
+                  'OpenSellOrders', 'PrevDay']:
+            self.assertIn(k, resp.json()['result'][0], msg=(k, resp.json()))
 
     def test_and_validate_data_for_order_book_endpoint_method_working_correctly(self):
         api = Bittrex()
@@ -311,11 +311,6 @@ class BittrexInterfaceTests(unittest.TestCase):
         result = resp.json()['result']
         for side in ('buy', 'sell'):
             self.assertIn(side, result)
-            for d in result[side]:
-                self.assertIsInstance(d, dict, msg=(l, side, resp.json()))
-                expected_keys = ['Quantity', 'Rate']
-                for k in d:
-                    self.assertIn(k, expected_keys, msg=(d, side, resp.json()))
 
     def test_and_validate_data_for_trades_endpoint_method_working_correctly(self):
         api = Bittrex()
