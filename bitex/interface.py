@@ -1,20 +1,17 @@
 # Import Built-Ins
 import logging
-import warnings
-from functools import wraps
 
 # Import Third-Party
 import requests
 
 # Import Homebrew
-from .pairs import PairFormatter
-from .exceptions import UnsupportedPairError, EmptySupportedPairListWarning
-from .exceptions import UnsupportedEndpointError
+from .exceptions import UnsupportedPairError
 from .rest import BitfinexREST, BittrexREST, BitstampREST, BTCEREST, BterREST
 from .rest import CCEXREST, CoincheckREST, CryptopiaREST
 from .rest import HitBTCREST, KrakenREST, OKCoinREST, PoloniexREST
 from .rest import QuadrigaCXREST, RockTradingREST, VaultoroREST
 from .utils import check_compatibility, format_pair
+
 # Init Logging Facilities
 log = logging.getLogger(__name__)
 
