@@ -2,7 +2,9 @@
 import logging
 import warnings
 from functools import wraps
+
 # Import Third-Party
+import requests
 
 # Import Homebrew
 from .pairs import PairFormatter
@@ -156,7 +158,7 @@ class Bitfinex(RESTInterface):
         if self.REST.version == 'v1':
             return self.symbols().json()
         else:
-            return Bitfinex().symbols().json()
+            return requests.get('https://api.bitfinex.com/v1/symbols').json()
 
     ###############
     # Basic Methods
