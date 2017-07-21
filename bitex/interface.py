@@ -589,7 +589,7 @@ class Bitstamp(RESTInterface):
         return self.request('cancel_order/', authenticate=True, data=payload)
 
     def wallet(self, *args, **kwargs):
-        pair = kwargs['pair'] if 'pair' in kwargs else None
+        pair = kwargs['pair'].format_for(self.name).lower() if 'pair' in kwargs else None
         if pair:
             return self.request('balance/%s/' % pair,
                                 authenticate=True, data=kwargs)
