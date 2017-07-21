@@ -1,6 +1,6 @@
 from functools import wraps
 from .exceptions import UnsupportedEndpointError
-
+from .pairs import PairFormatter
 #@wraps
 def check_compatibility(**version_func_pairs):
     """This Decorator maker takes any number of
@@ -27,3 +27,17 @@ def check_compatibility(**version_func_pairs):
             return func(*args, **kwargs)
         return wrapped
     return decorator
+
+
+def format_pair(func):
+    """Execute format_for() method if available.
+
+    :param func:
+    :return:
+    """
+    def wrapped(self, *args, **kwargs):
+        if isinstance(args[0], PairFormatter):
+            args = list(args)
+            args[0] = args[0].format_for(self.name)
+        return func(self, *args, **kwargs)
+    return wrapped
