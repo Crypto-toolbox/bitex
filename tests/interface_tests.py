@@ -7,7 +7,7 @@ import time
 
 # Import Homebrew
 from bitex.pairs import BTCUSD, ETHBTC
-from bitex.interface import Interface, RESTInterface, Bitfinex, Bitstamp, Bittrex
+from bitex.interface import Interface, RESTInterface, Bitfinex, Bitstamp, Bittrex, BTCE
 from bitex.exceptions import UnsupportedPairError, EmptySupportedPairListWarning
 from bitex.exceptions import UnsupportedEndpointError
 
@@ -363,6 +363,63 @@ class BittrexInterfaceTests(unittest.TestCase):
                       'ConditionTarget']:
                 self.assertIn(k, d, msg=(k, d, resp.json()))
 
+
+class BTCEInterfaceTests(unittest.TestCase):
+    def tearDown(self):
+        # Wait one second to reduce load on API
+        time.sleep(1)
+
+    # PUBLIC ENDPOINT TESTS
+    def test_and_validate_data_for_ticker_endpoint_method_working_correctly(self):
+        api = BTCE()
+        resp = api.ticker(ETHBTC)
+        self.assertEqual(resp.status_code, 200)
+        data = resp.json()[ETHBTC.format_for('BTC-E')]
+        # Assert that data is in expected format
+        for k in ['last', 'buy', 'sell', 'high', 'low', 'vol_cur', 'avg',
+                  'updated', 'vol']:
+            self.assertIn(k, data, msg=(k, resp.json()))
+
+    def test_and_validate_data_for_order_book_endpoint_method_working_correctly(self):
+        api = BTCE()
+        resp = api.order_book(ETHBTC)
+        self.assertEqual(resp.status_code, 200)
+
+        # Assert that data is in expected format
+        result = resp.json()[ETHBTC.format_for('BTC-E')]
+        for side in ('bids', 'asks'):
+            self.assertIn(side, result)
+
+    def test_and_validate_data_for_trades_endpoint_method_working_correctly(self):
+        api = BTCE()
+        resp = api.trades(ETHBTC)
+        self.assertEqual(resp.status_code, 200)
+
+        data = resp.json()[ETHBTC.format_for('BTC-E')]
+        # Assert that data is in expected format
+        for d in data:
+            self.assertIsInstance(d, dict)
+
+    # Test Private Endpoints
+
+    def test_and_validate_data_for_wallet_endpoint_method_working_correctly(self):
+        api = BTCE(config='%s/auth/btce.ini' % tests_folder_dir)
+
+        # Assert that if no pair is passed, we get a snapshot of all wallets:
+        resp = api.wallet()
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.json()['success'], 1, msg=resp.json())
+        self.assertIn('return', resp.json(), msg=resp.json())
+        data = resp.json()['return']
+        self.assertIn('funds', data)
+
+    def test_and_validate_data_for_open_orders_endpoint_method_working_correctly(self):
+        api = BTCE(config='%s/auth/btce.ini' % tests_folder_dir)
+        # Assert that Bittrex().open_orders() returns a list of dicts with expected
+        # keys
+        resp = api.open_orders()
+        self.assertEqual(resp.status_code, 200, msg=resp.json())
+        self.assertEqual(resp.json()['success'], 1, msg=resp.json())
 
 
 if __name__ == '__main__':
