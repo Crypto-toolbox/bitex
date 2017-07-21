@@ -328,9 +328,9 @@ class BittrexInterfaceTests(unittest.TestCase):
         api = Bittrex(config='%s/auth/bittrex.ini' % tests_folder_dir)
         # Assert that Bittrex().wallet(currency=BTC) returns a dict with expected
         # keys
-        resp = api.wallet(BTCUSD)
+        resp = api.wallet('BTC')
         self.assertEqual(resp.status_code, 200)
-        self.assertTrue(resp.json()['success'], msg=resp.json())
+        self.assertTrue(resp.json()['success'], msg=(resp.json(), resp.request.url))
         self.assertIsInstance(resp.json(), dict)
         for k in resp.json()['result']:
             self.assertIn(k, ['Currency', 'Balance', 'Available', 'Pending',
@@ -341,7 +341,7 @@ class BittrexInterfaceTests(unittest.TestCase):
         resp = api.wallet()
         self.assertEqual(resp.status_code, 200)
         self.assertTrue(resp.json()['success'], msg=resp.json())
-        self.assertIsInstance(resp.json(), list)
+        self.assertIsInstance(resp.json()['result'], list)
         for d in resp.json()['result']:
             for k in d:
                 self.assertIn(k, ['Currency', 'Balance', 'Available', 'Pending',
