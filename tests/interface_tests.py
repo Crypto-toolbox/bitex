@@ -14,7 +14,7 @@ from bitex.exceptions import UnsupportedEndpointError
 # Init Logging Facilities
 log = logging.getLogger(__name__)
 
-tests_folder_dir = '/home/nils/git/bitex/tests'
+tests_folder_dir = '/f/git/bitex/tests'
 
 
 class InterfaceTests(unittest.TestCase):
@@ -422,7 +422,7 @@ class BTCEInterfaceTests(unittest.TestCase):
         self.assertEqual(resp.json()['success'], 1, msg=resp.json())
 
 
-class BTCEInterfaceTests(unittest.TestCase):
+class BterInterfaceTests(unittest.TestCase):
     def tearDown(self):
         # Wait one second to reduce load on API
         time.sleep(1)
