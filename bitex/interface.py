@@ -111,7 +111,7 @@ class RESTInterface(Interface):
     def cancel_order(self, *order_ids, **kwargs):
         raise NotImplementedError
 
-    def wallet(self, currency, *args, **kwargs):
+    def wallet(self, *args, **kwargs):
         raise NotImplementedError
 
 
@@ -927,6 +927,83 @@ class Bter(RESTInterface):
 class CCEX(RESTInterface):
     def __init__(self, **APIKwargs):
         super(CCEX, self).__init__('C-CEX', CCEXREST(**APIKwargs))
+
+    def request(self, endpoint, authenticate=False, **req_kwargs):
+        if authenticate:
+            endpoint = endpoint if endpoint else 'api.html'
+            return super(CCEX, self).request('GET', endpoint, authenticate=True,
+                                **req_kwargs)
+        else:
+            endpoint = endpoint if endpoint else 'api_pub.html'
+            return super(CCEX, self).request('GET', endpoint, **req_kwargs)
+
+    # Public Endpoints
+    @format_pair
+    def ticker(self, pair, *args, **kwargs):
+        return self.request('%s.json' % pair, params=kwargs)
+
+    @format_pair
+    def order_book(self, pair, *args, **kwargs):
+        payload = {'a': 'getorderbook', 'market': pair, 'type': 'both'}
+        payload.update(kwargs)
+        return self.request(None, params=payload)
+
+    @format_pair
+    def trades(self, pair, *args, **kwargs):
+        payload = {'a': 'getmarkethistory', 'market': pair}
+        payload.update(kwargs)
+        return self.request(None, params=payload)
+
+    # Private Endpoints
+    @format_pair
+    def ask(self, pair, price, size, *args, **kwargs):
+        payload = {'a': 'selllimit', 'market': pair, 'quantity': size,
+                   'rate': price}
+        payload.update(kwargs)
+        return self.request(None, authenticate=True, params=payload)
+
+    @format_pair
+    def bid(self, pair, price, size, *args, **kwargs):
+        payload = {'a': 'buylimit', 'market': pair, 'quantity': size,
+                   'rate': price}
+        payload.update(kwargs)
+        return self.request(None, authenticate=True, params=payload)
+
+    def order_status(self, order_id, *args, **kwargs):
+        payload = {'a': 'getorder', 'uuid': order_id}
+        payload.update(kwargs)
+        return self.request(None, params=payload, authenticate=True)
+
+    def open_orders(self, *args, **kwargs):
+        payload = {'a': 'getopenorders'}
+        payload.update(kwargs)
+        return self.request(None, params=payload, authenticate=True)
+
+    def cancel_order(self, *order_ids, **kwargs):
+        payload = {'a': 'cancel'}
+        payload.update(kwargs)
+
+        if isinstance(order_ids, tuple) and len(order_ids) > 1:
+            results = []
+            for oid in order_ids:
+                payload.update({'uuid': oid})
+                results.append(self.request(None, params=payload,
+                                            authenticate=True))
+            return results
+
+        else:
+            payload.update({'uuid': order_ids})
+            return self.request(None, params=payload, authenticate=True)
+
+    def wallet(self, *args, currency=None, **kwargs):
+        if currency:
+            payload = {'a': 'getbalance'}
+            payload.update(kwargs)
+            payload.update({'currency': currency})
+        else:
+            payload = {'a': 'getbalances'}
+            payload.update(kwargs)
+        return self.request(None, params=payload, authenticate=True)
 
 
 class CoinCheck(RESTInterface):
