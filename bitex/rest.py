@@ -496,9 +496,9 @@ class CCEXREST(RESTAPI):
         params['apikey'] = self.key
         params['nonce'] = nonce
         post_params = params
-        post_params.update({'nonce': nonce, 'a': endpoint})
+        post_params.update({'nonce': nonce})
         url_params = urllib.parse.urlencode(post_params)
-        url = self.addr + '/api.html?' + url_params
+        url = self.addr + '/' + endpoint + '?' + url_params
 
         # generate signature
         sig = hmac.new(self.secret.encode('utf-8'), url.encode('utf-8'),
