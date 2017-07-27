@@ -6,7 +6,7 @@ import time
 # Import Third-Party
 
 # Import Homebrew
-from bitex.pairs import BTCUSD, ETHBTC
+from bitex.pairs import BTCUSD, ETHBTC, LTCBTC
 from bitex.interface import Interface, RESTInterface
 from bitex.interface import Bitfinex, Bitstamp, Bittrex, BTCE, Bter, CCEX
 from bitex.interface import CoinCheck, Cryptopia, HitBTC, Kraken, OKCoin
@@ -16,7 +16,7 @@ from bitex.exceptions import UnsupportedEndpointError
 # Init Logging Facilities
 log = logging.getLogger(__name__)
 
-tests_folder_dir = '/f/git/bitex/tests'
+tests_folder_dir = '/home/nils/git/bitex/tests'
 
 
 class InterfaceTests(unittest.TestCase):
@@ -493,8 +493,8 @@ class CCEXInterfaceTests(unittest.TestCase):
     # PUBLIC ENDPOINT TESTS
     def test_and_validate_data_for_ticker_endpoint_method_working_correctly(self):
         api = CCEX()
-        resp = api.ticker(ETHBTC)
-        self.assertEqual(resp.status_code, 200, msg=resp.json())
+        resp = api.ticker(LTCBTC)
+        self.assertEqual(resp.status_code, 200, msg=resp.text)
         self.assertIsInstance(resp.json(), dict, msg=resp.json())
         # Assert that data is in expected format
         self.assertIn('ticker', resp.json())
@@ -505,7 +505,7 @@ class CCEXInterfaceTests(unittest.TestCase):
 
     def test_and_validate_data_for_order_book_endpoint_method_working_correctly(self):
         api = CCEX()
-        resp = api.order_book(ETHBTC)
+        resp = api.order_book(LTCBTC)
         self.assertEqual(resp.status_code, 200, msg=resp.json())
         self.assertTrue(resp.json()['success'], msg=resp.json())
         # Assert that data is in expected format
@@ -516,7 +516,7 @@ class CCEXInterfaceTests(unittest.TestCase):
 
     def test_and_validate_data_for_trades_endpoint_method_working_correctly(self):
         api = CCEX()
-        resp = api.trades(ETHBTC)
+        resp = api.trades(LTCBTC)
         self.assertEqual(resp.status_code, 200, msg=resp.json())
         self.assertTrue(resp.json()['success'], msg=resp.json())
         for item in resp.json()['result']:
@@ -527,8 +527,9 @@ class CCEXInterfaceTests(unittest.TestCase):
     def test_and_validate_data_for_wallet_endpoint_method_working_correctly(self):
         api = CCEX(config='%s/auth/ccex.ini' % tests_folder_dir)
         resp = api.wallet()
-        self.assertEqual(resp.status_code, 200, msg=resp.json())
+        self.assertEqual(resp.status_code, 200, msg=resp.request.url)
         self.assertTrue(resp.json()['success'], msg=resp.json())
+
         for item in resp.json()['result']:
             self.assertIsInstance(item, dict, msg=(item, resp.json()))
 
@@ -953,7 +954,6 @@ class VaultoroInterfaceTests(unittest.TestCase):
         for side in ('bids', 'asks'):
             self.assertIn(side, resp.json())
 
-    @unittest.expectedFailure
     def test_and_validate_data_for_trades_endpoint_method_working_correctly(self):
         api = Vaultoro()
         resp = api.trades(ETHBTC)
