@@ -113,7 +113,7 @@ class PairFormatter:
 
     @staticmethod
     def ccex_formatter(base, quote):
-        return base + '/' + quote
+        return base.lower() + '-' + quote.lower()
 
     @staticmethod
     def cryptopia_formatter(base, quote):
@@ -194,6 +194,12 @@ class ETHBTCFormatter(PairFormatter):
     def __init__(self):
         super(ETHBTCFormatter, self).__init__('ETH', 'BTC')
 
+
+class LTCBTCFormatter(PairFormatter):
+    def __init__(self):
+        super(LTCBTCFormatter, self).__init__('LTC', 'BTC')
+
+
 BTCUSD = BTCUSDFormatter()
 ETHUSD = ETHUSDFormatter()
 XMRUSD = XMRUSDFormatter()
@@ -201,3 +207,4 @@ ETCUSD = ETCUSDFormatter()
 ZECUSD = ZECUSDFormatter()
 DASHUSD = DASHUSDFormatter()
 ETHBTC = ETHBTCFormatter()
+LTCBTC = LTCBTCFormatter()
