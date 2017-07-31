@@ -937,6 +937,9 @@ class CCEX(RESTInterface):
             endpoint = endpoint if endpoint else 'api_pub.html'
             return super(CCEX, self).request('GET', endpoint, **req_kwargs)
 
+    def _get_supported_pairs(self):
+        return requests.get('https://c-cex.com/t/pairs.json').json()['pairs']
+
     # Public Endpoints
     @format_pair
     def ticker(self, pair, *args, **kwargs):
@@ -1010,6 +1013,35 @@ class CoinCheck(RESTInterface):
     def __init__(self, **APIKwargs):
         super(CoinCheck, self).__init__('CoinCheck',
                                         CoincheckREST(**APIKwargs))
+
+    # Public Endpoints
+    def ticker(self, pair, *args, **kwargs):
+        raise NotImplementedError
+
+    def order_book(self, pair, *args, **kwargs):
+        raise NotImplementedError
+
+    def trades(self, pair, *args, **kwargs):
+        raise NotImplementedError
+
+    # Private Endpoints
+    def ask(self, pair, price, size, *args, **kwargs):
+        raise NotImplementedError
+
+    def bid(self, pair, price, size, *args, **kwargs):
+        raise NotImplementedError
+
+    def order_status(self, order_id, *args, **kwargs):
+        raise NotImplementedError
+
+    def open_orders(self, *args, **kwargs):
+        raise NotImplementedError
+
+    def cancel_order(self, *order_ids, **kwargs):
+        raise NotImplementedError
+
+    def wallet(self, *args, **kwargs):
+        raise NotImplementedError
 
 
 class Cryptopia(RESTInterface):
