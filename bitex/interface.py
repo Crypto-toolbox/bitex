@@ -1108,7 +1108,7 @@ class Cryptopia(RESTInterface):
     def _place_order(self, pair, price, size, side, *args, **kwargs):
         payload = {'Market': pair, 'Type': side, 'Rate': price, 'Amount': size}
         payload.update(kwargs)
-        return self.request('GET', 'SubmitTrade', params=payload,
+        return self.request('POST', 'SubmitTrade', params=payload,
                             authenticate=True)
 
     @check_and_format_pair
@@ -1123,21 +1123,21 @@ class Cryptopia(RESTInterface):
         raise NotImplementedError
 
     def open_orders(self, *args, **kwargs):
-        return self.request('GET', 'GetOpenOrders', params=kwargs,
+        return self.request('POST', 'GetOpenOrders', params=kwargs,
                             authenticate=True)
 
     def cancel_order(self, *order_ids, **kwargs):
         results = []
         payload = {'Type': 'Trade'}
-        for oid in order_ids
+        for oid in order_ids:
             payload.update({'OrderId': oid})
-            r = self.request('GET', 'CancelTrade', params=payload,
+            r = self.request('POST', 'CancelTrade', params=payload,
                              authenticate=True)
             results.append(r)
         return results if len(results) > 1 else results[0]
 
     def wallet(self, *args, **kwargs):
-        return self.request('GET', 'GetBalance', params=kwargs,
+        return self.request('POST', 'GetBalance', params=kwargs,
                             authenticate=True)
 
 
