@@ -1087,36 +1087,58 @@ class Cryptopia(RESTInterface):
         super(Cryptopia, self).__init__('Cryptopia', CryptopiaREST(**APIKwargs))
 
     def _get_supported_pairs(self):
-        raise NotImplementedError
+        r = self.request('GET', 'GetTradePairs').json()
+        pairs = [entry['Label'].replace('/', '_') for entry in r['Data']]
+        return pairs
 
     # Public Endpoints
+    @check_and_format_pair
     def ticker(self, pair, *args, **kwargs):
-        raise NotImplementedError
+        return self.request('GET', 'GetMarket/' + pair, params=kwargs)
 
+    @check_and_format_pair
     def order_book(self, pair, *args, **kwargs):
-        raise NotImplementedError
+        return self.request('GET', 'GetMarketOrders/' + pair, params=kwargs)
 
+    @check_and_format_pair
     def trades(self, pair, *args, **kwargs):
         raise NotImplementedError
 
     # Private Endpoints
-    def ask(self, pair, price, size, *args, **kwargs):
-        raise NotImplementedError
+    def _place_order(self, pair, price, size, side, *args, **kwargs):
+        payload = {'Market': pair, 'Type': side, 'Rate': price, 'Amount': size}
+        payload.update(kwargs)
+        return self.request('GET', 'SubmitTrade', params=payload,
+                            authenticate=True)
 
+    @check_and_format_pair
+    def ask(self, pair, price, size, *args, **kwargs):
+        return self._place_order(pair, price, size, 'Sell', *args, **kwargs)
+
+    @check_and_format_pair
     def bid(self, pair, price, size, *args, **kwargs):
-        raise NotImplementedError
+        return self._place_order(pair, price, size, 'Buy', *args, **kwargs)
 
     def order_status(self, order_id, *args, **kwargs):
         raise NotImplementedError
 
     def open_orders(self, *args, **kwargs):
-        raise NotImplementedError
+        return self.request('GET', 'GetOpenOrders', params=kwargs,
+                            authenticate=True)
 
     def cancel_order(self, *order_ids, **kwargs):
-        raise NotImplementedError
+        results = []
+        payload = {'Type': 'Trade'}
+        for oid in order_ids
+            payload.update({'OrderId': oid})
+            r = self.request('GET', 'CancelTrade', params=payload,
+                             authenticate=True)
+            results.append(r)
+        return results if len(results) > 1 else results[0]
 
     def wallet(self, *args, **kwargs):
-        raise NotImplementedError
+        return self.request('GET', 'GetBalance', params=kwargs,
+                            authenticate=True)
 
 
 class HitBTC(RESTInterface):
