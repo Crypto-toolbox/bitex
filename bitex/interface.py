@@ -86,19 +86,24 @@ class RESTInterface(Interface):
         super(RESTInterface, self).__init__(name=name, rest_api=rest_api)
 
     # Public Endpoints
+    @check_and_format_pair
     def ticker(self, pair, *args, **kwargs):
         raise NotImplementedError
 
+    @check_and_format_pair
     def order_book(self, pair, *args, **kwargs):
         raise NotImplementedError
 
+    @check_and_format_pair
     def trades(self, pair, *args, **kwargs):
         raise NotImplementedError
 
     # Private Endpoints
+    @check_and_format_pair
     def ask(self, pair, price, size, *args, **kwargs):
         raise NotImplementedError
 
+    @check_and_format_pair
     def bid(self, pair, price, size, *args, **kwargs):
         raise NotImplementedError
 
