@@ -599,7 +599,7 @@ class CryptopiaInterfaceTests(unittest.TestCase):
         resp = api.ticker(ETHBTC)
         self.assertEqual(resp.status_code, 200, msg=resp.json())
         self.assertTrue(resp.json()['Success'], msg=resp.json())
-        for k in ['last', 'AskPrice', 'BidPrice', 'percentChange','High', 'Low',
+        for k in ['AskPrice', 'BidPrice', 'High', 'Low',
                   'Volume', 'LastPrice', 'BuyVolume', 'SellVolume', 'Change',
                   'Open', 'Close', 'BaseVolume', 'BaseBuyVolume', 
                   'BaseSellVolume', 'TradePairId', 'Label']:
