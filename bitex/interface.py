@@ -215,9 +215,15 @@ class Bitfinex(RESTInterface):
         return self.active_orders(*args, **kwargs)
 
     @check_compatibility(v1=v1_only_methods, v2=v2_only_methods)
-    def cancel_order(self, order_id, **kwargs):
-        return self.request('order/cancel', authenticate=True,
-                            params={'order_id': order_id})
+    def cancel_order(self, *order_ids, **kwargs):
+        results = []
+        payload = kwargs
+        for oid in order_ids:
+            payload.update({'order_id': oid})
+            r = self.request('order/cancel', authenticate=True,
+                             params=payload)
+            results.append(r)
+        return results if len(results) > 1 else results[0]
 
     def wallet(self, *args, **kwargs):
         return self.balances()
@@ -584,9 +590,14 @@ class Bitstamp(RESTInterface):
                                 data=kwargs)
 
     def cancel_order(self, *order_ids, **kwargs):
-        payload = {'id': order_id}
-        payload.update(kwargs)
-        return self.request('cancel_order/', authenticate=True, data=payload)
+        results = []
+        payload = kwargs
+        for oid in order_ids:
+            payload.update({'id': oid})
+            r = self.request('cancel_order/', authenticate=True, data=payload)
+            results.append(r)
+        return results if len(results) > 1 else results[0]
+
 
     def wallet(self, *args, **kwargs):
         pair = kwargs['pair'].format_for(self.name).lower() if 'pair' in kwargs else None
@@ -741,16 +752,14 @@ class Bittrex(RESTInterface):
                             authenticate=True)
 
     def cancel_order(self, *order_ids, **kwargs):
-        if isinstance(order_ids, (tuple, list)):
-            results = []
-            for uuid in order_ids:
-                results.append(self.cancel_order(uuid, **kwargs))
-            return results
-        else:
-            payload = {'uuid': order_ids}
-            payload.update(kwargs)
-            return self.request('market/cancel', params=payload,
-                                authenticate=True)
+        results = []
+        payload = kwargs
+        for uuid in order_ids:
+            payload.update({'uuid': uuid})
+            r = self.request('market/cancel', params=payload,
+                             authenticate=True)
+            results.append(r)
+        return results if len(results) > 1 else results[0]
 
     def wallet(self, currency=None, *args, **kwargs):
         if currency:
@@ -838,18 +847,14 @@ class BTCE(RESTInterface):
                             authenticate=True)
 
     def cancel_order(self, *order_ids, **kwargs):
-        if isinstance(order_ids, tuple):
-            result = []
-            for oid in order_ids:
-                payload = {'order_id': oid}
-                r = self.request('POST', 'CancelOrder', params=payload,
-                                 authenticate=True)
-                result.append(r)
-            return r if len(r) > 1 else r[0]
-        else:
-            payload = {'order_id': order_ids}
-            return self.request('POST', 'CancelOrder', params=payload,
-                                authenticate=True)
+        result = []
+        payload = kwargs
+        for oid in order_ids:
+            payload.update({'order_id': oid})
+            r = self.request('POST', 'CancelOrder', params=payload,
+                             authenticate=True)
+            result.append(r)
+        return result if len(result) > 1 else r[0]
 
     def wallet(self, *args, **kwargs):
         return self.request('POST', 'getInfo', authenticate=True)
@@ -905,20 +910,13 @@ class Bter(RESTInterface):
             return self.request('POST', 'private/cancelAllOrders', params=kwargs,
                                 authenticate=True)
         else:
-            if isinstance(order_ids, tuple) and len(order_ids) > 1:
-                results = []
-                for oid in order_ids:
-                    payload = {'orderNumber': oid}
-                    payload.update(kwargs)
-                    results.append(self.request('POST', 'private/cancelOrder',
-                                                params=payload, authenticate=True))
-                return results
-
-            else:
-                payload = {'orderNumber': order_ids[0]}
-                payload.update(kwargs)
-                return self.request('POST', 'private/cancelOrder', params=payload,
-                                    authenticate=True)
+            results = []
+            payload = kwargs
+            for oid in order_ids:
+                payload.update({'orderNumber': oid})
+                results.append(self.request('POST', 'private/cancelOrder',
+                                            params=payload, authenticate=True))
+            return results if len(results) > 1 else results[0]
 
     def wallet(self, *args, **kwargs):
         return self.request('POST', 'private/balances', authenticate=True)
@@ -985,18 +983,12 @@ class CCEX(RESTInterface):
     def cancel_order(self, *order_ids, **kwargs):
         payload = {'a': 'cancel'}
         payload.update(kwargs)
-
-        if isinstance(order_ids, tuple) and len(order_ids) > 1:
-            results = []
-            for oid in order_ids:
-                payload.update({'uuid': oid})
-                results.append(self.request(None, params=payload,
-                                            authenticate=True))
-            return results
-
-        else:
-            payload.update({'uuid': order_ids})
-            return self.request(None, params=payload, authenticate=True)
+        results = []
+        for oid in order_ids:
+            payload.update({'uuid': oid})
+            results.append(self.request(None, params=payload,
+                                        authenticate=True))
+        return results if len(results) > 1 else results[0]
 
     def wallet(self, *args, currency=None, **kwargs):
         if currency:
@@ -1066,17 +1058,14 @@ class CoinCheck(RESTInterface):
                             authenticate=True)
 
     def cancel_order(self, *order_ids, **kwargs):
-        if isinstance(order_ids, tuple):
-            result = []
-            for oid in order_ids:
-                payload = {'order_id': oid}
-                r = self.request('DELETE', 'exchange/orders/' + oid,
-                                 params=kwargs, authenticate=True)
-                result.append(r)
-            return r if len(r) > 1 else r[0]
-        else:
-            return self.request('DELETE', 'exchange/orders/' + order_ids,
-                                params=kwargs, authenticate=True)
+        result = []
+        payload = kwargs
+        for oid in order_ids:
+            payload.update({'order_id': oid})
+            r = self.request('DELETE', 'exchange/orders/' + oid,
+                             params=payload, authenticate=True)
+            result.append(r)
+        return r if len(r) > 1 else r[0]
 
     def wallet(self, *args, **kwargs):
         return self.request('GET', 'accounts/balance', params=kwargs,
