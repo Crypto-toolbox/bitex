@@ -37,7 +37,7 @@ def check_and_format_pair(func):
     :return:
     """
     def wrapped(self, *args, **kwargs):
-        pair, _* = args
+        pair, *_ = args
         try:
             if isinstance(args[0], PairFormatter):
                 pair = pair.format_for(self.name)
@@ -45,6 +45,7 @@ def check_and_format_pair(func):
                 args[0] = pair
         except IndexError:
             pass
-        assert(pair in self._supported_pairs)
+        if pair not in self._supported_pairs:
+            raise AssertionError("%s is not supported by this exchange!" % pair)
         return func(self, *args, **kwargs)
     return wrapped
