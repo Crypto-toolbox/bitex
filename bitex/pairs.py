@@ -91,7 +91,7 @@ class PairFormatter:
 
     @staticmethod
     def coincheck_formatter(base, quote):
-        return base + quote
+        return base.lower() + '_' + quote.lower()
 
     @staticmethod
     def gdax_formatter(base, quote):
