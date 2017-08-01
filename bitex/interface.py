@@ -1019,12 +1019,15 @@ class CoinCheck(RESTInterface):
         return ['btc-jpy']
 
     # Public Endpoints
+    @check_and_format_pair
     def ticker(self, pair, *args, **kwargs):
         return self.request('GET', 'ticker', params=kwargs)
 
+    @check_and_format_pair
     def order_book(self, pair, *args, **kwargs):
         return self.request('GET', 'order_books', params=kwargs)
 
+    @check_and_format_pair
     def trades(self, pair, *args, **kwargs):
         return self.request('GET', 'trades', params=kwargs)
 
@@ -1036,6 +1039,7 @@ class CoinCheck(RESTInterface):
         return self.request('POST', 'exchange/orders', params=payload,
                             authenticate=True)
 
+    @check_and_format_pair
     def ask(self, pair, price, size, *args, **kwargs):
         if 'order_type' in kwargs:
             if (kwargs['order_type'] not in
@@ -1043,6 +1047,7 @@ class CoinCheck(RESTInterface):
                 raise ValueError("order_type not supported by this function!")
         return self._place_order(pair, price, size, 'sell', **kwargs)
 
+    @check_and_format_pair
     def bid(self, pair, price, size, *args, **kwargs):
         if 'order_type' in kwargs:
             if (kwargs['order_type'] not in
