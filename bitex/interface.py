@@ -1146,8 +1146,8 @@ class HitBTC(RESTInterface):
         super(HitBTC, self).__init__('HitBTC', HitBTCREST(**APIKwargs))
 
     def _get_supported_pairs(self):
-        r = self.request('symbols').json()
-        return [entry['symbol'] for entry in r['symbols']]
+        r = self.request('symbols')
+        return [entry['symbol'] for entry in r.json()['symbols']]
 
     def request(self, endpoint, authenticate=False, verb=None, **req_kwargs):
         verb = verb if verb else 'GET'
@@ -1170,7 +1170,7 @@ class HitBTC(RESTInterface):
     @check_and_format_pair
     def trades(self, pair, *args, **kwargs):
         if 'from' not in kwargs:
-            return self.request('%s/trades/recent', params=kwargs)
+            return self.request('%s/trades/recent' % pair, params=kwargs)
         else:
             return self.request('%s/trades', params=kwargs)
 
