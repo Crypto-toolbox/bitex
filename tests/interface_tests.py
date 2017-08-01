@@ -2,6 +2,7 @@
 import logging
 import unittest
 import time
+import json
 
 # Import Third-Party
 
@@ -651,7 +652,7 @@ class HitBTCInterfaceTests(unittest.TestCase):
         self.assertEqual(resp.status_code, 200, msg=resp.json())
         self.assertIsInstance(resp.json(), dict, msg=resp.json())
         # Assert that data is in expected format
-        for k in ['last', 'bid', 'ask', 'high', 'low', 'volume', 'open', 'close',
+        for k in ['last', 'bid', 'ask', 'high', 'low', 'volume', 'open',
                   'volume_quote', 'timestamp']:
             self.assertIn(k, resp.json(), msg=(k, resp.json()))
 
@@ -675,7 +676,7 @@ class HitBTCInterfaceTests(unittest.TestCase):
         api = HitBTC(config='%s/auth/hitbtc.ini' % tests_folder_dir)
         resp = api.wallet()
         self.assertEqual(resp.status_code, 200, msg=resp.json())
-        self.assertIsInstance(resp.json(), dict, msg=resp.json())
+        self.assertIsInstance(resp.json(), dict, msg=resp.request.url)
         self.assertIn('balance', resp.json())
 
     def test_and_validate_data_for_open_orders_endpoint_method_working_correctly(self):
