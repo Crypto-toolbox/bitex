@@ -19,9 +19,9 @@ def check_version_compatibility(**version_func_pairs):
                 if func.__name__ in methods:
                     if version.replace('_', '.') != interface.REST.version:
                         error_msg = ("Method not available on this API version"
-                                    "(current is %s, supported is %s)" %
-                                    (interface.REST.version,
-                                     version.replace('_', '.')))
+                                     "(current is %s, supported is %s)" %
+                                     (interface.REST.version,
+                                      version.replace('_', '.')))
                         raise UnsupportedEndpointError(error_msg)
 
             return func(*args, **kwargs)
