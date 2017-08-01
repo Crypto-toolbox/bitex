@@ -10,7 +10,7 @@ from .rest import BitfinexREST, BittrexREST, BitstampREST, BTCEREST, BterREST
 from .rest import CCEXREST, CoincheckREST, CryptopiaREST
 from .rest import HitBTCREST, KrakenREST, OKCoinREST, PoloniexREST
 from .rest import QuadrigaCXREST, RockTradingREST, VaultoroREST
-from .utils import check_compatibility, format_pair
+from .utils import check_version_compatibility, format_pair
 
 # Init Logging Facilities
 log = logging.getLogger(__name__)
@@ -205,16 +205,16 @@ class Bitfinex(RESTInterface):
         payload.update(kwargs)
         return self.new_order(pair, **payload)
 
-    @check_compatibility(v1=v1_only_methods, v2=v2_only_methods)
+    @check_version_compatibility(v1=v1_only_methods, v2=v2_only_methods)
     def order_status(self, order_id, *args, **kwargs):
         return self.request('order/status', authenticate=True,
                             params={'order_id': order_id})
 
-    @check_compatibility(v1=v1_only_methods, v2=v2_only_methods)
+    @check_version_compatibility(v1=v1_only_methods, v2=v2_only_methods)
     def open_orders(self, *args, **kwargs):
         return self.active_orders(*args, **kwargs)
 
-    @check_compatibility(v1=v1_only_methods, v2=v2_only_methods)
+    @check_version_compatibility(v1=v1_only_methods, v2=v2_only_methods)
     def cancel_order(self, *order_ids, **kwargs):
         results = []
         payload = kwargs
@@ -270,72 +270,72 @@ class Bitfinex(RESTInterface):
     # Version 1 Only Methods
     ########################
 
-    @check_compatibility(v1=v1_only_methods, v2=v2_only_methods)
+    @check_version_compatibility(v1=v1_only_methods, v2=v2_only_methods)
     def tickers(self):
         return self.request('tickers')
 
-    @check_compatibility(v1=v1_only_methods, v2=v2_only_methods)
+    @check_version_compatibility(v1=v1_only_methods, v2=v2_only_methods)
     def symbols(self, verbose=False):
         if verbose:
             return self.request('symbols_details')
         else:
             return self.request('symbols')
 
-    @check_compatibility(v1=v1_only_methods, v2=v2_only_methods)
+    @check_version_compatibility(v1=v1_only_methods, v2=v2_only_methods)
     def symbols_details(self):
         return self.request('symbols_details')
 
-    @check_compatibility(v1=v1_only_methods, v2=v2_only_methods)
+    @check_version_compatibility(v1=v1_only_methods, v2=v2_only_methods)
     def lends(self, currency, **endpoint_kwargs):
         return self.request('lends/%s' % currency,
                             params=endpoint_kwargs)
 
-    @check_compatibility(v1=v1_only_methods, v2=v2_only_methods)
+    @check_version_compatibility(v1=v1_only_methods, v2=v2_only_methods)
     def funding_book(self, currency, **endpoint_kwargs):
         return self.request('lendbook/%s' % currency,
                             params=endpoint_kwargs)
 
-    @check_compatibility(v1=v1_only_methods, v2=v2_only_methods)
+    @check_version_compatibility(v1=v1_only_methods, v2=v2_only_methods)
     def account_info(self):
         return self.request('account_infos', authenticate=True)
 
-    @check_compatibility(v1=v1_only_methods, v2=v2_only_methods)
+    @check_version_compatibility(v1=v1_only_methods, v2=v2_only_methods)
     def account_fees(self):
         return self.request('account_fees', authenticate=True)
 
-    @check_compatibility(v1=v1_only_methods, v2=v2_only_methods)
+    @check_version_compatibility(v1=v1_only_methods, v2=v2_only_methods)
     def summary(self):
         return self.request('summary', authenticate=True)
 
-    @check_compatibility(v1=v1_only_methods, v2=v2_only_methods)
+    @check_version_compatibility(v1=v1_only_methods, v2=v2_only_methods)
     def deposit(self, **endpoint_kwargs):
         return self.request('deposit', authenticate=True,
                             params=endpoint_kwargs)
 
-    @check_compatibility(v1=v1_only_methods, v2=v2_only_methods)
+    @check_version_compatibility(v1=v1_only_methods, v2=v2_only_methods)
     def key_info(self):
         return self.request('key_info', authenticate=True)
 
-    @check_compatibility(v1=v1_only_methods, v2=v2_only_methods)
+    @check_version_compatibility(v1=v1_only_methods, v2=v2_only_methods)
     def funding_info(self, **endpoint_kwargs):
         return self.request('auth/r/funding/%s' % key, authenticate=True,
                             params=endpoint_kwargs)
 
-    @check_compatibility(v1=v1_only_methods, v2=v2_only_methods)
+    @check_version_compatibility(v1=v1_only_methods, v2=v2_only_methods)
     def balances(self):
         return self.request('balances', authenticate=True)
 
-    @check_compatibility(v1=v1_only_methods, v2=v2_only_methods)
+    @check_version_compatibility(v1=v1_only_methods, v2=v2_only_methods)
     def transfer(self, **endpoint_kwargs):
         return self.request('transfer', authenticate=True,
                             params=endpoint_kwargs)
 
-    @check_compatibility(v1=v1_only_methods, v2=v2_only_methods)
+    @check_version_compatibility(v1=v1_only_methods, v2=v2_only_methods)
     def withdrawal(self, **endpoint_kwargs):
         return self.request('withdraw', authenticate=True,
                             params=endpoint_kwargs)
 
-    @check_compatibility(v1=v1_only_methods, v2=v2_only_methods)
+    @check_version_compatibility(v1=v1_only_methods, v2=v2_only_methods)
     @format_pair
     def new_order(self, pair, **endpoint_kwargs):
         self.is_supported(pair)
@@ -344,48 +344,48 @@ class Bitfinex(RESTInterface):
         return self.request('order/new', authenticate=True,
                             params=payload)
 
-    @check_compatibility(v1=v1_only_methods, v2=v2_only_methods)
+    @check_version_compatibility(v1=v1_only_methods, v2=v2_only_methods)
     def multiple_new_orders(self, *orders):
         raise NotImplementedError
 
-    @check_compatibility(v1=v1_only_methods, v2=v2_only_methods)
+    @check_version_compatibility(v1=v1_only_methods, v2=v2_only_methods)
     def cancel_multiple_orders(self, *order_ids):
         return self.request('order/cancel/multi', authenticate=True,
                             params={'order_ids': order_ids})
 
-    @check_compatibility(v1=v1_only_methods, v2=v2_only_methods)
+    @check_version_compatibility(v1=v1_only_methods, v2=v2_only_methods)
     def cancel_all_orders(self):
         return self.request('order/cancel/all', authenticate=True)
 
-    @check_compatibility(v1=v1_only_methods, v2=v2_only_methods)
+    @check_version_compatibility(v1=v1_only_methods, v2=v2_only_methods)
     def replace_order(self, **endpoint_kwargs):
         return self.request('order/cancel/replace', authenticate=True,
                             params=endpoint_kwargs)
 
-    @check_compatibility(v1=v1_only_methods, v2=v2_only_methods)
+    @check_version_compatibility(v1=v1_only_methods, v2=v2_only_methods)
     def active_orders(self, *args, **kwargs):
         return self.request('orders', authenticate=True)
 
-    @check_compatibility(v1=v1_only_methods, v2=v2_only_methods)
+    @check_version_compatibility(v1=v1_only_methods, v2=v2_only_methods)
     def active_positions(self):
         return self.request('positions', authenticate=True)
 
-    @check_compatibility(v1=v1_only_methods, v2=v2_only_methods)
+    @check_version_compatibility(v1=v1_only_methods, v2=v2_only_methods)
     def claim_position(self, **endpoint_kwargs):
         return self.request('position/claim', authenticate=True,
                             params=endpoint_kwargs)
 
-    @check_compatibility(v1=v1_only_methods, v2=v2_only_methods)
+    @check_version_compatibility(v1=v1_only_methods, v2=v2_only_methods)
     def balance_history(self, **endpoint_kwargs):
         return self.request('history', authenticate=True,
                             params=endpoint_kwargs)
 
-    @check_compatibility(v1=v1_only_methods, v2=v2_only_methods)
+    @check_version_compatibility(v1=v1_only_methods, v2=v2_only_methods)
     def deposit_withdrawal_history(self, **endpoint_kwargs):
         return self.request('history/movement', authenticate=True,
                             params=endpoint_kwargs)
 
-    @check_compatibility(v1=v1_only_methods, v2=v2_only_methods)
+    @check_version_compatibility(v1=v1_only_methods, v2=v2_only_methods)
     @format_pair
     def past_trades(self, pair, **endpoint_kwargs):
         self.is_supported(pair)
@@ -394,47 +394,47 @@ class Bitfinex(RESTInterface):
         return self.request('mytrades', authenticate=True,
                             params=payload)
 
-    @check_compatibility(v1=v1_only_methods, v2=v2_only_methods)
+    @check_version_compatibility(v1=v1_only_methods, v2=v2_only_methods)
     def new_offer(self, **endpoint_kwargs):
         return self.request('offer/new', authenticate=True,
                             params=endpoint_kwargs)
 
-    @check_compatibility(v1=v1_only_methods, v2=v2_only_methods)
+    @check_version_compatibility(v1=v1_only_methods, v2=v2_only_methods)
     def cancel_offer(self, **endpoint_kwargs):
         return self.request('offer/cancel', authenticate=False,
                             params=endpoint_kwargs)
 
-    @check_compatibility(v1=v1_only_methods, v2=v2_only_methods)
+    @check_version_compatibility(v1=v1_only_methods, v2=v2_only_methods)
     def offer_status(self, **endpoint_kwargs):
         return self.request('offer/status', authenticate=True,
                             params=endpoint_kwargs)
 
-    @check_compatibility(v1=v1_only_methods, v2=v2_only_methods)
+    @check_version_compatibility(v1=v1_only_methods, v2=v2_only_methods)
     def active_credits(self, **endpoint_kwargs):
         return self.request('credits', authenticate=True,
                             params=endpoint_kwargs)
 
-    @check_compatibility(v1=v1_only_methods, v2=v2_only_methods)
+    @check_version_compatibility(v1=v1_only_methods, v2=v2_only_methods)
     def taken_funds(self, **endpoint_kwargs):
         return self.request('taken_funds', authenticate=True,
                             params=endpoint_kwargs)
 
-    @check_compatibility(v1=v1_only_methods, v2=v2_only_methods)
+    @check_version_compatibility(v1=v1_only_methods, v2=v2_only_methods)
     def unused_taken_funds(self, **endpoint_kwargs):
         return self.request('unused_taken_funds', authenticate=True,
                             params=endpoint_kwargs)
 
-    @check_compatibility(v1=v1_only_methods, v2=v2_only_methods)
+    @check_version_compatibility(v1=v1_only_methods, v2=v2_only_methods)
     def total_taken_funds(self, **endpoint_kwargs):
         return self.request('total_taken_funds', authenticate=True,
                             params=endpoint_kwargs)
 
-    @check_compatibility(v1=v1_only_methods, v2=v2_only_methods)
+    @check_version_compatibility(v1=v1_only_methods, v2=v2_only_methods)
     def close_funding(self, **endpoint_kwargs):
         return self.request('funding/close', authenticate=True,
                             params=endpoint_kwargs)
 
-    @check_compatibility(v1=v1_only_methods, v2=v2_only_methods)
+    @check_version_compatibility(v1=v1_only_methods, v2=v2_only_methods)
     def basket_manage(self, **endpoint_kwargs):
         return self.request('basket_manage', authenticate=True,
                             params=endpoint_kwargs)
@@ -442,7 +442,7 @@ class Bitfinex(RESTInterface):
     ########################
     # Version 2 Only Methods
     ########################
-    @check_compatibility(v1=v1_only_methods, v2=v2_only_methods)
+    @check_version_compatibility(v1=v1_only_methods, v2=v2_only_methods)
     @format_pair
     def candles(self, pair, **endpoint_kwargs):
         time_frame = endpoint_kwargs.pop('time_frame')
@@ -451,45 +451,45 @@ class Bitfinex(RESTInterface):
                             (time_frame, pair, section),
                             params=endpoint_kwargs)
 
-    @check_compatibility(v1=v1_only_methods, v2=v2_only_methods)
+    @check_version_compatibility(v1=v1_only_methods, v2=v2_only_methods)
     @format_pair
     def market_average_price(self, pair, **endpoint_kwargs):
         self.is_supported(pair)
         return self.request('calc/trade/avg', data=endpoint_kwargs)
 
-    @check_compatibility(v1=v1_only_methods, v2=v2_only_methods)
+    @check_version_compatibility(v1=v1_only_methods, v2=v2_only_methods)
     def wallets(self):
         return self.request('auth/r/wallets', authenticate=True)
 
-    @check_compatibility(v1=v1_only_methods, v2=v2_only_methods)
+    @check_version_compatibility(v1=v1_only_methods, v2=v2_only_methods)
     def orders(self):
         return self.request('auth/r/orders', authenticate=True)
 
-    @check_compatibility(v1=v1_only_methods, v2=v2_only_methods)
+    @check_version_compatibility(v1=v1_only_methods, v2=v2_only_methods)
     @format_pair
     def order_trades(self, pair, order_id, **endpoint_kwargs):
         return self.request('auth/r/order/%s:%s/trades' %
                             (pair, order_id),
                             authenticate=True, params=endpoint_kwargs)
 
-    @check_compatibility(v1=v1_only_methods, v2=v2_only_methods)
+    @check_version_compatibility(v1=v1_only_methods, v2=v2_only_methods)
     def positions(self):
         return self.request('auth/r/positions', authenticate=True)
 
-    @check_compatibility(v1=v1_only_methods, v2=v2_only_methods)
+    @check_version_compatibility(v1=v1_only_methods, v2=v2_only_methods)
     def offers(self):
         return self.request('auth/offers', authenticate=True)
 
-    @check_compatibility(v1=v1_only_methods, v2=v2_only_methods)
+    @check_version_compatibility(v1=v1_only_methods, v2=v2_only_methods)
     def performance(self):
         return self.request('auth/r/stats/perf:1D/hist', authenticate=True)
 
-    @check_compatibility(v1=v1_only_methods, v2=v2_only_methods)
+    @check_version_compatibility(v1=v1_only_methods, v2=v2_only_methods)
     def alert_list(self, **endpoint_kwargs):
         price = endpoint_kwargs.pop('type')
         return self.request('auth/r/alerts?type=%s' % price, authenticate=True)
 
-    @check_compatibility(v1=v1_only_methods, v2=v2_only_methods)
+    @check_version_compatibility(v1=v1_only_methods, v2=v2_only_methods)
     @format_pair
     def alert_set(self, pair, **endpoint_kwargs):
         self.is_supported(pair)
@@ -497,7 +497,7 @@ class Bitfinex(RESTInterface):
         return self.request('auth/w/alert/set', authenticate=True,
                             params=endpoint_kwargs)
 
-    @check_compatibility(v1=v1_only_methods, v2=v2_only_methods)
+    @check_version_compatibility(v1=v1_only_methods, v2=v2_only_methods)
     @format_pair
     def alert_delete(self, pair, **endpoint_kwargs):
         self.is_supported(pair)
@@ -506,7 +506,7 @@ class Bitfinex(RESTInterface):
                             (pair, price),
                             authenticate=True)
 
-    @check_compatibility(v1=v1_only_methods, v2=v2_only_methods)
+    @check_version_compatibility(v1=v1_only_methods, v2=v2_only_methods)
     @format_pair
     def calc_available_balance(self, pair, **endpoint_kwargs):
         self.is_supported(pair)

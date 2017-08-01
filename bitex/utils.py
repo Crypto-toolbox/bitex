@@ -2,7 +2,7 @@ from .exceptions import UnsupportedEndpointError
 from .pairs import PairFormatter
 
 
-def check_compatibility(**version_func_pairs):
+def check_version_compatibility(**version_func_pairs):
     """This Decorator maker takes any number of
     version_num=[list of compatible funcs] pairs, and checks if the
     decorated function is compatible with the currently set API version.
