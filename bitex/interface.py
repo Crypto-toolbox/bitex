@@ -1102,7 +1102,7 @@ class Cryptopia(RESTInterface):
 
     @check_and_format_pair
     def trades(self, pair, *args, **kwargs):
-        raise NotImplementedError
+        return self.request('GET', 'GetMarketHistory/' + pair, params=kwargs)
 
     # Private Endpoints
     def _place_order(self, pair, price, size, side, *args, **kwargs):
