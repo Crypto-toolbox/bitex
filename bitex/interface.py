@@ -10,7 +10,7 @@ from .rest import BitfinexREST, BittrexREST, BitstampREST, BTCEREST, BterREST
 from .rest import CCEXREST, CoincheckREST, CryptopiaREST
 from .rest import HitBTCREST, KrakenREST, OKCoinREST, PoloniexREST
 from .rest import QuadrigaCXREST, RockTradingREST, VaultoroREST
-from .utils import check_version_compatibility, format_pair
+from .utils import check_version_compatibility, check_and_format_pair
 
 # Init Logging Facilities
 log = logging.getLogger(__name__)
@@ -160,7 +160,7 @@ class Bitfinex(RESTInterface):
     ###############
     # Basic Methods
     ###############
-    @format_pair
+    @check_and_format_pair
     def ticker(self, pair, **endpoint_kwargs):
         self.is_supported(pair)
         if self.REST.version == 'v1':
@@ -169,7 +169,7 @@ class Bitfinex(RESTInterface):
             return self.request('ticker/%s' % pair,
                                 params=endpoint_kwargs)
 
-    @format_pair
+    @check_and_format_pair
     def order_book(self, pair, **endpoint_kwargs):
         self.is_supported(pair)
         if self.REST.version == 'v1':
@@ -181,7 +181,7 @@ class Bitfinex(RESTInterface):
             return self.request('book/%s/%s' % (pair, prec),
                                 params=endpoint_kwargs)
 
-    @format_pair
+    @check_and_format_pair
     def trades(self, pair, **endpoint_kwargs):
         self.is_supported(pair)
         if self.REST.version == 'v1':
@@ -191,11 +191,11 @@ class Bitfinex(RESTInterface):
             return self.request('trades/%s/hist' % pair,
                                 params=endpoint_kwargs)
 
-    @format_pair
+    @check_and_format_pair
     def ask(self, pair, price, size, *args, **kwargs):
         return self._place_order(pair, price, size, 'sell', **kwargs)
 
-    @format_pair
+    @check_and_format_pair
     def bid(self, pair, price, size, *args, **kwargs):
         return self._place_order(pair, price, size, 'buy', **kwargs)
 
@@ -236,7 +236,7 @@ class Bitfinex(RESTInterface):
     # Version Neutral Methods
     #########################
 
-    @format_pair
+    @check_and_format_pair
     def stats(self, pair, **endpoint_kwargs):
         self.is_supported(pair)
         if self.REST.version == 'v1':
@@ -336,7 +336,7 @@ class Bitfinex(RESTInterface):
                             params=endpoint_kwargs)
 
     @check_version_compatibility(v1=v1_only_methods, v2=v2_only_methods)
-    @format_pair
+    @check_and_format_pair
     def new_order(self, pair, **endpoint_kwargs):
         self.is_supported(pair)
         payload = {'symbol': pair}
@@ -386,7 +386,7 @@ class Bitfinex(RESTInterface):
                             params=endpoint_kwargs)
 
     @check_version_compatibility(v1=v1_only_methods, v2=v2_only_methods)
-    @format_pair
+    @check_and_format_pair
     def past_trades(self, pair, **endpoint_kwargs):
         self.is_supported(pair)
         payload = {'symbol': pair}
@@ -443,7 +443,7 @@ class Bitfinex(RESTInterface):
     # Version 2 Only Methods
     ########################
     @check_version_compatibility(v1=v1_only_methods, v2=v2_only_methods)
-    @format_pair
+    @check_and_format_pair
     def candles(self, pair, **endpoint_kwargs):
         time_frame = endpoint_kwargs.pop('time_frame')
         section = endpoint_kwargs.pop('section')
@@ -452,7 +452,7 @@ class Bitfinex(RESTInterface):
                             params=endpoint_kwargs)
 
     @check_version_compatibility(v1=v1_only_methods, v2=v2_only_methods)
-    @format_pair
+    @check_and_format_pair
     def market_average_price(self, pair, **endpoint_kwargs):
         self.is_supported(pair)
         return self.request('calc/trade/avg', data=endpoint_kwargs)
@@ -466,7 +466,7 @@ class Bitfinex(RESTInterface):
         return self.request('auth/r/orders', authenticate=True)
 
     @check_version_compatibility(v1=v1_only_methods, v2=v2_only_methods)
-    @format_pair
+    @check_and_format_pair
     def order_trades(self, pair, order_id, **endpoint_kwargs):
         return self.request('auth/r/order/%s:%s/trades' %
                             (pair, order_id),
@@ -490,7 +490,7 @@ class Bitfinex(RESTInterface):
         return self.request('auth/r/alerts?type=%s' % price, authenticate=True)
 
     @check_version_compatibility(v1=v1_only_methods, v2=v2_only_methods)
-    @format_pair
+    @check_and_format_pair
     def alert_set(self, pair, **endpoint_kwargs):
         self.is_supported(pair)
         endpoint_kwargs['symbol'] = pair
@@ -498,7 +498,7 @@ class Bitfinex(RESTInterface):
                             params=endpoint_kwargs)
 
     @check_version_compatibility(v1=v1_only_methods, v2=v2_only_methods)
-    @format_pair
+    @check_and_format_pair
     def alert_delete(self, pair, **endpoint_kwargs):
         self.is_supported(pair)
         symbol = endpoint_kwargs.pop('price')
@@ -507,7 +507,7 @@ class Bitfinex(RESTInterface):
                             authenticate=True)
 
     @check_version_compatibility(v1=v1_only_methods, v2=v2_only_methods)
-    @format_pair
+    @check_and_format_pair
     def calc_available_balance(self, pair, **endpoint_kwargs):
         self.is_supported(pair)
         endpoint_kwargs['symbol'] = pair
@@ -538,28 +538,28 @@ class Bitstamp(RESTInterface):
     ###############
 
     # Public Endpoints
-    @format_pair
+    @check_and_format_pair
     def ticker(self, pair, *args, **kwargs):
         return self.request('ticker/%s/' % pair,
                             params=kwargs)
 
-    @format_pair
+    @check_and_format_pair
     def order_book(self, pair, *args, **kwargs):
         return self.request('order_book/%s/' % pair,
                             params=kwargs)
 
-    @format_pair
+    @check_and_format_pair
     def trades(self, pair, *args, **kwargs):
         return self.request('transactions/%s/' % pair,
                             params=kwargs)
 
     # Private Endpoints
-    @format_pair
+    @check_and_format_pair
     def ask(self, pair, price, size, *args, market=False, **kwargs):
         return self._place_order(pair, price, size, 'buy', market=market,
                                  **kwargs)
 
-    @format_pair
+    @check_and_format_pair
     def bid(self, pair, price, size, *args, market=False, **kwargs):
         return self._place_order(pair, price, size, 'buy', market=False,
                                  **kwargs)
@@ -611,7 +611,7 @@ class Bitstamp(RESTInterface):
     # Exchange Specific Methods
     ###########################
 
-    @format_pair
+    @check_and_format_pair
     def hourly_ticker(self, pair, **kwargs):
         if pair:
             return self.request('ticker_hour/%s/' % pair,
@@ -622,7 +622,7 @@ class Bitstamp(RESTInterface):
     def eur_usd_conversion_rate(self, **kwargs):
         return self.request('api/eur_usd/', params=kwargs)
 
-    @format_pair
+    @check_and_format_pair
     def user_transactions(self, pair, **kwargs):
         if pair:
             return self.request('user_transactions/%s/' %
@@ -708,33 +708,33 @@ class Bittrex(RESTInterface):
     ###############
     # Basic Methods
     ###############
-    @format_pair
+    @check_and_format_pair
     def ticker(self, pair, *args, **kwargs):
         payload = {'market': pair}
         payload.update(kwargs)
         return self.request('public/getmarketsummary', params=payload)
 
-    @format_pair
+    @check_and_format_pair
     def order_book(self, pair, *args, **kwargs):
         payload = {'market': pair, 'type': 'both'}
         payload.update(kwargs)
         return self.request('public/getorderbook', params=payload)
 
-    @format_pair
+    @check_and_format_pair
     def trades(self, pair, *args, **kwargs):
         payload = {'market': pair}
         payload.update(kwargs)
         return self.request('public/getmarkethistory', params=payload)
 
     # Private Endpoints
-    @format_pair
+    @check_and_format_pair
     def ask(self, pair, price, size, *args, **kwargs):
         payload = {'market': pair, 'quantity': size, 'rate': price}
         payload.update(kwargs)
         return self.request('market/selllimit', params=payload,
                             authenticate=True)
 
-    @format_pair
+    @check_and_format_pair
     def bid(self, pair, price, size, *args, **kwargs):
         payload = {'market': pair, 'quantity': size, 'rate': price}
         payload.update(kwargs)
@@ -809,24 +809,24 @@ class BTCE(RESTInterface):
         super(BTCE, self).__init__('BTC-E', BTCEREST(**APIKwargs))
 
     # Public Endpoints
-    @format_pair
+    @check_and_format_pair
     def ticker(self, pair, *args, **kwargs):
         return self.request('GET', 'ticker/%s' % pair)
 
-    @format_pair
+    @check_and_format_pair
     def order_book(self, pair, *args, **kwargs):
         return self.request('GET', 'depth/%s' % pair)
 
-    @format_pair
+    @check_and_format_pair
     def trades(self, pair, *args, **kwargs):
         return self.request('GET', 'trades/%s' % pair)
 
     # Private Endpoints
-    @format_pair
+    @check_and_format_pair
     def ask(self, pair, price, size, *args, **kwargs):
         return self._place_order(pair, price, size, 'sell')
 
-    @format_pair
+    @check_and_format_pair
     def bid(self, pair, price, size, *args, **kwargs):
         return self._place_order(pair, price, size, 'buy')
 
@@ -841,7 +841,7 @@ class BTCE(RESTInterface):
         return self.request('POST', 'OrderInfo', params=payload,
                             authenticate=True)
 
-    @format_pair
+    @check_and_format_pair
     def open_orders(self, *args, **kwargs):
         return self.request('POST', 'ActiveOrders', params=kwargs,
                             authenticate=True)
@@ -868,25 +868,25 @@ class Bter(RESTInterface):
         return self.request('GET', 'pairs').json()
 
     # Public Endpoints
-    @format_pair
+    @check_and_format_pair
     def ticker(self, pair, *args, **kwargs):
         return self.request('GET', 'ticker/%s' % pair)
 
-    @format_pair
+    @check_and_format_pair
     def order_book(self, pair, *args, **kwargs):
         return self.request('GET', 'orderBook/%s' % pair)
 
-    @format_pair
+    @check_and_format_pair
     def trades(self, pair, *args, **kwargs):
         tid = '' if not 'TID' in kwargs else '/' + str(kwargs['TID'])
         return self.request('GET', 'tradeHistory' + tid)
 
     # Private Endpoints
-    @format_pair
+    @check_and_format_pair
     def ask(self, pair, price, size, *args, **kwargs):
         return self._place_orde(pair, price, size, 'sell', **kwargs)
 
-    @format_pair
+    @check_and_format_pair
     def bid(self, pair, price, size, *args, **kwargs):
         return self._place_orde(pair, price, size, 'buy', **kwargs)
 
@@ -939,31 +939,31 @@ class CCEX(RESTInterface):
         return requests.get('https://c-cex.com/t/pairs.json').json()['pairs']
 
     # Public Endpoints
-    @format_pair
+    @check_and_format_pair
     def ticker(self, pair, *args, **kwargs):
         return self.request('%s.json' % pair, params=kwargs)
 
-    @format_pair
+    @check_and_format_pair
     def order_book(self, pair, *args, **kwargs):
         payload = {'a': 'getorderbook', 'market': pair, 'type': 'both'}
         payload.update(kwargs)
         return self.request(None, params=payload)
 
-    @format_pair
+    @check_and_format_pair
     def trades(self, pair, *args, **kwargs):
         payload = {'a': 'getmarkethistory', 'market': pair}
         payload.update(kwargs)
         return self.request(None, params=payload)
 
     # Private Endpoints
-    @format_pair
+    @check_and_format_pair
     def ask(self, pair, price, size, *args, **kwargs):
         payload = {'a': 'selllimit', 'market': pair, 'quantity': size,
                    'rate': price}
         payload.update(kwargs)
         return self.request(None, authenticate=True, params=payload)
 
-    @format_pair
+    @check_and_format_pair
     def bid(self, pair, price, size, *args, **kwargs):
         payload = {'a': 'buylimit', 'market': pair, 'quantity': size,
                    'rate': price}

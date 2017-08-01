@@ -29,18 +29,22 @@ def check_version_compatibility(**version_func_pairs):
     return decorator
 
 
-def format_pair(func):
-    """Execute format_for() method if available.
+def check_and_format_pair(func):
+    """Execute format_for() method if available, and assert that pair is
+    supported by the exchange.
 
     :param func:
     :return:
     """
     def wrapped(self, *args, **kwargs):
+        pair, _* = args
         try:
             if isinstance(args[0], PairFormatter):
+                pair = pair.format_for(self.name)
                 args = list(args)
-                args[0] = args[0].format_for(self.name)
+                args[0] = pair
         except IndexError:
             pass
+        assert(pair in self._supported_pairs)
         return func(self, *args, **kwargs)
     return wrapped
