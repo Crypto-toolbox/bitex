@@ -1,7 +1,7 @@
-from functools import wraps
 from .exceptions import UnsupportedEndpointError
 from .pairs import PairFormatter
-#@wraps
+
+
 def check_compatibility(**version_func_pairs):
     """This Decorator maker takes any number of
     version_num=[list of compatible funcs] pairs, and checks if the
