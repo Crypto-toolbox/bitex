@@ -1076,6 +1076,38 @@ class Cryptopia(RESTInterface):
     def __init__(self, **APIKwargs):
         super(Cryptopia, self).__init__('Cryptopia', CryptopiaREST(**APIKwargs))
 
+    def _get_supported_pairs(self):
+        raise NotImplementedError
+
+    # Public Endpoints
+    def ticker(self, pair, *args, **kwargs):
+        raise NotImplementedError
+
+    def order_book(self, pair, *args, **kwargs):
+        raise NotImplementedError
+
+    def trades(self, pair, *args, **kwargs):
+        raise NotImplementedError
+
+    # Private Endpoints
+    def ask(self, pair, price, size, *args, **kwargs):
+        raise NotImplementedError
+
+    def bid(self, pair, price, size, *args, **kwargs):
+        raise NotImplementedError
+
+    def order_status(self, order_id, *args, **kwargs):
+        raise NotImplementedError
+
+    def open_orders(self, *args, **kwargs):
+        raise NotImplementedError
+
+    def cancel_order(self, *order_ids, **kwargs):
+        raise NotImplementedError
+
+    def wallet(self, *args, **kwargs):
+        raise NotImplementedError
+
 
 class HitBTC(RESTInterface):
     def __init__(self, **APIKwargs):
