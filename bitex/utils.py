@@ -33,6 +33,9 @@ def check_and_format_pair(func):
     """Execute format_for() method if available, and assert that pair is
     supported by the exchange.
 
+    When using this decorator, make sure that the first positional argument of
+    the wrapped method is the pair, otherwise behaviour is undefined.
+
     :param func:
     :return:
     """
