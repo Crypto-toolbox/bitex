@@ -408,25 +408,25 @@ class OKCoinREST(RESTAPI):
         # Prepare payload arguments
         nonce = self.nonce()
         try:
-            payload = kwargs['params']
+            payload = req_kwargs.pop('params')
         except KeyError:
             payload = {}
         payload['api_key'] = self.key
 
         # Create the signature from payload and add it to params
-        encoded_payload = ''
+        encoded_params = ''
         for k in sorted(payload.keys()):
-            encoded_payload += str(k) + '=' + str(payload[k]) + '&'
-        sign = encoded_payload + 'secret_key=' + self.secret
+            encoded_params += str(k) + '=' + str(payload[k]) + '&'
+        sign = encoded_params + 'secret_key=' + self.secret
         hash_sign = hashlib.md5(sign.encode('utf-8')).hexdigest().upper()
 
         # create params dict for body
         body = {'api_key': self.key, 'sign': hash_sign}
 
         # Update req_kwargs keys
-        req_kwargs['data'] = urllib.parse.urlencode(body)
+        req_kwargs['data'] = body
         req_kwargs['headers'] = {"contentType": 'application/x-www-form-urlencoded'}
-        #req_kwargs['url'] = encoded_url
+        req_kwargs['url'] = self.generate_url(self.generate_uri(endpoint + '?' + encoded_params[:-1]))
         return req_kwargs
 
 
@@ -808,7 +808,7 @@ class QuadrigaCXREST(RESTAPI):
 
         # update req_kwargs keys
         req_kwargs['json'] = {'key': self.key, 'signature': signature,
-                                 'nonce': nonce}
+                              'nonce': nonce}
         req_kwargs['data'] = params
         return req_kwargs
 

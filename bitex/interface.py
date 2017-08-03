@@ -1340,7 +1340,7 @@ class OKCoin(RESTInterface):
         return self.request('order_info.do', authenticate=True, params=payload)
 
     def open_orders(self, *args, **kwargs):
-        return self.order_status(-1)
+        return self.order_status(-1, **kwargs)
 
     def cancel_order(self, *order_ids, **kwargs):
         payload = kwargs
