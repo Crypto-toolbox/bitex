@@ -65,7 +65,7 @@ class PairFormatter:
     @staticmethod
     def kraken_formatter(base, quote):
         base = 'XBT' if base == 'BTC' else base
-        quote = 'XBT' if base == 'BTC' else quote
+        quote = 'XBT' if quote == 'BTC' else quote
 
         def add_prefix(cur):
             if 'BCH' in (base, quote):
