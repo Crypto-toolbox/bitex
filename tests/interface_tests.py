@@ -781,14 +781,14 @@ class OKCoinInterfaceTests(unittest.TestCase):
         api = OKCoin(config='%s/auth/okcoin.ini' % tests_folder_dir)
         resp = api.wallet()
         self.assertEqual(resp.status_code, 200, msg=resp.json())
-        self.assertTrue(resp.json()['result'], msg=(resp.json())
+        self.assertTrue(resp.json()['result'], msg=resp.json())
         self.assertIn('info', resp.json())
 
     def test_and_validate_data_for_open_orders_endpoint_method_working_correctly(self):
         api = OKCoin(config='%s/auth/okcoin.ini' % tests_folder_dir)
         resp = api.open_orders(symbol=ETHUSD.format_for('OKCoin'))
         self.assertEqual(resp.status_code, 200, msg=resp.request.url)
-        self.assertTrue(resp.json()['result'], msg=(resp.json())
+        self.assertTrue(resp.json()['result'], msg=resp.json())
         self.assertIn('orders', resp.json())
         self.assertIsInstance(resp.json()['orders'], list)
 
@@ -802,7 +802,7 @@ class PoloniexInterfaceTests(unittest.TestCase):
     def test_and_validate_data_for_ticker_endpoint_method_working_correctly(self):
         api = Poloniex()
         resp = api.ticker(ETHBTC)
-        self.assertEqual(resp.status_code, 200, msg=resp.json())
+        self.assertEqual(resp.status_code, 200, msg=(resp.text, resp.request.url))
         self.assertIsInstance(resp.json(), dict, msg=(resp.json()))
         pair = ETHBTC.format_for('Poloniex')
         self.assertIn(pair, resp.json(), msg=resp.json())
@@ -836,7 +836,7 @@ class PoloniexInterfaceTests(unittest.TestCase):
     def test_and_validate_data_for_open_orders_endpoint_method_working_correctly(self):
         api = Poloniex(config='%s/auth/poloniex.ini' % tests_folder_dir)
         resp = api.open_orders()
-        self.assertEqual(resp.status_code, 200, msg=resp.json())
+        self.assertEqual(resp.status_code, 200, msg=(resp.json(), resp.request.url))
         self.assertIsInstance(resp.json(), dict, msg=resp.json())
         for key in resp.json():
             self.assertIsInstance(resp.json()[key], list, msg=resp.json())
