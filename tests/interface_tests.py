@@ -7,7 +7,7 @@ import json
 # Import Third-Party
 
 # Import Homebrew
-from bitex.pairs import BTCUSD, ETHBTC, LTCBTC
+from bitex.pairs import BTCUSD, ETHBTC, LTCBTC, ETHUSD
 from bitex.interface import Interface, RESTInterface
 from bitex.interface import Bitfinex, Bitstamp, Bittrex, BTCE, Bter, CCEX
 from bitex.interface import CoinCheck, Cryptopia, HitBTC, Kraken, OKCoin
@@ -750,34 +750,47 @@ class OKCoinInterfaceTests(unittest.TestCase):
     # PUBLIC ENDPOINT TESTS
     def test_and_validate_data_for_ticker_endpoint_method_working_correctly(self):
         api = OKCoin()
-        resp = api.ticker(ETHBTC)
+        resp = api.ticker(ETHUSD)
         self.assertEqual(resp.status_code, 200, msg=resp.json())
-        self.fail("Finish this test!")
+        self.assertIn('ticker', resp.json())
+        for k in ('buy', 'high', 'low', 'sell', 'vol'):
+            self.assertIn(k, resp.json()['ticker'], msg=(k, resp.json()))
 
     def test_and_validate_data_for_order_book_endpoint_method_working_correctly(self):
         api = OKCoin()
-        resp = api.order_book(ETHBTC)
+        resp = api.order_book(ETHUSD)
         self.assertEqual(resp.status_code, 200, msg=resp.json())
-        self.fail("Finish this test!")
+        self.assertIn('asks', resp.json())
+        self.assertIn('bids', resp.json())
+        for b, a in zip(resp.json()['bids'], resp.json()['asks']):
+            self.assertIsInstance(b, list)
+            self.assertIsInstance(a, list)
 
     def test_and_validate_data_for_trades_endpoint_method_working_correctly(self):
         api = OKCoin()
-        resp = api.trades(ETHBTC)
+        resp = api.trades(ETHUSD)
         self.assertEqual(resp.status_code, 200, msg=resp.json())
-        self.fail("Finish this test!")
+        self.assertIsInstance(resp.json(), list)
+        for d in resp.json():
+            self.assertIsInstance(d, dict)
+            for k in ('date', 'date_ms', 'price', 'amount', 'tid', 'type'):
+                self.assertIn(k, d)
 
     # Test Private Endpoints
     def test_and_validate_data_for_wallet_endpoint_method_working_correctly(self):
         api = OKCoin(config='%s/auth/okcoin.ini' % tests_folder_dir)
         resp = api.wallet()
         self.assertEqual(resp.status_code, 200, msg=resp.json())
-        self.fail("Finish this test!")
+        self.assertTrue(resp.json()['result'], msg=(resp.json())
+        self.assertIn('info', resp.json())
 
     def test_and_validate_data_for_open_orders_endpoint_method_working_correctly(self):
         api = OKCoin(config='%s/auth/okcoin.ini' % tests_folder_dir)
-        resp = api.open_orders()
-        self.assertEqual(resp.status_code, 200, msg=resp.json())
-        self.fail("Finish this test!")
+        resp = api.open_orders(symbol=ETHUSD.format_for('OKCoin'))
+        self.assertEqual(resp.status_code, 200, msg=resp.request.url)
+        self.assertTrue(resp.json()['result'], msg=(resp.json())
+        self.assertIn('orders', resp.json())
+        self.assertIsInstance(resp.json()['orders'], list)
 
 
 class PoloniexInterfaceTests(unittest.TestCase):
@@ -790,7 +803,7 @@ class PoloniexInterfaceTests(unittest.TestCase):
         api = Poloniex()
         resp = api.ticker(ETHBTC)
         self.assertEqual(resp.status_code, 200, msg=resp.json())
-        self.assertIsInstance(resp.json(), dict, msg=resp.json())
+        self.assertIsInstance(resp.json(), dict, msg=(resp.json()))
         pair = ETHBTC.format_for('Poloniex')
         self.assertIn(pair, resp.json(), msg=resp.json())
 
