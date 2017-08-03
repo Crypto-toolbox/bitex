@@ -712,7 +712,7 @@ class KrakenInterfaceTests(unittest.TestCase):
         self.assertIn(pair, resp.json()['result'], msg=resp.json())
 
         for side in ('bids', 'asks'):
-            self.assertIn(side, resp.json())
+            self.assertIn(side, resp.json()['result'][pair])
 
     def test_and_validate_data_for_trades_endpoint_method_working_correctly(self):
         api = Kraken()
@@ -724,7 +724,7 @@ class KrakenInterfaceTests(unittest.TestCase):
         data = resp.json()['result'][pair]
         self.assertIsInstance(data, list)
         for d in data:
-            self.assertIsInstance(d, dict)
+            self.assertIsInstance(d, list)
 
     # Test Private Endpoints
     def test_and_validate_data_for_wallet_endpoint_method_working_correctly(self):
@@ -734,7 +734,6 @@ class KrakenInterfaceTests(unittest.TestCase):
         resp = api.wallet()
         self.assertEqual(resp.status_code, 200, msg=resp.json())
         self.assertFalse(resp.json()['error'], msg=resp.json())
-        self.assertIn('available', resp.json())
 
     def test_and_validate_data_for_open_orders_endpoint_method_working_correctly(self):
         api = Kraken(config='%s/auth/kraken.ini' % tests_folder_dir)
