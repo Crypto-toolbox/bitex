@@ -416,7 +416,7 @@ class OKCoinREST(RESTAPI):
         # Create the signature from payload and add it to params
         encoded_payload = ''
         for k in sorted(payload.keys()):
-            encoded_payload += k + '=' + payload[k] + '&'
+            encoded_payload += str(k) + '=' + str(payload[k]) + '&'
         sign = encoded_payload + 'secret_key=' + self.secret
         hash_sign = hashlib.md5(sign.encode('utf-8')).hexdigest().upper()
 
@@ -425,7 +425,7 @@ class OKCoinREST(RESTAPI):
 
         # Update req_kwargs keys
         req_kwargs['data'] = urllib.parse.urlencode(body)
-        req_kwargs['headers'] = {"Content-type": 'application/x-www-form-urlencoded'}
+        req_kwargs['headers'] = {"contentType": 'application/x-www-form-urlencoded'}
         #req_kwargs['url'] = encoded_url
         return req_kwargs
 
