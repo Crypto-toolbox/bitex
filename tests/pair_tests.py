@@ -57,7 +57,6 @@ class PairTests(unittest.TestCase):
         pair = PairFormatter('ETH', 'XMR')
         self.assertEqual(pair.format('Poloniex'), 'XMR_ETH')
 
-
     def test_bitfinex_formatter_edge_case(self):
         # The DASH symbol is shortened in the Bitfinex API standard, hence
         # our formatter should take this into consideration
@@ -66,6 +65,10 @@ class PairTests(unittest.TestCase):
 
         pair = PairFormatter('USD', 'DASH')
         self.assertEqual(pair.format('Bitfinex'), 'USDDSH')
+
+    def test_kraken_formatter_edge_case(self):
+        pair = PairFormatter('BCH', 'EUR')
+        self.assertEqual(pair.format_for('Kraken'), 'BCHEUR')
 
 if __name__ == '__main__':
     unittest.main()

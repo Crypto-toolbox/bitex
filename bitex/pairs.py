@@ -68,8 +68,10 @@ class PairFormatter:
         quote = 'XBT' if base == 'BTC' else quote
 
         def add_prefix(cur):
-            if cur in ('USD', 'EUR', 'GBP', 'JPY', 'CAD'):
-                return 'Z' + cur
+            if 'BCH' in (base, quote):
+                return cur
+            elif cur in ('USD', 'EUR', 'GBP', 'JPY', 'CAD'):
+                    return 'Z' + cur
             else:
                 return 'X' + cur
 
