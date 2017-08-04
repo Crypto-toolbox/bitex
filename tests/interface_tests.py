@@ -881,8 +881,13 @@ class QuadrigaCXInterfaceTests(unittest.TestCase):
         api = QuadrigaCX(config='%s/auth/quadrigacx.ini' % tests_folder_dir)
         resp = api.open_orders()
         self.assertEqual(resp.status_code, 200, msg=resp.json())
-        self.assertIsInstance(resp.json(), dict, msg=resp.json())
         self.assertNotIn('error', resp.json())
+        try:
+            self.assertIsInstance(resp.json(), dict, msg=resp.json())
+        except AssertionError:
+            # This may be due to empty wallets being None, and the result
+            # may be instead an empty list. Assert this.
+            self.assertIsInstance(resp.json(), list, msg=resp.json())
 
     def test_and_validate_data_for_open_orders_endpoint_method_working_correctly(self):
         api = QuadrigaCX(config='%s/auth/quadrigacx.ini' % tests_folder_dir)
