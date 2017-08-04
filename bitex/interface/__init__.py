@@ -1,11 +1,15 @@
-# Import Built-Ins
-import logging
-
-# Import Third-Party
-
-# Import Homebrew
-
-# Init Logging Facilities
-log = logging.getLogger(__name__)
-
-
+from bitex.interface.interfaces import Bitfinex
+from bitex.interface.interfaces import Bitstamp
+from bitex.interface.interfaces import Bittrex
+from bitex.interface.interfaces import BTCE
+from bitex.interface.interfaces import Bter
+from bitex.interface.interfaces import CCEX
+from bitex.interface.interfaces import CoinCheck
+from bitex.interface.interfaces import Cryptopia
+from bitex.interface.interfaces import HitBTC
+from bitex.interface.interfaces import Kraken
+from bitex.interface.interfaces import OKCoin
+from bitex.interface.interfaces import Poloniex
+from bitex.interface.interfaces import QuadrigaCX
+from bitex.interface.interfaces import TheRockTrading
+from bitex.interface.interfaces import Vaultoro
