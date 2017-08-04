@@ -21,176 +21,95 @@ BTC @ 3D4yuyf84eQUauyZLoQKyouPuThoxMMRZa
 
 # Supported Exchanges
 
-| Exchange       | API  | Authentication | Public Endpoints*[^1] | Private Endpoints[^1] | Formatters | Tests |
-|----------------|------|----------------|-------------------|--------------------|------------|-------|
-| Bitfinex       | Done | Done           | Done              | Done               | WIP        | WIP   |
-| Bitstamp       | Done | Done           | Done              | Done               | WIP        | WIP   |
-| Bittrex        | Done | Done           | Done              | Done               | WIP        | WIP   |
-| Bter           | Done | BETA           | Done              | Done               | WIP        | WIP   |
-| C-Cex          | Done | BETA           | Done              | Done               | WIP        | WIP   |
-| CoinCheck      | Done | Done           | Done              | Done               | WIP        | WIP   |
-| Cryptopia      | Done | BETA           | Done              | Done               | WIP        | WIP   |
-| GDAX           | Done | BETA           | Done              | Done               | WIP        | WIP   |
-| Gemini         | Done | BETA           | Done              | Done               | WIP        | WIP   |
-| HitBtc         | Done | BETA           | Done              | Done               | WIP        | WIP   |
-| itBit          | Done | BETA           | Done              | Done               | WIP        | WIP   |
-| Kraken         | Done | Done           | Done              | Done               | WIP        | WIP   |
-| OkCoin         | Done | BETA           | Done              | Done               | WIP        | WIP   |
-| Poloniex       | Done | Done           | Done              | Done               | WIP        | WIP   |
-| Quoine         | Done | BETA           | Done              | Done               | WIP        | WIP   |
-| QuadrigaCX     | Done | BETA           | Done              | Done               | WIP        | WIP   |
-| TheRockTrading | Done | BETA           | Done              | Done               | WIP        | WIP   |
-| Yunbi          | Done | BETA           | Done              | Done               | WIP        | WIP   |
-| Vaultoro       | Done | BETA           | Done              | Done               | WIP        | WIP   |
+| Exchange             | REST  API | Authentication | Public Interface<sup>1</sup> | Private Interface<sup>1</sup> | Tests             |
+|----------------------|-----------|----------------|------------------|-------------------|-------------------|
+| Bitfinex             | DONE      | DONE           | DONE             | DONE              | Passing           |
+| Bitstamp             | DONE      | DONE           | DONE             | DONE              | Passing           |
+| Bittrex              | DONE      | DONE           | DONE             | DONE              | Passing           |
+| BTCE                 | DONE      | DONE           | DONE             | DONE              | Passing           |
+| Bter                 | DONE      | DONE           | DONE             | DONE              | Passing           |
+| C-CEX                | DONE      | DONE           | DONE             | DONE              | Passing           |
+| CoinCheck            | DONE      | DONE           | DONE             | DONE              | Passing           |
+| Cryptopia            | DONE      | DONE           | DONE             | DONE              | Passing           |
+| HitBTC               | DONE      | DONE           | DONE             | DONE              | Passing           |
+| Kraken               | DONE      | DONE           | DONE             | DONE              | Passing           |
+| OKCoin               | DONE      | DONE           | DONE             | DONE              | Passing           |
+| Poloniex             | DONE      | DONE           | DONE             | DONE              | Passing           |
+| QuadrigaCX           | DONE      | DONE           | DONE             | DONE              | Passing           |
+| The Rock Trading LTD | DONE      | DONE           | DONE             | DONE              | Partially Passing |
+| Vaultoro             | DONE      | DONE           | DONE             | DONE              | Failing           |
 
 
 Additional clients will be added to (or removed from) this list, 
 according to their liquidity and market volume.
 
-[^1]: This table considers standardized methods only, when describing the state. See section `Standardized Methods` for more
+<sup>1</sup>): This table considers standardized methods only, when describing the state. 
+See section `Standardized Methods` for more information on these.
 
-# bitex.api.REST
-
-Classes found in `bitex.api.REST` provide wrapper classes and methods for Python's
-`requests` module, including handling of each exchange's specific authentication
-procedure.
-
-An example:
-```
-from bitex.api.rest import KrakenREST
-
-k = KrakenREST()
-k.load_key('kraken.key')  # loads key and secret from given file;
-
-# Query a public endpoint
-k.query('GET','public/Depth', params={'pair': 'XXBTZUSD'})
-
-# Query a private (authenticated) endpoint
-q = {'pair': 'XXBTZUSD', 'type': 'sell', 'ordertype': 'limit', 'price': 1000.0,
-     'volume': 0.01, 'validate': True}
-k.query('POST','private/AddOrder', authenticate=True, params=q)
-
-```
-
-Example `.key` file:
-```
->>>dummy.key
-my_api_key
-my_fancy_api_secret
-```
-
-If the api requires further details, for example a userid or account 
-number (for example for bitstamp), you should check the class method's doc string,
-although usually this information needs to go after the api key
-and secret, on a separate line each.
-```
->>>dummy2.key
-my_api_key
-my_fancy_api_secret
-Userid
-accountname
-```
-
-# bitex.api.WSS
-`bitex.api.WSS` offers `Queue()`-based Websocket interface for a select few exchanges.
-The classes found within are very basic, and subject to further development. Private
-endpoints and trading are only sporadically implemented.
-
-Their prime objective is to provide a raw, realtime interface to all of an exchange's
-Websocket endpoint.
-
-## Usage
-```
-from.bitex.api.WSS import GeminiWSS
-import time
-
-wss = GeminiWSS()
-wss.start()
-time.sleep(5)
-wss.stop()
-
-while not wss.data_q.empty():
-    print(wss.data_q.get())
-    
-```
-You can of course also access `data_q` while the `WebSocket` is still running 
-(i.e. before calling `stop()`).
-
-# bitex.interfaces
-
-Built on top of `bitex.api`'s api classes are the slightly more sophisticated
-exchange interfaces in `bitex.interfaces`. These have been written to unify
-the diverse REST APIs of the implemented exchanges, by providing the same methods and method parameters
-across all of them (see next section, `Standardized Methods`, for more information).
-
-For example, querying tickers looks the same on all exchanges, as well as
-placing an order, using `bitex.interface`:
-
-```
-from bitex import Kraken, Bitstamp, Gemini
-k = Kraken(key_file='krkn.key')
-b = Bitstamp(key_file='btst.key')
-g = Gemini(key_file='gmni.key')
-
-k.ticker('XBTUSD')
-b.ticker('btceur')
-g.ticker('BTC-USD')
-
-k.ask(pair, price, size)
-b.ask(pair, price, size)
-g.ask(pair, price, size)
-```
 
 # Standardized Methods
 
 As explained in the previous section, __standardized methods__ refer to the methods of each interface
 which have been deemed as part of the set of minimal methods and functions required to trade
-at an exchange via its API. They feature the following characteristics:
+at an exchange via its API.
 
-- Each method has an identical method header across all interfaces
-- Its output is identical across all interfaces
-- Each method returns a `bitex.api.response.APIResponse` object; these behave like `requests.Request` objects, with the addition
-of a new attribute, `formatted`, which stores a standardized representation of the data queried.
+The Methods are:
+
+| Method           | Required Parameters | Requires Authentification? | Function                                                                                        |
+|------------------|---------------------|----------------------------|-------------------------------------------------------------------------------------------------|
+| ticker()         | pair                | No                         | Returns a specified pair's 'ticker' data from the exchange API.                                 |
+| order_book       | pair                | No                         | Returns a specified pair's `order book` data from the exchange API.                             |
+| `trades()`       | pair                | No                         | Returns a specified pair's `trades` data from the exchange API                                  |
+| `ask()`          | pair, price, size   | Yes                        | Places an `ask` order of type `limit` via the exchange API.                                     |
+| `bid()`          | pair, price, size   | Yes                        | Places an `bid` order of type `limit` via the exchange API.                                     |
+| `order_status()` | order_id            | Yes                        | Requests the status of the given `order id` via the exchange API.                               |
+| `open_orders()`  | -                   | Yes                        | Requests all `open orders` via the exchange API.                                                |
+| `cancel_order()` | *order_ids          | Yes                        | Cancels one or more `orders` by their given `order id` via the exchange API.                    |
+| `wallet()`       | -                   | Yes                        | Requests the current balances of the account associated with the API keys via the exchange API. |
 
 
+# Standardized Pairs
 
-# bitex.formatters
+`Bitex` comes with a `PairFormatter()` class, which formats a given symbol
+ pair into a format which is recognized by the exchange you're querying.
+ 
+ This allows you to specify a pair once, without having to worry about
+ whether or not you typed it correctly for each individual exchange.
+ 
+ An example:
+ 
+ The Pair `ETHBTC` is denoted as follows:
+  - At Kraken it goes by XETHXXBT
+  - At Poloniex it goes by BTC_ETH
+  - At Bittrex it goes by BTC-ETH
+  - at OKCoin it goes by btc_eth
+ 
+ Instead of passing a string to the standardized methods, then, you may
+ pass a `PairFormatter()` object instead.
+ It automatically formats the pair accordingly when a standardized method 
+ is invoked.
+ 
+ You can create a custom `PairFormatter()` easily. Let's consider two 
+ imaginary crypt currencies, Bla-Coin(BLA) and Fake-Coin (FKE): 
+ 
+```
+    from bitex.pairs import PairFormatter
+    
+    class BLAFKE(PairFormatter):
+        def __init__(self):
+            super(MySpecialPairFormatter).__init__(base='BLA', quote='FKE')
+```
 
-This module provide formatters for the standardized methods, formatting their json output into a uniform layout. They are a work in progress feature.
-
-Be mindful that, in order to provide a unified output format, some fields have been dropped in the formatted output! If you rely on one of these dropped fields, be sure to use the `APIResponse`'s `json` attribute instead, and parse the json yourself:
+And that's all you need to do! Whenever you pass this to a standardized
+method, the method will call the `PairFormatter()`'s `format_for()` method,
+and let it take care of the formatting:
 
 ```
-from bitex import Kraken
-k = Kraken()
-response = k.ticker()
-print(response.formatted)  # show formatted data
-print(response.json())  # Returns all json data
+    >>>BLAFKE.format_for('Kraken')
+    'XBLAXFKE'
+    >>>BLAFKE.format_for('Bittrex')
+    'BLA-FKE'
 ```
-
-The following is a table of all formatters currently implemented - any method not marked as `Done` will not do any formatting.
-
-| Exchange          | `ticker()` | order_book() | trades() | bid()/ask() | order() | cancel_order() | balance() | withdraw() | deposit() |
-|-------------------|------------|--------------|----------|-------------|---------|----------------|-----------|------------|-----------|
-| Bitfinex          | Done       | Planned      | Planned  | Planned     | Planned | Planned        | Planned   | Planned    | Planned   |
-| Bitstamp          | Done       | Planned      | Planned  | Planned     | Planned | Planned        | Planned   | Planned    | Planned   |
-| Bittrex           | Done       | Planned      | Planned  | Planned     | Planned | Planned        | Planned   | Planned    | Planned   |
-| Bter              | WIP        | WIP          | WIP      | WIP         | WIP     | WIP            | WIP       | WIP        | WIP       |
-| C-Cex             | Done       | Planned      | Planned  | Planned     | Planned | Planned        | Planned   | Planned    | Planned   |
-| Coincheck         | Done       | Planned      | Planned  | Planned     | Planned | Planned        | Planned   | Planned    | Planned   |
-| Cryptopia         | Done       | Planned      | Planned  | Planned     | Planned | Planned        | Planned   | Planned    | Planned   |
-| GDAX              | Done       | Planned      | Planned  | Planned     | Planned | Planned        | Planned   | Planned    | Planned   |
-| Gemini            | Done       | Planned      | Planned  | Planned     | Planned | Planned        | Planned   | Planned    | Planned   |
-| HitBtc            | WIP        | WIP          | WIP      | WIP         | WIP     | WIP            | WIP       | WIP        | WIP       |
-| itBit             | Done       | Planned      | Planned  | Planned     | Planned | Planned        | Planned   | Planned    | Planned   |
-| Kraken            | Done       | Planned      | Planned  | Planned     | Planned | Planned        | Planned   | Planned    | Planned   |
-| OKCoin            | Done       | Planned      | Planned  | Planned     | Planned | Planned        | Planned   | Planned    | Planned   |
-| Poloniex          | Done       | Planned      | Planned  | Planned     | Planned | Planned        | Planned   | Planned    | Planned   |
-| QuadrigaCX        | Done       | Planned      | Planned  | Planned     | Planned | Planned        | Planned   | Planned    | Planned   |
-| Quoine            | Done       | Planned      | Planned  | Planned     | Planned | Planned        | Planned   | Planned    | Planned   |
-| TheRockTradingLTD | Done       | Planned      | Planned  | Planned     | Planned | Planned        | Planned   | Planned    | Planned   |
-| Vaultoro          | WIP        | WIP          | WIP      | WIP         | WIP     | WIP            | WIP       | WIP        | WIP       |
-| Yunbi             | Done       | Planned      | Planned  | Planned     | Planned | Planned        | Planned   | Planned    | Planned   |
 
 
 
