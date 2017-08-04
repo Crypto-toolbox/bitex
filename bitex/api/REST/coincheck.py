@@ -6,7 +6,6 @@ import hmac
 
 # Import Third-Party
 
-
 # Import Homebrew
 from bitex.base import RESTAPI
 

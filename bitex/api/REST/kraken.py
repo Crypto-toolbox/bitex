@@ -11,6 +11,7 @@ import urllib.parse
 
 # Import Homebrew
 from bitex.base import RESTAPI
+
 log = logging.getLogger(__name__)
 
 

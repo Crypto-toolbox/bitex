@@ -7,6 +7,9 @@ import warnings
 # Import Third-Party
 
 # Import Homebrew
+from bitex.base import RESTAPI
+from bitex.exceptions import IncompleteCredentialsError
+from bitex.exceptions import IncompleteCredentialConfigurationWarning
 
 # Init Logging Facilities
 log = logging.getLogger(__name__)

@@ -8,11 +8,6 @@ import warnings
 
 # Import Third-Party
 from requests.auth import AuthBase
-try:
-    import pyjwt as jwt
-    jwt = True
-except ImportError:
-    jwt = False
 
 # Import Homebrew
 from bitex.base import RESTAPI

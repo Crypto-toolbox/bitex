@@ -6,7 +6,8 @@ import hmac
 
 # Import Third-Party
 
-# Import Homebrew
+# Import Homebrew# Import Homebrew
+from bitex.base import RESTAPI
 
 # Init Logging Facilities
 log = logging.getLogger(__name__)

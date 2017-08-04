@@ -11,7 +11,6 @@ from bitex.base import RESTAPI
 from bitex.exceptions import IncompleteCredentialsError
 from bitex.exceptions import IncompleteCredentialConfigurationWarning
 
-
 log = logging.getLogger(__name__)
 
 

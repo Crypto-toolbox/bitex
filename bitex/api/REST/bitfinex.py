@@ -10,7 +10,6 @@ import base64
 # Import Homebrew
 from bitex.base import RESTAPI
 
-
 log = logging.getLogger(__name__)
 
 

@@ -8,6 +8,7 @@ import base64
 # Import Third-Party
 
 # Import Homebrew
+from bitex.base import RESTAPI
 
 # Init Logging Facilities
 log = logging.getLogger(__name__)
