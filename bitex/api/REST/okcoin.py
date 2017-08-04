@@ -1,9 +1,8 @@
 # Import Built-ins
 import logging
+import logging
 import hashlib
-import hmac
-import urllib
-import urllib.parse
+
 
 # Import Third-Party
 
@@ -14,45 +13,43 @@ from bitex.base import RESTAPI
 log = logging.getLogger(__name__)
 
 
-
-class BTCEREST(RESTAPI):
-    def __init__(self, key=None, secret=None, version=None,
-                 addr=None, timeout=5, config=None):
-        version = '3' if not version else version
-        addr = 'https://btc-e.com/api' if not addr else addr
-        super(BTCEREST, self).__init__(addr=addr, version=version, key=key,
-                                       secret=secret, timeout=timeout,
-                                       config=config)
-        self._nonce_counter = 0
-
-    def nonce(self):
-        self._nonce_counter += 1
-        return self._nonce_counter
+class OKCoinREST(RESTAPI):
+    def __init__(self, key=None, secret=None, version=None, config=None,
+                 addr=None, timeout=5):
+        version = 'v1' if not version else version
+        addr = 'https://www.okcoin.com/api' if not addr else addr
+        super(OKCoinREST, self).__init__(addr=addr, version=version,
+                                         key=key, secret=secret, config=config,
+                                         timeout=timeout)
 
     def sign_request_kwargs(self, endpoint, **kwargs):
-        req_kwargs = super(BTCEREST, self).sign_request_kwargs(endpoint,
-                                                               **kwargs)
-        # Prepare POST payload
+        """ OKCoin requires the parameters in the signature string and url to
+        be appended in alphabetical order. This means we cannot rely on urllib's
+        encode() method and need to do this ourselves.
+        """
+
+        req_kwargs = super(OKCoinREST, self).sign_request_kwargs(endpoint,
+                                                                 **kwargs)
+        # Prepare payload arguments
         nonce = self.nonce()
         try:
-            params = kwargs['params']
+            payload = req_kwargs.pop('params')
         except KeyError:
-            params = {}
-        post_params = params
-        post_params.update({'nonce': nonce,
-                            'method': endpoint})
-        post_params = urllib.parse.urlencode(post_params)
+            payload = {}
+        payload['api_key'] = self.key
 
-        # Sign POST payload
-        signature = hmac.new(self.secret.encode('utf-8'),
-                             post_params.encode('utf-8'),
-                             hashlib.sha512).hexdigest()
+        # Create the signature from payload and add it to params
+        encoded_params = ''
+        for k in sorted(payload.keys()):
+            encoded_params += str(k) + '=' + str(payload[k]) + '&'
+        sign = encoded_params + 'secret_key=' + self.secret
+        hash_sign = hashlib.md5(sign.encode('utf-8')).hexdigest().upper()
 
-        # update req_kwargs keys
-        req_kwargs['headers'] = {'Key': self.key, 'Sign': signature,
-                                 "Content-type": "application/x-www-form-urlencoded"}
+        # create params dict for body
+        body = {'api_key': self.key, 'sign': hash_sign}
 
-        # update url for POST;
-        req_kwargs['url'] = self.addr.replace('/api', '/tapi')
-        req_kwargs['data'] = post_params
+        # Update req_kwargs keys
+        req_kwargs['data'] = body
+        req_kwargs['headers'] = {"contentType": 'application/x-www-form-urlencoded'}
+        req_kwargs['url'] = self.generate_url(self.generate_uri(endpoint + '?' + encoded_params[:-1]))
         return req_kwargs
