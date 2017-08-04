@@ -12,8 +12,6 @@ BTC @ 3D4yuyf84eQUauyZLoQKyouPuThoxMMRZa
 
 **RESTAPI** : **Completed**
 
-**WSSAPI** : **BETA**
-
 **Interfaces** : **WIP**
 
 --------------------------------
