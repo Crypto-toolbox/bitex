@@ -940,7 +940,7 @@ class TheRockTradingInterfaceTests(unittest.TestCase):
 
     def test_and_validate_data_for_open_orders_endpoint_method_working_correctly(self):
         api = TheRockTrading(config='%s/auth/rocktrading.ini' % tests_folder_dir)
-        resp = api.open_orders()
+        resp = api.open_orders(pair='ETHUSD')
         self.assertEqual(resp.status_code, 200, msg=resp.json())
         self.assertNotIn('errors', resp.json(), msg=resp.json())
         self.assertIn('orders', resp.json())
