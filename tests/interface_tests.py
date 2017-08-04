@@ -8,7 +8,8 @@ import json
 
 # Import Homebrew
 from bitex.pairs import BTCUSD, ETHBTC, LTCBTC, ETHUSD
-from bitex.interface import Interface, RESTInterface
+from bitex.interface.base import Interface
+from bitex.interface.rest import RESTInterface
 from bitex.interface import Bitfinex, Bitstamp, Bittrex, BTCE, Bter, CCEX
 from bitex.interface import CoinCheck, Cryptopia, HitBTC, Kraken, OKCoin
 from bitex.interface import Poloniex, QuadrigaCX, TheRockTrading, Vaultoro
