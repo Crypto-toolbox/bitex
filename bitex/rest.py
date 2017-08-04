@@ -24,7 +24,6 @@ except ImportError:
 
 # Import Homebrew
 from bitex.base import RESTAPI
-from bitex.exceptions import IncompleteCredentialsWarning
 from bitex.exceptions import IncompleteCredentialsError
 from bitex.exceptions import IncompleteCredentialConfigurationWarning
 

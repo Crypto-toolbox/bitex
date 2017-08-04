@@ -43,8 +43,6 @@ class BaseAPI:
             raise ValueError("Invalid key or secret - cannot be empty string! "
                              "Pass None instead!")
 
-
-
         self.addr = addr
         self.key = key if key else None
         self.secret = secret if secret else None
