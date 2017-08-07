@@ -41,8 +41,6 @@ class Interface:
         Input can either be a string or a PairFormatter Obj (or child thereof).
         If the latter two, we'll call the format() method with the Interface's
         name attribute to acquire proper formatting.
-        Since str.format() doesn't raise an error if a string isnt used,
-        this works for both PairFormatter objects and strings.
         :param pair: Str, or PairFormatter Object
         :return: Bool
         """
