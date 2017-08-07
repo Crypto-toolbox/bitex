@@ -96,7 +96,7 @@ class Cryptopia(CryptopiaREST):
 
     @return_api_response(None)
     def currencies(self):
-        return self.public_query('GetCurrency')
+        return self.public_query('GetCurrencies')
 
     @return_api_response(None)
     def pairs(self):
