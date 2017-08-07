@@ -364,16 +364,24 @@ class CryptopiaREST(APIClient):
         except KeyError:
             params = {}
 
-
         post_data = json.dumps(params)
-        md5 = base64.b64encode(hashlib.md5().updated(post_data).digest())
 
-        sig = self.key + 'POST' + urllib.parse.quote_plus(uri).lower() + nonce + md5
+        # generate signature
+        md5 = hashlib.md5()
+        md5.update(post_data.encode('utf-8'))
+        request_content_b64_string = base64.b64encode(md5.digest()).decode('utf-8')
+        signature = (self.key + 'POST' +
+                     urllib.parse.quote_plus(uri).lower() +
+                     nonce + request_content_b64_string)
+
         hmac_sig = base64.b64encode(hmac.new(base64.b64decode(self.secret),
-                                              sig, hashlib.sha256).digest())
-        header_data = 'amx' + self.key + ':' + hmac_sig + ':' + nonce
+                                             signature.encode('utf-8'),
+                                             hashlib.sha256).digest())
+        header_data = 'amx ' + self.key + ':' + hmac_sig.decode('utf-8') + ':' + nonce
+
+        # Update req_kwargs keys
         headers = {'Authorization': header_data,
-                   'Content-Type': 'application/json; charset=utf-8'}
+                                 'Content-Type': 'application/json; charset=utf-8'}
 
         return uri, {'headers': headers, 'data': post_data}
 
