@@ -92,11 +92,13 @@ class Kraken(KrakenREST):
 
     @return_api_response(fmt.withdraw)
     def withdraw(self, size, tar_addr, **kwargs):
-        raise NotImplementedError()
+        q = {'amount': size, 'key': tar_addr}
+        q.update(kwargs)
+        return self.private_query('Withdraw', params=q)
 
     @return_api_response(fmt.deposit)
     def deposit_address(self, **kwargs):
-        raise NotImplementedError()
+        return self.private_query('DepositAddresses', params=kwargs)
 
     """
     Exchange Specific Methods
@@ -147,3 +149,11 @@ class Kraken(KrakenREST):
             q['pair'] = pair
 
         return self.private_query('TradeVolume', params=q)
+
+    def deposit_methods(self, **kwargs):
+        return self.private_query('DepositMethods', params=kwargs)
+
+    def withdraw_info(self, size, tar_addr, **kwargs):
+        q = {'amount': size, 'key': tar_addr}
+        q.update(kwargs)
+        return self.private_query('WithdrawInfo', params=q)
