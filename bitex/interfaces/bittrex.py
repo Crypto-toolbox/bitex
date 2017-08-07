@@ -94,7 +94,7 @@ class Bittrex(BittrexREST):
 
     @return_api_response(fmt.deposit)
     def deposit_address(self, **kwargs):
-        return self.private_query('account/getdepositaddress')
+        return self.private_query('account/getdepositaddress', params=kwargs)
 
     """
     Exchange Specific Methods
