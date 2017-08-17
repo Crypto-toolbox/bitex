@@ -5,119 +5,35 @@ import logging
 import requests
 
 # Import Homebrew
-from .exceptions import UnsupportedPairError
-from .rest import BitfinexREST, BittrexREST, BitstampREST, BTCEREST, BterREST
-from .rest import CCEXREST, CoincheckREST, CryptopiaREST
-from .rest import HitBTCREST, KrakenREST, OKCoinREST, PoloniexREST
-from .rest import QuadrigaCXREST, RockTradingREST, VaultoroREST
-from .utils import check_version_compatibility, check_and_format_pair
+from bitex.exceptions import UnsupportedPairError
+
+from bitex.api.REST.rest import RESTAPI
+from bitex.api.REST.bitfinex import BitfinexREST
+from bitex.api.REST.bitstamp import BitstampREST
+from bitex.api.REST.bittrex import BittrexREST
+from bitex.api.REST.btce import BTCEREST
+from bitex.api.REST.bter import BterREST
+from bitex.api.REST.ccex import CCEXREST
+from bitex.api.REST.coincheck import CoincheckREST
+from bitex.api.REST.cryptopia import CryptopiaREST
+from bitex.api.REST.gdax import GDAXREST
+from bitex.api.REST.gemini import GeminiREST
+from bitex.api.REST.hitbtc import HitBTCREST
+from bitex.api.REST.itbit import ITbitREST
+from bitex.api.REST.kraken import KrakenREST
+from bitex.api.REST.okcoin import OKCoinREST
+from bitex.api.REST.poloniex import PoloniexREST
+from bitex.api.REST.quadriga import QuadrigaCXREST
+from bitex.api.REST.quoine import QuoineREST
+from bitex.api.REST.rocktrading import RockTradingREST
+from bitex.api.REST.vaultoro import VaultoroREST
+from bitex.api.REST.yunbi import YunbiREST
+
+from bitex.interface.rest import RESTInterface
+from bitex.utils import check_version_compatibility, check_and_format_pair
 
 # Init Logging Facilities
 log = logging.getLogger(__name__)
-
-
-class Interface:
-    def __init__(self, *, name, rest_api):
-        self.REST = rest_api
-        self.name = name
-        try:
-            self._supported_pairs = self._get_supported_pairs()
-        except NotImplementedError:
-            self._supported_pairs = None
-
-    @property
-    def supported_pairs(self):
-        return self._supported_pairs
-
-    def _get_supported_pairs(self):
-        """Generate a list of supported pairs.
-
-        Queries the API for a list of supported pairs and returns this as a
-        list.
-
-        Raises a NotImplementedError by default and needs to be overridden in
-        child classes.
-
-        :raises: NotImplementedError
-        """
-        raise NotImplementedError
-
-    def is_supported(self, pair):
-        """Checks if the given pair is present in self._supported_pairs.
-
-        Input can either be a string or a PairFormatter Obj (or child thereof).
-        If the latter two, we'll call the format() method with the Interface's
-        name attribute to acquire proper formatting.
-        Since str.format() doesn't raise an error if a string isnt used,
-        this works for both PairFormatter objects and strings.
-        :param pair: Str, or PairFormatter Object
-        :return: Bool
-        """
-        try:
-            pair = pair.format_for(self.name)
-        except AttributeError:
-            pair = pair
-
-        if pair in self.supported_pairs:
-            return True
-        else:
-            return False
-
-    def request(self, verb, endpoint, authenticate=False, **req_kwargs):
-        """Query the API and return its result.
-
-        :param verb: HTTP verb (GET, PUT, DELETE, etc)
-        :param endpoint: Str
-        :param authenticate: Bool, whether to call private_query or public_query
-                             method.
-        :param req_kwargs: Kwargs to pass to _query / requests.request()
-        :raise: UnsupportedPairError
-        :return: requests.Response() Obj
-        """
-
-        if authenticate:
-            return self.REST.private_query(verb, endpoint, **req_kwargs)
-        else:
-            return self.REST.public_query(verb, endpoint, **req_kwargs)
-
-
-class RESTInterface(Interface):
-    def __init__(self, name, rest_api):
-        super(RESTInterface, self).__init__(name=name, rest_api=rest_api)
-
-    # Public Endpoints
-    @check_and_format_pair
-    def ticker(self, pair, *args, **kwargs):
-        raise NotImplementedError
-
-    @check_and_format_pair
-    def order_book(self, pair, *args, **kwargs):
-        raise NotImplementedError
-
-    @check_and_format_pair
-    def trades(self, pair, *args, **kwargs):
-        raise NotImplementedError
-
-    # Private Endpoints
-    @check_and_format_pair
-    def ask(self, pair, price, size, *args, **kwargs):
-        raise NotImplementedError
-
-    @check_and_format_pair
-    def bid(self, pair, price, size, *args, **kwargs):
-        raise NotImplementedError
-
-    def order_status(self, order_id, *args, **kwargs):
-        raise NotImplementedError
-
-    def open_orders(self, *args, **kwargs):
-        raise NotImplementedError
-
-    def cancel_order(self, *order_ids, **kwargs):
-        raise NotImplementedError
-
-    def wallet(self, *args, **kwargs):
-        raise NotImplementedError
 
 
 class Bitfinex(RESTInterface):

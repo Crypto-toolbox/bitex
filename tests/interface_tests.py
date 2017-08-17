@@ -2,19 +2,24 @@
 import logging
 import unittest
 import time
+import json
 
 # Import Third-Party
 
 # Import Homebrew
-from bitex.pairs import BTCUSD
-from bitex.interface import Interface, RESTInterface, Bitfinex, Bitstamp
-from bitex.exceptions import UnsupportedPairError, EmptySupportedPairListWarning
+from bitex.pairs import BTCUSD, ETHBTC, LTCBTC, ETHUSD
+from bitex.interface.base import Interface
+from bitex.interface.rest import RESTInterface
+from bitex.interface import Bitfinex, Bitstamp, Bittrex, BTCE, Bter, CCEX
+from bitex.interface import CoinCheck, Cryptopia, HitBTC, Kraken, OKCoin
+from bitex.interface import Poloniex, QuadrigaCX, TheRockTrading, Vaultoro
 from bitex.exceptions import UnsupportedEndpointError
 
 # Init Logging Facilities
 log = logging.getLogger(__name__)
 
-tests_folder_dir = '/home/nls/git/bitex/tests'
+tests_folder_dir = '/home/nils/git/bitex/tests'
+
 
 class InterfaceTests(unittest.TestCase):
     def test_init_raises_NotImplementedError_for_basic_interface(self):
@@ -216,7 +221,7 @@ class BitstampInterfaceTests(unittest.TestCase):
     def test_and_validate_data_for_ticker_endpoint_method_working_correctly(self):
         api = Bitstamp()
         resp = api.ticker(BTCUSD)
-        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.status_code, 200, msg=resp.json())
         # Assert that data is in expected format
         for k in ['last', 'bid', 'ask', 'vwap', 'low', 'high', 'volume',
                   'open', 'timestamp']:
@@ -225,7 +230,7 @@ class BitstampInterfaceTests(unittest.TestCase):
     def test_and_validate_data_for_order_book_endpoint_method_working_correctly(self):
         api = Bitstamp()
         resp = api.order_book(BTCUSD)
-        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.status_code, 200, msg=resp.json())
         # Assert that data is in expected format
         for side in ('bids', 'asks'):
             self.assertIn(side, resp.json())
@@ -236,7 +241,7 @@ class BitstampInterfaceTests(unittest.TestCase):
     def test_and_validate_data_for_trades_endpoint_method_working_correctly(self):
         api = Bitstamp()
         resp = api.trades(BTCUSD)
-        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.status_code, 200, msg=resp.json())
         # Assert that data is in expected format
         for d in resp.json():
             for k in ['date', 'tid', 'price', 'amount', 'type']:
@@ -248,7 +253,7 @@ class BitstampInterfaceTests(unittest.TestCase):
         # Assert that Bitstamp().wallet(pair=BTCUSD) returns a list of dicts with expected
         # keys
         resp = api.wallet(pair=BTCUSD)
-        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.status_code, 200, msg=resp.json())
         self.assertIsInstance(resp.json(), dict)
         for k in resp.json():
             self.assertIn(k, ['usd_reserved', 'usd_balance', 'usd_available',
@@ -257,7 +262,7 @@ class BitstampInterfaceTests(unittest.TestCase):
 
         # Assert that if no pair is passed, we get a snapshot of all wallets:
         resp = api.wallet()
-        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.status_code, 200, msg=resp.json())
         self.assertIsInstance(resp.json(), dict)
         currencies = ['ltc', 'btc', 'xrp', 'usd', 'eur']
         suffixes = ['balance', 'reserved', 'available']
@@ -292,35 +297,30 @@ class BittrexInterfaceTests(unittest.TestCase):
     # PUBLIC ENDPOINT TESTS
     def test_and_validate_data_for_ticker_endpoint_method_working_correctly(self):
         api = Bittrex()
-        resp = api.ticker(BTCUSD)
-        self.assertEqual(resp.status_code, 200)
-        self.assertTrue(resp.json()['success'])
+        resp = api.ticker(ETHBTC)
+        self.assertEqual(resp.status_code, 200, msg=resp.json())
+        self.assertTrue(resp.json()['success'], msg=resp.json())
         # Assert that data is in expected format
         for k in ['Last', 'Bid', 'Ask', 'High', 'Low', 'MarketName', 'Created',
                   'Volume', 'BaseVolume', 'TimeStamp', 'OpenBuyOrders',
-                  'OpenSellOrders', 'PrevDay', 'DisplayMarketName']:
-            self.assertIn(k, resp.json()['result'], msg=(k, resp.json()))
+                  'OpenSellOrders', 'PrevDay']:
+            self.assertIn(k, resp.json()['result'][0], msg=(k, resp.json()))
 
     def test_and_validate_data_for_order_book_endpoint_method_working_correctly(self):
         api = Bittrex()
-        resp = api.order_book(BTCUSD)
-        self.assertEqual(resp.status_code, 200)
-        self.assertTrue(resp.json()['success'])
+        resp = api.order_book(ETHBTC)
+        self.assertEqual(resp.status_code, 200, msg=resp.json())
+        self.assertTrue(resp.json()['success'], msg=resp.json())
         # Assert that data is in expected format
         result = resp.json()['result']
         for side in ('buy', 'sell'):
             self.assertIn(side, result)
-            for d in result[side]:
-                self.assertIsInstance(d, dict, msg=(l, side, resp.json()))
-                expected_keys = ['Quantity', 'Rate']
-                for k in d:
-                    self.assertIn(k, expected_keys, msg=(d, side, resp.json()))
 
     def test_and_validate_data_for_trades_endpoint_method_working_correctly(self):
         api = Bittrex()
-        resp = api.trades(BTCUSD)
-        self.assertEqual(resp.status_code, 200)
-        self.assertTrue(resp.json()['success'])
+        resp = api.trades(ETHBTC)
+        self.assertEqual(resp.status_code, 200, msg=resp.json())
+        self.assertTrue(resp.json()['success'], msg=resp.json())
         # Assert that data is in expected format
         for d in resp.json()['result']:
             for k in ['Id', 'TimeStamp', 'Price', 'Quantity', 'OrderType',
@@ -332,9 +332,9 @@ class BittrexInterfaceTests(unittest.TestCase):
         api = Bittrex(config='%s/auth/bittrex.ini' % tests_folder_dir)
         # Assert that Bittrex().wallet(currency=BTC) returns a dict with expected
         # keys
-        resp = api.wallet(pair=BTCUSD)
-        self.assertEqual(resp.status_code, 200)
-        self.assertTrue(resp.json()['success'])
+        resp = api.wallet('BTC')
+        self.assertEqual(resp.status_code, 200, msg=resp.json())
+        self.assertTrue(resp.json()['success'], msg=(resp.json(), resp.request.url))
         self.assertIsInstance(resp.json(), dict)
         for k in resp.json()['result']:
             self.assertIn(k, ['Currency', 'Balance', 'Available', 'Pending',
@@ -343,9 +343,9 @@ class BittrexInterfaceTests(unittest.TestCase):
 
         # Assert that if no pair is passed, we get a snapshot of all wallets:
         resp = api.wallet()
-        self.assertEqual(resp.status_code, 200)
-        self.assertTrue(resp.json()['success'])
-        self.assertIsInstance(resp.json(), list)
+        self.assertEqual(resp.status_code, 200, msg=resp.json())
+        self.assertTrue(resp.json()['success'], msg=resp.json())
+        self.assertIsInstance(resp.json()['result'], list)
         for d in resp.json()['result']:
             for k in d:
                 self.assertIn(k, ['Currency', 'Balance', 'Available', 'Pending',
@@ -358,7 +358,7 @@ class BittrexInterfaceTests(unittest.TestCase):
         # keys
         resp = api.open_orders()
         self.assertEqual(resp.status_code, 200, msg=resp.json())
-        self.assertTrue(resp.json()['success'])
+        self.assertTrue(resp.json()['success'], msg=resp.json())
         for d in resp.json()['result']:
             for k in ['Uuid', 'OrderUuid', 'Exchange', 'OrderType', 'Quantity',
                       'QuantityRemaining', 'Limit', 'CommissionPaid', 'Price',
@@ -368,6 +368,638 @@ class BittrexInterfaceTests(unittest.TestCase):
                 self.assertIn(k, d, msg=(k, d, resp.json()))
 
 
+class BTCEInterfaceTests(unittest.TestCase):
+    def tearDown(self):
+        # Wait one second to reduce load on API
+        time.sleep(1)
+
+    # PUBLIC ENDPOINT TESTS
+    def test_and_validate_data_for_ticker_endpoint_method_working_correctly(self):
+        api = BTCE()
+        resp = api.ticker(ETHBTC)
+        self.assertEqual(resp.status_code, 200, msg=resp.json())
+        data = resp.json()[ETHBTC.format_for('BTC-E')]
+        # Assert that data is in expected format
+        for k in ['last', 'buy', 'sell', 'high', 'low', 'vol_cur', 'avg',
+                  'updated', 'vol']:
+            self.assertIn(k, data, msg=(k, resp.json()))
+
+    def test_and_validate_data_for_order_book_endpoint_method_working_correctly(self):
+        api = BTCE()
+        resp = api.order_book(ETHBTC)
+        self.assertEqual(resp.status_code, 200, msg=resp.json())
+
+        # Assert that data is in expected format
+        result = resp.json()[ETHBTC.format_for('BTC-E')]
+        for side in ('bids', 'asks'):
+            self.assertIn(side, result)
+
+    def test_and_validate_data_for_trades_endpoint_method_working_correctly(self):
+        api = BTCE()
+        resp = api.trades(ETHBTC)
+        self.assertEqual(resp.status_code, 200, msg=resp.json())
+
+        data = resp.json()[ETHBTC.format_for('BTC-E')]
+        # Assert that data is in expected format
+        for d in data:
+            self.assertIsInstance(d, dict)
+
+    # Test Private Endpoints
+
+    def test_and_validate_data_for_wallet_endpoint_method_working_correctly(self):
+        api = BTCE(config='%s/auth/btce.ini' % tests_folder_dir)
+
+        # Assert that if no pair is passed, we get a snapshot of all wallets:
+        resp = api.wallet()
+        self.assertEqual(resp.status_code, 200, msg=resp.json())
+        self.assertEqual(resp.json()['success'], 1, msg=resp.json())
+        self.assertIn('return', resp.json(), msg=resp.json())
+        data = resp.json()['return']
+        self.assertIn('funds', data)
+
+    def test_and_validate_data_for_open_orders_endpoint_method_working_correctly(self):
+        api = BTCE(config='%s/auth/btce.ini' % tests_folder_dir)
+        # Assert that Bittrex().open_orders() returns a list of dicts with expected
+        # keys
+        resp = api.open_orders()
+        self.assertEqual(resp.status_code, 200, msg=resp.json())
+        self.assertEqual(resp.json()['success'], 1, msg=resp.json())
+
+
+class BterInterfaceTests(unittest.TestCase):
+    def tearDown(self):
+        # Wait one second to reduce load on API
+        time.sleep(1)
+
+    # PUBLIC ENDPOINT TESTS
+    def test_and_validate_data_for_ticker_endpoint_method_working_correctly(self):
+        api = Bter()
+        resp = api.ticker(ETHBTC)
+        self.assertEqual(resp.status_code, 200, msg=resp.json())
+        self.assertTrue(resp.json()['result'])
+        # Assert that data is in expected format
+        for k in ['last', 'lowestAsk', 'highestBid', 'percentChange',
+                  'baseVolume', 'quoteVolume', 'high24hr', 'low24hr']:
+            self.assertIn(k, resp.json(), msg=(k, resp.json()))
+
+    def test_and_validate_data_for_order_book_endpoint_method_working_correctly(self):
+        api = Bter()
+        resp = api.order_book(ETHBTC)
+        self.assertEqual(resp.status_code, 200, msg=resp.json())
+
+        # Assert that data is in expected format
+
+        for side in ('bids', 'asks'):
+            self.assertIn(side, resp.json())
+
+    @unittest.expectedFailure
+    def test_and_validate_data_for_trades_endpoint_method_working_correctly(self):
+        api = Bter()
+        resp = api.trades(ETHBTC)
+        self.assertEqual(resp.status_code, 200, msg=resp.json())
+        try:
+            self.assertEqual(resp.json()['result'], msg=resp.request.url)
+        except KeyError:
+            self.fail("Trades endpoint returns empty page!")
+        data = resp.json()['data']
+        # Assert that data is in expected format
+        for d in data:
+            self.assertIsInstance(d, dict)
+
+    # Test Private Endpoints
+
+    @unittest.expectedFailure
+    def test_and_validate_data_for_wallet_endpoint_method_working_correctly(self):
+        api = Bter(config='%s/auth/bter.ini' % tests_folder_dir)
+
+        # Assert that if no pair is passed, we get a snapshot of all wallets:
+        resp = api.wallet()
+        self.assertEqual(resp.status_code, 200, msg=resp.json())
+        self.assertTrue(resp.json()['result'], msg=resp.json())
+        self.assertIn('available', resp.json())
+
+    def test_and_validate_data_for_open_orders_endpoint_method_working_correctly(self):
+        api = Bter(config='%s/auth/bter.ini' % tests_folder_dir)
+        # Assert that Bittrex().open_orders() returns a list of dicts with expected
+        # keys
+        resp = api.open_orders()
+        self.assertEqual(resp.status_code, 200, msg=resp.json())
+        self.assertTrue(resp.json()['result'], msg=resp.json())
+
+
+class CCEXInterfaceTests(unittest.TestCase):
+    def tearDown(self):
+        # Wait one second to reduce load on API
+        time.sleep(1)
+
+    # PUBLIC ENDPOINT TESTS
+    def test_and_validate_data_for_ticker_endpoint_method_working_correctly(self):
+        api = CCEX()
+        resp = api.ticker(LTCBTC)
+        self.assertEqual(resp.status_code, 200, msg=resp.text)
+        self.assertIsInstance(resp.json(), dict, msg=resp.json())
+        # Assert that data is in expected format
+        self.assertIn('ticker', resp.json())
+
+        for k in ['lastbuy', 'lastsell', 'low', 'high', 'avg',
+                  'buy', 'sell', 'lastprice', 'buysupport', 'updated']:
+            self.assertIn(k, resp.json()['ticker'], msg=(k, resp.json()))
+
+    def test_and_validate_data_for_order_book_endpoint_method_working_correctly(self):
+        api = CCEX()
+        resp = api.order_book(LTCBTC)
+        self.assertEqual(resp.status_code, 200, msg=resp.json())
+        self.assertTrue(resp.json()['success'], msg=resp.json())
+        # Assert that data is in expected format
+        data = resp.json()['result']
+        # Assert that data is in expected format
+        for side in ('buy', 'sell'):
+            self.assertIn(side, data)
+
+    def test_and_validate_data_for_trades_endpoint_method_working_correctly(self):
+        api = CCEX()
+        resp = api.trades(LTCBTC)
+        self.assertEqual(resp.status_code, 200, msg=resp.json())
+        self.assertTrue(resp.json()['success'], msg=resp.json())
+        for item in resp.json()['result']:
+            self.assertIsInstance(item, dict, msg=(item, resp.json()))
+
+    # Test Private Endpoints
+
+    def test_and_validate_data_for_wallet_endpoint_method_working_correctly(self):
+        api = CCEX(config='%s/auth/ccex.ini' % tests_folder_dir)
+        resp = api.wallet()
+        self.assertEqual(resp.status_code, 200, msg=resp.request.url)
+        self.assertTrue(resp.json()['success'], msg=resp.json())
+
+        for item in resp.json()['result']:
+            self.assertIsInstance(item, dict, msg=(item, resp.json()))
+
+    def test_and_validate_data_for_open_orders_endpoint_method_working_correctly(self):
+        api = CCEX(config='%s/auth/ccex.ini' % tests_folder_dir)
+        resp = api.open_orders()
+        self.assertEqual(resp.status_code, 200, msg=resp.json())
+        self.assertTrue(resp.json()['success'], msg=resp.json())
+        for item in resp.json()['result']:
+            self.assertIsInstance(item, dict, msg=(item, resp.json()))
+
+
+class CoinCheckInterfaceTests(unittest.TestCase):
+    def tearDown(self):
+        time.sleep(1)
+
+    # PUBLIC ENDPOINT TESTS
+    def test_and_validate_data_for_ticker_endpoint_method_working_correctly(self):
+        api = CoinCheck()
+        resp = api.ticker(ETHBTC)
+        self.assertEqual(resp.status_code, 200, msg=resp.json())
+        for k in ['last', 'low', 'high', 'bid', 'ask', 'volume', 'timestamp']:
+            self.assertIn(k, resp.json(), msg=(k, resp.json()))
+
+    def test_and_validate_data_for_order_book_endpoint_method_working_correctly(self):
+        api = CoinCheck()
+        resp = api.order_book(ETHBTC)
+        self.assertEqual(resp.status_code, 200, msg=resp.json())
+        self.assertIsInstance(resp.json(), list, msg=resp.json())
+        for side in ('bids', 'asks'):
+            self.assertIn(side, resp.json(), msg=resp.json())
+
+    def test_and_validate_data_for_trades_endpoint_method_working_correctly(self):
+        api = CoinCheck()
+        resp = api.trades(ETHBTC)
+        self.assertEqual(resp.status_code, 200, msg=resp.json())
+        self.assertIsInstance(resp.json(), list, msg=resp.json())
+        for d in resp.json():
+            self.assertIsInstance(d, dict)
+
+    # Test Private Endpoints
+    def test_and_validate_data_for_wallet_endpoint_method_working_correctly(self):
+        api = CoinCheck(config='%s/auth/coincheck.ini' % tests_folder_dir)
+        resp = api.wallet()
+        self.assertEqual(resp.status_code, 200, msg=resp.json())
+        self.assertTrue(resp.json()['success'], msg=resp.json())
+        self.assertIsInstance(resp.json(), dict, msg=resp.json())
+
+    def test_and_validate_data_for_open_orders_endpoint_method_working_correctly(self):
+        api = CoinCheck(config='%s/auth/coincheck.ini' % tests_folder_dir)
+        resp = api.open_orders()
+        self.assertEqual(resp.status_code, 200, msg=resp.json())
+        self.assertTrue(resp.json()['success'], msg=resp.json())
+        self.assertIn('orders', resp.json(), msg=resp.json())
+        for order in resp.json()['orders']:
+            self.assertIsInstance(order, dict, msg=(order, resp.json()))
+
+
+class CryptopiaInterfaceTests(unittest.TestCase):
+    def tearDown(self):
+        # Wait one second to reduce load on API
+        time.sleep(1)
+
+    # PUBLIC ENDPOINT TESTS
+    def test_and_validate_data_for_ticker_endpoint_method_working_correctly(self):
+        api = Cryptopia()
+        resp = api.ticker(ETHBTC)
+        self.assertEqual(resp.status_code, 200, msg=resp.json())
+        self.assertTrue(resp.json()['Success'], msg=resp.json())
+        for k in ['AskPrice', 'BidPrice', 'High', 'Low',
+                  'Volume', 'LastPrice', 'BuyVolume', 'SellVolume', 'Change',
+                  'Open', 'Close', 'BaseVolume', 'BaseBuyVolume', 
+                  'BaseSellVolume', 'TradePairId', 'Label']:
+            self.assertIn(k, resp.json()['Data'], msg=(k, resp.json()))
+
+    def test_and_validate_data_for_order_book_endpoint_method_working_correctly(self):
+        api = Cryptopia()
+        resp = api.order_book(ETHBTC)
+        self.assertEqual(resp.status_code, 200, msg=resp.json())
+        self.assertTrue(resp.json()['Success'], msg=resp.json())
+        self.assertIn('Data', resp.json(), msg=resp.json())
+        for side in ('Buy', 'Sell'):
+            self.assertIn(side, resp.json()['Data'], msg=resp.json())
+
+    def test_and_validate_data_for_trades_endpoint_method_working_correctly(self):
+        api = Cryptopia()
+        resp = api.trades(ETHBTC)
+        self.assertEqual(resp.status_code, 200, msg=resp.json())
+        self.assertTrue(resp.json()['Success'], msg=resp.json())
+        self.assertIn('Data', resp.json(), msg=resp.json())
+        for d in resp.json()['Data']:
+            self.assertIsInstance(d, dict)
+
+    # Test Private Endpoints
+    def test_and_validate_data_for_wallet_endpoint_method_working_correctly(self):
+        api = Cryptopia(config='%s/auth/cryptopia.ini' % tests_folder_dir)
+        resp = api.wallet()
+        self.assertEqual(resp.status_code, 200, msg=resp.json())
+        self.assertTrue(resp.json()['Success'], msg=resp.json())
+        self.assertIn('Data', resp.json())
+
+    def test_and_validate_data_for_open_orders_endpoint_method_working_correctly(self):
+        api = Cryptopia(config='%s/auth/cryptopia.ini' % tests_folder_dir)
+        resp = api.open_orders()
+        self.assertEqual(resp.status_code, 200, msg=resp.json())
+        self.assertTrue(resp.json()['Success'], msg=resp.json())
+        self.assertIn('Data', resp.json())
+
+
+class HitBTCInterfaceTests(unittest.TestCase):
+    def tearDown(self):
+        # Wait one second to reduce load on API
+        time.sleep(1)
+
+    # PUBLIC ENDPOINT TESTS
+    def test_and_validate_data_for_ticker_endpoint_method_working_correctly(self):
+        api = HitBTC()
+        resp = api.ticker(ETHBTC)
+        self.assertEqual(resp.status_code, 200, msg=resp.json())
+        self.assertIsInstance(resp.json(), dict, msg=resp.json())
+        # Assert that data is in expected format
+        for k in ['last', 'bid', 'ask', 'high', 'low', 'volume', 'open',
+                  'volume_quote', 'timestamp']:
+            self.assertIn(k, resp.json(), msg=(k, resp.json()))
+
+    def test_and_validate_data_for_order_book_endpoint_method_working_correctly(self):
+        api = HitBTC()
+        resp = api.order_book(ETHBTC)
+        self.assertEqual(resp.status_code, 200, msg=resp.json())
+        self.assertIsInstance(resp.json(), dict, msg=resp.json())
+        for side in ('bids', 'asks'):
+            self.assertIn(side, resp.json())
+
+    def test_and_validate_data_for_trades_endpoint_method_working_correctly(self):
+        api = HitBTC()
+        resp = api.trades(ETHBTC)
+        self.assertEqual(resp.status_code, 200, msg=resp.json())
+        self.assertIsInstance(resp.json(), dict, msg=resp.json())
+        self.assertIn('trades', resp.json())
+
+    # Test Private Endpoints
+    def test_and_validate_data_for_wallet_endpoint_method_working_correctly(self):
+        api = HitBTC(config='%s/auth/hitbtc.ini' % tests_folder_dir)
+        resp = api.wallet()
+        self.assertEqual(resp.status_code, 200, msg=resp.json())
+        self.assertIsInstance(resp.json(), dict, msg=resp.request.url)
+        self.assertIn('balance', resp.json())
+
+    def test_and_validate_data_for_open_orders_endpoint_method_working_correctly(self):
+        api = HitBTC(config='%s/auth/hitbtc.ini' % tests_folder_dir)
+        resp = api.open_orders()
+        self.assertEqual(resp.status_code, 200, msg=resp.json())
+        self.assertIsInstance(resp.json(), dict, msg=resp.json())
+        self.assertIn('orders', resp.json())
+
+
+class KrakenInterfaceTests(unittest.TestCase):
+    def tearDown(self):
+        # Wait one second to reduce load on API
+        time.sleep(1)
+
+    # PUBLIC ENDPOINT TESTS
+    def test_and_validate_data_for_ticker_endpoint_method_working_correctly(self):
+        api = Kraken()
+        resp = api.ticker(ETHBTC)
+        self.assertEqual(resp.status_code, 200, msg=resp.json())
+        self.assertFalse(resp.json()['error'], msg=resp.json())
+        pair = ETHBTC.format_for('Kraken')
+        self.assertIn(pair, resp.json()['result'], msg=resp.json())
+        for k in 'a,b,c,v,p,t,l,h,o'.split(','):
+            self.assertIn(k, resp.json()['result'][pair], msg=(k, resp.json()))
+
+    def test_and_validate_data_for_order_book_endpoint_method_working_correctly(self):
+        api = Kraken()
+        resp = api.order_book(ETHBTC)
+        self.assertEqual(resp.status_code, 200, msg=resp.json())
+        self.assertFalse(resp.json()['error'], msg=resp.json())
+        pair = ETHBTC.format_for('Kraken')
+        self.assertIn(pair, resp.json()['result'], msg=resp.json())
+
+        for side in ('bids', 'asks'):
+            self.assertIn(side, resp.json()['result'][pair])
+
+    def test_and_validate_data_for_trades_endpoint_method_working_correctly(self):
+        api = Kraken()
+        resp = api.trades(ETHBTC)
+        self.assertEqual(resp.status_code, 200, msg=resp.json())
+        self.assertFalse(resp.json()['error'], msg=resp.json())
+        pair = ETHBTC.format_for('Kraken')
+        self.assertIn(pair, resp.json()['result'], msg=resp.json())
+        data = resp.json()['result'][pair]
+        self.assertIsInstance(data, list)
+        for d in data:
+            self.assertIsInstance(d, list)
+
+    # Test Private Endpoints
+    def test_and_validate_data_for_wallet_endpoint_method_working_correctly(self):
+        api = Kraken(config='%s/auth/kraken.ini' % tests_folder_dir)
+
+        # Assert that if no pair is passed, we get a snapshot of all wallets:
+        resp = api.wallet()
+        self.assertEqual(resp.status_code, 200, msg=resp.json())
+        self.assertFalse(resp.json()['error'], msg=resp.json())
+
+    def test_and_validate_data_for_open_orders_endpoint_method_working_correctly(self):
+        api = Kraken(config='%s/auth/kraken.ini' % tests_folder_dir)
+        resp = api.open_orders()
+        self.assertEqual(resp.status_code, 200, msg=resp.json())
+        self.assertFalse(resp.json()['error'], msg=resp.json())
+
+
+class OKCoinInterfaceTests(unittest.TestCase):
+    def tearDown(self):
+        # Wait one second to reduce load on API
+        time.sleep(1)
+
+    # PUBLIC ENDPOINT TESTS
+    def test_and_validate_data_for_ticker_endpoint_method_working_correctly(self):
+        api = OKCoin()
+        resp = api.ticker(ETHUSD)
+        self.assertEqual(resp.status_code, 200, msg=resp.json())
+        self.assertIn('ticker', resp.json())
+        for k in ('buy', 'high', 'low', 'sell', 'vol'):
+            self.assertIn(k, resp.json()['ticker'], msg=(k, resp.json()))
+
+    def test_and_validate_data_for_order_book_endpoint_method_working_correctly(self):
+        api = OKCoin()
+        resp = api.order_book(ETHUSD)
+        self.assertEqual(resp.status_code, 200, msg=resp.json())
+        self.assertIn('asks', resp.json())
+        self.assertIn('bids', resp.json())
+        for b, a in zip(resp.json()['bids'], resp.json()['asks']):
+            self.assertIsInstance(b, list)
+            self.assertIsInstance(a, list)
+
+    def test_and_validate_data_for_trades_endpoint_method_working_correctly(self):
+        api = OKCoin()
+        resp = api.trades(ETHUSD)
+        self.assertEqual(resp.status_code, 200, msg=resp.json())
+        self.assertIsInstance(resp.json(), list)
+        for d in resp.json():
+            self.assertIsInstance(d, dict)
+            for k in ('date', 'date_ms', 'price', 'amount', 'tid', 'type'):
+                self.assertIn(k, d)
+
+    # Test Private Endpoints
+    def test_and_validate_data_for_wallet_endpoint_method_working_correctly(self):
+        api = OKCoin(config='%s/auth/okcoin.ini' % tests_folder_dir)
+        resp = api.wallet()
+        self.assertEqual(resp.status_code, 200, msg=resp.json())
+        self.assertTrue(resp.json()['result'], msg=resp.json())
+        self.assertIn('info', resp.json())
+
+    def test_and_validate_data_for_open_orders_endpoint_method_working_correctly(self):
+        api = OKCoin(config='%s/auth/okcoin.ini' % tests_folder_dir)
+        resp = api.open_orders(symbol=ETHUSD.format_for('OKCoin'))
+        self.assertEqual(resp.status_code, 200, msg=resp.request.url)
+        self.assertTrue(resp.json()['result'], msg=resp.json())
+        self.assertIn('orders', resp.json())
+        self.assertIsInstance(resp.json()['orders'], list)
+
+
+class PoloniexInterfaceTests(unittest.TestCase):
+    def tearDown(self):
+        # Wait one second to reduce load on API
+        time.sleep(1)
+
+    # PUBLIC ENDPOINT TESTS
+    def test_and_validate_data_for_ticker_endpoint_method_working_correctly(self):
+        api = Poloniex()
+        resp = api.ticker(ETHBTC)
+        self.assertEqual(resp.status_code, 200, msg=(resp.text, resp.request.url))
+        self.assertIsInstance(resp.json(), dict, msg=(resp.json()))
+        pair = ETHBTC.format_for('Poloniex')
+        self.assertIn(pair, resp.json(), msg=resp.json())
+
+    def test_and_validate_data_for_order_book_endpoint_method_working_correctly(self):
+        api = Poloniex()
+        resp = api.order_book(ETHBTC)
+        self.assertEqual(resp.status_code, 200, msg=resp.json())
+        self.assertIsInstance(resp.json(), dict, msg=resp.json())
+        self.assertIn('seq', resp.json(), msg=resp.json())
+        for side in ('bids', 'asks'):
+            self.assertIn(side, resp.json())
+
+    def test_and_validate_data_for_trades_endpoint_method_working_correctly(self):
+        api = Poloniex()
+        resp = api.trades(ETHBTC)
+        self.assertEqual(resp.status_code, 200, msg=resp.json())
+        self.assertIsInstance(resp.json(), list, msg=resp.json())
+        for d in resp.json():
+            self.assertIsInstance(d, dict, msg=resp.json())
+
+    # Test Private Endpoints
+    def test_and_validate_data_for_wallet_endpoint_method_working_correctly(self):
+        api = Poloniex(config='%s/auth/poloniex.ini' % tests_folder_dir)
+
+        # Assert that if no pair is passed, we get a snapshot of all wallets:
+        resp = api.wallet()
+        self.assertEqual(resp.status_code, 200, msg=resp.json())
+        self.assertIsInstance(resp.json(), dict, msg=resp.json())
+
+    def test_and_validate_data_for_open_orders_endpoint_method_working_correctly(self):
+        api = Poloniex(config='%s/auth/poloniex.ini' % tests_folder_dir)
+        resp = api.open_orders()
+        self.assertEqual(resp.status_code, 200, msg=(resp.json(), resp.request.url))
+        self.assertIsInstance(resp.json(), dict, msg=resp.json())
+        for key in resp.json():
+            self.assertIsInstance(resp.json()[key], list, msg=resp.json())
+            for l in resp.json()[key]:
+                self.assertIsInstance(l, list, msg=(l, key, resp.json()))
+
+
+class QuadrigaCXInterfaceTests(unittest.TestCase):
+    def tearDown(self):
+        # Wait one second to reduce load on API
+        time.sleep(1)
+
+    # PUBLIC ENDPOINT TESTS
+    def test_and_validate_data_for_ticker_endpoint_method_working_correctly(self):
+        api = QuadrigaCX()
+        resp = api.ticker(ETHBTC)
+        self.assertEqual(resp.status_code, 200, msg=resp.json())
+        self.assertNotIn('error', resp.json())
+        for k in ['high', 'low', 'last', 'vwap', 'volume', 'bid', 'ask']:
+            self.assertIn(k, resp.json(), msg=(k, resp.json()))
+
+    def test_and_validate_data_for_order_book_endpoint_method_working_correctly(self):
+        api = QuadrigaCX()
+        resp = api.order_book(ETHBTC)
+        self.assertEqual(resp.status_code, 200, msg=resp.json())
+        self.assertIsInstance(resp.json(), dict, msg=resp.json())
+        self.assertNotIn('error', resp.json())
+        for key in ('bids', 'asks', 'timestamp'):
+            self.assertIn(key, resp.json())
+
+    def test_and_validate_data_for_trades_endpoint_method_working_correctly(self):
+        api = QuadrigaCX()
+        resp = api.trades(ETHBTC)
+        self.assertEqual(resp.status_code, 200, msg=resp.json())
+        self.assertIsInstance(resp.json(), list, msg=resp.json())
+        self.assertNotIn('error', resp.json())
+        for item in resp.json():
+            self.assertIsInstance(item, dict, msg=resp.json())
+
+    # Test Private Endpoints
+    def test_and_validate_data_for_wallet_endpoint_method_working_correctly(self):
+        api = QuadrigaCX(config='%s/auth/quadrigacx.ini' % tests_folder_dir)
+        resp = api.open_orders()
+        self.assertEqual(resp.status_code, 200, msg=resp.json())
+        self.assertNotIn('error', resp.json())
+        try:
+            self.assertIsInstance(resp.json(), dict, msg=resp.json())
+        except AssertionError:
+            # This may be due to empty wallets being None, and the result
+            # may be instead an empty list. Assert this.
+            self.assertIsInstance(resp.json(), list, msg=resp.json())
+
+    def test_and_validate_data_for_open_orders_endpoint_method_working_correctly(self):
+        api = QuadrigaCX(config='%s/auth/quadrigacx.ini' % tests_folder_dir)
+        resp = api.open_orders()
+        self.assertEqual(resp.status_code, 200, msg=resp.json())
+        self.assertIsInstance(resp.json(), list, msg=resp.json())
+        self.assertNotIn('error', resp.json())
+
+
+class TheRockTradingInterfaceTests(unittest.TestCase):
+    def tearDown(self):
+        # Wait one second to reduce load on API
+        time.sleep(1)
+
+    # PUBLIC ENDPOINT TESTS
+    def test_and_validate_data_for_ticker_endpoint_method_working_correctly(self):
+        api = TheRockTrading()
+        resp = api.ticker(ETHBTC)
+        self.assertEqual(resp.status_code, 200, msg=resp.json())
+        self.assertIsInstance(resp.json(), dict, msg=resp.json())
+        self.assertNotIn('errors', resp.json(), msg=resp.json())
+        # Assert that data is in expected format
+        for k in ['last', 'high', 'low', 'open', 'close', 'fund_id',
+                  'bid', 'ask', 'date', 'volume', 'volume_traded']:
+            self.assertIn(k, resp.json(), msg=(k, resp.json()))
+
+    def test_and_validate_data_for_order_book_endpoint_method_working_correctly(self):
+        api = TheRockTrading()
+        resp = api.order_book(ETHBTC)
+        self.assertEqual(resp.status_code, 200, msg=resp.json())
+        self.assertIsInstance(resp.json(), dict, msg=resp.json())
+        self.assertNotIn('errors', resp.json(), msg=resp.json())
+        for k in ('bids', 'asks', 'fund_id', 'date'):
+            self.assertIn(k, resp.json(), msg=resp.json())
+
+    def test_and_validate_data_for_trades_endpoint_method_working_correctly(self):
+        api = TheRockTrading()
+        resp = api.trades(ETHBTC)
+        self.assertEqual(resp.status_code, 200, msg=resp.json())
+        self.assertNotIn('errors', resp.json(), msg=resp.json())
+        self.assertIn('trades', resp.json(), msg=resp.json())
+
+    def test_and_validate_data_for_wallet_endpoint_method_working_correctly(self):
+        api = TheRockTrading(config='%s/auth/rocktrading.ini' % tests_folder_dir)
+
+        resp = api.wallet()
+        self.assertEqual(resp.status_code, 200, msg=resp.json())
+        self.assertNotIn('errors', resp.json(), msg=resp.json())
+        self.assertIn('balances', resp.json())
+
+    def test_and_validate_data_for_open_orders_endpoint_method_working_correctly(self):
+        api = TheRockTrading(config='%s/auth/rocktrading.ini' % tests_folder_dir)
+        resp = api.open_orders(pair='ETHUSD')
+        self.assertEqual(resp.status_code, 200, msg=resp.json())
+        self.assertNotIn('errors', resp.json(), msg=resp.json())
+        self.assertIn('orders', resp.json())
+
+
+class VaultoroInterfaceTests(unittest.TestCase):
+    def tearDown(self):
+        # Wait one second to reduce load on API
+        time.sleep(1)
+
+    # PUBLIC ENDPOINT TESTS
+    def test_and_validate_data_for_ticker_endpoint_method_working_correctly(self):
+        api = Vaultoro()
+        resp = api.ticker(ETHBTC)
+        self.assertEqual(resp.status_code, 200, msg=resp.json())
+        self.assertTrue(resp.json()['result'])
+        # Assert that data is in expected format
+        for k in ['last', 'lowestAsk', 'highestBid', 'percentChange',
+                  'baseVolume', 'quoteVolume', 'high24hr', 'low24hr']:
+            self.assertIn(k, resp.json(), msg=(k, resp.json()))
+
+    def test_and_validate_data_for_order_book_endpoint_method_working_correctly(self):
+        api = Vaultoro()
+        resp = api.order_book(ETHBTC)
+        self.assertEqual(resp.status_code, 200, msg=resp.json())
+
+        # Assert that data is in expected format
+
+        for side in ('bids', 'asks'):
+            self.assertIn(side, resp.json())
+
+    def test_and_validate_data_for_trades_endpoint_method_working_correctly(self):
+        api = Vaultoro()
+        resp = api.trades(ETHBTC)
+        self.assertEqual(resp.status_code, 200, msg=resp.json())
+        try:
+            self.assertEqual(resp.json()['result'], msg=resp.request.url)
+        except KeyError:
+            self.fail("Trades endpoint returns empty page!")
+        data = resp.json()['data']
+        # Assert that data is in expected format
+        for d in data:
+            self.assertIsInstance(d, dict)
+
+    def test_and_validate_data_for_wallet_endpoint_method_working_correctly(self):
+        api = Vaultoro(config='%s/auth/vaultoro.ini' % tests_folder_dir)
+
+        # Assert that if no pair is passed, we get a snapshot of all wallets:
+        resp = api.wallet()
+        self.assertEqual(resp.status_code, 200, msg=resp.json())
+        self.assertEqual(resp.json()['status'], 'success', msg=resp.json())
+        self.assertIn('data', resp.json())
+
+    def test_and_validate_data_for_open_orders_endpoint_method_working_correctly(self):
+        api = Vaultoro(config='%s/auth/bter.ini' % tests_folder_dir)
+        resp = api.open_orders()
+        self.assertEqual(resp.json()['status'], 'success', msg=resp.json())
+        self.assertIn('data', resp.json())
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)

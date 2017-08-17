@@ -10,7 +10,7 @@ log = logging.getLogger(__name__)
 
 
 class PairTests(unittest.TestCase):
-    def test_that_pair_class_returns_correct_format(self):
+    def test_that_pair_class_returns_correct_format_for(self):
         pair = PairFormatter('BTC', 'USD')
 
         # Assert All exchanges are supported and format correctly;
@@ -18,13 +18,13 @@ class PairTests(unittest.TestCase):
         self.assertEqual(pair.format_for('Kraken'), 'XXBTZUSD')
         self.assertEqual(pair.format_for('Bitstamp'), 'btcusd')
         self.assertEqual(pair.format_for('Bitfinex'), 'BTCUSD')
-        self.assertEqual(pair.format_for('Bittrex'), 'BTC-USD')
-        self.assertEqual(pair.format_for('CoinCheck'), 'BTCUSD')
+        self.assertEqual(pair.format_for('Bittrex'), 'USD-BTC')
+        self.assertEqual(pair.format_for('CoinCheck'), 'btc_usd')
         self.assertEqual(pair.format_for('GDAX'), 'BTC-USD')
         self.assertEqual(pair.format_for('ITBit'), 'XBTUSD')
         self.assertEqual(pair.format_for('OKCoin'), 'btc_usd')
         self.assertEqual(pair.format_for('BTC-E'), 'btc_usd')
-        self.assertEqual(pair.format_for('C-CEX'), 'BTC/USD')
+        self.assertEqual(pair.format_for('C-CEX'), 'btc-usd')
         self.assertEqual(pair.format_for('Cryptopia'), 'BTC_USD')
         self.assertEqual(pair.format_for('Gemini'), 'btcusd')
         self.assertEqual(pair.format_for('Yunbi'), 'btcusd')
@@ -37,7 +37,7 @@ class PairTests(unittest.TestCase):
         self.assertEqual(pair.format_for('Bter'), 'btc_usd')
 
         # Assert that calling the formatter returns the standard presentation
-        self.assertEqual(pair(), 'BTCUSD')
+        self.assertEqual(str(pair), 'BTCUSD')
 
     def test_poloniex_formatter_edge_case(self):
         # Assert that BTC in quote is swapped to base
@@ -57,7 +57,6 @@ class PairTests(unittest.TestCase):
         pair = PairFormatter('ETH', 'XMR')
         self.assertEqual(pair.format_for('Poloniex'), 'XMR_ETH')
 
-
     def test_bitfinex_formatter_edge_case(self):
         # The DASH symbol is shortened in the Bitfinex API standard, hence
         # our formatter should take this into consideration
@@ -66,6 +65,10 @@ class PairTests(unittest.TestCase):
 
         pair = PairFormatter('USD', 'DASH')
         self.assertEqual(pair.format_for('Bitfinex'), 'USDDSH')
+
+    def test_kraken_formatter_edge_case(self):
+        pair = PairFormatter('BCH', 'EUR')
+        self.assertEqual(pair.format_for('Kraken'), 'BCHEUR')
 
 if __name__ == '__main__':
     unittest.main()

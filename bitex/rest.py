@@ -24,7 +24,6 @@ except ImportError:
 
 # Import Homebrew
 from bitex.base import RESTAPI
-from bitex.exceptions import IncompleteCredentialsWarning
 from bitex.exceptions import IncompleteCredentialsError
 from bitex.exceptions import IncompleteCredentialConfigurationWarning
 
@@ -146,7 +145,7 @@ class BittrexREST(RESTAPI):
         """
         req_kwargs = super(BittrexREST, self).sign_request_kwargs(endpoint,
                                                                   **kwargs)
-
+        req_kwargs['params'] = {}
         # Prepare arguments for query request.
         try:
             params = kwargs.pop('params')
@@ -408,25 +407,25 @@ class OKCoinREST(RESTAPI):
         # Prepare payload arguments
         nonce = self.nonce()
         try:
-            payload = kwargs['params']
+            payload = req_kwargs.pop('params')
         except KeyError:
             payload = {}
         payload['api_key'] = self.key
 
         # Create the signature from payload and add it to params
-        encoded_payload = ''
+        encoded_params = ''
         for k in sorted(payload.keys()):
-            encoded_payload += k + '=' + payload[k] + '&'
-        sign = encoded_payload + 'secret_key=' + self.secret
+            encoded_params += str(k) + '=' + str(payload[k]) + '&'
+        sign = encoded_params + 'secret_key=' + self.secret
         hash_sign = hashlib.md5(sign.encode('utf-8')).hexdigest().upper()
 
         # create params dict for body
         body = {'api_key': self.key, 'sign': hash_sign}
 
         # Update req_kwargs keys
-        req_kwargs['data'] = urllib.parse.urlencode(body)
-        req_kwargs['headers'] = {"Content-type": 'application/x-www-form-urlencoded'}
-        #req_kwargs['url'] = encoded_url
+        req_kwargs['data'] = body
+        req_kwargs['headers'] = {"contentType": 'application/x-www-form-urlencoded'}
+        req_kwargs['url'] = self.generate_url(self.generate_uri(endpoint + '?' + encoded_params[:-1]))
         return req_kwargs
 
 
@@ -496,9 +495,9 @@ class CCEXREST(RESTAPI):
         params['apikey'] = self.key
         params['nonce'] = nonce
         post_params = params
-        post_params.update({'nonce': nonce, 'a': endpoint})
+        post_params.update({'nonce': nonce})
         url_params = urllib.parse.urlencode(post_params)
-        url = self.addr + '/api.html?' + url_params
+        url = self.addr + '/' + endpoint + '?' + url_params
 
         # generate signature
         sig = hmac.new(self.secret.encode('utf-8'), url.encode('utf-8'),
@@ -808,7 +807,7 @@ class QuadrigaCXREST(RESTAPI):
 
         # update req_kwargs keys
         req_kwargs['json'] = {'key': self.key, 'signature': signature,
-                                 'nonce': nonce}
+                              'nonce': nonce}
         req_kwargs['data'] = params
         return req_kwargs
 

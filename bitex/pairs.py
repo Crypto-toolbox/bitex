@@ -68,11 +68,13 @@ class PairFormatter:
     @staticmethod
     def kraken_formatter(base, quote):
         base = 'XBT' if base == 'BTC' else base
-        quote = 'XBT' if base == 'BTC' else quote
+        quote = 'XBT' if quote == 'BTC' else quote
 
         def add_prefix(cur):
-            if cur in ('USD', 'EUR', 'GBP', 'JPY', 'CAD'):
-                return 'Z' + cur
+            if 'BCH' in (base, quote):
+                return cur
+            elif cur in ('USD', 'EUR', 'GBP', 'JPY', 'CAD'):
+                    return 'Z' + cur
             else:
                 return 'X' + cur
 
@@ -90,11 +92,11 @@ class PairFormatter:
 
     @staticmethod
     def bittrex_formatter(base, quote):
-        return base + '-' + quote
+        return quote + '-' + base
 
     @staticmethod
     def coincheck_formatter(base, quote):
-        return base + quote
+        return base.lower() + '_' + quote.lower()
 
     @staticmethod
     def gdax_formatter(base, quote):
@@ -116,7 +118,7 @@ class PairFormatter:
 
     @staticmethod
     def ccex_formatter(base, quote):
-        return base + '/' + quote
+        return base.lower() + '-' + quote.lower()
 
     @staticmethod
     def cryptopia_formatter(base, quote):
@@ -192,9 +194,22 @@ class DASHUSDFormatter(PairFormatter):
     def __init__(self):
         super(DASHUSDFormatter, self).__init__('DASH', 'USD')
 
+
+class ETHBTCFormatter(PairFormatter):
+    def __init__(self):
+        super(ETHBTCFormatter, self).__init__('ETH', 'BTC')
+
+
+class LTCBTCFormatter(PairFormatter):
+    def __init__(self):
+        super(LTCBTCFormatter, self).__init__('LTC', 'BTC')
+
+
 BTCUSD = BTCUSDFormatter()
 ETHUSD = ETHUSDFormatter()
 XMRUSD = XMRUSDFormatter()
 ETCUSD = ETCUSDFormatter()
 ZECUSD = ZECUSDFormatter()
 DASHUSD = DASHUSDFormatter()
+ETHBTC = ETHBTCFormatter()
+LTCBTC = LTCBTCFormatter()
