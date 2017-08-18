@@ -8,7 +8,7 @@ import base64
 # Import Third-Party
 
 # Import Homebrew
-from bitex.base import RESTAPI
+from bitex.api.REST import RESTAPI
 
 log = logging.getLogger(__name__)
 

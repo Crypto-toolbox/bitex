@@ -7,7 +7,7 @@ import warnings
 # Import Third-Party
 
 # Import Homebrew
-from bitex.base import RESTAPI
+from bitex.api.REST import RESTAPI
 from bitex.exceptions import IncompleteCredentialsError
 from bitex.exceptions import IncompleteCredentialConfigurationWarning
 

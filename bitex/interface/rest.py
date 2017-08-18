@@ -6,6 +6,7 @@ import logging
 # Import Homebrew
 from bitex.utils import check_and_format_pair
 from bitex.interface.base import Interface
+from bitex.interface.base import BaseAPI
 
 # Init Logging Facilities
 log = logging.getLogger(__name__)

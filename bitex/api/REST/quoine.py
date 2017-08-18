@@ -7,7 +7,7 @@ import urllib.parse
 import jwt
 
 # Import Homebrew
-from bitex.base import RESTAPI
+from bitex.api.REST import RESTAPI
 
 # Init Logging Facilities
 log = logging.getLogger(__name__)
