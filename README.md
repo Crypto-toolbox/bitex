@@ -35,7 +35,10 @@ BTC @ 3D4yuyf84eQUauyZLoQKyouPuThoxMMRZa
 | Poloniex             | DONE      | DONE           | DONE             | DONE              | Passing           |
 | QuadrigaCX           | DONE      | DONE           | DONE             | DONE              | Passing           |
 | The Rock Trading LTD | DONE      | DONE           | DONE             | DONE              | Partially Passing |
-| Vaultoro             | DONE      | DONE           | DONE             | DONE              | Failing           |
+| Vaultoro             | DONE      | DONE           | DONE             | DONE              | Passing           |
+| Yunbi                | Planned   | Planned        | Planned          | Planned           | Failing           |
+| Quoine               | Planned   | Planned        | Planned          | Planned           | Failing           |
+| ITBit                | Planned   | Planned        | Planned          | Planned           | Failing           |
 
 
 Additional clients will be added to (or removed from) this list, 
@@ -121,3 +124,11 @@ or via pip
 
 `pip install BitEx`
 
+# Disclaimer
+
+Due to technical reasons I cannot test all private methods of each exchange,
+since some of them need me to move actual currency - exposing an API Key of an account with
+actual value is, as you may imagine, a security risk and thus isn't done.
+
+Therefore, take great care when using the library. I cannot be
+held responsible for any losses or damages you suffer while using BitEx.
