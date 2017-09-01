@@ -35,7 +35,7 @@ class VaultoroREST(RESTAPI):
         nonce = self.nonce()
         params['nonce'] = nonce
         params['apikey'] = self.key
-        url = self.generate_url('/' + endpoint + '?' + urllib.parse.urlencode(params))
+        url = self.addr + '/' + endpoint + '?' + urllib.parse.urlencode(params)
 
         # generate signature
         signature = hmac.new(self.secret.encode(encoding='utf-8'),
@@ -44,5 +44,6 @@ class VaultoroREST(RESTAPI):
 
         # update req_kwargs keys
         req_kwargs['headers'] = {'X-Signature': signature}
-        req_kwargs['url'] = url
+        if not endpoint.startswith('1'):
+            req_kwargs['url'] = url
         return req_kwargs

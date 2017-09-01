@@ -986,14 +986,15 @@ class VaultoroInterfaceTests(unittest.TestCase):
 
         # Assert that if no pair is passed, we get a snapshot of all wallets:
         resp = api.wallet()
-        self.assertEqual(resp.status_code, 200, msg=resp.text)
+        self.assertEqual(resp.status_code, 200, msg=(resp.text, resp.request.url))
         self.assertEqual(resp.json()['status'], 'success', msg=resp.json())
         self.assertIn('data', resp.json())
 
     def test_and_validate_data_for_open_orders_endpoint_method_working_correctly(self):
-        api = Vaultoro(config='%s/auth/bter.ini' % tests_folder_dir)
+        api = Vaultoro(config='%s/auth/vaultoro.ini' % tests_folder_dir)
         resp = api.open_orders()
-        self.assertEqual(resp.json()['status'], 'success', msg=resp.text)
+        self.assertEqual(resp.status_code, 200, msg=(resp.text, resp.request.url))
+        self.assertEqual(resp.json()['status'], 'success', msg=(resp.text, resp.request.url))
         self.assertIn('data', resp.json())
 
 if __name__ == '__main__':
