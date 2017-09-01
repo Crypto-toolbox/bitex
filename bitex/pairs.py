@@ -195,6 +195,11 @@ class DASHUSDFormatter(PairFormatter):
         super(DASHUSDFormatter, self).__init__('DASH', 'USD')
 
 
+class BCHUSDFormatter(PairFormatter):
+    def __init__(self):
+        super(BCHUSDFormatter, self).__init__('BCH', 'USD')
+
+
 class ETHBTCFormatter(PairFormatter):
     def __init__(self):
         super(ETHBTCFormatter, self).__init__('ETH', 'BTC')
@@ -205,11 +210,43 @@ class LTCBTCFormatter(PairFormatter):
         super(LTCBTCFormatter, self).__init__('LTC', 'BTC')
 
 
+class XMRBTCFormatter(PairFormatter):
+    def __init__(self):
+        super(XMRBTCFormatter, self).__init__('XMR', 'BTC')
+
+
+class ETCBTCFormatter(PairFormatter):
+    def __init__(self):
+        super(ETCBTCFormatter, self).__init__('ETC', 'BTC')
+
+
+class ZECBTCFormatter(PairFormatter):
+    def __init__(self):
+        super(ZECBTCFormatter, self).__init__('ZEC', 'BTC')
+
+
+class DASHBTCFormatter(PairFormatter):
+    def __init__(self):
+        super(DASHBTCFormatter, self).__init__('DASH', 'BTC')
+
+
+class BCHBTCFormatter(PairFormatter):
+    def __init__(self):
+        super(BCHBTCFormatter, self).__init__('BCH', 'BTC')
+
+
 BTCUSD = BTCUSDFormatter()
 ETHUSD = ETHUSDFormatter()
 XMRUSD = XMRUSDFormatter()
 ETCUSD = ETCUSDFormatter()
 ZECUSD = ZECUSDFormatter()
 DASHUSD = DASHUSDFormatter()
+BCHUSD = BCHUSDFormatter()
+
 ETHBTC = ETHBTCFormatter()
 LTCBTC = LTCBTCFormatter()
+XMRBTC = XMRBTCFormatter()
+ETCBTC = ETCBTCFormatter()
+ZECBTC = ZECBTCFormatter()
+DASHBTC = DASHBTCFormatter()
+BCHBTC = BCHBTCFormatter()
