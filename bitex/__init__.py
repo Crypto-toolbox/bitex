@@ -1,16 +1,16 @@
 from .pairs import BTCUSD, ZECUSD, XMRUSD, ETCUSD, ETHUSD, DASHUSD
-from .rest import BitstampREST, BterREST, BTCEREST, BitfinexREST
-from .rest import CryptopiaREST, CoincheckREST, CCEXREST
-from .rest import GDAXREST, GeminiREST
-from .rest import HitBTCREST
-from .rest import ITbitREST
-from .rest import KrakenREST
-from .rest import OKCoinREST
-from .rest import PoloniexREST
-from .rest import QuadrigaCXREST, QuoineREST
-from .rest import RockTradingREST
-from .rest import VaultoroREST
-from .rest import YunbiREST
+from bitex.api.REST import BitstampREST, BterREST, BTCEREST, BitfinexREST
+from bitex.api.REST import CryptopiaREST, CoincheckREST, CCEXREST
+from bitex.api.REST import GDAXREST, GeminiREST
+from bitex.api.REST import HitBTCREST
+from bitex.api.REST import ITbitREST
+from bitex.api.REST import KrakenREST
+from bitex.api.REST import OKCoinREST
+from bitex.api.REST import PoloniexREST
+from bitex.api.REST import QuadrigaCXREST, QuoineREST
+from bitex.api.REST import RockTradingREST
+from bitex.api.REST import VaultoroREST
+from bitex.api.REST import YunbiREST
 from .interface import BTCE, Bter, Bitfinex, Bittrex, Bitstamp, CCEX, CoinCheck
 from .interface import Cryptopia, HitBTC, Kraken, OKCoin, Poloniex, QuadrigaCX
 from .interface import TheRockTrading, Vaultoro
