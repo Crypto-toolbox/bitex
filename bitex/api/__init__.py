@@ -1,3 +1,4 @@
-import bitex.api.REST
-import bitex.api.WSS
+from bitex.api.REST import *
+from bitex.api.base import BaseAPI
+
 

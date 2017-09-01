@@ -1,68 +1,54 @@
-"""
-Provides utility functions used across more than one module or sub module.
-
-"""
-
-# Import Built-Ins
-import logging
-import json
-from functools import wraps
-
-# Import Third-Party
-import requests
-
-# Import Homebrew
-
-# Init Logging Facilities
-log = logging.getLogger(__name__)
+from .exceptions import UnsupportedEndpointError
+from .pairs import PairFormatter
 
 
-def return_api_response(formatter=None):
+def check_version_compatibility(**version_func_pairs):
+    """This Decorator maker takes any number of
+    version_num=[list of compatible funcs] pairs, and checks if the
+    decorated function is compatible with the currently set API version.
+    Should this not be the case, an UnsupportedEndpointError is raised.
+
+    If the api version required contains '.', replace this with an
+    underscore ('_') - the decorator will take care of it.
     """
-    Decorator, which Applies the referenced formatter (if available) to the
-    function output and adds it to the APIResponse Object's `formatted`
-    attribute.
-    :param formatter: bitex.formatters.Formatter() obj
-    :return: bitex.api.response.APIResponse()
-    """
+
     def decorator(func):
-        @wraps(func)
-        def wrapper(*args, **kwargs):
-            try:
-                r = func(*args, **kwargs)
-            except Exception:
-                log.exception("return_api_response(): Error during call to %s(%s, %s)",
-                              func.__name__, args, kwargs)
-                raise
+        def wrapped(*args, **kwargs):
+            interface = args[0]
+            for version, methods in version_func_pairs.items():
+                if func.__name__ in methods:
+                    if version.replace('_', '.') != interface.REST.version:
+                        error_msg = ("Method not available on this API version"
+                                     "(current is %s, supported is %s)" %
+                                     (interface.REST.version,
+                                      version.replace('_', '.')))
+                        raise UnsupportedEndpointError(error_msg)
 
-            # Check Status
-            try:
-                r.raise_for_status()
-            except requests.HTTPError:
-                log.exception("return_api_response: HTTPError for url %s",
-                              r.request.url)
-
-            #  Verify json data
-            try:
-                data = r.json() if r.status_code == 200 else None
-            except json.JSONDecodeError:
-                log.error('return_api_response: Error while parsing json. '
-                          'Request url was: %s, result is: '
-                          '%s', r.request.url, r.text)
-                data = None
-            except Exception:
-                log.exception("return_api_response(): Unexpected error while parsing "
-                              "json from %s", r.request.url)
-                raise
-
-            # Format, if available
-            if formatter is not None and data:
-                try:
-                    r.formatted = formatter(data, *args, **kwargs)
-                except Exception:
-                    log.exception("Error while applying formatter to data! %s", data)
-
-            return r
-
-        return wrapper
+            return func(*args, **kwargs)
+        return wrapped
     return decorator
+
+
+def check_and_format_pair(func):
+    """Execute format_for() method if available, and assert that pair is
+    supported by the exchange.
+
+    When using this decorator, make sure that the first positional argument of
+    the wrapped method is the pair, otherwise behaviour is undefined.
+
+    :param func:
+    :return:
+    """
+    def wrapped(self, *args, **kwargs):
+        pair, *_ = args
+        try:
+            if isinstance(args[0], PairFormatter):
+                pair = pair.format_for(self.name)
+                args = list(args)
+                args[0] = pair
+        except IndexError:
+            pass
+        if pair not in self._supported_pairs:
+            raise AssertionError("%s is not supported by this exchange!" % pair)
+        return func(self, *args, **kwargs)
+    return wrapped
