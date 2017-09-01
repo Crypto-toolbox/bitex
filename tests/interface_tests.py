@@ -955,33 +955,28 @@ class VaultoroInterfaceTests(unittest.TestCase):
     # PUBLIC ENDPOINT TESTS
     def test_and_validate_data_for_ticker_endpoint_method_working_correctly(self):
         api = Vaultoro()
-        resp = api.ticker(ETHBTC)
-        self.assertEqual(resp.status_code, 200, msg=resp.json())
-        self.assertTrue(resp.json()['result'])
+
+        resp = api.ticker('BTC-GLD')
+        self.assertEqual(resp.status_code, 200, msg=resp.text)
+        self.assertEqual(resp.json()['status'], 'success')
         # Assert that data is in expected format
-        for k in ['last', 'lowestAsk', 'highestBid', 'percentChange',
-                  'baseVolume', 'quoteVolume', 'high24hr', 'low24hr']:
-            self.assertIn(k, resp.json(), msg=(k, resp.json()))
+        for k in ['LastPrice', '24hLow', '24hHigh', '24hVolume']:
+            self.assertIn(k, resp.json()['data'], msg=(k, resp.json()))
 
     def test_and_validate_data_for_order_book_endpoint_method_working_correctly(self):
         api = Vaultoro()
-        resp = api.order_book(ETHBTC)
-        self.assertEqual(resp.status_code, 200, msg=resp.json())
+        resp = api.order_book('BTC-GLD')
+        self.assertEqual(resp.status_code, 200, msg=resp.text)
 
         # Assert that data is in expected format
-
-        for side in ('bids', 'asks'):
-            self.assertIn(side, resp.json())
+        self.assertIn('b', resp.json()['data'][0], msg=resp.json()['data'][0].keys())
+        self.assertIn('s', resp.json()['data'][1], msg=resp.json()['data'][0].keys())
 
     def test_and_validate_data_for_trades_endpoint_method_working_correctly(self):
         api = Vaultoro()
-        resp = api.trades(ETHBTC)
-        self.assertEqual(resp.status_code, 200, msg=resp.json())
-        try:
-            self.assertEqual(resp.json()['result'], msg=resp.request.url)
-        except KeyError:
-            self.fail("Trades endpoint returns empty page!")
-        data = resp.json()['data']
+        resp = api.trades('BTC-GLD')
+        self.assertEqual(resp.status_code, 200, msg=resp.text)
+        data = resp.json()
         # Assert that data is in expected format
         for d in data:
             self.assertIsInstance(d, dict)
@@ -991,14 +986,14 @@ class VaultoroInterfaceTests(unittest.TestCase):
 
         # Assert that if no pair is passed, we get a snapshot of all wallets:
         resp = api.wallet()
-        self.assertEqual(resp.status_code, 200, msg=resp.json())
+        self.assertEqual(resp.status_code, 200, msg=resp.text)
         self.assertEqual(resp.json()['status'], 'success', msg=resp.json())
         self.assertIn('data', resp.json())
 
     def test_and_validate_data_for_open_orders_endpoint_method_working_correctly(self):
         api = Vaultoro(config='%s/auth/bter.ini' % tests_folder_dir)
         resp = api.open_orders()
-        self.assertEqual(resp.json()['status'], 'success', msg=resp.json())
+        self.assertEqual(resp.json()['status'], 'success', msg=resp.text)
         self.assertIn('data', resp.json())
 
 if __name__ == '__main__':

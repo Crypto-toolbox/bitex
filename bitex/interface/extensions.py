@@ -1,5 +1,6 @@
 # Import Built-Ins
 import logging
+import time
 
 # Import Third-Party
 import requests
@@ -7,7 +8,6 @@ import requests
 # Import Homebrew
 from bitex.exceptions import UnsupportedPairError
 
-from bitex.api.REST.rest import RESTAPI
 from bitex.api.REST.bitfinex import BitfinexREST
 from bitex.api.REST.bitstamp import BitstampREST
 from bitex.api.REST.bittrex import BittrexREST
@@ -1513,6 +1513,7 @@ class Vaultoro(RESTInterface):
 
     def request(self, endpoint, authenticate=False, post=False, **req_kwargs):
         verb = 'GET' if not post else 'POST'
+        endpoint = '1/' + endpoint if authenticate else endpoint
         return super(Vaultoro, self).request(verb, endpoint, authenticate, **req_kwargs)
 
     def _get_supported_pairs(self):
@@ -1521,21 +1522,23 @@ class Vaultoro(RESTInterface):
     # Public Endpoints
     @check_and_format_pair
     def ticker(self, pair, *args, **kwargs):
-        return self.request('https://api.vaultoro.com/markets', params=kwargs)
+        return self.request('markets', params=kwargs)
 
     @check_and_format_pair
     def order_book(self, pair, *args, **kwargs):
-        return self.request('https://api.vaultoro.com/orderbook/', params=kwargs)
+        return self.request('orderbook/', params=kwargs)
 
     @check_and_format_pair
-    def trades(self, pair, *args, **kwargs):
-        return self.request('https://api.vaultoro.com/latesttrades', params=kwargs)
+    def trades(self, pair, *args, since=None, **kwargs):
+        q = {'since': time.time() - 360 if not since else since}
+        q.update(kwargs)
+        return self.request('latesttrades', params=q)
 
     # Private Endpoints
     def _place_order(self, pair, price, size, side, market_order, **kwargs):
         order_type = 'limit' if not market_order else 'market'
         q = {'gld': size, 'price': price}
-        return self.request('https://api.vaultoro.com/1/%s/gld/%s' %
+        return self.request('%s/gld/%s' %
                             (side, order_type), authenticate=True,
                             post=True, params=q)
 
@@ -1553,17 +1556,17 @@ class Vaultoro(RESTInterface):
         raise NotImplementedError
 
     def open_orders(self, *args, **kwargs):
-        return self.request('https://api.vaultoro.com/1/orders',
+        return self.request('orders',
                             authenticate=True, params=kwargs)
 
     def cancel_order(self, *order_ids, **kwargs):
         results = []
         for oid in order_ids:
-            r = self.request('https://api.vaultoro.com/1/cancel/%s' % oid,
+            r = self.request('cancel/%s' % oid,
                              authenticate=True, post=True, params=kwargs)
             results.append(r)
         return results if len(results) > 1 else results[0]
 
     def wallet(self, *args, **kwargs):
-        return self.request('https://api.vaultoro.com/1/balance',
+        return self.request('balance',
                             authenticate=True, params=kwargs)
