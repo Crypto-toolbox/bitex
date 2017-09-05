@@ -10,7 +10,11 @@ install:
 # command to run tests
 script: 
   - cd tests
-  - python -m unittest *.py
+  - python -m unittest pair_tests.py
+  - python -m unittest api_tests.py
+  - python -m unittest interface_tests.py
+
+
 branches:
   only:
   - master
