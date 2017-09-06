@@ -753,7 +753,7 @@ class QuadrigaCXRESTTest(TestCase):
         # check that passphrase is loaded correctly, and no
         # IncompleteCredentialsWarning is issued, if we dont pass a client_id
         # kwarg but it is avaialable in the config file
-        config_path = '%s/auth/quadrigacx.ini'
+        config_path = '%s/auth/quadrigacx.ini' % tests_folder_dir
         with self.assertRaises(AssertionError):
             with self.assertWarns(IncompleteCredentialConfigurationWarning):
                 api = QuadrigaCXREST(config=config_path)
