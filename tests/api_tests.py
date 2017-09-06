@@ -199,7 +199,7 @@ class BitstampRESTTests(TestCase):
         # check that user_id is loaded correctly, and no
         # IncompleteCredentialsWarning is issued, if we dont pass a user_id
         # kwarg but it is avaialable in the config file
-        config_path = '/home/nls/git/bitex/tests/auth/bitstamp.ini'
+        config_path = './auth/bitstamp.ini'
         with self.assertRaises(AssertionError):
             with self.assertWarns(IncompleteCredentialConfigurationWarning):
                 api = BitstampREST(config=config_path)
