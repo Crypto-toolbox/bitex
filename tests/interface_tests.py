@@ -18,7 +18,7 @@ from bitex.exceptions import UnsupportedEndpointError
 # Init Logging Facilities
 log = logging.getLogger(__name__)
 
-tests_folder_dir = '/home/nils/git/bitex/tests'
+tests_folder_dir = '.'
 
 
 class InterfaceTests(unittest.TestCase):
