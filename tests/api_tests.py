@@ -545,7 +545,7 @@ class CCEXRESTTest(TestCase):
         try:
             self.assertTrue(response.json()['success'], msg=response.json())
         except JSONDecodeError:
-            self.fail("Shit happened during decoding! %s" % api.sign_request_kwargs('getbalances'))
+            self.fail("Error during decoding of JSON payload: %s" % response.text)
 
 
 class CryptopiaRESTTest(TestCase):
