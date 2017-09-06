@@ -22,24 +22,24 @@ BTC @ 3D4yuyf84eQUauyZLoQKyouPuThoxMMRZa
 
 | Exchange             | REST  API | Authentication | Public Interface<sup>1</sup> | Private Interface<sup>1</sup> | Tests             |
 |----------------------|-----------|----------------|------------------|-------------------|-------------------|
-| Bitfinex             | DONE      | DONE           | DONE             | DONE              | Passing           |
-| Bitstamp             | DONE      | DONE           | DONE             | DONE              | Passing           |
-| Bittrex              | DONE      | DONE           | DONE             | DONE              | Passing           |
-| BTCE                 | DONE      | DONE           | DONE             | DONE              | Passing           |
-| Bter                 | DONE      | DONE           | DONE             | DONE              | Passing           |
-| C-CEX                | DONE      | DONE           | DONE             | DONE              | Passing           |
-| CoinCheck            | DONE      | DONE           | DONE             | DONE              | Passing           |
-| Cryptopia            | DONE      | DONE           | DONE             | DONE              | Passing           |
-| HitBTC               | DONE      | DONE           | DONE             | DONE              | Passing           |
-| Kraken               | DONE      | DONE           | DONE             | DONE              | Passing           |
-| OKCoin               | DONE      | DONE           | DONE             | DONE              | Passing           |
-| Poloniex             | DONE      | DONE           | DONE             | DONE              | Passing           |
-| QuadrigaCX           | DONE      | DONE           | DONE             | DONE              | Passing           |
-| The Rock Trading LTD | DONE      | DONE           | DONE             | DONE              | Partially Passing |
-| Vaultoro             | DONE      | DONE           | DONE             | DONE              | Passing           |
-| Yunbi                | Planned   | Planned        | Planned          | Planned           | Failing           |
-| Quoine               | Planned   | Planned        | Planned          | Planned           | Failing           |
-| ITBit                | Planned   | Planned        | Planned          | Planned           | Failing           |
+| Bitfinex             | DONE      | DONE           | DONE             | DONE              | DONE              |
+| Bitstamp             | DONE      | DONE           | DONE             | DONE              | DONE              |
+| Bittrex              | DONE      | DONE           | DONE             | DONE              | DONE              |
+| BTCE                 | DONE      | DONE           | DONE             | DONE              | DONE              |
+| Bter                 | DONE      | DONE           | DONE             | DONE              | DONE              |
+| C-CEX                | DONE      | DONE           | DONE             | DONE              | DONE              |
+| CoinCheck            | DONE      | DONE           | DONE             | DONE              | DONE              |
+| Cryptopia            | DONE      | DONE           | DONE             | DONE              | DONE              |
+| HitBTC               | DONE      | DONE           | DONE             | DONE              | DONE              |
+| Kraken               | DONE      | DONE           | DONE             | DONE              | DONE              |
+| OKCoin               | DONE      | DONE           | DONE             | DONE              | DONE              |
+| Poloniex             | DONE      | DONE           | DONE             | DONE              | DONE              |
+| QuadrigaCX           | DONE      | DONE           | DONE             | DONE              | DONE              |
+| The Rock Trading LTD | DONE      | DONE           | DONE             | DONE              | DONE              |
+| Vaultoro             | DONE      | DONE           | DONE             | DONE              | DONE              |
+| Yunbi                | Planned   | Planned        | Planned          | Planned           | DONE              |
+| Quoine               | Planned   | Planned        | Planned          | Planned           | DONE              |
+| ITBit                | Planned   | Planned        | Planned          | Planned           | DONE              |
 
 
 Additional clients will be added to (or removed from) this list, 
