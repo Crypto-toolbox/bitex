@@ -3,8 +3,7 @@ python:
   - "3.5"
   - "3.6"
 
-install: 
-  - pip install BitEx
+install:
   - python3 setup.py install
 
 # command to run tests
