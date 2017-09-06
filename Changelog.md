@@ -1,11 +1,18 @@
 # Changelog
 
-## Next Release
+## V 2.0.0
 ### Added
+- Travis CI configuration and automated testing
+- Unittest testsuites for `API`, `Interface` and `PairFormatter` Components
+- API version checking when calling interface methods is now available where applicable 
 ### Changed
-### Deprecated
+- `RESTAPI` completely rewritten
+- `Interface` module rewritten
+- `sign_request_kwargs()` replaces `sign()` method, provides standardized method header
+- `bitex.formatters` has been replaced with the `PairFormatter` class and the use of `Pair` variables
+
 ### Removed
-### Fixed
+- Websocket APIs have been removed.
 
 ## V 1.1.0
 ### Added
