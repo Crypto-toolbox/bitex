@@ -4,6 +4,8 @@ python:
   - "3.6"
 
 install:
+  - python3 -m pip install requests
+  - python3 -m pip install pyjwt
   - python3 setup.py install
 
 # command to run tests
