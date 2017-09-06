@@ -23,7 +23,7 @@ from bitex.exceptions import IncompleteCredentialConfigurationWarning
 # Init Logging Facilities
 log = logging.getLogger(__name__)
 
-tests_folder_dir = '/home/nls/git/bitex/tests'
+tests_folder_dir = '.'
 
 
 class BaseAPITests(TestCase):
