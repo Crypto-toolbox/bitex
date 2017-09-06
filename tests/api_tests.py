@@ -9,12 +9,13 @@ import requests
 from requests import HTTPError
 
 # Import Homebrew
-from bitex.base import BaseAPI, RESTAPI
-from bitex.rest import BitstampREST, BitfinexREST, BittrexREST, BTCEREST
-from bitex.rest import HitBTCREST, CCEXREST, CoincheckREST, CryptopiaREST
-from bitex.rest import ITbitREST, GDAXREST, GeminiREST,  KrakenREST, OKCoinREST
-from bitex.rest import PoloniexREST, QuoineREST, QuadrigaCXREST, RockTradingREST
-from bitex.rest import VaultoroREST, YunbiREST, BterREST
+from bitex.api.base import BaseAPI
+from bitex.api.REST import RESTAPI
+from bitex.api.REST import BitstampREST, BitfinexREST, BittrexREST, BTCEREST
+from bitex.api.REST import HitBTCREST, CCEXREST, CoincheckREST, CryptopiaREST
+from bitex.api.REST import ITbitREST, GDAXREST, GeminiREST,  KrakenREST, OKCoinREST
+from bitex.api.REST import PoloniexREST, QuoineREST, QuadrigaCXREST, RockTradingREST
+from bitex.api.REST import VaultoroREST, YunbiREST, BterREST
 from bitex.exceptions import IncompleteCredentialsWarning
 from bitex.exceptions import IncompleteCredentialsError
 from bitex.exceptions import IncompleteAPIConfigurationWarning
@@ -511,7 +512,10 @@ class BTCERESTTest(TestCase):
             self.fail("test_sign_request_kwargs_method_and_signature(): HTTPError: %s" % e)
 
         self.assertEqual(response.status_code, 200, msg=response.status_code)
-        self.assertEqual(response.json()['success'], 1, msg=(response.json(), api.sign_request_kwargs('getInfo')))
+        try:
+            self.assertEqual(response.json()['success'], 1, msg=(response.json(), api.sign_request_kwargs('getInfo')))
+        except JSONDecodeError:
+            self.fail("Error during decoding of JSON payload: %s" % response.text)
 
 
 class CCEXRESTTest(TestCase):
