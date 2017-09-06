@@ -1,4 +1,4 @@
-<img src="https://travis-ci.org/nlsdfnbch/bitex.svg?branch=master"/>
+`Master`: <img src="https://travis-ci.org/nlsdfnbch/bitex.svg?branch=master"/> `Dev`: <img src="https://travis-ci.org/nlsdfnbch/bitex.svg?branch=dev"/>
 # BitEx 
 BitEx is a collection of API Clients for Crypto Currency Exchanges.
 
