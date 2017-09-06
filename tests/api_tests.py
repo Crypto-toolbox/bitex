@@ -798,7 +798,7 @@ class HitBTCRESTTest(TestCase):
             response = api.private_query('GET', 'account/balance')
             response.raise_for_status()
         except HTTPError as e:
-            self.fail("test_sign_request_kwargs_method_and_signature(): HTTPError: %s, %s" % (e, response.json()))
+            self.fail("test_sign_request_kwargs_method_and_signature(): HTTPError: %s, %s" % (e, response.text))
 
         self.assertEqual(response.status_code, 200, msg=response.status_code)
         self.assertIn('balance', response.text, msg=response.request.url)
