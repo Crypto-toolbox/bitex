@@ -98,7 +98,7 @@ class PairFormatter:
 
     @staticmethod
     def binance_formatter(base, quote):
-        return quote + '_' + base
+        return base + quote
 
     @staticmethod
     def coincheck_formatter(base, quote):
