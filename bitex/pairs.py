@@ -54,7 +54,9 @@ class PairFormatter:
                            'HitBTC':                self.hitbtc_formatter,
                            'Vaultoro':              self.vaultoro_formatter,
                            'Bter':                  self.bter_formatter,
-                           'Yunbi':                 self.yunbi_formatter}
+                           'Yunbi':                 self.yunbi_formatter,
+                           "Binance":               self.binance_formatter
+                        }
 
     def __str__(self, *args, **kwargs):
         return self._base + self._quote
@@ -93,6 +95,10 @@ class PairFormatter:
     @staticmethod
     def bittrex_formatter(base, quote):
         return quote + '-' + base
+
+    @staticmethod
+    def binance_formatter(base, quote):
+        return base + quote
 
     @staticmethod
     def coincheck_formatter(base, quote):
