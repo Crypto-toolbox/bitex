@@ -1,10 +1,11 @@
 # Changelog
 
-## V 1.2.0
+## V 1.2.1
 ## Fixed
  - Fixed Bittrex `deposit_address()` per PR #72
  - Fixed Cryptopia's currencies per PR #71
  - Fixed Cryptopia's signature method #69
+ - Fixed missing encoding in GDAX authorization
 
 ## Added
  - Implemented Kraken's`wWithdraw()` and `deposit_address()` per PR #70
