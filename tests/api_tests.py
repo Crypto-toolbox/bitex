@@ -524,7 +524,7 @@ class CCEXRESTTest(TestCase):
         self.assertEqual(api.config_file, config_path)
 
         # Check signatured request kwargs
-        response = api.private_query('GET', 'getbalances')
+        response = api.private_query('GET', 'api.html', params={'a': 'getbalance'})
         self.assertEqual(response.status_code, 200,
                          msg="Unexpected status code (%s) for request to path "
                              "%s!" % (response.status_code, response.request.url))
@@ -533,7 +533,7 @@ class CCEXRESTTest(TestCase):
         except JSONDecodeError:
             self.fail(
                 "Error during decoding of JSON payload for response to "
-                "request URL: %s" % response.request.url)
+                "request URL: %s" % response.history[0].url)
 
 
 class CryptopiaRESTTest(TestCase):
