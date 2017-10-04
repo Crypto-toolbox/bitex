@@ -777,7 +777,12 @@ class HitBTCRESTTest(TestCase):
 
         # Check signatured request kwargs
 
-        response = api.private_query('GET', 'account/balance')
+        response = api.private_query('GET', 'trading/balance')
+        if response.status_code == 401:
+            try:
+                self.fail('Authorization failed: %s' % response.json())
+            except JSONDecodeError:
+                pass
         self.assertEqual(response.status_code, 200,
                          msg="Unexpected status code (%s) for request to path "
                              "%s!" % (response.status_code, response.request.url))
