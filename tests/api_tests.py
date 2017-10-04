@@ -1,12 +1,11 @@
 # Import Built-Ins
 import logging
-import unittest
 from unittest import TestCase
 import time
 from json import JSONDecodeError
 # Import Third-Party
 import requests
-from requests import HTTPError
+
 
 # Import Homebrew
 from bitex.api.base import BaseAPI
@@ -135,9 +134,9 @@ class RESTAPITests(TestCase):
             self.assertTrue(k in d)
 
     def test_query_methods_return_as_expected(self):
-        # assert that an IncompleteCredentialsError is raised, if any of the auth
-        # attributes are None (key, secret) when querying a private endpoint
-        # of the API.
+        # assert that an IncompleteCredentialsError is raised, if any of the
+        # auth attributes are None (key, secret) when querying a private
+        # endpoint of the API.
         kwargs = ({'key': 'shadow', 'secret': None},
                   {'key': None, 'secret': 'panda'},
                   {'key': None, 'secret': None})
@@ -150,17 +149,10 @@ class RESTAPITests(TestCase):
         # assert that _query() silently returns an requests.Response() obj, if
         # the request was good
         try:
-            resp = RESTAPI('http://test.com')._query('GET',
-                                                     url='https://api.kraken.com/0/public/Time')
+            resp = RESTAPI('http://test.com')._query('GET', url='https://api.kraken.com/0/public/Time')
         except requests.exceptions.ConnectionError:
             self.fail("No Internet connection detected to ")
         self.assertIsInstance(resp, requests.Response)
-
-        # assert that _query() raises an appropriate error on status code other
-        # than 200
-        with self.assertRaises(requests.exceptions.HTTPError):
-            resp = RESTAPI('http://test.com')._query('data', url='https://api.kraken.com/0/public/Wasabi')
-            resp.raise_for_status()
 
 
 class BitstampRESTTests(TestCase):
@@ -221,12 +213,12 @@ class BitstampRESTTests(TestCase):
         self.assertEqual(api.config_file, config_path)
 
         # Check signatured request kwargs
-        try:
-            response = api.private_query('POST', 'balance/')
-        except HTTPError as e:
-            self.fail("test_sign_request_kwargs_method_and_signature(): HTTPError: %s" % e)
 
-        self.assertEqual(response.status_code, 200, msg=response.status_code)
+        response = api.private_query('POST', 'balance/')
+        self.assertEqual(response.status_code, 200,
+                         msg="Unexpected status code (%s) for request to path "
+                             "%s!" % (response.status_code, response.request.url))
+
         self.assertIn('usd_balance', response.json(), msg=response.json())
 
 
@@ -248,13 +240,11 @@ class BitfinexRESTTests(TestCase):
         self.assertEqual(api.config_file, config_path)
 
         # Check signatured request kwargs
-        try:
-            response = api.private_query('POST', 'balances')
-            response.raise_for_status()
-        except HTTPError as e:
-            self.fail("test_sign_request_kwargs_method_and_signature(): HTTPError: %s" % e)
 
-        self.assertEqual(response.status_code, 200, msg=response.status_code)
+        response = api.private_query('POST', 'balances')
+        self.assertEqual(response.status_code, 200,
+                         msg="Unexpected status code (%s) for request to path "
+                             "%s!" % (response.status_code, response.request.url))
 
 
 class BittrexRESTTest(TestCase):
@@ -275,12 +265,11 @@ class BittrexRESTTest(TestCase):
         self.assertEqual(api.config_file, config_path)
 
         # Check signatured request kwargs
-        try:
-            response = api.private_query('GET', 'account/getbalances')
-        except HTTPError as e:
-            self.fail("test_sign_request_kwargs_method_and_signature(): HTTPError: %s" % e)
+        response = api.private_query('GET', 'account/getbalances')
+        self.assertEqual(response.status_code, 200,
+                         msg="Unexpected status code (%s) for request to path "
+                             "%s!" % (response.status_code, response.request.url))
 
-        self.assertEqual(response.status_code, 200, msg=response.status_code)
         self.assertTrue(response.json()['success'], msg=response.json())
 
 
@@ -302,12 +291,11 @@ class CoinCheckRESTTest(TestCase):
         self.assertEqual(api.config_file, config_path)
 
         # Check signatured request kwargs
-        try:
-            response = api.private_query('GET', 'accounts/balance')
-        except HTTPError as e:
-            self.fail("test_sign_request_kwargs_method_and_signature(): HTTPError: %s" % e)
+        response = api.private_query('GET', 'accounts/balance')
+        self.assertEqual(response.status_code, 200,
+                         msg="Unexpected status code (%s) for request to path "
+                             "%s!" % (response.status_code, response.request.url))
 
-        self.assertEqual(response.status_code, 200, msg=response.status_code)
         self.assertTrue(response.json()['success'], msg=response.json())
 
 
@@ -364,10 +352,10 @@ class GDAXRESTTest(TestCase):
         self.assertEqual(api.config_file, config_path)
 
         # Check signatured request kwargs
-        try:
-            response = api.private_query('GET', 'accounts')
-        except HTTPError as e:
-            self.fail("test_sign_request_kwargs_method_and_signature(): HTTPError: %s" % e)
+        response = api.private_query('GET', 'accounts')
+        self.assertEqual(response.status_code, 200,
+                         msg="Unexpected status code (%s) for request to path "
+                             "%s!" % (response.status_code, response.request.url))
 
         self.assertEqual(response.status_code, 200, msg=response.status_code)
         self.assertIn('id', response.json()[0], msg=response.json())
@@ -391,12 +379,11 @@ class KrakenRESTTest(TestCase):
         self.assertEqual(api.config_file, config_path)
 
         # Check signatured request kwargs
-        try:
-            response = api.private_query('POST', 'private/Balance')
-        except HTTPError as e:
-            self.fail("test_sign_request_kwargs_method_and_signature(): HTTPError: %s" % e)
+        response = api.private_query('POST', 'private/Balance')
+        self.assertEqual(response.status_code, 200,
+                         msg="Unexpected status code (%s) for request to path "
+                             "%s!" % (response.status_code, response.request.url))
 
-        self.assertEqual(response.status_code, 200, msg=response.status_code)
         self.assertEqual(response.json()['error'], [], msg=response.json())
 
 
@@ -415,12 +402,12 @@ class ITBitRESTTest(TestCase):
         # check mechanism is extended properly
         with self.assertWarns(IncompleteCredentialsWarning):
             api = ITbitREST(addr='Bangarang', user_id=None, key='SomeKey',
-                           secret='SomeSecret', config=None, version=None)
+                            secret='SomeSecret', config=None, version=None)
 
         # make sure an exception is raised if user_id is passed as ''
         with self.assertRaises(ValueError):
             api = ITbitREST(addr='Bangarang', user_id='', key='SomeKey',
-                           secret='SomeSecret', config=None, version=None)
+                            secret='SomeSecret', config=None, version=None)
 
         # make sure user_id is assigned properly
         api = ITbitREST(addr='Bangarang', user_id='woloho')
@@ -452,10 +439,10 @@ class ITBitRESTTest(TestCase):
         self.assertEqual(api.config_file, config_path)
 
         # Check signatured request kwargs
-        try:
-            response = api.private_query('GET', 'wallets')
-        except HTTPError as e:
-            self.fail("test_sign_request_kwargs_method_and_signature(): HTTPError: %s" % e)
+        response = api.private_query('GET', 'wallets')
+        self.assertEqual(response.status_code, 200,
+                         msg="Unexpected status code (%s) for request to path "
+                             "%s!" % (response.status_code, response.request.url))
 
         self.assertEqual(response.status_code, 200, msg=response.status_code)
         self.assertNotIn('code', response.json(), msg=response.json())
@@ -479,13 +466,13 @@ class OKCoinRESTTest(TestCase):
         self.assertEqual(api.config_file, config_path)
 
         # Check signatured request kwargs
-        try:
-            response = api.private_query('POST', 'userinfo.do')
-        except HTTPError as e:
-            self.fail("test_sign_request_kwargs_method_and_signature(): HTTPError: %s" % e)
+        response = api.private_query('POST', 'userinfo.do')
+        self.assertEqual(response.status_code, 200,
+                         msg="Unexpected status code (%s) for request to path "
+                             "%s!" % (response.status_code, response.request.url))
 
-        self.assertEqual(response.status_code, 200, msg=response.status_code)
-        self.assertTrue(response.json()['result'], msg=(response.json(), api.sign_request_kwargs('userinfo.do')))
+        self.assertTrue(response.json()['result'],
+                        msg=(response.json(), api.sign_request_kwargs('userinfo.do')))
 
 
 class BTCERESTTest(TestCase):
@@ -506,14 +493,13 @@ class BTCERESTTest(TestCase):
         self.assertEqual(api.config_file, config_path)
 
         # Check signatured request kwargs
+        response = api.private_query('POST', 'getInfo')
+        self.assertEqual(response.status_code, 200,
+                         msg="Unexpected status code (%s) for request to path "
+                             "%s!" % (response.status_code, response.request.url))
         try:
-            response = api.private_query('POST', 'getInfo')
-        except HTTPError as e:
-            self.fail("test_sign_request_kwargs_method_and_signature(): HTTPError: %s" % e)
-
-        self.assertEqual(response.status_code, 200, msg=response.status_code)
-        try:
-            self.assertEqual(response.json()['success'], 1, msg=(response.json(), api.sign_request_kwargs('getInfo')))
+            self.assertEqual(response.json()['success'], 1,
+                             msg=(response.json(), api.sign_request_kwargs('getInfo')))
         except JSONDecodeError:
             self.fail("Error during decoding of JSON payload: %s" % response.text)
 
@@ -536,12 +522,10 @@ class CCEXRESTTest(TestCase):
         self.assertEqual(api.config_file, config_path)
 
         # Check signatured request kwargs
-        try:
-            response = api.private_query('GET', 'getbalances')
-        except HTTPError as e:
-            self.fail("test_sign_request_kwargs_method_and_signature(): HTTPError: %s" % e)
-
-        self.assertEqual(response.status_code, 200, msg=response.status_code)
+        response = api.private_query('GET', 'getbalances')
+        self.assertEqual(response.status_code, 200,
+                         msg="Unexpected status code (%s) for request to path "
+                             "%s!" % (response.status_code, response.request.url))
         try:
             self.assertTrue(response.json()['success'], msg=response.json())
         except JSONDecodeError:
@@ -566,16 +550,16 @@ class CryptopiaRESTTest(TestCase):
         self.assertEqual(api.config_file, config_path)
 
         # Check signatured request kwargs
-        try:
-            response = api.private_query('POST', 'GetBalance')
-        except HTTPError as e:
-            self.fail("test_sign_request_kwargs_method_and_signature(): HTTPError: %s" % e)
+        response = api.private_query('POST', 'GetBalance')
+        self.assertEqual(response.status_code, 200,
+                         msg="Unexpected status code (%s) for request to path "
+                             "%s!" % (response.status_code, response.request.url))
 
-        self.assertEqual(response.status_code, 200, msg=response.status_code)
         try:
             self.assertTrue(response.json()['Success'], msg=response.json())
         except JSONDecodeError:
-            self.fail('test_sign_request_kwargs_method_and_signature(): JSONDecodeError for %s' % response._content)
+            self.fail('test_sign_request_kwargs_method_and_signature(): '
+                      'JSONDecodeError for %s' % response._content)
 
 
 class GeminiRESTTest(TestCase):
@@ -598,12 +582,11 @@ class GeminiRESTTest(TestCase):
         self.assertEqual(api.config_file, config_path)
 
         # Check signatured request kwargs
-        try:
-            response = api.private_query('GET', 'balances')
-        except HTTPError as e:
-            self.fail("test_sign_request_kwargs_method_and_signature(): HTTPError: %s" % e)
+        response = api.private_query('GET', 'balances')
+        self.assertEqual(response.status_code, 200,
+                         msg="Unexpected status code (%s) for request to path "
+                             "%s!" % (response.status_code, response.request.url))
 
-        self.assertEqual(response.status_code, 200, msg=response.status_code)
         self.assertIn('currency', response.json(), msg=response.json())
 
 
@@ -627,12 +610,11 @@ class YunbiRESTTest(TestCase):
         self.assertEqual(api.config_file, config_path)
 
         # Check signatured request kwargs
-        try:
-            response = api.private_query('GET', 'deposits.json')
-        except HTTPError as e:
-            self.fail("test_sign_request_kwargs_method_and_signature(): HTTPError: %s" % e)
+        response = api.private_query('GET', 'deposits.json')
+        self.assertEqual(response.status_code, 200,
+                         msg="Unexpected status code (%s) for request to path "
+                             "%s!" % (response.status_code, response.request.url))
 
-        self.assertEqual(response.status_code, 200, msg=response.status_code)
         self.assertNotIn('error', response.json(), msg=response.json())
 
 
@@ -654,12 +636,11 @@ class RockTradingRESTTest(TestCase):
         self.assertEqual(api.config_file, config_path)
 
         # Check signatured request kwargs
-        try:
-            response = api.private_query('GET', 'balances')
-        except HTTPError as e:
-            self.fail("test_sign_request_kwargs_method_and_signature(): HTTPError: %s, %s" % (e, api.sign_request_kwargs('balances')))
+        response = api.private_query('GET', 'balances')
+        self.assertEqual(response.status_code, 200,
+                         msg="Unexpected status code (%s) for request to path "
+                             "%s!" % (response.status_code, response.request.url))
 
-        self.assertEqual(response.status_code, 200, msg=response.status_code)
         self.assertIn('balances', response.json(), msg=response.json())
 
 
@@ -681,12 +662,11 @@ class PoloniexRESTTest(TestCase):
         self.assertEqual(api.config_file, config_path)
 
         # Check signatured request kwargs
-        try:
-            response = api.private_query('POST', 'returnBalances')
-        except HTTPError as e:
-            self.fail("test_sign_request_kwargs_method_and_signature(): HTTPError: %s" % e)
+        response = api.private_query('POST', 'returnBalances')
+        self.assertEqual(response.status_code, 200,
+                         msg="Unexpected status code (%s) for request to path "
+                             "%s!" % (response.status_code, response.request.url))
 
-        self.assertEqual(response.status_code, 200, msg=response.status_code)
         self.assertNotIn('error', response.json(), msg=(response.json(), response.request.url))
 
 
@@ -710,12 +690,11 @@ class QuoineRESTTest(TestCase):
         self.assertEqual(api.config_file, config_path)
 
         # Check signatured request kwargs
-        try:
-            response = api.private_query('GET', 'fiat_accounts')
-        except HTTPError as e:
-            self.fail("test_sign_request_kwargs_method_and_signature(): HTTPError: %s" % e)
+        response = api.private_query('GET', 'fiat_accounts')
+        self.assertEqual(response.status_code, 200,
+                         msg="Unexpected status code (%s) for request to path "
+                             "%s!" % (response.status_code, response.request.url))
 
-        self.assertEqual(response.status_code, 200, msg=response.status_code)
         self.assertIn('currency', response.json()[0], msg=response.json())
 
 
@@ -767,12 +746,11 @@ class QuadrigaCXRESTTest(TestCase):
         self.assertEqual(api.config_file, config_path)
 
         # Check signatured request kwargs
-        try:
-            response = api.private_query('POST', 'balance')
-        except HTTPError as e:
-            self.fail("test_sign_request_kwargs_method_and_signature(): HTTPError: %s" % e)
+        response = api.private_query('POST', 'balance')
+        self.assertEqual(response.status_code, 200,
+                         msg="Unexpected status code (%s) for request to path "
+                             "%s!" % (response.status_code, response.request.url))
 
-        self.assertEqual(response.status_code, 200, msg=response.status_code)
         self.assertIn('cad_balance', response.json(), msg=response.json())
 
 
@@ -794,13 +772,12 @@ class HitBTCRESTTest(TestCase):
         self.assertEqual(api.config_file, config_path)
 
         # Check signatured request kwargs
-        try:
-            response = api.private_query('GET', 'account/balance')
-            response.raise_for_status()
-        except HTTPError as e:
-            self.fail("test_sign_request_kwargs_method_and_signature(): HTTPError: %s, %s" % (e, response.text))
 
-        self.assertEqual(response.status_code, 200, msg=response.status_code)
+        response = api.private_query('GET', 'account/balance')
+        self.assertEqual(response.status_code, 200,
+                         msg="Unexpected status code (%s) for request to path "
+                             "%s!" % (response.status_code, response.request.url))
+
         self.assertIn('balance', response.text, msg=response.request.url)
 
 
@@ -822,12 +799,11 @@ class VaultoroRESTTest(TestCase):
         self.assertEqual(api.config_file, config_path)
 
         # Check signatured request kwargs
-        try:
-            response = api.private_query('GET', '1/balance')
-        except HTTPError as e:
-            self.fail("test_sign_request_kwargs_method_and_signature(): HTTPError: %s" % e)
+        response = api.private_query('GET', '1/balance')
+        self.assertEqual(response.status_code, 200,
+                         msg="Unexpected status code (%s) for request to path "
+                             "%s!" % (response.status_code, response.request.url))
 
-        self.assertEqual(response.status_code, 200, msg=response.status_code)
         self.assertEqual(response.json()['status'], 'success',
                          msg=response.json())
 
@@ -850,12 +826,11 @@ class BterRESTTest(TestCase):
         self.assertEqual(api.config_file, config_path)
 
         # Assert signatured request kwargs are valid and api call is succesful
-        try:
-            response = api.private_query('POST', 'private/balances')
-        except HTTPError as e:
-            self.fail("test_sign_request_kwargs_method_and_signature(): HTTPError: %s" % e)
+        response = api.private_query('POST', 'private/balances')
+        self.assertEqual(response.status_code, 200,
+                         msg="Unexpected status code (%s) for request to path "
+                             "%s!" % (response.status_code, response.request.url))
 
-        self.assertEqual(response.status_code, 200, msg=response.status_code)
         self.assertTrue(response.json()['result'], msg=response.json())
 
 
