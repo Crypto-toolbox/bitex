@@ -1,5 +1,6 @@
 # Import Built-Ins
 import logging
+import unittest
 from unittest import TestCase
 import time
 from json import JSONDecodeError
@@ -501,7 +502,8 @@ class BTCERESTTest(TestCase):
             self.assertEqual(response.json()['success'], 1,
                              msg=(response.json(), api.sign_request_kwargs('getInfo')))
         except JSONDecodeError:
-            self.fail("Error during decoding of JSON payload: %s" % response.text)
+            self.fail("Error during decoding of JSON payload for response to "
+                      "request URL: %s" % response.request.url)
 
 
 class CCEXRESTTest(TestCase):
@@ -529,7 +531,9 @@ class CCEXRESTTest(TestCase):
         try:
             self.assertTrue(response.json()['success'], msg=response.json())
         except JSONDecodeError:
-            self.fail("Error during decoding of JSON payload: %s" % response.text)
+            self.fail(
+                "Error during decoding of JSON payload for response to "
+                "request URL: %s" % response.request.url)
 
 
 class CryptopiaRESTTest(TestCase):
@@ -835,5 +839,4 @@ class BterRESTTest(TestCase):
 
 
 if __name__ == '__main__':
-    import unittest
     unittest.main(verbosity=2)
