@@ -22,12 +22,13 @@ class Quoine(QuoineREST):
         if key_file:
             self.load_key(key_file)
 
-        self.pairs = {d['currency_pair_code']: d['id'] for d in self.public_query('products')}
+        self.pairs = {d['currency_pair_code']: d['id']
+                      for d in self.public_query('products').json()}
 
     def public_query(self, endpoint, **kwargs):
         return self.query('GET', endpoint, **kwargs)
 
-    def private_query(self, endpoint, method='POST',**kwargs):
+    def private_query(self, endpoint, method='POST', **kwargs):
         return self.query(method, endpoint, authenticate=True, **kwargs)
 
     """
@@ -55,25 +56,23 @@ class Quoine(QuoineREST):
         q = {'quantity': size, 'price': price, 'order_type': 'limit',
              'product_id': self.pairs[pair], 'side': 'buy'}
         q.update(kwargs)
-        return self.private_query('orders/' % pair, params=q)
+        return self.private_query('orders', params={'order': q})
 
     @return_api_response(fmt.order)
     def ask(self, pair, price, size, **kwargs):
         q = {'quantity': size, 'price': price, 'order_type': 'limit',
              'product_id': self.pairs[pair], 'side': 'sell'}
         q.update(kwargs)
-        return self.private_query('orders/' % pair, params=q)
+        return self.private_query('orders', params={'order': q})
 
     @return_api_response(fmt.cancel)
     def cancel_order(self, order_id, **kwargs):
-        return self.private_query('cancel_order/%s/cancel' % order_id,
+        return self.private_query('orders/%s/cancel' % order_id,
                                   method='PUT')
 
     @return_api_response(fmt.order_status)
     def order(self, order_id, **kwargs):
-        q = {'id': order_id}
-        q.update(kwargs)
-        return self.private_query('orders/', params=q, method='GET')
+        return self.private_query('orders/%s' % order_id, method='GET')
 
     @return_api_response(fmt.balance)
     def balance(self, **kwargs):
