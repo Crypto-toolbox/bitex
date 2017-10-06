@@ -26,6 +26,8 @@ When filing an issue, please use this template:
 PR Merge Criteria
 -----------------
 
+**Attention**: Please make sure that you merge your PR into `dev`, if it's a **feature**, and into `master` if you supply a **hotfix**!
+
 For a PR to be merged, the following statements must hold true:
 
 -  PEP8 has been enforced
