@@ -22,9 +22,9 @@ class BaseAPI:
     """
     BaseAPI provides lowest-common-denominator methods used in all API types.
 
-    It provides a nonce() method, basic configuration loading and Credential
+    It provides a nonce() method, basic configuration loading and credential
     validity checking method check_auth_requirements(), which should be
-    extended in subclasses to cover any additional parameters necessary.
+    extended in subclasses to cover any additional parameters that are necessary.
     """
     def __init__(self, *, addr, key, secret, version, config):
         """
@@ -58,10 +58,10 @@ class BaseAPI:
             self.load_config(self.config_file)
 
     def check_auth_requirements(self):
-        """Check that neither self.key nor self.secret are None. If so, this
+        """Checks that neither self.key nor self.secret are None. If so, this
         method raises an IncompleteCredentialsError. Otherwise returns None.
 
-        Extend this in  child classes if you need to check for further
+        Extend this in child classes if you need to check for further
         required values.
 
         :raise: IncompleteCredentialsError
@@ -75,7 +75,7 @@ class BaseAPI:
 
     def load_config(self, fname):
         """
-        Load configuration from an ini file. Return it, in case this
+        Loads configuration from an ini file. Return it, in case this
         func needs to be extended.
         :param fname: path to file
         :return: configparser.ConfigParser() Obj

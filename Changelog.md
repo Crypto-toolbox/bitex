@@ -2,14 +2,14 @@
 
 ## V 2.0.0
 ### Added
-- Travis CI configuration and automated testing
-- Unittest testsuites for `API`, `Interface` and `PairFormatter` Components
-- API version checking when calling interface methods is now available where applicable 
+- Travis CI configuration and automated testing.
+- Unittest testsuites for `API`, `Interface` and `PairFormatter` Components.
+- API version checking when calling interface methods is now available wherever applicable. 
 ### Changed
-- `RESTAPI` completely rewritten
-- `Interface` module rewritten
-- `sign_request_kwargs()` replaces `sign()` method, provides standardized method header
-- `bitex.formatters` has been replaced with the `PairFormatter` class and the use of `Pair` variables
+- `RESTAPI` completely rewritten.
+- `Interface` module rewritten.
+- `sign_request_kwargs()` replaces `sign()` method, provides standardized method header.
+- `bitex.formatters` has been replaced with the `PairFormatter` class and the use of `Pair` variables.
 
 ### Removed
 - Websocket APIs have been removed.
@@ -17,9 +17,9 @@
 ## V 1.1.0
 ### Added
 Exchanges:
-- HitBTC API Client & Interface
-- Bter API Client & Interface
-- Vaultoro API Client & Interface
+- HitBTC API Client & Interface.
+- Bter API Client & Interface.
+- Vaultoro API Client & Interface.
 
 APIs:
 - The Following Exchanges had their WSS API implemented:
@@ -44,18 +44,18 @@ Various spelling errors
 ## V 1.0
 ### Added
 General:
-- Changelog (Yay!)
-- Pip install support
+- Changelog (Yay!).
+- Pip install support.
 - Semantic versioning now employed.
-- Added folder for Sphinx doc files, for hosting at ReadTheDocs
-- Added folder for Unittests; so far only tests for API classes exist
+- Added folder for Sphinx doc files, for hosting at ReadTheDocs.
+- Added folder for Unittests; so far only tests for API classes exist.
 
 Exchanges:
-- Poloniex  API Client and interface
-- Interfaces for all API Client currently implemented
-- Standardized methods with identical method headers for all interfaces
-- Quoine API Client and interface
-- QuadrigaCX API Client and interface
+- Poloniex  API Client and interface.
+- Interfaces for all API Client currently implemented.
+- Standardized methods with identical method headers for all interfaces.
+- Quoine API Client and interface.
+- QuadrigaCX API Client and interface.
 
 Formatters:
 - The sub-module `bitex.formatters` has been added, which provides formatter
@@ -63,12 +63,12 @@ functions for exchange interfaces.
 
 ### Changed
 General:
-- Restructured project to store interfaces in `bitex.interfaces` sub-module
+- Restructured project to store interfaces in `bitex.interfaces` sub-module.
 
 API Clients
 - The base class `RESTAPI` has been renamed to `APIClient` to better reflect
-its purpose
-- The class `APIClient` is now an ABC
+its purpose.
+- The class `APIClient` is now an ABC.
 - The attribute `request_methods` has been removed and its logic and purpose
 replaced by using `requests.request()` instead.
 

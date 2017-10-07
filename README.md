@@ -46,7 +46,7 @@ Additional clients will be added to (or removed from) this list,
 according to their liquidity and market volume.
 
 _<sup>1</sup>): This table considers standardized methods only, when describing the state. 
-See section `Standardized Methods` for more information on these._
+See section `Standardized Methods` for more information on these.
 
 
 # Standardized Methods

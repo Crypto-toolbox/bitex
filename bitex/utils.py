@@ -8,7 +8,7 @@ def check_version_compatibility(**version_func_pairs):
     decorated function is compatible with the currently set API version.
     Should this not be the case, an UnsupportedEndpointError is raised.
 
-    If the api version required contains '.', replace this with an
+    If the api version required contains '.', replace it with an
     underscore ('_') - the decorator will take care of it.
     """
 

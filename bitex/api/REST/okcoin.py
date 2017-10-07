@@ -23,7 +23,8 @@ class OKCoinREST(RESTAPI):
                                          timeout=timeout)
 
     def sign_request_kwargs(self, endpoint, **kwargs):
-        """ OKCoin requires the parameters in the signature string and url to
+        """
+        OKCoin requires the parameters in the signature string and url to
         be appended in alphabetical order. This means we cannot rely on urllib's
         encode() method and need to do this ourselves.
         """

@@ -39,7 +39,7 @@ class Interface:
         """Checks if the given pair is present in self._supported_pairs.
 
         Input can either be a string or a PairFormatter Obj (or child thereof).
-        If the latter two, we'll call the format() method with the Interface's
+        If it's one of the latter two, we'll call the format() method with the Interface's
         name attribute to acquire proper formatting.
         :param pair: Str, or PairFormatter Object
         :return: Bool
