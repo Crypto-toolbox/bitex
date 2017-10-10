@@ -26,7 +26,7 @@ class YunbiREST(RESTAPI):
     def sign_request_kwargs(self, endpoint, **kwargs):
         """Requires that the HTTP request VERB is passed along in kwargs as
         as key:value pair 'method':<Verb>; otherwise authentication will
-        not work.
+        fail.
         """
         req_kwargs = super(YunbiREST, self).sign_request_kwargs(endpoint,
                                                                 **kwargs)

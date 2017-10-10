@@ -25,7 +25,7 @@ class BittrexREST(RESTAPI):
         Bittrex requires the request address to be included as a sha512 encoded
         string in the query header. This means that the request address used for
         signing, and the actual address used to send the request (incuding order
-        of parameters) needs to be identical. Hence, we must build the request
+        of parameters) need to be identical. Hence, we must build the request
         address ourselves, instead of relying on the requests library to do it
         for us.
         """
@@ -54,4 +54,3 @@ class BittrexREST(RESTAPI):
         req_kwargs['headers'] = {"apisign": signature}
 
         return req_kwargs
-

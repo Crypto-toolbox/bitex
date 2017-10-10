@@ -32,7 +32,7 @@ class RESTAPI(BaseAPI):
 
     def generate_uri(self, endpoint):
         """
-        Generate a Unique Resource Identifier (API Version + Endpoint)
+        Generates a Unique Resource Identifier (API Version + Endpoint)
         :param endpoint: str, endpoint path (i.e. /market/btcusd)
         :return: str, URI
         """
@@ -43,7 +43,7 @@ class RESTAPI(BaseAPI):
 
     def generate_url(self, uri):
         """
-        Generate a Unique Resource Locator (API Address + URI)
+        Generates a Unique Resource Locator (API Address + URI)
         :param uri: str, URI
         :return: str, URL
         """
@@ -52,8 +52,8 @@ class RESTAPI(BaseAPI):
     def sign_request_kwargs(self, endpoint, **kwargs):
         """
         Dummy Request Kwarg Signature Generator.
-        Extend this to implement signing of requests for private api calls.
-        By default, supplies a default URL using generate_uri and generate_url
+        Extend this to implement signing of requests for private API calls.
+        By default, it supplies a default URL using generate_uri and generate_url
         :param endpoint: str, API Endpoint
         :param kwargs: Kwargs meant for requests.Request()
         :return: dict, request kwargs
@@ -68,7 +68,7 @@ class RESTAPI(BaseAPI):
 
     def _query(self, method_verb, **request_kwargs):
         """
-        Send the request to the API via requests.
+        Sends the request to the API via requests.
         :param method_verb: valid HTTP Verb (GET, PUT, DELETE, etc.)
         :param request_kwargs: kwargs for request.Request()
         :return: request.Response() object
@@ -91,7 +91,7 @@ class RESTAPI(BaseAPI):
 
     def public_query(self, method_verb, endpoint, **request_kwargs):
         """
-        Query a public (i.e. unauthenticated) API endpoint and return the result.
+        Queries a public (i.e. unauthenticated) API endpoint and return the result.
         :param method_verb: valid HTTP Verb (GET, PUT, DELETE, etc.)
         :param endpoint: str, API Endpoint
         :param request_kwargs: kwargs for request.Request()
