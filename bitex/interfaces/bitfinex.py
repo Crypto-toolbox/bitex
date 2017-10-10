@@ -150,5 +150,5 @@ class Bitfinex(BitfinexREST):
         return self.private_query('positions')
 
     @return_api_response(None)
-    def positions(self):
+    def credits(self):
         return self.private_query('credits')
