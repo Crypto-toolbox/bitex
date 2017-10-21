@@ -189,7 +189,7 @@ class BitfinexWSS(WSSAPI):
         log.info("BitfinexWSS.start(): Initializing Websocket connection..")
         while self.conn is None:
             try:
-                self.conn = create_connection(self.addr, timeout=3)
+                self.conn = create_connection(self.addr, timeout=10)
             except WebSocketTimeoutException:
                 self.conn = None
                 print("Couldn't create websocket connection - retrying!")
