@@ -285,6 +285,7 @@ class BitfinexWSS(WSSAPI):
                 try:
                     raw = self.conn.recv()
                 except WebSocketTimeoutException:
+                    self._receiver_lock.release()
                     continue
                 except WebSocketConnectionClosedException:
                     # this needs to restart the client, while keeping track
@@ -293,6 +294,7 @@ class BitfinexWSS(WSSAPI):
                     self._controller_q.put('restart')
                 except AttributeError:
                     # self.conn is None, idle loop until shutdown of thread
+                    self._receiver_lock.release()
                     continue
                 msg = time.time(), json.loads(raw)
                 log.debug("receiver Thread: Data Received: %s", msg)
