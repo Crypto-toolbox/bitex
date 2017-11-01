@@ -1,7 +1,6 @@
 from bitex.interface.extensions import Bitfinex
 from bitex.interface.extensions import Bitstamp
 from bitex.interface.extensions import Bittrex
-from bitex.interface.extensions import BTCE
 from bitex.interface.extensions import Bter
 from bitex.interface.extensions import CCEX
 from bitex.interface.extensions import CoinCheck
