@@ -10,7 +10,7 @@ import json
 from bitex.pairs import BTCUSD, ETHBTC, LTCBTC, ETHUSD
 from bitex.interface.base import Interface
 from bitex.interface.rest import RESTInterface
-from bitex.interface import Bitfinex, Bitstamp, Bittrex, BTCE, Bter, CCEX
+from bitex.interface import Bitfinex, Bitstamp, Bittrex, Bter, CCEX
 from bitex.interface import CoinCheck, Cryptopia, HitBTC, Kraken, OKCoin
 from bitex.interface import Poloniex, QuadrigaCX, TheRockTrading, Vaultoro
 from bitex.exceptions import UnsupportedEndpointError
@@ -938,6 +938,7 @@ class VaultoroInterfaceTests(unittest.TestCase):
         self.assertEqual(resp.status_code, 200, msg=(resp.text, resp.request.url))
         self.assertEqual(resp.json()['status'], 'success', msg=(resp.text, resp.request.url))
         self.assertIn('data', resp.json())
+
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)

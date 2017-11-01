@@ -2,7 +2,6 @@ from bitex.api.REST.rest import RESTAPI
 from bitex.api.REST.bitfinex import BitfinexREST
 from bitex.api.REST.bitstamp import BitstampREST
 from bitex.api.REST.bittrex import BittrexREST
-from bitex.api.REST.btce import BTCEREST
 from bitex.api.REST.bter import BterREST
 from bitex.api.REST.ccex import CCEXREST
 from bitex.api.REST.coincheck import CoincheckREST
