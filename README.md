@@ -25,7 +25,6 @@ BTC @ 3D4yuyf84eQUauyZLoQKyouPuThoxMMRZa
 | Bitfinex             | DONE      | DONE           | DONE             | DONE              | DONE              |
 | Bitstamp             | DONE      | DONE           | DONE             | DONE              | DONE              |
 | Bittrex              | DONE      | DONE           | DONE             | DONE              | DONE              |
-| BTCE                 | DONE      | DONE           | DONE             | DONE              | DONE              |
 | Bter                 | DONE      | DONE           | DONE             | DONE              | DONE              |
 | C-CEX                | DONE      | DONE           | DONE             | DONE              | DONE              |
 | CoinCheck            | DONE      | DONE           | DONE             | DONE              | DONE              |
