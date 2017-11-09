@@ -1,0 +1,22 @@
+language: python
+python:
+  - "3.5"
+  - "3.6"
+
+install:
+  - pip install -r requirements.txt
+  - python3 setup.py install --record files.txt
+
+# command to run tests
+script:
+  - cd tests
+  - python client_tests.py
+  - cd ..
+  - cat files.txt | xargs rm -rf
+  - pip install btfxwss
+
+
+branches:
+  only:
+  - master
+  - dev
