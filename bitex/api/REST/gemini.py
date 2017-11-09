@@ -36,7 +36,7 @@ class GeminiREST(RESTAPI):
         payload = params
         payload['nonce'] = nonce
         payload['request'] = self.generate_uri(endpoint)
-        payload = base64.b64encode(json.dumps(payload))
+        payload = base64.b64encode(json.dumps(payload).encode('utf-8'))
 
         # generate signature
         sig = hmac.new(self.secret, payload, hashlib.sha384).hexdigest()
