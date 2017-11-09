@@ -10,7 +10,8 @@ install:
 # command to run tests
 script:
   - cd tests
-  - python client_tests.py
+  - python api.py
+  - python formatters.py
 
 
 
