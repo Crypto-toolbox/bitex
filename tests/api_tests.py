@@ -11,7 +11,7 @@ import requests
 # Import Homebrew
 from bitex.api.base import BaseAPI
 from bitex.api.REST import RESTAPI
-from bitex.api.REST import BitstampREST, BitfinexREST, BittrexREST, BTCEREST
+from bitex.api.REST import BitstampREST, BitfinexREST, BittrexREST
 from bitex.api.REST import HitBTCREST, CCEXREST, CoincheckREST, CryptopiaREST
 from bitex.api.REST import ITbitREST, GDAXREST, GeminiREST,  KrakenREST, OKCoinREST
 from bitex.api.REST import PoloniexREST, QuoineREST, QuadrigaCXREST, RockTradingREST
