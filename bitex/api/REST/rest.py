@@ -401,11 +401,14 @@ class GeminiREST(APIClient):
         payload = params
         payload['nonce'] = nonce
         payload['request'] = endpoint_path
-        payload = base64.b64encode(json.dumps(payload))
-        sig = hmac.new(self.secret, payload, hashlib.sha384).hexdigest()
+
+        js = json.dumps(payload)
+        data = base64.standard_b64encode(js.encode('utf8'))
+        h = hmac.new(self.secret.encode('utf8'), data, hashlib.sha384)
+        signature = h.hexdigest()
         headers = {'X-GEMINI-APIKEY': self.key,
-                   'X-GEMINI-PAYLOAD': payload,
-                   'X-GEMINI-SIGNATURE': sig}
+                   'X-GEMINI-PAYLOAD': data,
+                   'X-GEMINI-SIGNATURE': signature}
         return uri, {'headers': headers}
 
 
