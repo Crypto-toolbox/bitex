@@ -1,0 +1,21 @@
+language: python
+python:
+  - "3.5"
+  - "3.6"
+
+install:
+  - pip install bitex
+
+
+# command to run tests
+script:
+  - cd tests
+  - python api.py
+  - python formatters.py
+
+
+
+branches:
+  only:
+  - master
+  - dev

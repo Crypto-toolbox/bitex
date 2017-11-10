@@ -16,10 +16,10 @@ import urllib.parse
 from requests.auth import AuthBase
 
 try:
-    import pyjwt as jwt
-    jwt = True
+    import jwt
+    jwt_available = True
 except ImportError:
-    jwt = False
+    jwt_available = False
 
 # Import Homebrew
 from bitex.api.REST.api import APIClient
@@ -401,11 +401,14 @@ class GeminiREST(APIClient):
         payload = params
         payload['nonce'] = nonce
         payload['request'] = endpoint_path
-        payload = base64.b64encode(json.dumps(payload))
-        sig = hmac.new(self.secret, payload, hashlib.sha384).hexdigest()
+
+        js = json.dumps(payload)
+        data = base64.standard_b64encode(js.encode('utf8'))
+        h = hmac.new(self.secret.encode('utf8'), data, hashlib.sha384)
+        signature = h.hexdigest()
         headers = {'X-GEMINI-APIKEY': self.key,
-                   'X-GEMINI-PAYLOAD': payload,
-                   'X-GEMINI-SIGNATURE': sig}
+                   'X-GEMINI-PAYLOAD': data,
+                   'X-GEMINI-SIGNATURE': signature}
         return uri, {'headers': headers}
 
 
@@ -484,8 +487,8 @@ class QuoineREST(APIClient):
     header as {'X-Quoine-API-Version': 2}
     """
     def __init__(self, key=None, secret=None, api_version=None,
-                 url='https://api.quoine.com/', timeout=5):
-        if not jwt:
+                 url='https://api.quoine.com', timeout=5):
+        if not jwt_available:
             raise SystemError("No JWT Installed! Quoine API Unavailable!")
         super(QuoineREST, self).__init__(url, api_version=api_version,
                                          key=key, secret=secret, timeout=timeout)
@@ -496,13 +499,17 @@ class QuoineREST(APIClient):
         except KeyError:
             params = {}
 
-        path = endpoint_path + urllib.parse.urlencode(params)
-        msg = {'path': path, 'nonce': self.nonce(), 'token_id': self.key}
+        if method_verb != 'POST':
+            endpoint_path += urllib.parse.urlencode(params)
+        msg = {'path': endpoint_path, 'nonce': self.nonce(), 'token_id': self.key}
 
         signature = jwt.encode(msg, self.secret, algorithm='HS256')
         headers = {'X-Quoine-API-Version': '2', 'X-Quoine-Auth': signature,
                    'Content-Type': 'application/json'}
-        return self.uri+path, {'headers': headers}
+        request = {'headers': headers}
+        if method_verb == 'POST':
+            request['json'] = params
+        return self.uri + endpoint_path, request
 
 
 class QuadrigaCXREST(APIClient):

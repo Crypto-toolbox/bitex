@@ -16,7 +16,7 @@ class QoinFormatter(Formatter):
     def ticker(data, *args, **kwargs):
         return (data['market_bid'], data['market_ask'], data['high_market_bid'],
                 data['low_market_ask'], None, None, data['last_traded_price'],
-                ata['volume_24'], None)
+                data['volume_24'], None)
 
     @staticmethod
     def order(data, *args, **kwargs):

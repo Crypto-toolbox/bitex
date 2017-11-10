@@ -144,3 +144,11 @@ class Bitfinex(BitfinexREST):
         q = {'symbol': pair, 'timestamp': since}
         q.update(kwargs)
         return self.private_query('mytrades', params=q)
+
+    @return_api_response(None)
+    def positions(self):
+        return self.private_query('positions')
+
+    @return_api_response(None)
+    def credits(self):
+        return self.private_query('credits')
