@@ -28,12 +28,19 @@ class BitfinexREST(RESTAPI):
 
         # Parameters go into headers, so pop params key and generate signature
         params = req_kwargs.pop('params')
-        params['request'] = self.generate_uri(endpoint)
-        params['nonce'] = self.nonce()
 
-        # convert to json, encode and hash
-        js = json.dumps(params)
-        data = base64.standard_b64encode(js.encode('utf8'))
+        if self.version == 'v1':
+            params['request'] = self.generate_uri(endpoint)
+            params['nonce'] = self.nonce()
+
+            # convert to json, encode and hash
+            js = json.dumps(params)
+            data = base64.standard_b64encode(js.encode('utf8'))
+        elif self.version == 'v2':
+            data = '/api/' + endpoint + self.nonce() + json.dumps(params).encode('utf-8')
+        else:
+            raise NotImplementedError("Api version %s is not supported - "
+                                      "must be 'v1' or 'v2'!" % self.version)
 
         h = hmac.new(self.secret.encode('utf8'), data, hashlib.sha384)
         signature = h.hexdigest()
@@ -42,5 +49,7 @@ class BitfinexREST(RESTAPI):
         req_kwargs['headers'] = {"X-BFX-APIKEY": self.key,
                                  "X-BFX-SIGNATURE": signature,
                                  "X-BFX-PAYLOAD": data}
+        if self.version == 'v2':
+            req_kwargs['headers']['content-type'] = 'application/json'
 
         return req_kwargs
