@@ -40,17 +40,21 @@ class BitfinexREST(APIClient):
             req = kwargs['params']
         except KeyError:
             req = {}
-        req['request'] = endpoint_path
-        req['nonce'] = self.nonce()
+        if self.version == 'v1':
+            req['request'] = endpoint_path
+            req['nonce'] = self.nonce()
 
-        js = json.dumps(req)
-        data = base64.standard_b64encode(js.encode('utf8'))
-
+            js = json.dumps(req)
+            data = base64.standard_b64encode(js.encode('utf8'))
+        else:
+            data = '/api/' + endpoint_path + self.nonce() + json.dumps(req)
         h = hmac.new(self.secret.encode('utf8'), data, hashlib.sha384)
         signature = h.hexdigest()
         headers = {"X-BFX-APIKEY": self.key,
                    "X-BFX-SIGNATURE": signature,
                    "X-BFX-PAYLOAD": data}
+        if self.version == 'v2':
+            headers['content-type'] = 'application/json'
 
         return url, {'headers': headers}
 
