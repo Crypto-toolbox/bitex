@@ -6,17 +6,23 @@ python:
 install:
   - python3 -m pip install requests
   - python3 -m pip install pyjwt
+  - python3 -m pip install pylint pycodestyle pydocstyle
   - python3 setup.py install
 
 # command to run tests
-script: 
-  - cd tests
-  - python -m unittest pair_tests.py
-  - python -m unittest api_tests.py
-  - python -m unittest interface_tests.py
-
-
+jobs:
+  include:
+    - stage: Linter Checks
+    - pylint --rcfile=pylint.rc bitex
+    - pycodestyle --max-line-length=100 bitex
+    - pydocstyle bitex
+    - stage: Unit-tests
+    - cd tests
+    - python -m unittest pair_tests.py
+    - python -m unittest api_tests.py
+    - python -m unittest interface_tests.py
+    - stage: Deploy
+    - echo "Skipping deployment."
 branches:
   only:
-  - master
-  - dev
+  - release-2.0.0
