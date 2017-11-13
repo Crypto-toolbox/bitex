@@ -10,21 +10,21 @@ install:
   - python3 setup.py install
 
 # command to run tests
-scripts:
-  - echo "Passing.."
 jobs:
   include:
     - stage: Linter Checks
-    - pylint --rcfile=pylint.rc bitex
-    - pycodestyle --max-line-length=100 bitex
-    - pydocstyle bitex
+    - script: 
+      - pylint --rcfile=pylint.rc bitex
+      - pycodestyle --max-line-length=100 bitex
+      - pydocstyle bitex
     - stage: Unit-tests
-    - cd tests
-    - python -m unittest pair_tests.py
-    - python -m unittest api_tests.py
-    - python -m unittest interface_tests.py
+    - script:
+      - cd tests
+      - python -m unittest pair_tests.py
+      - python -m unittest api_tests.py
+      - python -m unittest interface_tests.py
     - stage: Deploy
-    - echo "Skipping deployment."
+    - script: echo "Skipping deployment."
 branches:
   only:
   - release-2.0.0
