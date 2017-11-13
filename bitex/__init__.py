@@ -1,5 +1,5 @@
 import logging
-logging.getLogger(__main__).warning("The API clients available in this package are be depreceated "
+logging.getLogger(__name__).warning("The API clients available in this package are be depreceated "
                                     "and will be no longer available in their current form "
                                     "starting with version 2.0!")
 from bitex.interfaces import Kraken, Bitfinex, Bitstamp, CCEX, Coincheck
