@@ -1,3 +1,8 @@
+"""Bitstamp REST API backend.
+
+Documentation available here:
+    https://www.bitstamp.net/api/
+"""
 # Import Built-ins
 import logging
 import hashlib
@@ -15,8 +20,11 @@ log = logging.getLogger(__name__)
 
 
 class BitstampREST(RESTAPI):
+    """Bitfinex REST API class."""
+
     def __init__(self, addr=None, user_id=None, key=None, secret=None,
                  version=None, timeout=5, config=None):
+        """Initialize the class instance."""
         addr = 'https://www.bitstamp.net/api' if not addr else addr
         if user_id == '':
             raise ValueError("Invalid user id - cannot be empty string! "
@@ -28,6 +36,7 @@ class BitstampREST(RESTAPI):
                                            timeout=timeout, config=config)
 
     def check_auth_requirements(self):
+        """Check if authentication requirements are met."""
         try:
             super(BitstampREST, self).check_auth_requirements()
         except IncompleteCredentialsError:
@@ -35,16 +44,15 @@ class BitstampREST(RESTAPI):
 
         if self.user_id is None:
             raise IncompleteCredentialsError
-        else:
-            return
 
     def generate_uri(self, endpoint):
+        """Generate a Unique Resource Identifier for bitstamp."""
         if endpoint.startswith('api'):
             return endpoint[3:]
-        else:
-            return super(BitstampREST, self).generate_uri(endpoint)
+        return super(BitstampREST, self).generate_uri(endpoint)
 
     def load_config(self, fname):
+        """Load configuration from a file."""
         conf = super(BitstampREST, self).load_config(fname)
         try:
             self.user_id = conf['AUTH']['user_id']
@@ -55,6 +63,7 @@ class BitstampREST(RESTAPI):
         return conf
 
     def sign_request_kwargs(self, endpoint, **kwargs):
+        """Sign the reuqest."""
         req_kwargs = super(BitstampREST, self).sign_request_kwargs(endpoint,
                                                                    **kwargs)
 
@@ -73,4 +82,3 @@ class BitstampREST(RESTAPI):
         req_kwargs['data'] = params
 
         return req_kwargs
-
