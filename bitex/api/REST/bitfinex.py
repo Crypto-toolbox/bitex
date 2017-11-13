@@ -1,3 +1,9 @@
+"""Bitfinex REST API backend.
+
+Documentation available at:
+    https://docs.bitfinex.com/docs
+"""
+# pylint: disable=too-many-arguments
 # Import Built-ins
 import logging
 import json
@@ -14,8 +20,11 @@ log = logging.getLogger(__name__)
 
 
 class BitfinexREST(RESTAPI):
+    v
+
     def __init__(self, addr=None, key=None, secret=None,
                  version=None, config=None, timeout=None):
+        """Initialize the class instance."""
         addr = 'https://api.bitfinex.com' if not addr else addr
         version = 'v1' if not version else version
         super(BitfinexREST, self).__init__(addr=addr, version=version, key=key,
@@ -23,6 +32,7 @@ class BitfinexREST(RESTAPI):
                                            config=config)
 
     def sign_request_kwargs(self, endpoint, **kwargs):
+        """Sign the request."""
         req_kwargs = super(BitfinexREST, self).sign_request_kwargs(endpoint,
                                                                    **kwargs)
 
@@ -42,8 +52,8 @@ class BitfinexREST(RESTAPI):
             raise NotImplementedError("Api version %s is not supported - "
                                       "must be 'v1' or 'v2'!" % self.version)
 
-        h = hmac.new(self.secret.encode('utf8'), data, hashlib.sha384)
-        signature = h.hexdigest()
+        hmac_sig = hmac.new(self.secret.encode('utf8'), data, hashlib.sha384)
+        signature = hmac_sig.hexdigest()
 
         # Update headers and return
         req_kwargs['headers'] = {"X-BFX-APIKEY": self.key,
