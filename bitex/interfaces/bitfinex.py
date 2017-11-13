@@ -152,3 +152,15 @@ class Bitfinex(BitfinexREST):
     @return_api_response(None)
     def credits(self):
         return self.private_query('credits')
+    
+    @return_api_response(None)
+    def new_offer(self, currency, amount, rate, period, direction, **kwargs):
+        q = {'currency': currency, 'amount': amount, 'rate': rate, 'period': period, 'period': direction }
+        q.update(kwargs)
+        return self.private_query('offer/new', params=q)
+    
+    @return_api_response(None)
+    def cancel_offer(self, id, **kwargs):
+        q = {'id': id}
+        q.update(kwargs)
+        return self.private_query('offer/cancel', params=q)
