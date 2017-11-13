@@ -17,8 +17,9 @@ script:
   - pycodestyle --max-line-length=100 bitex
   - pydocstyle bitex
   - cd tests
-  - python api.py
-  - python formatters.py
+  - python _tests.py
+  - python pair_tests.py
+  - python interface_tests.py
 
       
 branches:
