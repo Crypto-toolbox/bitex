@@ -9,6 +9,9 @@ install:
 
 # command to run tests
 script:
+  - pylint --rcfile=pylint.rc bitex
+  - pycodestyle --max-line-length=100 bitex
+  - pydocstyle bitex
   - cd tests
   - python api.py
   - python formatters.py
