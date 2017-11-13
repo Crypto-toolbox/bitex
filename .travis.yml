@@ -6,17 +6,22 @@ python:
 install:
   - python3 -m pip install requests
   - python3 -m pip install pyjwt
+  - python3 -m pip install pylint
+  - python3 -m pip install pydocstyle
+  - python3 -m pip install pycodestyle
   - python3 setup.py install
 
 # command to run tests
-script: 
+script:
+  - pylint --rcfile=pylint.rc bitex
+  - pycodestyle --max-line-length=100 bitex
+  - pydocstyle bitex
   - cd tests
-  - python -m unittest pair_tests.py
-  - python -m unittest api_tests.py
-  - python -m unittest interface_tests.py
+  - python api.py
+  - python formatters.py
 
 
 branches:
   only:
-  - master
-  - dev
+  - release-2.0.0
+
