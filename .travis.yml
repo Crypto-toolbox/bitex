@@ -20,7 +20,7 @@ script:
   - python api.py
   - python formatters.py
 
-
+      
 branches:
   only:
   - release-2.0.0
