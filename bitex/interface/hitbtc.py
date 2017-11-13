@@ -1,35 +1,86 @@
 # Import Built-Ins
 import logging
-import time
-
-# Import Third-Party
-import requests
 
 # Import Homebrew
-from bitex.exceptions import UnsupportedPairError
-
-from bitex.api.REST.bitfinex import BitfinexREST
-from bitex.api.REST.bitstamp import BitstampREST
-from bitex.api.REST.bittrex import BittrexREST
-from bitex.api.REST.bter import BterREST
-from bitex.api.REST.ccex import CCEXREST
-from bitex.api.REST.coincheck import CoincheckREST
-from bitex.api.REST.cryptopia import CryptopiaREST
-from bitex.api.REST.gdax import GDAXREST
-from bitex.api.REST.gemini import GeminiREST
 from bitex.api.REST.hitbtc import HitBTCREST
-from bitex.api.REST.itbit import ITbitREST
-from bitex.api.REST.kraken import KrakenREST
-from bitex.api.REST.okcoin import OKCoinREST
-from bitex.api.REST.poloniex import PoloniexREST
-from bitex.api.REST.quadriga import QuadrigaCXREST
-from bitex.api.REST.quoine import QuoineREST
-from bitex.api.REST.rocktrading import RockTradingREST
-from bitex.api.REST.vaultoro import VaultoroREST
-from bitex.api.REST.yunbi import YunbiREST
-
 from bitex.interface.rest import RESTInterface
-from bitex.utils import check_version_compatibility, check_and_format_pair
+from bitex.utils import check_and_format_pair
 
 # Init Logging Facilities
 log = logging.getLogger(__name__)
+
+
+class HitBTC(RESTInterface):
+    def __init__(self, **APIKwargs):
+        super(HitBTC, self).__init__('HitBTC', HitBTCREST(**APIKwargs))
+
+    def _get_supported_pairs(self):
+        r = self.request('symbols')
+        return [entry['symbol'] for entry in r.json()['symbols']]
+
+    def request(self, endpoint, authenticate=False, verb=None, **req_kwargs):
+        verb = verb if verb else 'GET'
+        if authenticate:
+            endpoint = 'trading/' + endpoint
+        else:
+            endpoint = 'public/' + endpoint
+        return super(HitBTC, self).request(verb, endpoint, authenticate,
+                                           **req_kwargs)
+
+    # Public Endpoints
+    @check_and_format_pair
+    def ticker(self, pair, *args, **kwargs):
+        return self.request('%s/ticker' % pair, params=kwargs)
+
+    @check_and_format_pair
+    def order_book(self, pair, *args, **kwargs):
+        return self.request('%s/orderbook' % pair, params=kwargs)
+
+    @check_and_format_pair
+    def trades(self, pair, *args, **kwargs):
+        if 'from' not in kwargs:
+            return self.request('%s/trades/recent' % pair, params=kwargs)
+        else:
+            return self.request('%s/trades', params=kwargs)
+
+    # Private Endpoints
+    def _place_order(self, pair, price, size, side, *args, **kwargs):
+        payload = {'symbol': pair, 'side': side, 'price': price,
+                   'quantity': size, 'type': 'limit'}
+        payload.update(kwargs)
+        return self.request('new_order', authenticate=True, verb='POST',
+                            params=kwargs)
+
+    @check_and_format_pair
+    def ask(self, pair, price, size, *args, **kwargs):
+        return self._place_order(pair, price, size, 'sell')
+
+    @check_and_format_pair
+    def bid(self, pair, price, size, *args, **kwargs):
+        return self._place_order(pair, price, size, 'buy')
+
+    def order_status(self, order_id, *args, **kwargs):
+        payload = {'client_order_id': order_id}
+        payload.update(kwargs)
+        return self.request('order', params=payload, authenticate=True)
+
+    def open_orders(self, *args, **kwargs):
+        return self.request('orders/active', authenticate=True, params=kwargs)
+
+    def cancel_order(self, *order_ids, cancel_all=False, **kwargs):
+        if cancel_all:
+            return self.request('cancel_orders', authenticate=True, verb='POST',
+                                params=kwargs)
+        else:
+            results = []
+            payload = kwargs
+            for oid in order_ids:
+                payload.update({'clientOrderId': oid})
+                r = self.request('cancel_order', authenticate=True,
+                                 verb='POST', params=payload)
+                results.append(r)
+            return results if len(results) > 1 else results[0]
+
+    def wallet(self, *args, **kwargs):
+        return self.request('balance', authenticate=True, params=kwargs)
+

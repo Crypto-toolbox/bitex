@@ -1,35 +1,123 @@
 # Import Built-Ins
 import logging
-import time
-
-# Import Third-Party
-import requests
 
 # Import Homebrew
-from bitex.exceptions import UnsupportedPairError
-
-from bitex.api.REST.bitfinex import BitfinexREST
-from bitex.api.REST.bitstamp import BitstampREST
 from bitex.api.REST.bittrex import BittrexREST
-from bitex.api.REST.bter import BterREST
-from bitex.api.REST.ccex import CCEXREST
-from bitex.api.REST.coincheck import CoincheckREST
-from bitex.api.REST.cryptopia import CryptopiaREST
-from bitex.api.REST.gdax import GDAXREST
-from bitex.api.REST.gemini import GeminiREST
-from bitex.api.REST.hitbtc import HitBTCREST
-from bitex.api.REST.itbit import ITbitREST
-from bitex.api.REST.kraken import KrakenREST
-from bitex.api.REST.okcoin import OKCoinREST
-from bitex.api.REST.poloniex import PoloniexREST
-from bitex.api.REST.quadriga import QuadrigaCXREST
-from bitex.api.REST.quoine import QuoineREST
-from bitex.api.REST.rocktrading import RockTradingREST
-from bitex.api.REST.vaultoro import VaultoroREST
-from bitex.api.REST.yunbi import YunbiREST
 
 from bitex.interface.rest import RESTInterface
-from bitex.utils import check_version_compatibility, check_and_format_pair
+from bitex.utils import check_and_format_pair
 
 # Init Logging Facilities
 log = logging.getLogger(__name__)
+
+
+class Bittrex(RESTInterface):
+    def __init__(self, **APIKwargs):
+        super(Bittrex, self).__init__('Bittrex', BittrexREST(**APIKwargs))
+
+    def request(self, endpoint, authenticate=False, **req_kwargs):
+        return super(Bittrex, self).request('GET', endpoint, authenticate,
+                                            **req_kwargs)
+
+    def _get_supported_pairs(self):
+        r = self.pairs()
+        pairs = [item['MarketName'] for item in r.json()['result']]
+        return pairs
+
+    ###############
+    # Basic Methods
+    ###############
+    @check_and_format_pair
+    def ticker(self, pair, *args, **kwargs):
+        payload = {'market': pair}
+        payload.update(kwargs)
+        return self.request('public/getmarketsummary', params=payload)
+
+    @check_and_format_pair
+    def order_book(self, pair, *args, **kwargs):
+        payload = {'market': pair, 'type': 'both'}
+        payload.update(kwargs)
+        return self.request('public/getorderbook', params=payload)
+
+    @check_and_format_pair
+    def trades(self, pair, *args, **kwargs):
+        payload = {'market': pair}
+        payload.update(kwargs)
+        return self.request('public/getmarkethistory', params=payload)
+
+    # Private Endpoints
+    @check_and_format_pair
+    def ask(self, pair, price, size, *args, **kwargs):
+        payload = {'market': pair, 'quantity': size, 'rate': price}
+        payload.update(kwargs)
+        return self.request('market/selllimit', params=payload,
+                            authenticate=True)
+
+    @check_and_format_pair
+    def bid(self, pair, price, size, *args, **kwargs):
+        payload = {'market': pair, 'quantity': size, 'rate': price}
+        payload.update(kwargs)
+        return self.request('market/buylimit', params=payload,
+                            authenticate=True)
+
+    def order_status(self, order_id, *args, **kwargs):
+        payload = {'uuid': order_id}
+        payload.update(kwargs)
+        return self.request('account/getorder', params=payload,
+                            authenticate=True)
+
+    def open_orders(self, *args, **kwargs):
+        return self.request('market/getopenorders', params=kwargs,
+                            authenticate=True)
+
+    def cancel_order(self, *order_ids, **kwargs):
+        results = []
+        payload = kwargs
+        for uuid in order_ids:
+            payload.update({'uuid': uuid})
+            r = self.request('market/cancel', params=payload,
+                             authenticate=True)
+            results.append(r)
+        return results if len(results) > 1 else results[0]
+
+    def wallet(self, currency=None, *args, **kwargs):
+        if currency:
+            payload = {'currency': currency}
+            payload.update(kwargs)
+            return self.request('account/getbalance', params=payload,
+                                authenticate=True)
+        else:
+            payload = kwargs
+            return self.request('account/getbalances', params=payload,
+                                authenticate=True)
+
+    ###########################
+    # Exchange Specific Methods
+    ###########################
+
+    def deposit_address(self, currency, **kwargs):
+        payload = {'currency': currency}
+        payload.update(kwargs)
+        return self.request('account/getdepositaddress', params=payload,
+                            authenticate=True)
+
+    def withdraw(self, **kwargs):
+        return self.request('account/withdraw', params=kwargs)
+
+    def trade_history(self, *args, **kwargs):
+        return self.request('account/getorderhistory', params=kwargs)
+
+    def withdrawal_history(self, *args, **kwargs):
+        return self.request('account/getwithdrawalhistory', params=kwargs)
+
+    def deposit_history(self, *args, **kwargs):
+        return self.request('account/getdeposithistory', params=kwargs)
+
+    def pairs(self, **kwargs):
+        return self.request('public/getmarkets', params=kwargs)
+
+    def currencies(self, **kwargs):
+        return self.request('public/getcurrencies', params=kwargs)
+
+    def simple_ticker(self, **kwargs):
+        return self.request('public/getticker', params=kwargs)

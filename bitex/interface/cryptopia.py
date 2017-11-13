@@ -1,35 +1,69 @@
 # Import Built-Ins
 import logging
-import time
-
-# Import Third-Party
-import requests
 
 # Import Homebrew
-from bitex.exceptions import UnsupportedPairError
-
-from bitex.api.REST.bitfinex import BitfinexREST
-from bitex.api.REST.bitstamp import BitstampREST
-from bitex.api.REST.bittrex import BittrexREST
-from bitex.api.REST.bter import BterREST
-from bitex.api.REST.ccex import CCEXREST
-from bitex.api.REST.coincheck import CoincheckREST
 from bitex.api.REST.cryptopia import CryptopiaREST
-from bitex.api.REST.gdax import GDAXREST
-from bitex.api.REST.gemini import GeminiREST
-from bitex.api.REST.hitbtc import HitBTCREST
-from bitex.api.REST.itbit import ITbitREST
-from bitex.api.REST.kraken import KrakenREST
-from bitex.api.REST.okcoin import OKCoinREST
-from bitex.api.REST.poloniex import PoloniexREST
-from bitex.api.REST.quadriga import QuadrigaCXREST
-from bitex.api.REST.quoine import QuoineREST
-from bitex.api.REST.rocktrading import RockTradingREST
-from bitex.api.REST.vaultoro import VaultoroREST
-from bitex.api.REST.yunbi import YunbiREST
-
 from bitex.interface.rest import RESTInterface
-from bitex.utils import check_version_compatibility, check_and_format_pair
+from bitex.utils import check_and_format_pair
 
 # Init Logging Facilities
 log = logging.getLogger(__name__)
+
+
+class Cryptopia(RESTInterface):
+    def __init__(self, **APIKwargs):
+        super(Cryptopia, self).__init__('Cryptopia', CryptopiaREST(**APIKwargs))
+
+    def _get_supported_pairs(self):
+        r = self.request('GET', 'GetTradePairs').json()
+        pairs = [entry['Label'].replace('/', '_') for entry in r['Data']]
+        return pairs
+
+    # Public Endpoints
+    @check_and_format_pair
+    def ticker(self, pair, *args, **kwargs):
+        return self.request('GET', 'GetMarket/' + pair, params=kwargs)
+
+    @check_and_format_pair
+    def order_book(self, pair, *args, **kwargs):
+        return self.request('GET', 'GetMarketOrders/' + pair, params=kwargs)
+
+    @check_and_format_pair
+    def trades(self, pair, *args, **kwargs):
+        return self.request('GET', 'GetMarketHistory/' + pair, params=kwargs)
+
+    # Private Endpoints
+    def _place_order(self, pair, price, size, side, *args, **kwargs):
+        payload = {'Market': pair, 'Type': side, 'Rate': price, 'Amount': size}
+        payload.update(kwargs)
+        return self.request('POST', 'SubmitTrade', params=payload,
+                            authenticate=True)
+
+    @check_and_format_pair
+    def ask(self, pair, price, size, *args, **kwargs):
+        return self._place_order(pair, price, size, 'Sell', *args, **kwargs)
+
+    @check_and_format_pair
+    def bid(self, pair, price, size, *args, **kwargs):
+        return self._place_order(pair, price, size, 'Buy', *args, **kwargs)
+
+    def order_status(self, order_id, *args, **kwargs):
+        raise NotImplementedError
+
+    def open_orders(self, *args, **kwargs):
+        return self.request('POST', 'GetOpenOrders', params=kwargs,
+                            authenticate=True)
+
+    def cancel_order(self, *order_ids, **kwargs):
+        results = []
+        payload = {'Type': 'Trade'}
+        for oid in order_ids:
+            payload.update({'OrderId': oid})
+            r = self.request('POST', 'CancelTrade', params=payload,
+                             authenticate=True)
+            results.append(r)
+        return results if len(results) > 1 else results[0]
+
+    def wallet(self, *args, **kwargs):
+        return self.request('POST', 'GetBalance', params=kwargs,
+                            authenticate=True)

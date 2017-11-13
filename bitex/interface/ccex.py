@@ -1,35 +1,92 @@
 # Import Built-Ins
 import logging
-import time
 
 # Import Third-Party
 import requests
 
 # Import Homebrew
-from bitex.exceptions import UnsupportedPairError
-
-from bitex.api.REST.bitfinex import BitfinexREST
-from bitex.api.REST.bitstamp import BitstampREST
-from bitex.api.REST.bittrex import BittrexREST
-from bitex.api.REST.bter import BterREST
 from bitex.api.REST.ccex import CCEXREST
-from bitex.api.REST.coincheck import CoincheckREST
-from bitex.api.REST.cryptopia import CryptopiaREST
-from bitex.api.REST.gdax import GDAXREST
-from bitex.api.REST.gemini import GeminiREST
-from bitex.api.REST.hitbtc import HitBTCREST
-from bitex.api.REST.itbit import ITbitREST
-from bitex.api.REST.kraken import KrakenREST
-from bitex.api.REST.okcoin import OKCoinREST
-from bitex.api.REST.poloniex import PoloniexREST
-from bitex.api.REST.quadriga import QuadrigaCXREST
-from bitex.api.REST.quoine import QuoineREST
-from bitex.api.REST.rocktrading import RockTradingREST
-from bitex.api.REST.vaultoro import VaultoroREST
-from bitex.api.REST.yunbi import YunbiREST
-
 from bitex.interface.rest import RESTInterface
-from bitex.utils import check_version_compatibility, check_and_format_pair
+from bitex.utils import check_and_format_pair
 
 # Init Logging Facilities
 log = logging.getLogger(__name__)
+
+
+class CCEX(RESTInterface):
+    def __init__(self, **APIKwargs):
+        super(CCEX, self).__init__('C-CEX', CCEXREST(**APIKwargs))
+
+    def request(self, endpoint, authenticate=False, **req_kwargs):
+        if authenticate:
+            endpoint = endpoint if endpoint else 'api.html'
+            return super(CCEX, self).request('GET', endpoint, authenticate=True,
+                                **req_kwargs)
+        else:
+            endpoint = endpoint if endpoint else 'api_pub.html'
+            return super(CCEX, self).request('GET', endpoint, **req_kwargs)
+
+    def _get_supported_pairs(self):
+        return requests.get('https://c-cex.com/t/pairs.json').json()['pairs']
+
+    # Public Endpoints
+    @check_and_format_pair
+    def ticker(self, pair, *args, **kwargs):
+        return self.request('%s.json' % pair, params=kwargs)
+
+    @check_and_format_pair
+    def order_book(self, pair, *args, **kwargs):
+        payload = {'a': 'getorderbook', 'market': pair, 'type': 'both'}
+        payload.update(kwargs)
+        return self.request(None, params=payload)
+
+    @check_and_format_pair
+    def trades(self, pair, *args, **kwargs):
+        payload = {'a': 'getmarkethistory', 'market': pair}
+        payload.update(kwargs)
+        return self.request(None, params=payload)
+
+    # Private Endpoints
+    @check_and_format_pair
+    def ask(self, pair, price, size, *args, **kwargs):
+        payload = {'a': 'selllimit', 'market': pair, 'quantity': size,
+                   'rate': price}
+        payload.update(kwargs)
+        return self.request(None, authenticate=True, params=payload)
+
+    @check_and_format_pair
+    def bid(self, pair, price, size, *args, **kwargs):
+        payload = {'a': 'buylimit', 'market': pair, 'quantity': size,
+                   'rate': price}
+        payload.update(kwargs)
+        return self.request(None, authenticate=True, params=payload)
+
+    def order_status(self, order_id, *args, **kwargs):
+        payload = {'a': 'getorder', 'uuid': order_id}
+        payload.update(kwargs)
+        return self.request(None, params=payload, authenticate=True)
+
+    def open_orders(self, *args, **kwargs):
+        payload = {'a': 'getopenorders'}
+        payload.update(kwargs)
+        return self.request(None, params=payload, authenticate=True)
+
+    def cancel_order(self, *order_ids, **kwargs):
+        payload = {'a': 'cancel'}
+        payload.update(kwargs)
+        results = []
+        for oid in order_ids:
+            payload.update({'uuid': oid})
+            results.append(self.request(None, params=payload,
+                                        authenticate=True))
+        return results if len(results) > 1 else results[0]
+
+    def wallet(self, *args, currency=None, **kwargs):
+        if currency:
+            payload = {'a': 'getbalance'}
+            payload.update(kwargs)
+            payload.update({'currency': currency})
+        else:
+            payload = {'a': 'getbalances'}
+            payload.update(kwargs)
+        return self.request(None, params=payload, authenticate=True)
