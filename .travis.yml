@@ -10,6 +10,8 @@ install:
   - python3 setup.py install
 
 # command to run tests
+scripts:
+  - echo "Passing.."
 jobs:
   include:
     - stage: Linter Checks
