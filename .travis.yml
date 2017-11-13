@@ -13,18 +13,20 @@ install:
 jobs:
   include:
     - stage: Linter Checks
-    - script: 
-      - pylint --rcfile=pylint.rc bitex
-      - pycodestyle --max-line-length=100 bitex
-      - pydocstyle bitex
+      script: pylint --rcfile=pylint.rc bitex
+    -
+      script: pycodestyle --max-line-length=100 bitex
+    -
+      script: pydocstyle bitex
+
     - stage: Unit-tests
-    - script:
-      - cd tests
-      - python -m unittest pair_tests.py
-      - python -m unittest api_tests.py
-      - python -m unittest interface_tests.py
+      script: cd tests && python -m unittest api.py
+    - 
+      script: cd tests && python -m unittest formatters.py
+
     - stage: Deploy
-    - script: echo "Skipping deployment."
+      script: echo "Skipping deployment."
+      
 branches:
   only:
   - release-2.0.0
