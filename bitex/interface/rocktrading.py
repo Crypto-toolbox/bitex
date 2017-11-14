@@ -11,9 +11,8 @@ log = logging.getLogger(__name__)
 
 
 class TheRockTrading(RESTInterface):
-    def __init__(self, **APIKwargs):
-        super(TheRockTrading, self).__init__('The Rock Trading Ltd.',
-                                             RockTradingREST(**APIKwargs))
+    def __init__(self, **api_kwargs):
+        super(TheRockTrading, self).__init__('The Rock Trading Ltd.', RockTradingREST(**api_kwargs))
 
     def _get_supported_pairs(self):
         return [d['id'] for d in self.request('GET', 'funds').json()['funds']]
@@ -35,8 +34,7 @@ class TheRockTrading(RESTInterface):
     def _place_order(self, pair, price, size, side, **kwargs):
         payload = {'price': price, 'amount': size, 'side': side}
         payload.update(kwargs)
-        return self.request('POST', 'funds/%s/orders' % pair, authenticate=True,
-                            params=payload)
+        return self.request('POST', 'funds/%s/orders' % pair, authenticate=True, params=payload)
 
     @check_and_format_pair
     def ask(self, pair, price, size, *args, **kwargs):
@@ -49,36 +47,34 @@ class TheRockTrading(RESTInterface):
     def order_status(self, order_id, *args, **kwargs):
         if 'pair' not in kwargs and 'fund_id' not in kwargs:
             raise ValueError("Need to specify pair or fund_id in kwargs!")
-        else:
-            try:
-                pair = kwargs.pop('pair')
-            except KeyError:
-                pair = kwargs.pop('fund_id')
-            return self.request('GET', 'funds/%s/orders/%s' % (pair, order_id),
-                                authenticate=True, params=kwargs)
+        try:
+            pair = kwargs.pop('pair')
+        except KeyError:
+            pair = kwargs.pop('fund_id')
+        return self.request('GET', 'funds/%s/orders/%s' % (pair, order_id), authenticate=True,
+                            params=kwargs)
 
     def open_orders(self, *args, **kwargs):
         if 'pair' not in kwargs and 'fund_id' not in kwargs:
             results = []
             for fund_id in self.supported_pairs:
-                r = self.request('GET', 'funds/%s/orders' % fund_id,
-                                 authenticate=True, params=kwargs)
+                r = self.request('GET', 'funds/%s/orders' % fund_id, authenticate=True,
+                                 params=kwargs)
                 results.append(r)
             return results if len(results) > 1 else results[0]
-        else:
-            try:
-                pair = kwargs.pop('pair')
-            except KeyError:
-                pair = kwargs.pop('fund_id')
+        try:
+            pair = kwargs.pop('pair')
+        except KeyError:
+            pair = kwargs.pop('fund_id')
 
-            return self.request('GET', 'funds/%s/orders' % pair,
-                                authenticate=True, params=kwargs)
+        return self.request('GET', 'funds/%s/orders' % pair, authenticate=True, params=kwargs)
 
-    def cancel_order(self, *order_ids, all=False, **kwargs):
+    # pylint: disable=arguments-differ
+    def cancel_order(self, *order_ids, all_orders=False, **kwargs):
         results = []
         if 'pair' not in kwargs and 'fund_id' not in kwargs:
             for fund_id in self.supported_pairs:
-                r = self.cancel_order(*order_ids, all, pair=fund_id)
+                r = self.cancel_order(*order_ids, all_orders, pair=fund_id)
                 results.append(r)
             return results if len(results) > 1 else results[0]
         else:
@@ -86,17 +82,14 @@ class TheRockTrading(RESTInterface):
                 pair = kwargs.pop('pair')
             except KeyboardInterrupt:
                 pair = kwargs.pop('fund_id')
-
-        if all:
-            return self.request('DELETE', 'funds/%s/orders/remove_all' % pair,
-                                authenticate=True, params=kwargs)
-        else:
-            for oid in order_ids:
-                r = self.request('DELETE', 'funds/%s/orders/%s' % (pair, oid),
-                                 authenticate=True, params=kwargs)
-                results.append(r)
-            return results if len(results) > 1 else results[0]
+        if all_orders:
+            return self.request('DELETE', 'funds/%s/orders/remove_all' % pair, authenticate=True,
+                                params=kwargs)
+        for oid in order_ids:
+            r = self.request('DELETE', 'funds/%s/orders/%s' % (pair, oid), authenticate=True,
+                             params=kwargs)
+            results.append(r)
+        return results if len(results) > 1 else results[0]
 
     def wallet(self, *args, **kwargs):
         return self.request('GET', 'balances', authenticate=True, params=kwargs)
-
