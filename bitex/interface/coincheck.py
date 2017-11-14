@@ -84,4 +84,3 @@ class CoinCheck(RESTInterface):
     def wallet(self, *args, **kwargs):
         return self.request('GET', 'accounts/balance', params=kwargs,
                             authenticate=True)
-
