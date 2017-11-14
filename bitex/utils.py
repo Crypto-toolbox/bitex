@@ -1,4 +1,9 @@
 """Supplies Decorators and utility functions."""
+# Import Built-ins
+import os
+import configparser
+
+# Import Homebrew
 from bitex.exceptions import UnsupportedEndpointError
 from bitex.pairs import PairFormatter
 
@@ -53,3 +58,15 @@ def check_and_format_pair(func):
             raise AssertionError("%s is not supported by this exchange!" % pair)
         return func(self, *args, **kwargs)
     return wrapped
+
+
+def load_configuration(fname):
+    """Load the configuration file.
+
+    Returns a configparser.ConfigParser() object.
+    """
+    if not os.path.exists(fname) or not os.path.isfile(fname):
+        return None
+    config = configparser.ConfigParser()
+    config.read(fname)
+    return config
