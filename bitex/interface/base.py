@@ -41,7 +41,7 @@ class Interface:
         raise NotImplementedError
 
     def is_supported(self, pair):
-        """Checks if the given pair is present in self._supported_pairs.
+        """Check if the given pair is present in self._supported_pairs.
 
         Input can either be a string or a PairFormatter Obj (or child thereof).
         If it is the latter two, we'll call the format() method with the Interface's

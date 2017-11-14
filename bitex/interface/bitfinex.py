@@ -20,6 +20,7 @@ class Bitfinex(RESTInterface):
     Includes standardized methods, as well as all other Endpoints
     available on their REST API.
     """
+
     # pylint: disable=arguments-differ
 
     # State version specific methods
@@ -412,7 +413,7 @@ class Bitfinex(RESTInterface):
     @check_version_compatibility(v1=v1_only_methods, v2=v2_only_methods)
     @check_and_format_pair
     def alert_delete(self, pair, **endpoint_kwargs):
-        """Delet an alert for the given pair."""
+        """Delete an alert for the given pair."""
         self.is_supported(pair)
         price = endpoint_kwargs.pop('price')
         return self.request('auth/w/alert/price:%s:%s/del' % (pair, price), authenticate=True)

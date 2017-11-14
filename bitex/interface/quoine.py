@@ -16,5 +16,6 @@ class Quoine(RESTInterface):
     """Quoine Interface class."""
 
     def __init__(self, **api_kwargs):
+        """Initialize Interface class instance."""
         super(Quoine, self).__init__('Quoine', QuoineREST(**api_kwargs))
         raise NotImplementedError

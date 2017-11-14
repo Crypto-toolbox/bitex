@@ -16,5 +16,6 @@ class ItBit(RESTInterface):
     """itBit Interface class."""
 
     def __init__(self, **api_kwargs):
+        """Initialize Interface class instance."""
         super(ItBit, self).__init__('itBit', ITbitREST(**api_kwargs))
         raise NotImplementedError

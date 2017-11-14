@@ -19,7 +19,9 @@ class Bitstamp(RESTInterface):
     Since Bitstamp doesn't make an explicit differentiation between api versions,
     we do not use a version checker for this interface.
     """
+
     def __init__(self, **api_kwargs):
+        """Initialize the Interface class instance."""
         super(Bitstamp, self).__init__('Bitstamp', BitstampREST(**api_kwargs))
 
     def _get_supported_pairs(self):
@@ -28,6 +30,7 @@ class Bitstamp(RESTInterface):
                 'ltcusd', 'ltceur', 'ltcbtc']
 
     def request(self, endpoint, authenticate=False, **kwargs):
+        """Generate a request to the API."""
         verb = 'POST' if authenticate else 'GET'
         return super(Bitstamp, self).request(verb, endpoint, authenticate=authenticate, **kwargs)
 

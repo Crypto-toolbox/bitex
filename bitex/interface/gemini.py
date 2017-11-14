@@ -16,5 +16,6 @@ class Gemini(RESTInterface):
     """Gemini Interface class."""
 
     def __init__(self, **api_kwargs):
+        """Initialize Interface class instance."""
         super(Gemini, self).__init__('Gemini', GeminiREST(**api_kwargs))
         raise NotImplementedError

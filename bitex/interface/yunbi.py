@@ -16,5 +16,6 @@ class Yunbi(RESTInterface):
     """Yunbi Interface class."""
 
     def __init__(self, **api_kwargs):
+        """Initialize Interface class instance."""
         super(Yunbi, self).__init__('Yunbi', YunbiREST(**api_kwargs))
         raise NotImplementedError
