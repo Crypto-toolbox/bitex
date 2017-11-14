@@ -1,3 +1,4 @@
+"""Bter Interface class."""
 # Import Built-Ins
 import logging
 
@@ -11,8 +12,8 @@ log = logging.getLogger(__name__)
 
 
 class Bter(RESTInterface):
-    def __init__(self, **APIKwargs):
-        super(Bter, self).__init__('Bter', BterREST(**APIKwargs))
+    def __init__(self, **api_kwargs):
+        super(Bter, self).__init__('Bter', BterREST(**api_kwargs))
 
     def _get_supported_pairs(self):
         return self.request('GET', 'pairs').json()
@@ -28,7 +29,7 @@ class Bter(RESTInterface):
 
     @check_and_format_pair
     def trades(self, pair, *args, **kwargs):
-        tid = '' if not 'TID' in kwargs else '/' + str(kwargs['TID'])
+        tid = '' if 'TID' not in kwargs else '/' + str(kwargs['TID'])
         return self.request('GET', 'tradeHistory' + tid)
 
     # Private Endpoints
@@ -55,19 +56,18 @@ class Bter(RESTInterface):
     def open_orders(self, *args, **kwargs):
         return self.request('POST', 'private/openOrders', authenticate=True)
 
+    # pylint: disable=arguments-differ
     def cancel_order(self, *order_ids, cancel_all=False, **kwargs):
         if cancel_all:
             return self.request('POST', 'private/cancelAllOrders', params=kwargs,
                                 authenticate=True)
-        else:
-            results = []
-            payload = kwargs
-            for oid in order_ids:
-                payload.update({'orderNumber': oid})
-                results.append(self.request('POST', 'private/cancelOrder',
-                                            params=payload, authenticate=True))
-            return results if len(results) > 1 else results[0]
+        results = []
+        payload = kwargs
+        for oid in order_ids:
+            payload.update({'orderNumber': oid})
+            results.append(self.request('POST', 'private/cancelOrder',
+                                        params=payload, authenticate=True))
+        return results if len(results) > 1 else results[0]
 
     def wallet(self, *args, **kwargs):
         return self.request('POST', 'private/balances', authenticate=True)
-
