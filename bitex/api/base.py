@@ -24,9 +24,10 @@ class BaseAPI:
     validity checking method check_auth_requirements(), which should be
     extended in subclasses to cover any additional parameters that are necessary.
     """
+
     def __init__(self, *, addr, key, secret, version, config):
-        """
-        Initialize a BaseAPI instance.
+        """Initialize a BaseAPI instance.
+
         :param addr: str, API url
         :param key: str, API key
         :param secret: str, API secret
@@ -56,15 +57,15 @@ class BaseAPI:
             self.load_config(self.config_file)
 
     def check_auth_requirements(self):
-        """Checks that neither self.key nor self.secret are None. If so, this
-        method raises an IncompleteCredentialsError. Otherwise returns None.
+        """Check that neither self.key nor self.secret are None.
+
+        If so, this method raises an IncompleteCredentialsError. Otherwise returns None.
 
         Extend this in child classes if you need to check for further
         required values.
 
         :raise: IncompleteCredentialsError
         :return: None
-
         """
         if any(attr is None for attr in (self.key, self.secret)):
             raise IncompleteCredentialsError
@@ -72,9 +73,10 @@ class BaseAPI:
             return
 
     def load_config(self, fname):
-        """
-        Loads configuration from an ini file. Return it, in case this
-        func needs to be extended.
+        """Load configuration from an ini file.
+
+        Return it, in case this func needs to be extended.
+
         :param fname: path to file
         :return: configparser.ConfigParser() Obj
         """
@@ -115,8 +117,8 @@ class BaseAPI:
 
     @staticmethod
     def nonce():
-        """
-        Creates a Nonce value for signature generation
+        """Create a Nonce value for signature generation.
+
         :return: Nonce as string
         """
         return str(int(round(1000 * time.time())))
