@@ -14,6 +14,7 @@ class Poloniex(RESTInterface):
     def __init__(self, **APIKwargs):
         super(Poloniex, self).__init__('Poloniex', PoloniexREST(**APIKwargs))
 
+    # pylint: disable=arguments-differ
     def request(self, endpoint, authenticate=False, **req_kwargs):
         if 'params' in req_kwargs:
             req_kwargs['params'].update({'command': endpoint})
@@ -22,9 +23,8 @@ class Poloniex(RESTInterface):
         if authenticate:
             return super(Poloniex, self).request('POST', endpoint, authenticate,
                                                  **req_kwargs)
-        else:
-            return super(Poloniex, self).request('GET', 'public', authenticate,
-                                                 **req_kwargs)
+        return super(Poloniex, self).request('GET', 'public', authenticate,
+                                             **req_kwargs)
 
     def _get_supported_pairs(self):
         return ['BTC_ETH']
@@ -52,8 +52,7 @@ class Poloniex(RESTInterface):
         payload.update(kwargs)
         if side == 'bid':
             return self.request('buy', authenticate=True, params=payload)
-        else:
-            return self.request('sell', authenticate=True, params=payload)
+        return self.request('sell', authenticate=True, params=payload)
 
     @check_and_format_pair
     def ask(self, pair, price, size, *args, **kwargs):
@@ -66,14 +65,12 @@ class Poloniex(RESTInterface):
     def order_status(self, order_id, *args, **kwargs):
         payload = {'orderNumber': order_id}
         payload.update(kwargs)
-        return self.request('returnOrderTrades', authenticate=True,
-                            params=payload)
+        return self.request('returnOrderTrades', authenticate=True, params=payload)
 
     def open_orders(self, *args, **kwargs):
         payload = {'currencyPair': 'all'}
         payload.update(kwargs)
-        return self.request('returnOpenOrders', authenticate=True,
-                            params=payload)
+        return self.request('returnOpenOrders', authenticate=True, params=payload)
 
     def cancel_order(self, *order_ids, **kwargs):
         results = []
@@ -85,6 +82,4 @@ class Poloniex(RESTInterface):
         return results if len(results) > 1 else results[0]
 
     def wallet(self, *args, **kwargs):
-        return self.request('returnTradableBalances', authenticate=True,
-                            params=kwargs)
-
+        return self.request('returnTradableBalances', authenticate=True, params=kwargs)
