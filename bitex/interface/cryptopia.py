@@ -33,7 +33,7 @@ class Cryptopia(RESTInterface):
         return self.request('GET', 'GetMarketHistory/' + pair, params=kwargs)
 
     # Private Endpoints
-    # pylint: disable=unused-arguments
+    # pylint: disable=unused-argument
     def _place_order(self, pair, price, size, side, *args, **kwargs):
         payload = {'Market': pair, 'Type': side, 'Rate': price, 'Amount': size}
         payload.update(kwargs)
