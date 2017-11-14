@@ -1,3 +1,8 @@
+"""GDAX REST API backend.
+
+Documentation available here:
+    https://docs.gdax.com/
+"""
 # Import Built-ins
 import logging
 import hashlib
@@ -19,12 +24,16 @@ log = logging.getLogger(__name__)
 
 
 class GDAXAuth(AuthBase):
+    """GDAX Auth object."""
+
     def __init__(self, api_key, secret_key, passphrase):
+        """Initialize the class instance."""
         self.api_key = api_key.encode('utf-8')
         self.secret_key = secret_key.encode('utf-8')
         self.passphrase = passphrase.encode('utf-8')
 
     def __call__(self, request):
+        """Generate authentication headers."""
         timestamp = str(time.time())
         message = (timestamp + request.method + request.path_url +
                    (request.body or ''))
@@ -41,8 +50,11 @@ class GDAXAuth(AuthBase):
 
 
 class GDAXREST(RESTAPI):
+    """GDAX REST API class."""
+
     def __init__(self, passphrase=None, key=None, secret=None, version=None,
                  addr=None, config=None, timeout=5):
+        """Initialize the class instance."""
         if passphrase == '':
             raise ValueError("Invalid user id - cannot be empty string! "
                              "Pass None instead!")
@@ -54,6 +66,7 @@ class GDAXREST(RESTAPI):
                                        config=config)
 
     def check_auth_requirements(self):
+        """Check if authentication requirements are met."""
         try:
             super(GDAXREST, self).check_auth_requirements()
         except IncompleteCredentialsError:
@@ -65,6 +78,7 @@ class GDAXREST(RESTAPI):
             return
 
     def load_config(self, fname):
+        """Load configuration from a file."""
         conf = super(GDAXREST, self).load_config(fname)
         try:
             self.passphrase = conf['AUTH']['passphrase']
@@ -73,6 +87,7 @@ class GDAXREST(RESTAPI):
                           IncompleteCredentialConfigurationWarning)
 
     def sign_request_kwargs(self, endpoint, **kwargs):
+        """Sign the request."""
         req_kwargs = super(GDAXREST, self).sign_request_kwargs(endpoint,
                                                                **kwargs)
         req_kwargs['auth'] = GDAXAuth(self.key, self.secret, self.passphrase)
@@ -83,4 +98,3 @@ class GDAXREST(RESTAPI):
             pass
 
         return req_kwargs
-

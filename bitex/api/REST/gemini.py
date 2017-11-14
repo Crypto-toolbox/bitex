@@ -1,3 +1,8 @@
+"""Bitstamp REST API backend.
+
+Documentation available here:
+    https://www.bitstamp.net/api/
+"""
 # Import Built-ins
 import logging
 import json
@@ -15,8 +20,11 @@ log = logging.getLogger(__name__)
 
 
 class GeminiREST(RESTAPI):
+    """Gemini REST API class."""
+
     def __init__(self, key=None, secret=None, version=None,
                  addr=None, timeout=5, config=None):
+        """Initialize the class instance."""
         addr = 'https://api.gemini.com' if not addr else addr
         version = 'v1' if not version else version
         super(GeminiREST, self).__init__(addr=addr, version=version, key=key,
@@ -24,6 +32,7 @@ class GeminiREST(RESTAPI):
                                          config=config)
 
     def sign_request_kwargs(self, endpoint, **kwargs):
+        """Sign the request."""
         req_kwargs = super(GeminiREST, self).sign_request_kwargs(endpoint,
                                                                  **kwargs)
 
@@ -46,4 +55,3 @@ class GeminiREST(RESTAPI):
                                  'X-GEMINI-PAYLOAD': payload,
                                  'X-GEMINI-SIGNATURE': sig}
         return req_kwargs
-

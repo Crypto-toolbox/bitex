@@ -1,11 +1,12 @@
+"""C-CEX REST API backend.
+
+Documentation available here:
+    https://c-cex.com/?id=api
+"""
 # Import Built-ins
 import logging
 import hashlib
 import hmac
-import urllib
-import urllib.parse
-
-# Import Third-Party
 
 # Import Homebrew
 from bitex.api.REST import RESTAPI
@@ -15,8 +16,11 @@ log = logging.getLogger(__name__)
 
 
 class CCEXREST(RESTAPI):
+    """C-CEX REST API class."""
+
     def __init__(self, key=None, secret=None, version=None,
                  addr=None, timeout=5, config=None):
+        """Initialize the class instance."""
         addr = 'https://c-cex.com/t' if not addr else addr
 
         super(CCEXREST, self).__init__(addr=addr, version=version, key=key,
@@ -24,6 +28,7 @@ class CCEXREST(RESTAPI):
                                        config=config)
 
     def sign_request_kwargs(self, endpoint, **kwargs):
+        """Sign the request."""
         req_kwargs = super(CCEXREST, self).sign_request_kwargs(endpoint,
                                                                **kwargs)
 

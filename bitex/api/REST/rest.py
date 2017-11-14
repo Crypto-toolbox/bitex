@@ -1,3 +1,4 @@
+"""Basic REST API object."""
 # Import Built-Ins
 import logging
 
@@ -12,10 +13,12 @@ log = logging.getLogger(__name__)
 
 
 class RESTAPI(BaseAPI):
-    """
-    Generic REST API interface. Supplies private and public query methods,
+    """ Generic REST API interface.
+
+    Supplies private and public query methods,
     as well as building blocks to customize the signature generation process.
     """
+
     def __init__(self, addr, timeout=None, key=None, secret=None, version=None,
                  config=None):
         """
@@ -38,8 +41,7 @@ class RESTAPI(BaseAPI):
         """
         if self.version:
             return '/' + self.version + '/' + endpoint
-        else:
-            return '/' + endpoint
+        return '/' + endpoint
 
     def generate_url(self, uri):
         """

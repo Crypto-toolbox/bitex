@@ -1,3 +1,8 @@
+"""Bitstamp REST API backend.
+
+Documentation available here:
+    https://www.bitstamp.net/api/
+"""
 # Import Built-ins
 import logging
 import json
@@ -18,38 +23,42 @@ log = logging.getLogger(__name__)
 
 
 class CryptopiaREST(RESTAPI):
+    """Cryptopia REST API class."""
+
     def __init__(self, key=None, secret=None, version=None, config=None,
                  addr=None, timeout=5):
+        """Initialize the class instance."""
         addr = 'https://www.cryptopia.co.nz/api' if not addr else addr
         super(CryptopiaREST, self).__init__(addr=addr, version=version, key=key,
                                             secret=secret, timeout=timeout,
                                             config=config)
 
-    def _query(self, *args, **kwargs):
-        """Modified _query() method for CryptopiaREST.
+    def _query(self, method_verb, **request_kwargs):
+        """Query the Cryptopia REST API.
 
         For whatever reason, Cryptopia Sends a BOM Header. This is a 3 Byte
         header, which prevents requests.Request.json() to properly decode
         the response's content. We thus remove the first 3 bytes if Response.json()
         fails.
         """
-        resp = super(CryptopiaREST, self)._query(*args, **kwargs)
+        resp = super(CryptopiaREST, self)._query(method_verb, **kwargs)
         try:
             resp.json()
         except json.JSONDecodeError:
 
-            BOM_str = io.BytesIO(resp._content)
-            BOM_str.read(3)
-            BOM_removed_str = BOM_str.read(len(resp._content))
+            bom_str = io.BytesIO(resp._content)
+            bom_str.read(3)
+            bom_removed_str = bom_str.read(len(resp._content))
             try:
-                json.loads(BOM_removed_str.decode('utf-8'))
+                json.loads(bom_removed_str.decode('utf-8'))
             except json.JSONDecodeError:
                 return resp
 
-            resp._content = BOM_removed_str
+            resp._content = bom_removed_str
         return resp
 
     def sign_request_kwargs(self, endpoint, **kwargs):
+        """Sign the request."""
         req_kwargs = super(CryptopiaREST, self).sign_request_kwargs(endpoint,
                                                                     **kwargs)
 

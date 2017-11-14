@@ -1,3 +1,8 @@
+"""Bittrex REST API backend.
+
+Documentation available here:
+    https://bittrex.com/home/api
+"""
 # Import Built-ins
 import logging
 import hashlib
@@ -12,8 +17,11 @@ log = logging.getLogger(__name__)
 
 
 class BittrexREST(RESTAPI):
+    """Bittrex REST API class."""
+
     def __init__(self, key=None, secret=None, version=None,
                  addr=None, timeout=5, config=None):
+        """Initialize the class instance."""
         version = 'v1.1' if not version else version
         addr = 'https://bittrex.com/api' if not addr else addr
         super(BittrexREST, self).__init__(addr=addr, version=version, key=key,
@@ -21,7 +29,8 @@ class BittrexREST(RESTAPI):
                                           config=config)
 
     def sign_request_kwargs(self, endpoint, **kwargs):
-        """
+        """Sign the request.
+
         Bittrex requires the request address to be included as a sha512 encoded
         string in the query header. This means that the request address used for
         signing, and the actual address used to send the request (incuding order

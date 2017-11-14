@@ -1,3 +1,8 @@
+"""Bitstamp REST API backend.
+
+Documentation available here:
+    https://www.bitstamp.net/api/
+"""
 # Import Built-ins
 import logging
 import json
@@ -5,8 +10,6 @@ import hashlib
 import hmac
 import base64
 import warnings
-
-# Import Third-Party
 
 # Import Homebrew
 from bitex.api.REST import RESTAPI
@@ -18,9 +21,11 @@ log = logging.getLogger(__name__)
 
 
 class ITbitREST(RESTAPI):
+    """ItBit REST API class."""
+
     def __init__(self, user_id=None, key=None, secret=None, version=None,
                  addr=None, timeout=5, config=None):
-        self.userId = user_id
+        """Initialize the class instance."""
         version = 'v1' if not version else version
         addr = 'https://api.itbit.com' if not addr else addr
 
@@ -33,6 +38,7 @@ class ITbitREST(RESTAPI):
                                         config=config)
 
     def check_auth_requirements(self):
+        """Check if authentication requirements are met."""
         try:
             super(ITbitREST, self).check_auth_requirements()
         except IncompleteCredentialsError:
@@ -44,6 +50,7 @@ class ITbitREST(RESTAPI):
             return
 
     def load_config(self, fname):
+        """Load configuration from a file."""
         conf = super(ITbitREST, self).load_config(fname)
         try:
             self.user_id = conf['AUTH']['user_id']
@@ -52,7 +59,9 @@ class ITbitREST(RESTAPI):
                           IncompleteCredentialConfigurationWarning)
 
     def sign_request_kwargs(self, endpoint, **kwargs):
-        """Requires that the HTTP request VERB is passed along in kwargs as
+        """Sign the request.
+
+        Requires that the HTTP request VERB is passed along in kwargs as
         as key:value pair 'method':<Verb>; otherwise authentication will
         not work.
         """
@@ -92,4 +101,3 @@ class ITbitREST(RESTAPI):
                                  'X-Auth-Nonce': nonce,
                                  'Content-Type': 'application/json'}
         return req_kwargs
-

@@ -1,3 +1,8 @@
+"""Bitstamp REST API backend.
+
+Documentation available here:
+    https://www.bitstamp.net/api/
+"""
 # Import Built-ins
 import logging
 import hashlib
@@ -16,9 +21,11 @@ log = logging.getLogger(__name__)
 
 
 class QuadrigaCXREST(RESTAPI):
+    """QuadrigaCX REST API class."""
+
     def __init__(self, key=None, secret=None, client_id=None, version=None,
                  addr=None, timeout=5, config=None):
-
+        """Initialize the class instance."""
         version = 'v2' if not version else version
         addr = 'https://api.quadrigacx.com' if not addr else addr
 
@@ -31,6 +38,7 @@ class QuadrigaCXREST(RESTAPI):
                                              timeout=timeout, config=config)
 
     def check_auth_requirements(self):
+        """Check if authentication requirements are met."""
         try:
             super(QuadrigaCXREST, self).check_auth_requirements()
         except IncompleteCredentialsError:
@@ -42,6 +50,7 @@ class QuadrigaCXREST(RESTAPI):
             return
 
     def load_config(self, fname):
+        """Load configuration from a file."""
         conf = super(QuadrigaCXREST, self).load_config(fname)
         try:
             self.client_id = conf['AUTH']['client_id']
@@ -50,6 +59,7 @@ class QuadrigaCXREST(RESTAPI):
                           IncompleteCredentialConfigurationWarning)
 
     def sign_request_kwargs(self, endpoint, **kwargs):
+        """Sign the request."""
         req_kwargs = super(QuadrigaCXREST, self).sign_request_kwargs(endpoint,
                                                                      **kwargs)
 
@@ -71,4 +81,3 @@ class QuadrigaCXREST(RESTAPI):
                               'nonce': nonce}
         req_kwargs['data'] = params
         return req_kwargs
-

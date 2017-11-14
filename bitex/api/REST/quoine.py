@@ -1,3 +1,8 @@
+"""Bitstamp REST API backend.
+
+Documentation available here:
+    https://www.bitstamp.net/api/
+"""
 # Import Built-ins
 import logging
 import urllib
@@ -14,8 +19,11 @@ log = logging.getLogger(__name__)
 
 
 class QuoineREST(RESTAPI):
+    """Quoine REST API class."""
+
     def __init__(self, key=None, secret=None, version=None, config=None,
                  addr=None, timeout=5):
+        """Initialize the class instance."""
         addr = 'https://api.quoine.com/' if not addr else addr
         version = '2' if not version else version
         super(QuoineREST, self).__init__(addr=addr, version=version,
@@ -23,13 +31,16 @@ class QuoineREST(RESTAPI):
                                          timeout=timeout)
 
     def generate_uri(self, endpoint):
-        """The Quoine Api requires the API version to be designated in each
+        """Generate a Unique Resource Identifier (URI).
+
+        The Quoine Api requires the API version to be designated in each
         requests's header as {'X-Quoine-API-Version': 2}, instead of adding it
         to the URL. Hence, we need to adapt generate_uri.
         """
         return endpoint
 
     def sign_request_kwargs(self, endpoint, **kwargs):
+        """Sign the request."""
         req_kwargs = super(QuoineREST, self).sign_request_kwargs(endpoint,
                                                                  **kwargs)
 
@@ -49,4 +60,3 @@ class QuoineREST(RESTAPI):
                                  'X-Quoine-Auth': signature,
                                  'Content-Type': 'application/json'}
         return req_kwargs
-

@@ -20,7 +20,7 @@ log = logging.getLogger(__name__)
 
 
 class BitstampREST(RESTAPI):
-    """Bitfinex REST API class."""
+    """Bitstamp REST API class."""
 
     def __init__(self, addr=None, user_id=None, key=None, secret=None,
                  version=None, timeout=5, config=None):

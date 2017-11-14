@@ -20,7 +20,7 @@ log = logging.getLogger(__name__)
 
 
 class BitfinexREST(RESTAPI):
-    v
+    """Bitfinex REST API class."""
 
     def __init__(self, addr=None, key=None, secret=None,
                  version=None, config=None, timeout=None):

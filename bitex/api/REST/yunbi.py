@@ -1,3 +1,8 @@
+"""Yunbi REST API backend.
+
+Documentation available at:
+    https://yunbi.com/documents/api/v2
+"""
 # Import Built-ins
 import logging
 import hashlib
@@ -15,8 +20,11 @@ log = logging.getLogger(__name__)
 
 
 class YunbiREST(RESTAPI):
+    """Yunbi REST API class."""
+
     def __init__(self, key=None, secret=None, version=None,
                  addr=None, timeout=5, config=None):
+        """Initialize the class instance."""
         version = 'v2' if not version else version
         addr = 'https://yunbi.com/api' if not addr else addr
         super(YunbiREST, self).__init__(addr=addr, version=version, key=key,
@@ -24,7 +32,9 @@ class YunbiREST(RESTAPI):
                                         config=config)
 
     def sign_request_kwargs(self, endpoint, **kwargs):
-        """Requires that the HTTP request VERB is passed along in kwargs as
+        """Sign the reuqest.
+
+        Requires that the HTTP request VERB is passed along in kwargs as
         as key:value pair 'method':<Verb>; otherwise authentication will
         fail.
         """
