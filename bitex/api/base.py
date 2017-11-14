@@ -1,6 +1,4 @@
-"""
-API Base Classes for BitEx
-"""
+"""API Base Classes for BitEx."""
 # Import Built-Ins
 import logging
 import warnings
@@ -121,4 +119,4 @@ class BaseAPI:
         Creates a Nonce value for signature generation
         :return: Nonce as string
         """
-        return str(int(1000 * time.time()))
+        return str(int(round(1000 * time.time())))
