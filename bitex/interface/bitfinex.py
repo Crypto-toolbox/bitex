@@ -1,3 +1,4 @@
+"""Bitfinex Interface class."""
 # Import Built-Ins
 import logging
 

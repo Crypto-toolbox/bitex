@@ -1,3 +1,4 @@
+"""The Rock Trading Ltd Interface class."""
 # Import Built-Ins
 import logging
 
@@ -11,6 +12,8 @@ log = logging.getLogger(__name__)
 
 
 class TheRockTrading(RESTInterface):
+    """The Rock Trading Ltd Interface class."""
+
     def __init__(self, **api_kwargs):
         super(TheRockTrading, self).__init__('The Rock Trading Ltd.', RockTradingREST(**api_kwargs))
 

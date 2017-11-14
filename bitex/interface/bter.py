@@ -12,6 +12,8 @@ log = logging.getLogger(__name__)
 
 
 class Bter(RESTInterface):
+    """Bter Interface class."""
+
     def __init__(self, **api_kwargs):
         super(Bter, self).__init__('Bter', BterREST(**api_kwargs))
 

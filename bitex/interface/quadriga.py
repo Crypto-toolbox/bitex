@@ -1,3 +1,4 @@
+"""QuadrigaCX Interface class."""
 # Import Built-Ins
 import logging
 
@@ -11,6 +12,8 @@ log = logging.getLogger(__name__)
 
 
 class QuadrigaCX(RESTInterface):
+    """QuadrigaCX Interface class."""
+
     def __init__(self, **api_kwargs):
         super(QuadrigaCX, self).__init__('QuadrigaCX',
                                          QuadrigaCXREST(**api_kwargs))

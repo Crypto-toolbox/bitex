@@ -1,3 +1,4 @@
+"""Vaultoro Interface class."""
 # Import Built-Ins
 import logging
 import time
@@ -12,8 +13,10 @@ log = logging.getLogger(__name__)
 
 
 class Vaultoro(RESTInterface):
-    def __init__(self, **APIKwargs):
-        super(Vaultoro, self).__init__('Vaultoro', VaultoroREST(**APIKwargs))
+    """Vaultoro Interface class."""
+
+    def __init__(self, **api_kwargs):
+        super(Vaultoro, self).__init__('Vaultoro', VaultoroREST(**api_kwargs))
 
     # pylint: disable=arguments-differ
     def request(self, endpoint, authenticate=False, post=False, **req_kwargs):

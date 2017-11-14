@@ -1,3 +1,4 @@
+"""C-CEX Interface class."""
 # Import Built-Ins
 import logging
 
@@ -14,6 +15,8 @@ log = logging.getLogger(__name__)
 
 
 class CCEX(RESTInterface):
+    """C-CEX Interface class."""
+
     def __init__(self, **api_kwargs):
         super(CCEX, self).__init__('C-CEX', CCEXREST(**api_kwargs))
 

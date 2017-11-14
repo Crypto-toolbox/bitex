@@ -1,3 +1,4 @@
+"""OKCoin Interface class."""
 # Import Built-Ins
 import logging
 
@@ -11,8 +12,10 @@ log = logging.getLogger(__name__)
 
 
 class OKCoin(RESTInterface):
-    def __init__(self, **APIKwargs):
-        super(OKCoin, self).__init__('OKCoin', OKCoinREST(**APIKwargs))
+    """OKCoin Interface class."""
+
+    def __init__(self, **api_kwargs):
+        super(OKCoin, self).__init__('OKCoin', OKCoinREST(**api_kwargs))
 
     # pylint: disable=arguments-differ
     def request(self, endpoint, authenticate=False, **req_kwargs):

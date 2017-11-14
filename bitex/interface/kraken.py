@@ -1,3 +1,4 @@
+"""Kraken Interface class."""
 # Import Built-Ins
 import logging
 
@@ -11,6 +12,8 @@ log = logging.getLogger(__name__)
 
 
 class Kraken(RESTInterface):
+    """Kraken Interface class."""
+
     def __init__(self, **api_kwargs):
         super(Kraken, self).__init__('Kraken', KrakenREST(**api_kwargs))
 

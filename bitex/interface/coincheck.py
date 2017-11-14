@@ -1,3 +1,4 @@
+"""CoinCheck Interface class."""
 # Import Built-Ins
 import logging
 

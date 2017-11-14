@@ -1,3 +1,4 @@
+"""Poloniex Interface class."""
 # Import Built-Ins
 import logging
 
@@ -11,8 +12,10 @@ log = logging.getLogger(__name__)
 
 
 class Poloniex(RESTInterface):
-    def __init__(self, **APIKwargs):
-        super(Poloniex, self).__init__('Poloniex', PoloniexREST(**APIKwargs))
+    """Poloniex Interface class."""
+
+    def __init__(self, **api_kwargs):
+        super(Poloniex, self).__init__('Poloniex', PoloniexREST(**api_kwargs))
 
     # pylint: disable=arguments-differ
     def request(self, endpoint, authenticate=False, **req_kwargs):

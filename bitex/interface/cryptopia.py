@@ -1,3 +1,4 @@
+"""Cryptopia Interface class."""
 # Import Built-Ins
 import logging
 
@@ -11,6 +12,8 @@ log = logging.getLogger(__name__)
 
 
 class Cryptopia(RESTInterface):
+    """Cryptopia Interface class."""
+
     def __init__(self, **api_kwargs):
         super(Cryptopia, self).__init__('Cryptopia', CryptopiaREST(**api_kwargs))
 

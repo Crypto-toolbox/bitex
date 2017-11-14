@@ -1,3 +1,4 @@
+"""HitBTC Interface class."""
 # Import Built-Ins
 import logging
 
@@ -11,6 +12,8 @@ log = logging.getLogger(__name__)
 
 
 class HitBTC(RESTInterface):
+    """HitBtc Interface class."""
+
     def __init__(self, **api_kwargs):
         super(HitBTC, self).__init__('HitBTC', HitBTCREST(**api_kwargs))
 

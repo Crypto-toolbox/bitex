@@ -1,3 +1,4 @@
+"""Supplies Interface classes to access APIs."""
 from bitex.interface.bitfinex import Bitfinex
 from bitex.interface.bitstamp import Bitstamp
 from bitex.interface.bittrex import Bittrex
