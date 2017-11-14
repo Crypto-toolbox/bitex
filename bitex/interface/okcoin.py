@@ -14,13 +14,11 @@ class OKCoin(RESTInterface):
     def __init__(self, **APIKwargs):
         super(OKCoin, self).__init__('OKCoin', OKCoinREST(**APIKwargs))
 
+    # pylint: disable=arguments-differ
     def request(self, endpoint, authenticate=False, **req_kwargs):
         if authenticate:
-            return super(OKCoin, self).request('POST', endpoint, authenticate,
-                                               **req_kwargs)
-        else:
-            return super(OKCoin, self).request('GET', endpoint, authenticate,
-                                               **req_kwargs)
+            return super(OKCoin, self).request('POST', endpoint, authenticate, **req_kwargs)
+        return super(OKCoin, self).request('GET', endpoint, authenticate, **req_kwargs)
 
     def _get_supported_pairs(self):
         return ['btc_usd', 'ltc_usd', 'eth_usd',
@@ -74,4 +72,3 @@ class OKCoin(RESTInterface):
 
     def wallet(self, *args, **kwargs):
         return self.request('userinfo.do', authenticate=True, params=kwargs)
-
