@@ -91,27 +91,35 @@ class Bittrex(RESTInterface):
     ###########################
 
     def deposit_address(self, currency, **kwargs):
+        """Return the deposit address for given currency."""
         payload = {'currency': currency}
         payload.update(kwargs)
         return self.request('account/getdepositaddress', params=payload, authenticate=True)
 
     def withdraw(self, **kwargs):
+        """Issue a withdrawal."""
         return self.request('account/withdraw', params=kwargs)
 
     def trade_history(self, *args, **kwargs):  # pylint: disable=unused-argument
+        """Return the account's trade history."""
         return self.request('account/getorderhistory', params=kwargs)
 
     def withdrawal_history(self, *args, **kwargs):  # pylint: disable=unused-argument
+        """Return the account's withdrawal history."""
         return self.request('account/getwithdrawalhistory', params=kwargs)
 
     def deposit_history(self, *args, **kwargs):  # pylint: disable=unused-argument
+        """Return the account's deposit history."""
         return self.request('account/getdeposithistory', params=kwargs)
 
     def pairs(self, **kwargs):
+        """Return the available pairs."""
         return self.request('public/getmarkets', params=kwargs)
 
     def currencies(self, **kwargs):
+        """Return traded currencies."""
         return self.request('public/getcurrencies', params=kwargs)
 
     def simple_ticker(self, **kwargs):
+        """Return a simple ticker for a given pair."""
         return self.request('public/getticker', params=kwargs)
