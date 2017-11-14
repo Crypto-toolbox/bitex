@@ -50,7 +50,6 @@ class PairFormatter:
                            'GDAX':                  self.gdax_formatter,
                            'ITBit':                 self.itbit_formatter,
                            'OKCoin':                self.okcoin_formatter,
-                           'BTC-E':                 self.btce_formatter,
                            'C-CEX':                 self.ccex_formatter,
                            'Cryptopia':             self.cryptopia_formatter,
                            'Gemini':                self.gemini_formatter,
