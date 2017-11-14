@@ -201,8 +201,8 @@ class Bitfinex(RESTInterface):
         return self.request('key_info', authenticate=True)
 
     @check_version_compatibility(v1=v1_only_methods, v2=v2_only_methods)
-    def funding_info(self, **endpoint_kwargs):
-        return self.request('auth/r/funding/%s' % key, authenticate=True, params=endpoint_kwargs)
+    def funding_info(self, pair, **endpoint_kwargs):
+        return self.request('auth/r/funding/%s' % pair, authenticate=True, params=endpoint_kwargs)
 
     @check_version_compatibility(v1=v1_only_methods, v2=v2_only_methods)
     def balances(self):
