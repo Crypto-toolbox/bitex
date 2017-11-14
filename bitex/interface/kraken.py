@@ -11,22 +11,23 @@ log = logging.getLogger(__name__)
 
 
 class Kraken(RESTInterface):
-    def __init__(self, **APIKwargs):
-        super(Kraken, self).__init__('Kraken', KrakenREST(**APIKwargs))
+    def __init__(self, **api_kwargs):
+        super(Kraken, self).__init__('Kraken', KrakenREST(**api_kwargs))
 
     def _get_supported_pairs(self):
         r = self.request('AssetPairs').json()['result']
         return [r[k]['base'] + r[k]['quote'] if r[k]['base'] != 'BCH'
                 else k for k in r]
 
+    # pylint: disable=arguments-differ
     def request(self, endpoint, authenticate=False, **req_kwargs):
         if authenticate:
             return super(Kraken, self).request('POST', 'private/' + endpoint,
                                                authenticate=True, **req_kwargs)
-        else:
-            return super(Kraken, self).request('GET', 'public/' + endpoint, **req_kwargs)
+        return super(Kraken, self).request('GET', 'public/' + endpoint, **req_kwargs)
 
     # Public Endpoints
+    # pylint: disable=arguments-differ
     @check_and_format_pair
     def ticker(self, *pairs, **kwargs):
         payload = {'pair': pairs}
