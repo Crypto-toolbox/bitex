@@ -360,7 +360,7 @@ class Bitfinex(RESTInterface):
     @check_and_format_pair
     def alert_delete(self, pair, **endpoint_kwargs):
         self.is_supported(pair)
-        symbol = endpoint_kwargs.pop('price')
+        price = endpoint_kwargs.pop('price')
         return self.request('auth/w/alert/price:%s:%s/del' % (pair, price), authenticate=True)
 
     @check_version_compatibility(v1=v1_only_methods, v2=v2_only_methods)
