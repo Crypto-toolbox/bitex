@@ -4,15 +4,14 @@ from bitex.pairs import PairFormatter
 
 
 def check_version_compatibility(**version_func_pairs):
-    """This Decorator maker takes any number of
-    version_num=[list of compatible funcs] pairs, and checks if the
-    decorated function is compatible with the currently set API version.
+    """Check for correct version before method execution.
+
+    Checks if the decorated function is compatible with the currently set API version.
     Should this not be the case, an UnsupportedEndpointError is raised.
 
     If the api version required contains '.', replace it with an
     underscore ('_') - the decorator will take care of it.
     """
-
     def decorator(func):
         """Decorate wrapper."""
         def wrapped(*args, **kwargs):
@@ -35,14 +34,10 @@ def check_version_compatibility(**version_func_pairs):
 
 
 def check_and_format_pair(func):
-    """Execute format_for() method if available, and assert that pair is
-    supported by the exchange.
+    """Execute format_for() method if available, and assert that pair is supported by the exchange.
 
     When using this decorator, make sure that the first positional argument of
     the wrapped method is the pair, otherwise behaviour is undefined.
-
-    :param func:
-    :return:
     """
     def wrapped(self, *args, **kwargs):
         """Wrap function."""
