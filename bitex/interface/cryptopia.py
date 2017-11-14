@@ -11,8 +11,8 @@ log = logging.getLogger(__name__)
 
 
 class Cryptopia(RESTInterface):
-    def __init__(self, **APIKwargs):
-        super(Cryptopia, self).__init__('Cryptopia', CryptopiaREST(**APIKwargs))
+    def __init__(self, **api_kwargs):
+        super(Cryptopia, self).__init__('Cryptopia', CryptopiaREST(**api_kwargs))
 
     def _get_supported_pairs(self):
         r = self.request('GET', 'GetTradePairs').json()
@@ -33,6 +33,7 @@ class Cryptopia(RESTInterface):
         return self.request('GET', 'GetMarketHistory/' + pair, params=kwargs)
 
     # Private Endpoints
+    # pylint: disable=unused-arguments
     def _place_order(self, pair, price, size, side, *args, **kwargs):
         payload = {'Market': pair, 'Type': side, 'Rate': price, 'Amount': size}
         payload.update(kwargs)
