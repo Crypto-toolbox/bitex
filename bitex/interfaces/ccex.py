@@ -8,7 +8,7 @@ import logging
 # Import Third-Party
 
 # Import Homebrew
-from bitex.api.REST.rest import CCEXRest
+from bitex.api.REST import CCEXRest
 from bitex.utils import return_api_response
 from bitex.formatters.ccex import CcexFormatter as fmt
 

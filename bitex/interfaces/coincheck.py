@@ -8,7 +8,7 @@ import logging
 # Import Third-Party
 
 # Import Homebrew
-from bitex.api.REST.rest import CoincheckREST
+from bitex.api.REST import CoincheckREST
 from bitex.utils import return_api_response
 from bitex.formatters.coincheck import CnckFormatter as fmt
 

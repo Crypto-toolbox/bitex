@@ -57,7 +57,7 @@ procedure.
 
 An example:
 ```
-from bitex.api.REST.rest import KrakenREST
+from bitex.api.REST import KrakenREST
 
 k = KrakenREST()
 k.load_key('kraken.key')  # loads key and secret from given file;

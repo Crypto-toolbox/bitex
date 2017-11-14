@@ -8,7 +8,7 @@ import time
 # Import Third-Party
 
 # Import Homebrew
-from bitex.api.REST.rest import HitBTCREST
+from bitex.api.REST import HitBTCREST
 from bitex.api.WSS.hitbtc import HitBTCWSS
 from bitex.utils import return_api_response
 from bitex.formatters.hitbtc import HitBtcFormatter as fmt

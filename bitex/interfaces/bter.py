@@ -8,7 +8,7 @@ import logging
 # Import Third-Party
 
 # Import Homebrew
-from bitex.api.REST.rest import BterREST
+from bitex.api.REST import BterREST
 from bitex.utils import return_api_response
 from bitex.formatters.bter import BterFormatter as fmt
 

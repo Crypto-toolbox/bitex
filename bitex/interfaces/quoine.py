@@ -8,7 +8,7 @@ import logging
 # Import Third-Party
 
 # Import Homebrew
-from bitex.api.REST.rest import QuoineREST
+from bitex.api.REST import QuoineREST
 from bitex.utils import return_api_response
 from bitex.formatters.quoine import QoinFormatter as fmt
 

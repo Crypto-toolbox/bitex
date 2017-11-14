@@ -7,8 +7,8 @@ import json
 
 # Import Homebrew
 from bitex.api.REST.api import APIClient
-from bitex.api.REST.rest import KrakenREST, CryptopiaREST, CCEXRest, GeminiREST
-from bitex.api.REST.rest import YunbiREST, RockTradingREST
+from bitex.api.REST import KrakenREST, CryptopiaREST, CCEXRest, GeminiREST
+from bitex.api.REST import YunbiREST, RockTradingREST
 
 log = logging.getLogger(__name__)
 

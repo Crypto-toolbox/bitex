@@ -8,7 +8,7 @@ import logging
 # Import Third-Party
 
 # Import Homebrew
-from bitex.api.REST.rest import GeminiREST
+from bitex.api.REST import GeminiREST
 from bitex.api.WSS.gemini import GeminiWSS
 from bitex.utils import return_api_response
 from bitex.formatters.gemini import GmniFormatter as fmt

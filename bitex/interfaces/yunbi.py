@@ -8,7 +8,7 @@ import logging
 # Import Third-Party
 
 # Import Homebrew
-from bitex.api.REST.rest import YunbiREST
+from bitex.api.REST import YunbiREST
 from bitex.utils import return_api_response
 from bitex.formatters.yunbi import YnbiFormatter as fmt
 

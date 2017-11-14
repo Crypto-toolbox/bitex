@@ -8,7 +8,7 @@ import logging
 # Import Third-Party
 
 # Import Homebrew
-from bitex.api.REST.rest import VaultoroREST
+from bitex.api.REST import VaultoroREST
 from bitex.utils import return_api_response
 from bitex.formatters.vaultoro import VaultoroFormatter as fmt
 
