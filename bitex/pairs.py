@@ -13,6 +13,9 @@ you want:
 This object now takes care of all formatting of any exchange, supported by
 Bitex, you pass it to.
 """
+
+# pylint: disable=too-many-public-methods,missing-docstring
+
 # Import Built-Ins
 import logging
 
@@ -33,6 +36,7 @@ class PairFormatter:
     supported by the requested exchange.
     """
     def __init__(self, base, quote):
+        """Initialize formatter instance."""
         self._base = base
         self._quote = quote
         self.formatters = {'Kraken':                self.kraken_formatter,
@@ -55,30 +59,38 @@ class PairFormatter:
                            'Vaultoro':              self.vaultoro_formatter,
                            'Bter':                  self.bter_formatter,
                            'Yunbi':                 self.yunbi_formatter,
-                           "Binance":               self.binance_formatter
-                        }
+                           "Binance":               self.binance_formatter}
 
     def __str__(self, *args, **kwargs):
+        """Return the stored base and quote currency in proper pair format."""
         return self._base + self._quote
 
     def __call__(self):
+        """Return currency pair when called."""
         return self.__str__()
 
     def format_for(self, exchange_name):
+        """Format the pair for the given exchange."""
         return self.formatters[exchange_name](self._base, self._quote)
 
     @staticmethod
     def kraken_formatter(base, quote):
+        """Format the currencies for Kraken.
+
+        Generally speaking, Kraken prefixes digital currencies with a capital 'X', and fiat
+        Currencies with a capital 'Z'. There exceptions to this rule, unfortunately,
+        which should be handled as well.
+        """
         base = 'XBT' if base == 'BTC' else base
         quote = 'XBT' if quote == 'BTC' else quote
 
         def add_prefix(cur):
+            """Add the correct prefix to the currency."""
             if 'BCH' in (base, quote):
                 return cur
             elif cur in ('USD', 'EUR', 'GBP', 'JPY', 'CAD'):
-                    return 'Z' + cur
-            else:
-                return 'X' + cur
+                return 'Z' + cur
+            return 'X' + cur
 
         return add_prefix(base) + add_prefix(quote)
 
@@ -88,6 +100,11 @@ class PairFormatter:
 
     @staticmethod
     def bitfinex_formatter(base, quote):
+        """Format currencies for bitfinex.
+
+        Edgecase: DASH
+            This symbol is shortened to 'DSH'.
+        """
         base = 'DSH' if base == 'DASH' else base
         quote = 'DSH' if quote == 'DASH' else quote
         return base + quote
@@ -110,6 +127,11 @@ class PairFormatter:
 
     @staticmethod
     def itbit_formatter(base, quote):
+        """Format currencies for ItBit.
+
+        Edge case: BTC
+            BTC is denoted as 'XBT'.
+        """
         base = 'XBT' if base == 'BTC' else base
         quote = 'XBT' if base == 'BTC' else quote
         return base + quote
@@ -144,11 +166,16 @@ class PairFormatter:
 
     @staticmethod
     def poloniex_formatter(base, quote):
+        """Format currencies for Poloniex.
+
+        Edge Case: BTC, USDT and XMR in Quote
+            As theses Symbols have their own markets(several currencies are quoted in them),
+            they must be handled accordingly.
+        """
         if ((quote == 'BTC') or (quote == 'USDT') or
                 (quote == 'XMR' and not(base == 'BTC' or base == 'USDT'))):
             return quote + '_' + base
-        else:
-            return base + '_' + quote
+        return base + '_' + quote
 
     @staticmethod
     def quoine_formatter(base, quote):

@@ -1,5 +1,6 @@
-from .exceptions import UnsupportedEndpointError
-from .pairs import PairFormatter
+"""Supplies Decorators and utility functions."""
+from bitex.exceptions import UnsupportedEndpointError
+from bitex.pairs import PairFormatter
 
 
 def check_version_compatibility(**version_func_pairs):
@@ -13,7 +14,9 @@ def check_version_compatibility(**version_func_pairs):
     """
 
     def decorator(func):
+        """Decorate wrapper."""
         def wrapped(*args, **kwargs):
+            """Wrap function."""
             interface = args[0]
             for version, methods in version_func_pairs.items():
                 if func.__name__ in methods:
@@ -28,6 +31,8 @@ def check_version_compatibility(**version_func_pairs):
         return wrapped
     return decorator
 
+# pylint: disable=protected-access
+
 
 def check_and_format_pair(func):
     """Execute format_for() method if available, and assert that pair is
@@ -40,6 +45,7 @@ def check_and_format_pair(func):
     :return:
     """
     def wrapped(self, *args, **kwargs):
+        """Wrap function."""
         pair, *_ = args
         try:
             if isinstance(args[0], PairFormatter):
