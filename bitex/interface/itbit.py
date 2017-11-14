@@ -1,3 +1,5 @@
+"""ItBit Interface class."""
+# pylint: disable=abstract-method
 # Import Built-Ins
 import logging
 
@@ -11,6 +13,8 @@ log = logging.getLogger(__name__)
 
 
 class ItBit(RESTInterface):
+    """itBit Interface class."""
+
     def __init__(self, **api_kwargs):
         super(ItBit, self).__init__('itBit', ITbitREST(**api_kwargs))
         raise NotImplementedError

@@ -1,3 +1,5 @@
+"""Gemini Interface class."""
+# pylint: disable=abstract-method
 # Import Built-Ins
 import logging
 
@@ -11,6 +13,8 @@ log = logging.getLogger(__name__)
 
 
 class Gemini(RESTInterface):
+    """Gemini Interface class."""
+
     def __init__(self, **api_kwargs):
         super(Gemini, self).__init__('Gemini', GeminiREST(**api_kwargs))
         raise NotImplementedError
