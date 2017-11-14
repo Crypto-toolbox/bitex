@@ -11,17 +11,15 @@ log = logging.getLogger(__name__)
 
 
 class QuadrigaCX(RESTInterface):
-    def __init__(self, **APIKwargs):
+    def __init__(self, **api_kwargs):
         super(QuadrigaCX, self).__init__('QuadrigaCX',
-                                         QuadrigaCXREST(**APIKwargs))
+                                         QuadrigaCXREST(**api_kwargs))
 
+    # pylint: disable=arguments-differ
     def request(self, endpoint, authenticate=False, **req_kwargs):
         if authenticate:
-            return super(QuadrigaCX, self).request('POST', endpoint,
-                                                   authenticate, **req_kwargs)
-        else:
-            return super(QuadrigaCX, self).request('GET', endpoint,
-                                                   authenticate, **req_kwargs)
+            return super(QuadrigaCX, self).request('POST', endpoint, authenticate, **req_kwargs)
+        return super(QuadrigaCX, self).request('GET', endpoint, authenticate, **req_kwargs)
 
     def _get_supported_pairs(self):
         return ['btc_cad', 'btc_usd', 'eth_btc', 'eth_cad']
@@ -78,4 +76,3 @@ class QuadrigaCX(RESTInterface):
 
     def wallet(self, *args, **kwargs):
         return self.request('balance', authenticate=True, params=kwargs)
-
