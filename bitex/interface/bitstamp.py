@@ -1,3 +1,5 @@
+"""Bitstamp Interface class."""
+# pylint: disable=arguments-differ
 # Import Built-Ins
 import logging
 
@@ -17,8 +19,8 @@ class Bitstamp(RESTInterface):
     Since Bitstamp doesn't make an explicit differentiation between api versions,
     we do not use a version checker for this interface.
     """
-    def __init__(self, **APIKwargs):
-        super(Bitstamp, self).__init__('Bitstamp', BitstampREST(**APIKwargs))
+    def __init__(self, **api_kwargs):
+        super(Bitstamp, self).__init__('Bitstamp', BitstampREST(**api_kwargs))
 
     def _get_supported_pairs(self):
         return ['btceur', 'btcusd', 'eurusd', 'xrpusd', 'xrpeur', 'xrpbtc',
@@ -26,8 +28,7 @@ class Bitstamp(RESTInterface):
 
     def request(self, endpoint, authenticate=False, **kwargs):
         verb = 'POST' if authenticate else 'GET'
-        return super(Bitstamp, self).request(verb, endpoint,
-                                             authenticate=authenticate, **kwargs)
+        return super(Bitstamp, self).request(verb, endpoint, authenticate=authenticate, **kwargs)
 
     ###############
     # Basic Methods
@@ -36,54 +37,41 @@ class Bitstamp(RESTInterface):
     # Public Endpoints
     @check_and_format_pair
     def ticker(self, pair, *args, **kwargs):
-        return self.request('ticker/%s/' % pair,
-                            params=kwargs)
+        return self.request('ticker/%s/' % pair, params=kwargs)
 
     @check_and_format_pair
     def order_book(self, pair, *args, **kwargs):
-        return self.request('order_book/%s/' % pair,
-                            params=kwargs)
+        return self.request('order_book/%s/' % pair, params=kwargs)
 
     @check_and_format_pair
     def trades(self, pair, *args, **kwargs):
-        return self.request('transactions/%s/' % pair,
-                            params=kwargs)
+        return self.request('transactions/%s/' % pair, params=kwargs)
 
     # Private Endpoints
     @check_and_format_pair
     def ask(self, pair, price, size, *args, market=False, **kwargs):
-        return self._place_order(pair, price, size, 'buy', market=market,
-                                 **kwargs)
+        return self._place_order(pair, price, size, 'buy', market=market, **kwargs)
 
     @check_and_format_pair
     def bid(self, pair, price, size, *args, market=False, **kwargs):
-        return self._place_order(pair, price, size, 'buy', market=False,
-                                 **kwargs)
+        return self._place_order(pair, price, size, 'buy', market=market, **kwargs)
 
-    def _place_order(self, pair, size, price, side, market=None):
+    def _place_order(self, pair, size, price, side, market=None, **kwargs):
         payload = {'amount': size, 'price': price}
         payload.update(kwargs)
         if market:
-                    return self.request('%s/market/%s/' %
-                                        (side, pair),
-                                         authenticate=True, data=payload)
-        else:
-            return self.request('%s/%s/' % (side, pair),
-                                authenticate=True, data=payload)
+            return self.request('%s/market/%s/' % (side, pair), authenticate=True, data=payload)
+        return self.request('%s/%s/' % (side, pair), authenticate=True, data=payload)
 
     def order_status(self, order_id, *args, **kwargs):
         payload = {'id': order_id}
         payload.update(kwargs)
-        return self.request('api/order_status/', authenticate=True,
-                            data=payload)
+        return self.request('api/order_status/', authenticate=True, data=payload)
 
     def open_orders(self, *args, pair=None, **kwargs):
         if pair:
-            return self.request('open_orders/%s/' % pair,
-                                authenticate=True, data=kwargs)
-        else:
-            return self.request('open_orders/all/', authenticate=True,
-                                data=kwargs)
+            return self.request('open_orders/%s/' % pair, authenticate=True, data=kwargs)
+        return self.request('open_orders/all/', authenticate=True, data=kwargs)
 
     def cancel_order(self, *order_ids, **kwargs):
         results = []
@@ -94,14 +82,11 @@ class Bitstamp(RESTInterface):
             results.append(r)
         return results if len(results) > 1 else results[0]
 
-
     def wallet(self, *args, **kwargs):
         pair = kwargs['pair'].format_for(self.name).lower() if 'pair' in kwargs else None
         if pair:
-            return self.request('balance/%s/' % pair,
-                                authenticate=True, data=kwargs)
-        else:
-            return self.request('balance/', authenticate=True, data=kwargs)
+            return self.request('balance/%s/' % pair, authenticate=True, data=kwargs)
+        return self.request('balance/', authenticate=True, data=kwargs)
 
     ###########################
     # Exchange Specific Methods
@@ -110,10 +95,8 @@ class Bitstamp(RESTInterface):
     @check_and_format_pair
     def hourly_ticker(self, pair, **kwargs):
         if pair:
-            return self.request('ticker_hour/%s/' % pair,
-                                params=kwargs)
-        else:
-            return self.request('api/ticker_hour/')
+            return self.request('ticker_hour/%s/' % pair, params=kwargs)
+        return self.request('api/ticker_hour/')
 
     def eur_usd_conversion_rate(self, **kwargs):
         return self.request('api/eur_usd/', params=kwargs)
@@ -121,22 +104,16 @@ class Bitstamp(RESTInterface):
     @check_and_format_pair
     def user_transactions(self, pair, **kwargs):
         if pair:
-            return self.request('user_transactions/%s/' %
-                                pair, authenticate=True,
-                                data=kwargs)
-        else:
-            return self.request('api/user_transactions/', authenticate=True,
-                                data=kwargs)
+            return self.request('user_transactions/%s/' % pair, authenticate=True, data=kwargs)
+        return self.request('api/user_transactions/', authenticate=True, data=kwargs)
 
     def cancel_all_orders(self, **kwargs):
-        return self.request('api/cancel_all_orders/', authenticate=True,
-                            data=kwargs)
+        return self.request('api/cancel_all_orders/', authenticate=True, data=kwargs)
 
     def withdrawal_request(self, **kwargs):
-        return self.request('api/withdrawal_request', authenticate=True,
-                            data=kwargs)
+        return self.request('api/withdrawal_request', authenticate=True, data=kwargs)
 
-    def withdraw(self, currency, **kwargs):
+    def withdraw(self, currency, **kwargs):  # pylint: disable=unused-argument
         if currency in ('LTC', 'ltc'):
             return self.request('ltc_withdrawal', authenticate=True)
         elif currency in ('BTC', 'btc'):
@@ -186,4 +163,3 @@ class Bitstamp(RESTInterface):
     def liquidation_info(self, **kwargs):
         return self.request('liquidation_address/info/', authenticate=True,
                             data=kwargs)
-
