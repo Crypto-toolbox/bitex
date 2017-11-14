@@ -19,6 +19,8 @@ class Bitfinex(RESTInterface):
     Includes standardized methods, as well as all other Endpoints
     available on their REST API.
     """
+    # pylint: disable=arguments-differ
+
     # State version specific methods
     v2_only_methods = ['candles', 'market_average_price', 'wallets', 'orders',
                        'order_trades', 'positions', 'offers', 'funding_info',
@@ -43,15 +45,13 @@ class Bitfinex(RESTInterface):
         if not authenticate:
             return super(Bitfinex, self).request('GET', endpoint, authenticate=authenticate,
                                                  **req_kwargs)
-        else:
-            return super(Bitfinex, self).request('POST', endpoint, authenticate=authenticate,
-                                                 **req_kwargs)
+        return super(Bitfinex, self).request('POST', endpoint, authenticate=authenticate,
+                                             **req_kwargs)
 
     def _get_supported_pairs(self):
         if self.REST.version == 'v1':
             return self.symbols().json()
-        else:
-            return requests.get('https://api.bitfinex.com/v1/symbols').json()
+        return requests.get('https://api.bitfinex.com/v1/symbols').json()
 
     ###############
     # Basic Methods
@@ -61,27 +61,24 @@ class Bitfinex(RESTInterface):
         self.is_supported(pair)
         if self.REST.version == 'v1':
             return self.request('pubticker/%s' % pair)
-        else:
-            return self.request('ticker/%s' % pair, params=endpoint_kwargs)
+        return self.request('ticker/%s' % pair, params=endpoint_kwargs)
 
     @check_and_format_pair
     def order_book(self, pair, **endpoint_kwargs):
         self.is_supported(pair)
         if self.REST.version == 'v1':
             return self.request('book/%s' % pair, params=endpoint_kwargs)
-        else:
-            prec = ('P0' if 'Precision' not in endpoint_kwargs else
-                    endpoint_kwargs.pop('Precision'))
-            return self.request('book/%s/%s' % (pair, prec),
-                                params=endpoint_kwargs)
+        prec = ('P0' if 'Precision' not in endpoint_kwargs else
+                endpoint_kwargs.pop('Precision'))
+        return self.request('book/%s/%s' % (pair, prec),
+                            params=endpoint_kwargs)
 
     @check_and_format_pair
     def trades(self, pair, **endpoint_kwargs):
         self.is_supported(pair)
         if self.REST.version == 'v1':
             return self.request('trades/%s' % pair, params=endpoint_kwargs)
-        else:
-            return self.request('trades/%s/hist' % pair, params=endpoint_kwargs)
+        return self.request('trades/%s/hist' % pair, params=endpoint_kwargs)
 
     @check_and_format_pair
     def ask(self, pair, price, size, *args, **kwargs):
@@ -132,26 +129,23 @@ class Bitfinex(RESTInterface):
         self.is_supported(pair)
         if self.REST.version == 'v1':
             return self.request('stats/%s' % pair)
-        else:
-            key = endpoint_kwargs.pop('key')
-            size = endpoint_kwargs.pop('size')
-            side = endpoint_kwargs.pop('side')
-            section = endpoint_kwargs.pop('section')
-            path = key, size, pair, side, section
-            return self.request('stats1/%s:%s:%s:%s/%s' % path, params=endpoint_kwargs)
+        key = endpoint_kwargs.pop('key')
+        size = endpoint_kwargs.pop('size')
+        side = endpoint_kwargs.pop('side')
+        section = endpoint_kwargs.pop('section')
+        path = key, size, pair, side, section
+        return self.request('stats1/%s:%s:%s:%s/%s' % path, params=endpoint_kwargs)
 
     def margin_info(self, **endpoint_kwargs):
         if self.REST.version == 'v1':
             return self.request('margin_info', authenticate=True)
-        else:
-            key = endpoint_kwargs.pop('key')
-            return self.request('auth/r/margin/%s' % key, authenticate=True, params=endpoint_kwargs)
+        key = endpoint_kwargs.pop('key')
+        return self.request('auth/r/margin/%s' % key, authenticate=True, params=endpoint_kwargs)
 
     def offers(self, **endpoint_kwargs):
         if self.REST.version == 'v1':
             return self.request('offers', authenticate=True, params=endpoint_kwargs)
-        else:
-            return self.request('auth/r/offers', authenticate=True, params=endpoint_kwargs)
+        return self.request('auth/r/offers', authenticate=True, params=endpoint_kwargs)
 
     ########################
     # Version 1 Only Methods
@@ -165,8 +159,7 @@ class Bitfinex(RESTInterface):
     def symbols(self, verbose=False):
         if verbose:
             return self.request('symbols_details')
-        else:
-            return self.request('symbols')
+        return self.request('symbols')
 
     @check_version_compatibility(v1=v1_only_methods, v2=v2_only_methods)
     def symbols_details(self):
@@ -242,7 +235,7 @@ class Bitfinex(RESTInterface):
         return self.request('order/cancel/replace', authenticate=True, params=endpoint_kwargs)
 
     @check_version_compatibility(v1=v1_only_methods, v2=v2_only_methods)
-    def active_orders(self, *args, **kwargs):
+    def active_orders(self, *args, **kwargs):  # pylint: disable=unused-argument
         return self.request('orders', authenticate=True)
 
     @check_version_compatibility(v1=v1_only_methods, v2=v2_only_methods)
@@ -369,4 +362,3 @@ class Bitfinex(RESTInterface):
         self.is_supported(pair)
         endpoint_kwargs['symbol'] = pair
         return self.request('auth/calc/order/avail', authenticate=True, params=endpoint_kwargs)
-
