@@ -36,7 +36,6 @@ class OKCoinREST(RESTAPI):
         be appended in alphabetical order. This means we cannot rely on urllib's
         encode() method and need to do this ourselves.
         """
-
         req_kwargs = super(OKCoinREST, self).sign_request_kwargs(endpoint,
                                                                  **kwargs)
         # Prepare payload arguments

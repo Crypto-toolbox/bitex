@@ -22,6 +22,7 @@ log = logging.getLogger(__name__)
 
 class PoloniexREST(RESTAPI):
     """Poloniex REST API class."""
+
     def __init__(self, key=None, secret=None, version=None, config=None,
                  addr=None, timeout=5):
         """Initialize the class instance."""

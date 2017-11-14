@@ -13,7 +13,7 @@ log = logging.getLogger(__name__)
 
 
 class RESTAPI(BaseAPI):
-    """ Generic REST API interface.
+    """Generic REST API interface.
 
     Supplies private and public query methods,
     as well as building blocks to customize the signature generation process.
@@ -21,8 +21,8 @@ class RESTAPI(BaseAPI):
 
     def __init__(self, addr, timeout=None, key=None, secret=None, version=None,
                  config=None):
-        """
-        Initializes the RESTAPI instance.
+        """Initialize the RESTAPI instance.
+
         :param addr: str, API URL (excluding endpoint paths, if applicable)
         :param key: str, API key
         :param secret: str, API secret
@@ -34,8 +34,8 @@ class RESTAPI(BaseAPI):
         self.timeout = timeout if timeout else 10
 
     def generate_uri(self, endpoint):
-        """
-        Generates a Unique Resource Identifier (API Version + Endpoint)
+        """Generate a Unique Resource Identifier (API Version + Endpoint).
+
         :param endpoint: str, endpoint path (i.e. /market/btcusd)
         :return: str, URI
         """
@@ -44,16 +44,16 @@ class RESTAPI(BaseAPI):
         return '/' + endpoint
 
     def generate_url(self, uri):
-        """
-        Generates a Unique Resource Locator (API Address + URI)
+        """Generate a Unique Resource Locator (API Address + URI).
+
         :param uri: str, URI
         :return: str, URL
         """
         return self.addr + uri
 
     def sign_request_kwargs(self, endpoint, **kwargs):
-        """
-        Dummy Request Kwarg Signature Generator.
+        """Generate dummy Request Kwarg Signature.
+
         Extend this to implement signing of requests for private API calls.
         By default, it supplies a default URL using generate_uri and generate_url
         :param endpoint: str, API Endpoint
@@ -69,8 +69,8 @@ class RESTAPI(BaseAPI):
         return template
 
     def _query(self, method_verb, **request_kwargs):
-        """
-        Sends the request to the API via requests.
+        """Send the request to the API via requests.
+
         :param method_verb: valid HTTP Verb (GET, PUT, DELETE, etc.)
         :param request_kwargs: kwargs for request.Request()
         :return: request.Response() object
@@ -92,8 +92,8 @@ class RESTAPI(BaseAPI):
         return self._query(method_verb, **request_kwargs)
 
     def public_query(self, method_verb, endpoint, **request_kwargs):
-        """
-        Queries a public (i.e. unauthenticated) API endpoint and return the result.
+        """Query a public (i.e. unauthenticated) API endpoint and return the result.
+
         :param method_verb: valid HTTP Verb (GET, PUT, DELETE, etc.)
         :param endpoint: str, API Endpoint
         :param request_kwargs: kwargs for request.Request()
