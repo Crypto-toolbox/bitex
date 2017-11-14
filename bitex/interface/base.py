@@ -1,3 +1,4 @@
+"""Base class for interfaces."""
 # Import Built-Ins
 import logging
 
@@ -10,8 +11,11 @@ log = logging.getLogger(__name__)
 
 
 class Interface:
+    """Base class for Interface objects."""
+
     def __init__(self, *, name, rest_api):
-        self.REST = rest_api
+        """Initialize the class instance."""
+        self.REST = rest_api  # pylint: disable=invalid-name
         self.name = name
         try:
             self._supported_pairs = self._get_supported_pairs()
@@ -20,6 +24,7 @@ class Interface:
 
     @property
     def supported_pairs(self):
+        """Return a list of supported currncy pairs."""
         return self._supported_pairs
 
     def _get_supported_pairs(self):
@@ -51,8 +56,7 @@ class Interface:
 
         if pair in self.supported_pairs:
             return True
-        else:
-            return False
+        return False
 
     def request(self, verb, endpoint, authenticate=False, **req_kwargs):
         """Query the API and return its result.
@@ -65,8 +69,6 @@ class Interface:
         :raise: UnsupportedPairError
         :return: requests.Response() Obj
         """
-
         if authenticate:
             return self.REST.private_query(verb, endpoint, **req_kwargs)
-        else:
-            return self.REST.public_query(verb, endpoint, **req_kwargs)
+        return self.REST.public_query(verb, endpoint, **req_kwargs)
