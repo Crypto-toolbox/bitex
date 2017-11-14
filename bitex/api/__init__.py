@@ -1,3 +1,4 @@
+"""Supplies API modules."""
 from bitex.api.base import BaseAPI
 from bitex.api.REST import RESTAPI
 from bitex.api.REST import BitfinexREST

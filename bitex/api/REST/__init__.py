@@ -1,3 +1,4 @@
+"""Supplies REST Objects for APIS."""
 from bitex.api.REST.rest import RESTAPI
 from bitex.api.REST.bitfinex import BitfinexREST
 from bitex.api.REST.bitstamp import BitstampREST

@@ -41,7 +41,7 @@ class CryptopiaREST(RESTAPI):
         the response's content. We thus remove the first 3 bytes if Response.json()
         fails.
         """
-        resp = super(CryptopiaREST, self)._query(method_verb, **kwargs)
+        resp = super(CryptopiaREST, self)._query(method_verb, **request_kwargs)
         try:
             resp.json()
         except json.JSONDecodeError:
