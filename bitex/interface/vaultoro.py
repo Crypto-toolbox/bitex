@@ -15,6 +15,7 @@ class Vaultoro(RESTInterface):
     def __init__(self, **APIKwargs):
         super(Vaultoro, self).__init__('Vaultoro', VaultoroREST(**APIKwargs))
 
+    # pylint: disable=arguments-differ
     def request(self, endpoint, authenticate=False, post=False, **req_kwargs):
         verb = 'GET' if not post else 'POST'
         endpoint = '1/' + endpoint if authenticate else endpoint
@@ -32,6 +33,7 @@ class Vaultoro(RESTInterface):
     def order_book(self, pair, *args, **kwargs):
         return self.request('orderbook/', params=kwargs)
 
+    # pylint: disable=arguments-differ
     @check_and_format_pair
     def trades(self, pair, *args, since=None, **kwargs):
         q = {'since': time.time() - 360 if not since else since}
@@ -39,6 +41,7 @@ class Vaultoro(RESTInterface):
         return self.request('latesttrades', params=q)
 
     # Private Endpoints
+    # pylint: disable=unused-argument
     def _place_order(self, pair, price, size, side, market_order, **kwargs):
         order_type = 'limit' if not market_order else 'market'
         q = {'gld': size, 'price': price}
@@ -46,11 +49,13 @@ class Vaultoro(RESTInterface):
                             (side, order_type), authenticate=True,
                             post=True, params=q)
 
+    # pylint: disable=arguments-differ
     @check_and_format_pair
     def ask(self, pair, price, size, *args, market_order=False, **kwargs):
         return self._place_order(pair, price, size, 'sell', market_order,
                                  **kwargs)
 
+    # pylint: disable=arguments-differ
     @check_and_format_pair
     def bid(self, pair, price, size, *args, market_order=False, **kwargs):
         return self._place_order(pair, price, size, 'buy', market_order,
