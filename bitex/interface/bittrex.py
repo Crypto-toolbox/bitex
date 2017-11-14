@@ -1,3 +1,4 @@
+"""Bitstamp Interface class."""
 # Import Built-Ins
 import logging
 
@@ -12,12 +13,14 @@ log = logging.getLogger(__name__)
 
 
 class Bittrex(RESTInterface):
-    def __init__(self, **APIKwargs):
-        super(Bittrex, self).__init__('Bittrex', BittrexREST(**APIKwargs))
+    """Bittrex REST API Interface Class."""
 
+    def __init__(self, **api_kwargs):
+        super(Bittrex, self).__init__('Bittrex', BittrexREST(**api_kwargs))
+
+    # pylint: disable=arguments-differ
     def request(self, endpoint, authenticate=False, **req_kwargs):
-        return super(Bittrex, self).request('GET', endpoint, authenticate,
-                                            **req_kwargs)
+        return super(Bittrex, self).request('GET', endpoint, authenticate, **req_kwargs)
 
     def _get_supported_pairs(self):
         r = self.pairs()
@@ -50,46 +53,38 @@ class Bittrex(RESTInterface):
     def ask(self, pair, price, size, *args, **kwargs):
         payload = {'market': pair, 'quantity': size, 'rate': price}
         payload.update(kwargs)
-        return self.request('market/selllimit', params=payload,
-                            authenticate=True)
+        return self.request('market/selllimit', params=payload, authenticate=True)
 
     @check_and_format_pair
     def bid(self, pair, price, size, *args, **kwargs):
         payload = {'market': pair, 'quantity': size, 'rate': price}
         payload.update(kwargs)
-        return self.request('market/buylimit', params=payload,
-                            authenticate=True)
+        return self.request('market/buylimit', params=payload, authenticate=True)
 
     def order_status(self, order_id, *args, **kwargs):
         payload = {'uuid': order_id}
         payload.update(kwargs)
-        return self.request('account/getorder', params=payload,
-                            authenticate=True)
+        return self.request('account/getorder', params=payload, authenticate=True)
 
     def open_orders(self, *args, **kwargs):
-        return self.request('market/getopenorders', params=kwargs,
-                            authenticate=True)
+        return self.request('market/getopenorders', params=kwargs, authenticate=True)
 
     def cancel_order(self, *order_ids, **kwargs):
         results = []
         payload = kwargs
         for uuid in order_ids:
             payload.update({'uuid': uuid})
-            r = self.request('market/cancel', params=payload,
-                             authenticate=True)
+            r = self.request('market/cancel', params=payload, authenticate=True)
             results.append(r)
         return results if len(results) > 1 else results[0]
 
-    def wallet(self, currency=None, *args, **kwargs):
+    def wallet(self, currency=None, *args, **kwargs):  # pylint: disable=arguments-differ
         if currency:
             payload = {'currency': currency}
             payload.update(kwargs)
-            return self.request('account/getbalance', params=payload,
-                                authenticate=True)
-        else:
-            payload = kwargs
-            return self.request('account/getbalances', params=payload,
-                                authenticate=True)
+            return self.request('account/getbalance', params=payload, authenticate=True)
+        payload = kwargs
+        return self.request('account/getbalances', params=payload, authenticate=True)
 
     ###########################
     # Exchange Specific Methods
@@ -98,19 +93,18 @@ class Bittrex(RESTInterface):
     def deposit_address(self, currency, **kwargs):
         payload = {'currency': currency}
         payload.update(kwargs)
-        return self.request('account/getdepositaddress', params=payload,
-                            authenticate=True)
+        return self.request('account/getdepositaddress', params=payload, authenticate=True)
 
     def withdraw(self, **kwargs):
         return self.request('account/withdraw', params=kwargs)
 
-    def trade_history(self, *args, **kwargs):
+    def trade_history(self, *args, **kwargs):  # pylint: disable=unused-argument
         return self.request('account/getorderhistory', params=kwargs)
 
-    def withdrawal_history(self, *args, **kwargs):
+    def withdrawal_history(self, *args, **kwargs):  # pylint: disable=unused-argument
         return self.request('account/getwithdrawalhistory', params=kwargs)
 
-    def deposit_history(self, *args, **kwargs):
+    def deposit_history(self, *args, **kwargs):  # pylint: disable=unused-argument
         return self.request('account/getdeposithistory', params=kwargs)
 
     def pairs(self, **kwargs):
