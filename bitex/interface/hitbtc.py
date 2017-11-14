@@ -11,13 +11,14 @@ log = logging.getLogger(__name__)
 
 
 class HitBTC(RESTInterface):
-    def __init__(self, **APIKwargs):
-        super(HitBTC, self).__init__('HitBTC', HitBTCREST(**APIKwargs))
+    def __init__(self, **api_kwargs):
+        super(HitBTC, self).__init__('HitBTC', HitBTCREST(**api_kwargs))
 
     def _get_supported_pairs(self):
         r = self.request('symbols')
         return [entry['symbol'] for entry in r.json()['symbols']]
 
+    # pylint: disable=arguments-differ
     def request(self, endpoint, authenticate=False, verb=None, **req_kwargs):
         verb = verb if verb else 'GET'
         if authenticate:
@@ -40,10 +41,10 @@ class HitBTC(RESTInterface):
     def trades(self, pair, *args, **kwargs):
         if 'from' not in kwargs:
             return self.request('%s/trades/recent' % pair, params=kwargs)
-        else:
-            return self.request('%s/trades', params=kwargs)
+        return self.request('%s/trades', params=kwargs)
 
     # Private Endpoints
+    # pylint: disable=unused-argument
     def _place_order(self, pair, price, size, side, *args, **kwargs):
         payload = {'symbol': pair, 'side': side, 'price': price,
                    'quantity': size, 'type': 'limit'}
@@ -67,20 +68,19 @@ class HitBTC(RESTInterface):
     def open_orders(self, *args, **kwargs):
         return self.request('orders/active', authenticate=True, params=kwargs)
 
+    # pylint: disable=arguments-differ
     def cancel_order(self, *order_ids, cancel_all=False, **kwargs):
         if cancel_all:
             return self.request('cancel_orders', authenticate=True, verb='POST',
                                 params=kwargs)
-        else:
-            results = []
-            payload = kwargs
-            for oid in order_ids:
-                payload.update({'clientOrderId': oid})
-                r = self.request('cancel_order', authenticate=True,
-                                 verb='POST', params=payload)
-                results.append(r)
+        results = []
+        payload = kwargs
+        for oid in order_ids:
+            payload.update({'clientOrderId': oid})
+            r = self.request('cancel_order', authenticate=True,
+                             verb='POST', params=payload)
+            results.append(r)
             return results if len(results) > 1 else results[0]
 
     def wallet(self, *args, **kwargs):
         return self.request('balance', authenticate=True, params=kwargs)
-
