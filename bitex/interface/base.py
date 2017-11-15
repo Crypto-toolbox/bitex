@@ -14,7 +14,12 @@ class Interface:
     """Base class for Interface objects."""
 
     def __init__(self, *, name, rest_api):
-        """Initialize the class instance."""
+        """
+        Initialize the Interface class instance.
+
+        :param name: str, name of the Interface
+        :param rest_api: REST API object.
+        """
         self.REST = rest_api  # pylint: disable=invalid-name
         self.name = name
         try:
@@ -24,11 +29,16 @@ class Interface:
 
     @property
     def supported_pairs(self):
-        """Return a list of supported currncy pairs."""
+        """
+        Return a list of supported currncy pairs.
+
+        :return: list
+        """
         return self._supported_pairs
 
     def _get_supported_pairs(self):
-        """Generate a list of supported pairs.
+        """
+        Generate a list of supported pairs.
 
         Queries the API for a list of supported pairs and returns this as a
         list.
@@ -41,12 +51,14 @@ class Interface:
         raise NotImplementedError
 
     def is_supported(self, pair):
-        """Check if the given pair is present in self._supported_pairs.
+        """
+        Check if the given pair is present in self._supported_pairs.
 
         Input can either be a string or a PairFormatter Obj (or child thereof).
         If it is the latter two, we'll call the format() method with the Interface's
         name attribute to acquire proper formatting.
-        :param pair: Str, or PairFormatter Object
+
+        :param pair: Str, or bitex.pairs.PairFormatter Object
         :return: Bool
         """
         try:
@@ -65,9 +77,9 @@ class Interface:
         :param endpoint: Str
         :param authenticate: Bool, whether to call private_query or public_query
                              method.
-        :param req_kwargs: Kwargs to pass to _query / requests.request()
+        :param req_kwargs: Kwargs to pass to _query / :class:`requests.Request()`
         :raise: UnsupportedPairError
-        :return: requests.Response() Obj
+        :return: :class:`requests.Response() Obj`
         """
         if authenticate:
             return self.REST.private_query(verb, endpoint, **req_kwargs)

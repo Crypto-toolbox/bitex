@@ -2,7 +2,7 @@
 # Import Built-ins
 import os
 import configparser
-
+from functools import wraps
 # Import Homebrew
 from bitex.exceptions import UnsupportedEndpointError
 from bitex.pairs import PairFormatter
@@ -19,6 +19,7 @@ def check_version_compatibility(**version_func_pairs):
     """
     def decorator(func):
         """Decorate wrapper."""
+        @wraps(func)
         def wrapped(*args, **kwargs):
             """Wrap function."""
             interface = args[0]
@@ -44,6 +45,7 @@ def check_and_format_pair(func):
     When using this decorator, make sure that the first positional argument of
     the wrapped method is the pair, otherwise behaviour is undefined.
     """
+    @wraps(func)
     def wrapped(self, *args, **kwargs):
         """Wrap function."""
         pair, *_ = args
