@@ -1,0 +1,269 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>BitEx Code Reference &mdash; BitEx 2.0.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '2.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="BitEx 2.0.0 documentation" href="index.html" />
+    <link rel="prev" title="Welcome to BitEx’s documentation!" href="index.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-bitex">
+<span id="bitex-code-reference"></span><h1>BitEx Code Reference<a class="headerlink" href="#module-bitex" title="Permalink to this headline">¶</a></h1>
+<p>BitEx - Crypto-Exchange REST API Framework.</p>
+<p>Author: Nils Diefenbach
+Email: <a class="reference external" href="mailto:23okrs20+github&#37;&#52;&#48;mykolab&#46;com">23okrs20+github<span>&#64;</span>mykolab<span>&#46;</span>com</a>
+Repository at: <a class="reference external" href="https://github.com/nlsdfnbch/bitex">https://github.com/nlsdfnbch/bitex</a>
+License: MIT</p>
+</div>
+<div class="section" id="api-objects">
+<h1>API Objects<a class="headerlink" href="#api-objects" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="bitex.api.base.BaseAPI">
+<em class="property">class </em><code class="descclassname">bitex.api.base.</code><code class="descname">BaseAPI</code><span class="sig-paren">(</span><em>*</em>, <em>addr</em>, <em>key</em>, <em>secret</em>, <em>version</em>, <em>config</em><span class="sig-paren">)</span><a class="headerlink" href="#bitex.api.base.BaseAPI" title="Permalink to this definition">¶</a></dt>
+<dd><p>BaseAPI provides lowest-common-denominator methods used in all API types.</p>
+<p>It provides a nonce() method, basic configuration loading and credential
+validity checking method check_auth_requirements(), which should be
+extended in subclasses to cover any additional parameters that are necessary.</p>
+<dl class="method">
+<dt id="bitex.api.base.BaseAPI.check_auth_requirements">
+<code class="descname">check_auth_requirements</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitex.api.base.BaseAPI.check_auth_requirements" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check that neither self.key nor self.secret are None.</p>
+<p>If so, this method raises an IncompleteCredentialsError. Otherwise returns None.</p>
+<p>Extend this in child classes if you need to check for further
+required values.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Raise:</th><td class="field-body">IncompleteCredentialsError</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="bitex.api.base.BaseAPI.load_config">
+<code class="descname">load_config</code><span class="sig-paren">(</span><em>fname</em><span class="sig-paren">)</span><a class="headerlink" href="#bitex.api.base.BaseAPI.load_config" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load configuration from an ini file.</p>
+<p>Return it, in case this func needs to be extended.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>fname</strong> &#8211; path to file</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">configparser.ConfigParser() Obj</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="bitex.api.base.BaseAPI.nonce">
+<em class="property">static </em><code class="descname">nonce</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#bitex.api.base.BaseAPI.nonce" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a Nonce value for signature generation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Nonce as string</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="interface-objects">
+<h1>Interface Objects<a class="headerlink" href="#interface-objects" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="bitex.api.REST.rest.RESTAPI">
+<em class="property">class </em><code class="descclassname">bitex.api.REST.rest.</code><code class="descname">RESTAPI</code><span class="sig-paren">(</span><em>addr</em>, <em>timeout=None</em>, <em>key=None</em>, <em>secret=None</em>, <em>version=None</em>, <em>config=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bitex.api.REST.rest.RESTAPI" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generic REST API interface.</p>
+<p>Supplies private and public query methods,
+as well as building blocks to customize the signature generation process.</p>
+<dl class="method">
+<dt id="bitex.api.REST.rest.RESTAPI.generate_uri">
+<code class="descname">generate_uri</code><span class="sig-paren">(</span><em>endpoint</em><span class="sig-paren">)</span><a class="headerlink" href="#bitex.api.REST.rest.RESTAPI.generate_uri" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a Unique Resource Identifier (API Version + Endpoint).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>endpoint</strong> &#8211; str, endpoint path (i.e. /market/btcusd)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">str, URI</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="bitex.api.REST.rest.RESTAPI.generate_url">
+<code class="descname">generate_url</code><span class="sig-paren">(</span><em>uri</em><span class="sig-paren">)</span><a class="headerlink" href="#bitex.api.REST.rest.RESTAPI.generate_url" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate a Unique Resource Locator (API Address + URI).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>uri</strong> &#8211; str, URI</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">str, URL</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="bitex.api.REST.rest.RESTAPI.private_query">
+<code class="descname">private_query</code><span class="sig-paren">(</span><em>method_verb</em>, <em>endpoint</em>, <em>**request_kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#bitex.api.REST.rest.RESTAPI.private_query" title="Permalink to this definition">¶</a></dt>
+<dd><p>Query a private API endpoint requiring signing of the request.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>method_verb</strong> &#8211; valid HTTP Verb (GET, PUT, DELETE, etc.)</li>
+<li><strong>endpoint</strong> &#8211; str, API Endpoint</li>
+<li><strong>request_kwargs</strong> &#8211; kwargs for request.Request()</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">request.Response() object</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="bitex.api.REST.rest.RESTAPI.public_query">
+<code class="descname">public_query</code><span class="sig-paren">(</span><em>method_verb</em>, <em>endpoint</em>, <em>**request_kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#bitex.api.REST.rest.RESTAPI.public_query" title="Permalink to this definition">¶</a></dt>
+<dd><p>Query a public (i.e. unauthenticated) API endpoint and return the result.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>method_verb</strong> &#8211; valid HTTP Verb (GET, PUT, DELETE, etc.)</li>
+<li><strong>endpoint</strong> &#8211; str, API Endpoint</li>
+<li><strong>request_kwargs</strong> &#8211; kwargs for request.Request()</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">request.Response() object</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="bitex.api.REST.rest.RESTAPI.sign_request_kwargs">
+<code class="descname">sign_request_kwargs</code><span class="sig-paren">(</span><em>endpoint</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#bitex.api.REST.rest.RESTAPI.sign_request_kwargs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generate dummy Request Kwarg Signature.</p>
+<p>Extend this to implement signing of requests for private API calls.
+By default, it supplies a default URL using generate_uri and generate_url
+:param endpoint: str, API Endpoint
+:param kwargs: Kwargs meant for requests.Request()
+:return: dict, request kwargs</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">BitEx Code Reference</a></li>
+<li><a class="reference internal" href="#api-objects">API Objects</a></li>
+<li><a class="reference internal" href="#interface-objects">Interface Objects</a></li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">Welcome to BitEx&#8217;s documentation!</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/reference.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Nils Diefenbach.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.7</a>
+      
+      |
+      <a href="_sources/reference.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
