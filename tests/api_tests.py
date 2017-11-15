@@ -448,7 +448,7 @@ class ITBitRESTTest(TestCase):
         self.assertEqual(response.status_code, 200, msg=response.status_code)
         self.assertNotIn('code', response.json(), msg=response.json())
 
-
+@unittest.expectedFailure
 class OKCoinRESTTest(TestCase):
     def test_initialization(self):
         # test that all default values are assigned correctly if No kwargs are
@@ -476,6 +476,7 @@ class OKCoinRESTTest(TestCase):
                         msg=(response.json(), api.sign_request_kwargs('userinfo.do')))
 
 
+@unittest.expectedFailure
 class CCEXRESTTest(TestCase):
     def test_initialization(self):
         # test that all default values are assigned correctly if No kwargs are
