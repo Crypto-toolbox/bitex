@@ -106,9 +106,6 @@ required values.</p>
 
 </dd></dl>
 
-</div>
-<div class="section" id="interface-objects">
-<h1>Interface Objects<a class="headerlink" href="#interface-objects" title="Permalink to this headline">¶</a></h1>
 <dl class="class">
 <dt id="bitex.api.REST.rest.RESTAPI">
 <em class="property">class </em><code class="descclassname">bitex.api.REST.rest.</code><code class="descname">RESTAPI</code><span class="sig-paren">(</span><em>addr</em>, <em>timeout=None</em>, <em>key=None</em>, <em>secret=None</em>, <em>version=None</em>, <em>config=None</em><span class="sig-paren">)</span><a class="headerlink" href="#bitex.api.REST.rest.RESTAPI" title="Permalink to this definition">¶</a></dt>
@@ -195,11 +192,297 @@ as well as building blocks to customize the signature generation process.</p>
 <dt id="bitex.api.REST.rest.RESTAPI.sign_request_kwargs">
 <code class="descname">sign_request_kwargs</code><span class="sig-paren">(</span><em>endpoint</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#bitex.api.REST.rest.RESTAPI.sign_request_kwargs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate dummy Request Kwarg Signature.</p>
-<p>Extend this to implement signing of requests for private API calls.
-By default, it supplies a default URL using generate_uri and generate_url
-:param endpoint: str, API Endpoint
-:param kwargs: Kwargs meant for requests.Request()
-:return: dict, request kwargs</p>
+<p>Extend this to implement signing of requests for private API calls. By default, it supplies
+a default URL using generate_uri and generate_url.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>endpoint</strong> &#8211; str, API Endpoint</li>
+<li><strong>kwargs</strong> &#8211; Kwargs meant for requests.Request()</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">dict, request kwargs</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="interface-objects">
+<h1>Interface Objects<a class="headerlink" href="#interface-objects" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="bitex.interface.base.Interface">
+<em class="property">class </em><code class="descclassname">bitex.interface.base.</code><code class="descname">Interface</code><span class="sig-paren">(</span><em>*</em>, <em>name</em>, <em>rest_api</em><span class="sig-paren">)</span><a class="headerlink" href="#bitex.interface.base.Interface" title="Permalink to this definition">¶</a></dt>
+<dd><p>Base class for Interface objects.</p>
+<dl class="method">
+<dt id="bitex.interface.base.Interface.is_supported">
+<code class="descname">is_supported</code><span class="sig-paren">(</span><em>pair</em><span class="sig-paren">)</span><a class="headerlink" href="#bitex.interface.base.Interface.is_supported" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if the given pair is present in self._supported_pairs.</p>
+<p>Input can either be a string or a PairFormatter Obj (or child thereof).
+If it is the latter two, we&#8217;ll call the format() method with the Interface&#8217;s
+name attribute to acquire proper formatting.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pair</strong> &#8211; Str, or bitex.pairs.PairFormatter Object</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Bool</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="bitex.interface.base.Interface.request">
+<code class="descname">request</code><span class="sig-paren">(</span><em>verb</em>, <em>endpoint</em>, <em>authenticate=False</em>, <em>**req_kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#bitex.interface.base.Interface.request" title="Permalink to this definition">¶</a></dt>
+<dd><p>Query the API and return its result.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>verb</strong> &#8211; HTTP verb (GET, PUT, DELETE, etc)</li>
+<li><strong>endpoint</strong> &#8211; Str</li>
+<li><strong>authenticate</strong> &#8211; Bool, whether to call private_query or public_query
+method.</li>
+<li><strong>req_kwargs</strong> &#8211; Kwargs to pass to _query / <code class="xref py py-class docutils literal"><span class="pre">requests.Request()</span></code></li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raise:</th><td class="field-body"><p class="first">UnsupportedPairError</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><code class="xref py py-class docutils literal"><span class="pre">requests.Response()</span> <span class="pre">Obj</span></code></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="bitex.interface.base.Interface.supported_pairs">
+<code class="descname">supported_pairs</code><a class="headerlink" href="#bitex.interface.base.Interface.supported_pairs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of supported currncy pairs.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">list</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="bitex.interface.rest.RESTInterface">
+<em class="property">class </em><code class="descclassname">bitex.interface.rest.</code><code class="descname">RESTInterface</code><span class="sig-paren">(</span><em>name</em>, <em>rest_api</em><span class="sig-paren">)</span><a class="headerlink" href="#bitex.interface.rest.RESTInterface" title="Permalink to this definition">¶</a></dt>
+<dd><p>REST Interface base class.</p>
+<dl class="method">
+<dt id="bitex.interface.rest.RESTInterface.ask">
+<code class="descname">ask</code><span class="sig-paren">(</span><em>pair</em>, <em>price</em>, <em>size</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#bitex.interface.rest.RESTInterface.ask" title="Permalink to this definition">¶</a></dt>
+<dd><p>Place an ask order.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>pair</strong> &#8211; Str, pair to post order for.</li>
+<li><strong>price</strong> &#8211; Float or str, price you&#8217;d like to ask.</li>
+<li><strong>size</strong> &#8211; Float or str, amount of currency you&#8217;d like to sell.</li>
+<li><strong>args</strong> &#8211; additional arguments.</li>
+<li><strong>kwargs</strong> &#8211; additional kwargs, passed to requests.Requests() as &#8216;param&#8217; kwarg.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><code class="xref py py-class docutils literal"><span class="pre">requests.Response()</span></code> object.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="bitex.interface.rest.RESTInterface.bid">
+<code class="descname">bid</code><span class="sig-paren">(</span><em>pair</em>, <em>price</em>, <em>size</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#bitex.interface.rest.RESTInterface.bid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Place a bid order.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>pair</strong> &#8211; Str, pair to post order for.</li>
+<li><strong>price</strong> &#8211; Float or str, price you&#8217;d like to bid.</li>
+<li><strong>size</strong> &#8211; Float or str, amount of currency you&#8217;d like to buy.</li>
+<li><strong>args</strong> &#8211; additional arguments.</li>
+<li><strong>kwargs</strong> &#8211; additional kwargs, passed to requests.Requests() as &#8216;param&#8217; kwarg.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><code class="xref py py-class docutils literal"><span class="pre">requests.Response()</span></code> object.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="bitex.interface.rest.RESTInterface.cancel_order">
+<code class="descname">cancel_order</code><span class="sig-paren">(</span><em>*order_ids</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#bitex.interface.rest.RESTInterface.cancel_order" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cancel the order(s) with the given id(s).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>order_ids</strong> &#8211; variable amount of order IDs to cancel.</li>
+<li><strong>kwargs</strong> &#8211; additional kwargs, passed to requests.Requests() as &#8216;param&#8217; kwarg.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><code class="xref py py-class docutils literal"><span class="pre">requests.Response()</span></code> object.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="bitex.interface.rest.RESTInterface.open_orders">
+<code class="descname">open_orders</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#bitex.interface.rest.RESTInterface.open_orders" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return all open orders.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>args</strong> &#8211; additional arguments.</li>
+<li><strong>kwargs</strong> &#8211; additional kwargs, passed to requests.Requests() as &#8216;param&#8217; kwarg.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><code class="xref py py-class docutils literal"><span class="pre">requests.Response()</span></code> object.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="bitex.interface.rest.RESTInterface.order_book">
+<code class="descname">order_book</code><span class="sig-paren">(</span><em>pair</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#bitex.interface.rest.RESTInterface.order_book" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the order book for the given pair.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>pair</strong> &#8211; Str, pair to request data for.</li>
+<li><strong>args</strong> &#8211; additional arguments.</li>
+<li><strong>kwargs</strong> &#8211; additional kwargs, passed to requests.Requests() as &#8216;param&#8217; kwarg.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><code class="xref py py-class docutils literal"><span class="pre">requests.Response()</span></code> object.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="bitex.interface.rest.RESTInterface.order_status">
+<code class="descname">order_status</code><span class="sig-paren">(</span><em>order_id</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#bitex.interface.rest.RESTInterface.order_status" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the status of an order with the given id.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>order_id</strong> &#8211; Order ID of the order you&#8217;d like to have a status for.</li>
+<li><strong>args</strong> &#8211; additional arguments.</li>
+<li><strong>kwargs</strong> &#8211; additional kwargs, passed to requests.Requests() as &#8216;param&#8217; kwarg.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><code class="xref py py-class docutils literal"><span class="pre">requests.Response()</span></code> object.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="bitex.interface.rest.RESTInterface.ticker">
+<code class="descname">ticker</code><span class="sig-paren">(</span><em>pair</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#bitex.interface.rest.RESTInterface.ticker" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the ticker for the given pair.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>pair</strong> &#8211; Str, pair to request data for.</li>
+<li><strong>args</strong> &#8211; additional arguments.</li>
+<li><strong>kwargs</strong> &#8211; additional kwargs, passed to requests.Requests() as &#8216;param&#8217; kwarg.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><code class="xref py py-class docutils literal"><span class="pre">requests.Response()</span></code> object.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="bitex.interface.rest.RESTInterface.trades">
+<code class="descname">trades</code><span class="sig-paren">(</span><em>pair</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#bitex.interface.rest.RESTInterface.trades" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the trades for the given pair.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>pair</strong> &#8211; Str, pair to request data for.</li>
+<li><strong>args</strong> &#8211; additional arguments.</li>
+<li><strong>kwargs</strong> &#8211; additional kwargs, passed to requests.Requests() as &#8216;param&#8217; kwarg.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><code class="xref py py-class docutils literal"><span class="pre">requests.Response()</span></code> object.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="bitex.interface.rest.RESTInterface.wallet">
+<code class="descname">wallet</code><span class="sig-paren">(</span><em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#bitex.interface.rest.RESTInterface.wallet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the wallet of this account.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>args</strong> &#8211; additional arguments.</li>
+<li><strong>kwargs</strong> &#8211; additional kwargs, passed to requests.Requests() as &#8216;param&#8217; kwarg.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><code class="xref py py-class docutils literal"><span class="pre">requests.Response()</span></code> object.</p>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </dd></dl>

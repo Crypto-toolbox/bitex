@@ -9,13 +9,15 @@ API Objects
 
 .. autoclass:: bitex.api.base.BaseAPI
     :members:
-    :undoc-members:
 
-
+.. autoclass:: bitex.api.REST.rest.RESTAPI
+    :members:
 
 Interface Objects
 =================
 
-.. autoclass:: bitex.api.REST.rest.RESTAPI
-   :members:
+.. autoclass:: bitex.interface.base.Interface
+    :members:
 
+.. autoclass:: bitex.interface.rest.RESTInterface
+    :members:
