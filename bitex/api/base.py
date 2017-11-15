@@ -26,7 +26,8 @@ class BaseAPI:
     """
 
     def __init__(self, *, addr, key, secret, version, config):
-        """Initialize a BaseAPI instance.
+        """
+        Initialize a BaseAPI instance.
 
         :param addr: str, API url
         :param key: str, API key
@@ -57,7 +58,8 @@ class BaseAPI:
             self.load_config(self.config_file)
 
     def check_auth_requirements(self):
-        """Check that neither self.key nor self.secret are None.
+        """
+        Check that neither self.key nor self.secret are None.
 
         If so, this method raises an IncompleteCredentialsError. Otherwise returns None.
 
@@ -73,7 +75,8 @@ class BaseAPI:
             return
 
     def load_config(self, fname):
-        """Load configuration from an ini file.
+        """
+        Load configuration from an ini file.
 
         Return it, in case this func needs to be extended.
 
@@ -117,7 +120,8 @@ class BaseAPI:
 
     @staticmethod
     def nonce():
-        """Create a Nonce value for signature generation.
+        """
+        Create a Nonce value for signature generation.
 
         :return: Nonce as string
         """
