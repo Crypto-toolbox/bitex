@@ -1,5 +1,6 @@
-`Master`: <img src="https://travis-ci.org/nlsdfnbch/bitex.svg?branch=master"/> `Dev`: <img src="https://travis-ci.org/nlsdfnbch/bitex.svg?branch=dev"/>
-# BitEx 
+[![Build Status](https://travis-ci.org/nlsdfnbch/bitex.svg?branch=release-2.0.0)](https://travis-ci.org/nlsdfnbch/bitex)[![Coverage Status](https://coveralls.io/repos/github/nlsdfnbch/bitex/badge.svg?branch=master)](https://coveralls.io/github/nlsdfnbch/bitex?branch=master)[![Documentation Status](https://readthedocs.org/projects/bitex/badge/?version=latest)](http://bitex.readthedocs.io/en/latest/?badge=latest)
+
+# BitEx
 BitEx is a collection of API Clients for Crypto Currency Exchanges.
 
 It comes with two parts - `bitex.api` represents the base level API
@@ -8,6 +9,7 @@ interfaces, on top of which the second part - `bitex.interfaces` - builds upon.
 
 Donations welcome!
 BTC @ 3D4yuyf84eQUauyZLoQKyouPuThoxMMRZa
+
 # State
 --------------------------------
 
