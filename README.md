@@ -126,6 +126,10 @@ or via pip
 
 `pip install BitEx`
 
+# Further documentation
+
+Further documentation can be found [here](http://bitex.readthedocs.io/en/release-2.0.0/).
+
 # Disclaimer
 
 Due to technical reasons I cannot test all private methods of each exchange,
