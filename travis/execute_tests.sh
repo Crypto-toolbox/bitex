@@ -1,5 +1,5 @@
 #!/bin/bash
-pip install coverage;
+pip install coverage coveralls;
 python setup.py install;
 cd tests;
 coverage run -p --source=bitex api_tests.py test;
