@@ -1,7 +1,9 @@
 from setuptools import setup, find_packages
+import datetime
 
+VERSION = '2.0.0dev' + datetime.datetime.today().strftime('%Y%m%d')
 
-setup(name='BitEx', version='2.0.0b4', author='Nils Diefenbach',
+setup(name='BitEx', version=VERSION, author='Nils Diefenbach',
       author_email='23okrs20+pypi@mykolab.com',
       url="https://github.com/nlsdfnbch/bitex.git",
       test_suite='nose.collector', tests_require=['nose'],
@@ -11,4 +13,3 @@ setup(name='BitEx', version='2.0.0b4', author='Nils Diefenbach',
       license='MIT',  classifiers=['Development Status :: 4 - Beta',
                                    'Intended Audience :: Developers'],
       )
-
