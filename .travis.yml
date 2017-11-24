@@ -7,14 +7,15 @@ python:
   - 3.5
   - 3.6
 
-stage: test
+install: pip install -r requirements.txt
+
 script:
   - pip install coverage coveralls
   - coverage run --source=bitex setup.py test
+
 after_success: coveralls
 
-install:
-  - pip install -r requirements.txt
+after_failure: ./travis/force_deploy_on_nightly.sh
 
 jobs:
   allow_failures:
