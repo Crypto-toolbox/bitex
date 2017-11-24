@@ -16,10 +16,10 @@ jobs:
       script:
         - pip install pylint
         - pylint --rcfile=pylint.rc bitex
-      script:
+    - script:
         - pip install pydocstyle
         - pydocstyle bitex
-      script:
+    - script:
         - pip install pycodestyle
         - pycodestyle --max-line-length=100 bitex
     - stage: compile
