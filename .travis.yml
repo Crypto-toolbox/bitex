@@ -7,7 +7,11 @@ python:
   - 3.5
   - 3.6
 
-script: skip
+stage: test
+script:
+  - pip install coverage coveralls
+  - coverage run --source=bitex setup.py test
+after_success: coveralls
 
 install:
   - pip install -r requirements.txt
@@ -37,11 +41,6 @@ jobs:
     - stage: compile
       python: 3.5
       script: python setup.py install
-    - stage: test
-      script:
-        - pip install coverage coveralls
-        - coverage run --source=bitex setup.py test
-      after_success: coveralls
     - stage: deploy
       script: skip
       provider: pypi
