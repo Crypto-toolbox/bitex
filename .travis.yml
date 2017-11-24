@@ -1,9 +1,6 @@
 language: python
 
 python:
-  - 3.2
-  - 3.3
-  - 3.4
   - 3.5
   - 3.6
 
@@ -19,10 +16,6 @@ after_failure: ./travis/force_deploy_on_nightly.sh
 
 jobs:
   allow_failures:
-    python:
-      - 3.2
-      - 3.3
-      - 3.4
   include:
     - stage: lint
       python: 3.6
