@@ -52,11 +52,4 @@ stages:
   - compile
   - test
   - name: deploy
-    if: tag IS present
-
-
-
-branches:
-  only:
-  - master
-  - dev
+    if: tag IS present OR branch = nightly
