@@ -7,6 +7,8 @@ python:
   - 3.5
   - 3.6
 
+script: skip
+
 install:
   - pip install -r requirements.txt
 
