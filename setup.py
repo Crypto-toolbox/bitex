@@ -1,6 +1,8 @@
 from setuptools import setup, find_packages
 
+
 VERSION = '2.0.0rc'
+
 
 setup(name='BitEx', version=VERSION, author='Nils Diefenbach',
       author_email='23okrs20+pypi@mykolab.com',
