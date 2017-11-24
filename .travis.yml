@@ -1,41 +1,55 @@
 language: python
+
 python:
+  - "3.0"
+  - "3.1"
+  - "3.2"
+  - "3.3"
+  - "3.4"
   - "3.5"
   - "3.6"
-
-# command to run tests
-script: echo "Running.."
-
-install:
-  - pip --version
-  - pip install coverage twine
-
-script: echo "Starting.."
 
 jobs:
   include:
     - stage: lint
-      script: bash ./travis/execute_linters.sh
+      script:
+        - pip install pylint
+        - pylint --rcfile=pylint.rc bitex
+      script:
+        - pip install pydocstyle
+        - pydocstyle bitex
+      script:
+        - pip install pycodestyle
+        - pycodestyle --max-line-length=100 bitex
     - stage: compile
       script: python setup.py install
     - stage: test
-      script:  bash ./travis/execute_tests.sh
+      script:
+        - pip install coverage coveralls
+        - coverage run --source=bitex setup.py test
+      after_success: coveralls
     - stage: deploy
+      script: skip
       provider: pypi
       user: $PYPI_NAME
       password: $PYPI_PW
-      on:
-        tags: true
-        branch: master
 
 stages:
   - lint
   - compile
   - test
   - name: deploy
-    if: branch = master
+    if: tag IS present
 
+allow_failures:
+  python:
+    - "3.0"
+    - "3.1"
+    - "3.2"
+    - "3.3"
+    - "3.4"
 
 branches:
   only:
-  - release-2.0.0
+  - master
+  - dev
