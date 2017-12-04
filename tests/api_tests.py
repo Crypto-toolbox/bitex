@@ -152,7 +152,7 @@ class RESTAPITests(TestCase):
         try:
             resp = RESTAPI('http://test.com')._query('GET', url='https://api.kraken.com/0/public/Time')
         except requests.exceptions.ConnectionError:
-            self.fail("No Internet connection detected to ")
+            self.fail("No Internet connection detected")
         self.assertIsInstance(resp, requests.Response)
 
 

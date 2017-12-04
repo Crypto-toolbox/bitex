@@ -1,13 +1,16 @@
 # Import Built-Ins
 import logging
 import unittest
+from unittest.mock import patch
 import time
 import json
+import abc
 
 # Import Third-Party
 
 # Import Homebrew
 from bitex.pairs import BTCUSD, ETHBTC, LTCBTC, ETHUSD
+from bitex.pairs import PairFormatter
 from bitex.interface.base import Interface
 from bitex.interface.rest import RESTInterface
 from bitex.interface import Bitfinex, Bitstamp, Bittrex, Bter, CCEX
@@ -22,8 +25,29 @@ tests_folder_dir = '.'
 
 
 class InterfaceTests(unittest.TestCase):
-    def test_init_raises_NotImplementedError_for_basic_interface(self):
-        iface = Interface(name='CoinCheck', rest_api=None)
+    def __init__(self, *args, **kwargs):
+        super(InterfaceTests, self).__init__(*args, **kwargs)
+
+    @classmethod
+    def setUpClass(cls):
+        class ConcreteClass(Interface):
+            def __init__(self, *, name, rest_api):
+                super(ConcreteClass, self).__init__(name=name, rest_api=rest_api)
+
+            def _get_supported_pairs(self):
+                return super(ConcreteClass, self)._get_supported_pairs()
+
+            def is_supported(self, pair):
+                return super(ConcreteClass, self).is_supported(pair)
+
+            def request(self, verb, endpoint, authenticate=False, **req_kwargs):
+                return super(ConcreteClass, self).request(verb, endpoint, authenticate,
+                                                          **req_kwargs)
+
+        cls.interface_cls = ConcreteClass
+
+    def test_supported_pairs_facility(self):
+        iface = self.interface_cls(name='TestInterface', rest_api=None)
         self.assertIs(iface.supported_pairs, None)
 
         # Assert that the supported_pairs attribute cannot be set
@@ -35,33 +59,90 @@ class InterfaceTests(unittest.TestCase):
         iface._supported_pairs = ['BTCUSD', 'LTCBTC']
 
         self.assertTrue(iface.is_supported('BTCUSD'))
-        self.assertTrue(iface.is_supported(BTCUSD))
         self.assertTrue(iface.is_supported('LTCBTC'))
         self.assertFalse(iface.is_supported('LTCUSD'))
+        self.assertFalse(iface.is_supported('btcusd'))
 
         # Assert that, by default, _get_supported_pairs() raises a
         # NotImplementedError
         with self.assertRaises(NotImplementedError):
             iface._get_supported_pairs()
 
+        # Assert that, by default, _supported_pairs is None if _get_supported_pairs is not
+        # implemented.
+        iface = self.interface_cls(name='CoinCheck', rest_api=None)
+        self.assertIsNone(iface._supported_pairs)
+
+    @patch('bitex.api.REST.rest.RESTAPI')
+    def test_request_calls_correct_query_method(self, mocked_REST):
+        iface = self.interface_cls(name='TestInterface', rest_api=mocked_REST)
+        iface.request('GET', 'th/end/point', authenticate=False)
+        self.assertTrue(mocked_REST.public_query.called)
+        iface.request('GET', 'th/end/point', authenticate=True)
+        self.assertTrue(mocked_REST.private_query.called)
+
 
 class RESTInterfaceTests(unittest.TestCase):
-    def test_that_all_methods_raise_not_implemented_errors(self):
-        riface = RESTInterface('Test', None)
-        funcs = [riface.ticker, riface.order_book, riface.trades,
-                 riface.order_status, riface.open_orders, riface.cancel_order,
-                 riface.ask, riface.bid]
-        for f in funcs:
-            # Pass three Nones, since the max expected number of args is 3, and
-            # arguments are unimportant in this test's context.
-            with self.assertRaises(NotImplementedError, msg=f.__name__):
-                f(None, None, None)
+
+    @classmethod
+    def setUpClass(cls):
+        class ConcreteClass(RESTInterface):
+            def __init__(self, name, rest_api):
+                super(ConcreteClass, self).__init__(name, rest_api)
+
+            def _get_supported_pairs(self):
+                return super(ConcreteClass, self)._get_supported_pairs()
+
+            def is_supported(self, pair):
+                return super(ConcreteClass, self).is_supported(pair)
+
+            def request(self, verb, endpoint, authenticate=False, **req_kwargs):
+                return super(ConcreteClass, self).request(verb, endpoint, authenticate,
+                                                          **req_kwargs)
+
+            def ticker(self, pair, *args, **kwargs):
+                super(ConcreteClass, self).ticker(pair, *args, **kwargs)
+
+            def order_book(self, pair, *args, **kwargs):
+                super(ConcreteClass, self).order_book(pair, *args, **kwargs)
+
+            def trades(self, pair, *args, **kwargs):
+                super(ConcreteClass, self).trades(pair, *args, **kwargs)
+
+            def ask(self, pair, price, size, *args, **kwargs):
+                super(ConcreteClass, self).ask(pair, price, size, *args, **kwargs)
+
+            def bid(self, pair, price, size, *args, **kwargs):
+                super(ConcreteClass, self).bid(pair, price, size, *args, **kwargs)
+
+            def order_status(self, order_id, *args, **kwargs):
+                super(ConcreteClass, self).order_status(order_id, *args, **kwargs)
+
+            def open_orders(self, *order_ids, **kwargs):
+                super(ConcreteClass, self).open_orders(*order_ids, **kwargs)
+
+            def cancel_order(self, *order_ids, **kwargs):
+                super(ConcreteClass, self).cancel_order(*order_ids, **kwargs)
+
+            def wallet(self, *args, **kwargs):
+                super(ConcreteClass, self).wallet(*args, **kwargs)
+
+        cls.interface_cls = ConcreteClass
+
+    def test_abstractmethods_raise_notImplementedError_if_not_properly_overridden(self):
+        iface = self.interface_cls('someting fancy', None)
+        iface._supported_pairs = ['pair']
+        methods = ['ticker', 'order_book', 'trades', 'ask', 'bid', 'order_status', 'open_orders',
+                   'cancel_order', 'wallet']
+        for method in methods:
+            with self.assertRaises(NotImplementedError):
+                getattr(iface, method)('pair', 1, 2, 3, 4, 5, 6)  # Add arbitrary number of args
 
 
 class BitfinexInterfacTests(unittest.TestCase):
     def tearDown(self):
         # Wait one second to reduce load on API
-        time.sleep(1)
+        iface = self.interface_cls(name='CoinCheck', rest_api=None)
 
     # PUBLIC ENDPOINT TESTS
     def test_and_validate_data_for_ticker_endpoint_method_working_correctly(self):

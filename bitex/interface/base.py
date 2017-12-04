@@ -1,6 +1,7 @@
 """Base class for interfaces."""
 # Import Built-Ins
 import logging
+import abc
 
 # Import Third-Party
 
@@ -10,7 +11,7 @@ import logging
 log = logging.getLogger(__name__)
 
 
-class Interface:
+class Interface(metaclass=abc.ABCMeta):
     """Base class for Interface objects."""
 
     def __init__(self, *, name, rest_api):
@@ -36,6 +37,7 @@ class Interface:
         """
         return self._supported_pairs
 
+    @abc.abstractmethod
     def _get_supported_pairs(self):
         """
         Generate a list of supported pairs.
@@ -50,6 +52,7 @@ class Interface:
         """
         raise NotImplementedError
 
+    @abc.abstractmethod
     def is_supported(self, pair):
         """
         Check if the given pair is present in self._supported_pairs.
@@ -70,6 +73,7 @@ class Interface:
             return True
         return False
 
+    @abc.abstractmethod
     def request(self, verb, endpoint, authenticate=False, **req_kwargs):
         """Query the API and return its result.
 
