@@ -140,9 +140,13 @@ class RESTInterfaceTests(unittest.TestCase):
 
 
 class BitfinexInterfacTests(unittest.TestCase):
-    def tearDown(self):
-        # Wait one second to reduce load on API
-        iface = self.interface_cls(name='CoinCheck', rest_api=None)
+
+    @patch('requests.request')
+    def test_authenticated_requests_use_POST(self, mocked_rest):
+        api = Bitfinex(key='1231', secret='152561')
+        api.request('some_endpoint', authenticate=True)
+        self.assertTrue(mocked_rest.called)
+        self.assertTrue(mocked_rest.called_with(method='POST'))
 
     # PUBLIC ENDPOINT TESTS
     def test_and_validate_data_for_ticker_endpoint_method_working_correctly(self):
@@ -206,35 +210,6 @@ class BitfinexInterfacTests(unittest.TestCase):
                       section='last')
         except UnsupportedEndpointError:
             self.fail('Version 2 not supported!')
-
-    def test_and_validate_data_for_lends_endpoint_method_working_correctly(self):
-        api = Bitfinex()
-        resp = api.lends('BTC')
-        self.assertEqual(resp.status_code, 200, msg=resp.text)
-        # Assert that data is in expected format
-        for d in resp.json():
-            for k in ['rate', 'amount_lent', 'amount_used', 'timestamp']:
-                self.assertIn(k, d, msg=(k, d, resp.json()))
-        # Assert that an error is raised if the API version isn't v1
-        api = Bitfinex(version='v2')
-        with self.assertRaises(UnsupportedEndpointError):
-            api.lends('BTC')
-
-    def test_and_validate_data_for_funding_book_endpoint_method_working_correctly(self):
-        api = Bitfinex()
-        resp = api.funding_book('BTC')
-        self.assertEqual(resp.status_code, 200, msg=resp.text)
-        # Assert that we have bids and asks, and that their entries are in the
-        # expected format
-        for side in ('bids', 'asks'):
-            self.assertIn(side, resp.json())
-            for d in resp.json()[side]:
-                for k in ['rate', 'amount', 'period', 'timestamp', 'frr']:
-                    self.assertIn(k, d, msg=(k, d, side, resp.json()))
-        # Assert that an error is raised if the API version isn't v1
-        api = Bitfinex(version='v2')
-        with self.assertRaises(UnsupportedEndpointError):
-            api.funding_book('BTC')
 
     def test_and_validate_data_for_symbols_endpoint_method_working_correctly(self):
         api = Bitfinex()
