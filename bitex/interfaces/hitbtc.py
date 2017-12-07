@@ -46,20 +46,20 @@ class HitBtc(HitBTCREST):
     @return_api_response(fmt.order_book)
     def order_book(self, pair, **kwargs):
         q = kwargs
-        return self.public_query('%s/orderbook' % pair, params=q)
+        return self.public_query('api/%s/orderbook' % pair, params=q)
 
     @return_api_response(fmt.ticker)
     def ticker(self, pair, **kwargs):
         q = kwargs
         if pair == 'all':
-            return self.public_query('ticker', params=q)
+            return self.public_query('api/ticker', params=q)
         else:
-            return self.public_query('%s/ticker' % pair, params=q)
+            return self.public_query('api/%s/ticker' % pair, params=q)
 
     @return_api_response(fmt.trades)
     def trades(self, pair, **kwargs):
         q = kwargs
-        return self.public_query('%s/trades' % pair, params=q)
+        return self.public_query('api/%s/trades' % pair, params=q)
 
     def _place_order(self, pair, size, price, side, order_id, **kwargs):
         q = {'symbol': pair, 'price': price, 'quantity': size, 'side': side,
