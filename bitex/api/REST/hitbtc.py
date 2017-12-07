@@ -30,12 +30,12 @@ class HitBTCREST(APIClient):
         except KeyError:
             params = {}
         nonce = self.nonce()
-        kwargs['nonce'] = nonce
-        kwargs['apikey'] = self.key
+        params['nonce'] = nonce
+        params['apikey'] = self.key
         msg = endpoint_path + urllib.parse.urlencode(params)
 
         signature = hmac.new(self.secret.encode(encoding='utf-8'),
                              msg.encode(encoding='utf-8'), hashlib.sha512).hexdigest()
-        headers = {'Api-signature': signature, 'apikey': self.key}
+        headers = {'Api-signature': signature}
         return self.uri + msg, {'headers': headers, 'data': params}
 
