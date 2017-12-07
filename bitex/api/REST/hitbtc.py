@@ -36,6 +36,6 @@ class HitBTCREST(APIClient):
 
         signature = hmac.new(self.secret.encode(encoding='utf-8'),
                              msg.encode(encoding='utf-8'), hashlib.sha512).hexdigest()
-        headers = {'Api-signature': signature}
+        headers = {'Api-signature': signature, 'apikey': self.key}
         return self.uri + msg, {'headers': headers, 'data': params}
 
