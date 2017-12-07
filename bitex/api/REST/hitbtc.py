@@ -32,7 +32,7 @@ class HitBTCREST(APIClient):
         nonce = self.nonce()
         params['nonce'] = nonce
         params['apikey'] = self.key
-        msg = endpoint_path + urllib.parse.urlencode(params)
+        msg = endpoint_path + '?' + urllib.parse.urlencode(params)
 
         signature = hmac.new(self.secret.encode(encoding='utf-8'),
                              msg.encode(encoding='utf-8'), hashlib.sha512).hexdigest()
