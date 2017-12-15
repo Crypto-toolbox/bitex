@@ -17,7 +17,7 @@ from bitex.api.REST import QuadrigaCXREST, QuoineREST
 from bitex.api.REST import RockTradingREST
 from bitex.api.REST import VaultoroREST
 from bitex.api.REST import YunbiREST
-from bitex.interface import Bter, Bitfinex, Bittrex, Bitstamp, CCEX, CoinCheck
+from bitex.interface import Bter, Binance, Bitfinex, Bittrex, Bitstamp, CCEX, CoinCheck
 from bitex.interface import Cryptopia, HitBTC, Kraken, OKCoin, Poloniex, QuadrigaCX
 from bitex.interface import TheRockTrading, Vaultoro
 from bitex.pairs import BTCUSD, ZECUSD, XMRUSD, ETCUSD, ETHUSD, DASHUSD
