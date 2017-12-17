@@ -215,15 +215,17 @@ class BitstampRESTTests(TestCase):
         self.assertIs(api.config_file, None)
         # Assert that a Warning is raised if user_id is None, and BaseAPI's
         # check mechanism is extended properly
-        with self.assertWarns(IncompleteCredentialsWarning):
-            api = BitstampREST(addr='Bangarang', user_id=None, key='SomeKey',
-                               secret='SomeSecret', config=None, version=None)
+        api = BitstampREST(addr='Bangarang', user_id=None, key='SomeKey', secret='SomeSecret',
+                           config=None, version=None)
+        with mock.patch('warnings.warn') as mock_warn:
+            api.load_config('./configs/config.ini')
+            mock_warn.assert_called_with("'user_id' not found in config!",
+                                         IncompleteCredentialConfigurationWarning)
 
         # make sure an exception is raised if user_id is passed as ''
         with self.assertRaises(ValueError):
-            api = BitstampREST(addr='Bangarang', user_id='', key='SomeKey',
-                               secret='SomeSecret', config=None,
-                               version=None)
+            BitstampREST(addr='Bangarang', user_id='', key='SomeKey', secret='SomeSecret',
+                         config=None, version=None)
 
         # make sure user_id is assigned properly
         api = BitstampREST(addr='Bangarang', user_id='woloho')
