@@ -248,13 +248,13 @@ class BitstampRESTTests(TestCase):
         self.assertTrue(api.config_file == config_path)
         self.assertEqual(api.user_id, '267705')
 
-    def test_private_query_raises_error_on_incomplete_credentials(self):
+    def test_check_auth_requirements_fires_as_expected_on_empty_user_id(self):
         # config.ini is missing the key 'user_id' and hence should raise
-        # an error on attempting to query a private endpoint.
+        # an error on checking for authentication credentials when calling check_auth_requirements()
         config_path = '%s/configs/config.ini' % tests_folder_dir
         api = BitstampREST(config=config_path)
         with self.assertRaises(IncompleteCredentialsError):
-            api.private_query('POST', 'balance')
+            api.check_auth_requirements()
 
     def test_sign_request_kwargs_method_and_signature(self):
         # Test that the sign_request_kwargs generate appropriate kwargs:
