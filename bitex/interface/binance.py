@@ -2,13 +2,9 @@
 # Import Built-Ins
 import logging
 
-# Import Third-Party
-import requests
-
 # Import Homebrew
 from bitex.api.REST.binance import BinanceREST
 from bitex.interface.rest import RESTInterface
-from bitex.utils import check_version_compatibility, check_and_format_pair
 
 # Init Logging Facilities
 log = logging.getLogger(__name__)
@@ -23,7 +19,6 @@ class Binance(RESTInterface):
 
     # pylint: disable=arguments-differ
 
-
     def __init__(self, **api_kwargs):
         """Initialize class instance."""
         super(Binance, self).__init__('Binance', BinanceREST(**api_kwargs))
@@ -31,39 +26,32 @@ class Binance(RESTInterface):
     def request(self, verb, endpoint, authenticate=False, **req_kwargs):
         """Preprocess request to API."""
         return super(Binance, self).request(verb, endpoint, authenticate=authenticate,
-                                             **req_kwargs)
+                                            **req_kwargs)
 
     def _get_supported_pairs(self):
-        """
-        Generate a list of supported pairs.
-        """
+        """Return a list of supported pairs."""
         r = self.request('GET', 'v1/exchangeInfo').json()
         pairs = [entry['symbol'] for entry in r['symbols']]
         return pairs
 
-    def is_supported(self, pair):
-        return super(Binance, self).is_supported(pair)
+    # Automatically calls the RESTInterface method.
+    # def is_supported(self, pair):
+    #     return super(Binance, self).is_supported(pair)
 
     def ticker(self, pair, *args, **kwargs):
-        """
-        Return the ticker for the given pair.
-        """
+        """Return the ticker for the given pair."""
         payload = {'symbol': pair}
         payload.update(kwargs)
         return self.request('GET', 'v1/ticker/24hr', params=payload)
 
     def order_book(self, pair, *args, **kwargs):
-        """
-        Return the order book for the given pair.
-        """
+        """Return the order book for the given pair."""
         payload = {'symbol': pair}
         payload.update(kwargs)
         return self.request("GET", "v1/depth", params=payload)
 
     def trades(self, pair, *args, **kwargs):
-        """
-        Return the trades for the given pair.
-        """
+        """Return the trades for the given pair."""
         payload = {'symbol': pair}
         payload.update(kwargs)
         return self.request('GET', 'v1/trades', params=payload)
@@ -79,36 +67,26 @@ class Binance(RESTInterface):
         return self.request('POST', 'v3/order', authenticate=True, params=payload)
 
     def ask(self, pair, price, size, *args, **kwargs):
-        """
-        Place an ask order.
-        """
+        """Place an ask order."""
         return self._place_order(pair, price, size, "SELL", *args, **kwargs)
 
     def bid(self, pair, price, size, *args, **kwargs):
-        """
-        Place a bid order.
-        """
+        """Place a bid order."""
         return self._place_order(pair, price, size, "BUY", *args, **kwargs)
 
     def order_status(self, pair, order_id, *args, **kwargs):
-        """
-        Return the status of an order with the given id.
-        """
+        """Return the status of an order with the given id."""
         payload = {'symbol': pair,
                    'orderId': order_id}
         payload.update(kwargs)
         return self.request('GET', 'v3/order', authenticate=True, params=payload)
 
     def open_orders(self, *args, **kwargs):
-        """
-        Return all open orders.
-        """
+        """Return all open orders."""
         return self.request('GET', 'v3/openOrders', authenticate=True, params=kwargs)
 
     def cancel_order(self, pair, *order_ids, **kwargs):
-        """
-        Cancel the order(s) with the given id(s).
-        """
+        """Cancel the order(s) with the given id(s)."""
         results = []
         for order_id in order_ids:
             payload = {'symbol': pair,
@@ -119,9 +97,6 @@ class Binance(RESTInterface):
 
         return results if len(results) > 1 else results[0]
 
-
     def wallet(self, *args, **kwargs):
-        """
-        Return the wallet of this account.
-        """
+        """Return the wallet of this account."""
         return self.request('GET', "v3/account", True).json()['balances']
