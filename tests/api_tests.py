@@ -227,7 +227,7 @@ class BitstampRESTTests(TestCase):
 
         # make sure user_id is assigned properly
         api = BitstampREST(addr='Bangarang', user_id='woloho')
-        self.assertIs(api.user_id, 'woloho')
+        self.assertEqual(api.user_id, 'woloho')
 
         # Check that a IncompleteCredentialConfigurationWarning is issued if
         # user_id isn't available in config, and no user_id was given.
