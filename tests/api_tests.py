@@ -1,8 +1,9 @@
 # Import Built-Ins
 import logging
 import unittest
-from unittest import TestCase
+from unittest import TestCase, mock
 import time
+import warnings
 from json import JSONDecodeError
 # Import Third-Party
 import requests
@@ -109,6 +110,52 @@ class BaseAPITests(TestCase):
             new_nonce = int(api.nonce())
             self.assertLess(previous_nonce, new_nonce)
             previous_nonce = new_nonce
+
+    @mock.patch('time.time', return_value=1000.1000)
+    def test_nonce(self, mock_time):
+        self.assertEqual(BaseAPI.nonce(), str(int(round(mock_time() * 1000))))
+
+    def test_load_config(self):
+        with self.assertRaises(FileNotFoundError):
+            open("non_existant_file.txt")
+
+        no_key_warning_msg = "Key parameter not present in config - authentication may not work!"
+        no_secret_warning_msg = "Key parameter not present in config - authentication may not work!"
+        no_version_warning_msg = "API version was not present in config - requests may not work!"
+        no_url_warning_msg = "API address not present in config - requests may not work!"
+
+        no_key_warning_args = (no_key_warning_msg, IncompleteCredentialConfigurationWarning)
+        no_secret_warning_args = (no_secret_warning_msg, IncompleteCredentialConfigurationWarning)
+        no_version_warning_args = (no_version_warning_msg, IncompleteAPIConfigurationWarning)
+        no_address_warning_args = (no_url_warning_msg, IncompleteAPIConfigurationWarning)
+
+        with mock._patch_object(warnings, 'warn') as mock_warn:
+            BaseAPI(config='./configs/config_empty.ini', key=None, secret=None, addr=None,
+                    version=None)
+            mock_warn.assert_any_call(*no_key_warning_args)
+            mock_warn.assert_any_call(*no_secret_warning_args)
+            mock_warn.assert_any_call(*no_address_warning_args)
+            mock_warn.assert_any_call(*no_version_warning_args)
+
+        with mock._patch_object(warnings, 'warn') as mock_warn:
+            BaseAPI(config='./configs/config_no_auth.ini', key=None, secret=None, addr=None,
+                    version=None)
+            mock_warn.assert_any_call(*no_key_warning_args)
+            mock_warn.assert_any_call(*no_secret_warning_args)
+            with self.assertRaises(AssertionError):
+                mock_warn.assert_any_call(*no_address_warning_args)
+            with self.assertRaises(AssertionError):
+                mock_warn.assert_any_call(*no_version_warning_args)
+
+        with mock._patch_object(warnings, 'warn') as mock_warn:
+            BaseAPI(config='./configs/config_no_api.ini', key=None, secret=None, addr=None,
+                    version=None)
+            mock_warn.assert_any_call(*no_address_warning_args)
+            mock_warn.assert_any_call(*no_version_warning_args)
+            with self.assertRaises(AssertionError):
+                mock_warn.assert_any_call(*no_key_warning_args)
+            with self.assertRaises(AssertionError):
+                mock_warn.assert_any_call(*no_secret_warning_args)
 
 
 class RESTAPITests(TestCase):
