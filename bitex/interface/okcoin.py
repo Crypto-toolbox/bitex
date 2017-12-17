@@ -26,8 +26,11 @@ class OKCoin(RESTInterface):
         return super(OKCoin, self).request('GET', endpoint, authenticate, **req_kwargs)
 
     def _get_supported_pairs(self):
-        return ['btc_usd', 'ltc_usd', 'eth_usd',
-                'btc_cny', 'ltc_cny', 'eth_cny']
+        """Return a list of supported pairs."""
+        # https://www.okcoin.cn/about/rest_api.html#spapi
+        # Doesn't seem to be a way to query for the pairs traded.
+        return ['btc_usd', 'ltc_usd', 'eth_usd', 'etc_usd', 'bch_usd',
+                'btc_cny', 'ltc_cny', 'eth_cny', 'etc_cny', 'bch_cny']
 
     # Public Endpoints
     @check_and_format_pair

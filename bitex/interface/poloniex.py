@@ -33,7 +33,6 @@ class Poloniex(RESTInterface):
 
     def _get_supported_pairs(self):
         """Return a list of supported pairs."""
-
         # Retrieve the pairs through a call to the public ticker endpoint.
         # Can't call self.ticker, because it looks up the pair in this method.
         resp = self.request("returnTicker")

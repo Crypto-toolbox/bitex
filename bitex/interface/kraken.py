@@ -19,6 +19,7 @@ class Kraken(RESTInterface):
         super(Kraken, self).__init__('Kraken', KrakenREST(**api_kwargs))
 
     def _get_supported_pairs(self):
+        """Return a list of supported pairs."""
         r = self.request('AssetPairs').json()['result']
         return [r[k]['base'] + r[k]['quote'] if r[k]['base'] != 'BCH'
                 else k for k in r]

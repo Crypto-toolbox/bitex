@@ -19,6 +19,7 @@ class HitBTC(RESTInterface):
         super(HitBTC, self).__init__('HitBTC', HitBTCREST(**api_kwargs))
 
     def _get_supported_pairs(self):
+        """Return a list of supported pairs."""
         r = self.request('symbols')
         return [entry['symbol'] for entry in r.json()['symbols']]
 
