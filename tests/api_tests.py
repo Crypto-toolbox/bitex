@@ -196,11 +196,11 @@ class RESTAPITests(TestCase):
 
         # assert that _query() silently returns an requests.Response() obj, if
         # the request was good
-        try:
+        with mock._patch_object(requests, 'request') as mock_request:
+            mock_request.return_value = requests.Response()
             resp = RESTAPI('http://test.com')._query('GET', url='https://api.kraken.com/0/public/Time')
-        except requests.exceptions.ConnectionError:
-            self.fail("No Internet connection detected")
-        self.assertIsInstance(resp, requests.Response)
+            mock_request.assert_called_once_with('GET', timeout=10, url='https://api.kraken.com/0/public/Time')
+            self.assertIsInstance(resp, requests.Response)
 
 
 class BitstampRESTTests(TestCase):
