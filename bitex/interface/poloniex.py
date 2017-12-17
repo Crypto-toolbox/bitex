@@ -32,7 +32,12 @@ class Poloniex(RESTInterface):
                                              **req_kwargs)
 
     def _get_supported_pairs(self):
-        return ['BTC_ETH']
+        """Return a list of supported pairs."""
+
+        # Retrieve the pairs through a call to the public ticker endpoint.
+        # Can't call self.ticker, because it looks up the pair in this method.
+        resp = self.request("returnTicker")
+        return list(resp.json().keys())
 
     # Public Endpoints
     @check_and_format_pair
