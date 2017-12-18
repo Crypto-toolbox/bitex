@@ -279,7 +279,6 @@ class BitstampRESTTests(TestCase):
         key, secret, user = 'panda', 'shadow', 'leeroy'
         with mock.patch.object(RESTAPI, 'nonce', return_value=str(10000)) as mock_rest:
             api = BitstampREST(key=key, secret=secret, user_id=user)
-            self.assertEqual(api.nonce(), str(10000))
             ret_values = api.sign_request_kwargs('testing/signature', param_1='a', param_2=1)
             expected_signature = hmac.new(secret.encode('utf-8'),
                                           (str(10000) + user + key).encode('utf-8'),
@@ -344,17 +343,16 @@ class BittrexRESTTest(TestCase):
 
     def test_sign_request_kwargs_method_and_signature(self):
         # Test that the sign_request_kwargs generate appropriate kwargs:
-        config_path = '%s/auth/bittrex.ini' % tests_folder_dir
-        api = BittrexREST(config=config_path)
-        self.assertEqual(api.config_file, config_path)
-
-        # Check signatured request kwargs
-        response = api.private_query('GET', 'account/getbalances')
-        self.assertEqual(response.status_code, 200,
-                         msg="Unexpected status code (%s) for request to path "
-                             "%s!" % (response.status_code, response.request.url))
-
-        self.assertTrue(response.json()['success'], msg=response.json())
+        key, secret, user = 'panda', 'shadow', 'leeroy'
+        with mock.patch.object(RESTAPI, 'nonce', return_value=str(100)) as mock_rest:
+            api = BittrexREST(key=key, secret=secret, version='v1.1')
+            self.assertEqual(api.generate_uri('testing/signature'), '/v1.1/testing/signature')
+            ret_values = api.sign_request_kwargs('testing/signature', params={'param_1': 'abc'})
+            url = 'https://bittrex.com/api/v1.1/testing/signature?apikey=panda&nonce=100&param_1=abc'
+            sig = hmac.new(secret.encode('utf8'), url.encode('utf8'), hashlib.sha512).hexdigest()
+            self.assertEqual(ret_values['url'], url)
+            self.assertIn('apisign', ret_values['headers'])
+            self.assertEqual(ret_values['headers']['apisign'], sig)
 
 
 class CoinCheckRESTTest(TestCase):
