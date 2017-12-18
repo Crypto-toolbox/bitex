@@ -1,6 +1,7 @@
 """Base class for interfaces."""
 # Import Built-Ins
 import logging
+import abc
 
 # Import Third-Party
 
@@ -10,7 +11,7 @@ import logging
 log = logging.getLogger(__name__)
 
 
-class Interface:
+class Interface(metaclass=abc.ABCMeta):
     """Base class for Interface objects."""
 
     def __init__(self, *, name, rest_api):
@@ -36,6 +37,7 @@ class Interface:
         """
         return self._supported_pairs
 
+    @abc.abstractmethod
     def _get_supported_pairs(self):
         """
         Generate a list of supported pairs.
@@ -75,8 +77,7 @@ class Interface:
 
         :param verb: HTTP verb (GET, PUT, DELETE, etc)
         :param endpoint: Str
-        :param authenticate: Bool, whether to call private_query or public_query
-                             method.
+        :param authenticate: Bool, whether to call private_query or public_query method.
         :param req_kwargs: Kwargs to pass to _query / :class:`requests.Request()`
         :raise: UnsupportedPairError
         :return: :class:`requests.Response() Obj`

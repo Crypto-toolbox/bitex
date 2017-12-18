@@ -1,27 +1,21 @@
 language: python
 
 python:
-  - 3.2
-  - 3.3
-  - 3.4
   - 3.5
   - 3.6
 
-stage: test
+install: pip install -r requirements.txt
+
 script:
   - pip install coverage coveralls
   - coverage run --source=bitex setup.py test
+
 after_success: coveralls
 
-install:
-  - pip install -r requirements.txt
+after_failure: ./travis/force_deploy_on_nightly.sh
 
 jobs:
   allow_failures:
-    python:
-      - 3.2
-      - 3.3
-      - 3.4
   include:
     - stage: lint
       python: 3.6
@@ -42,14 +36,13 @@ jobs:
       python: 3.5
       script: python setup.py install
     - stage: deploy
-      script: skip
-      provider: pypi
-      user: $PYPI_NAME
-      password: $PYPI_PW
+      script: ./travis/deploy.sh
 
 stages:
-  - lint
+  - name: lint
+    if: branch != nightly
   - compile
-  - test
+  - name: test
+    if: branch != nightly
   - name: deploy
     if: tag IS present OR branch = nightly

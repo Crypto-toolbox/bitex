@@ -2,9 +2,6 @@
 # Import Built-Ins
 import logging
 
-# Import Third-Party
-import requests
-
 # Import Homebrew
 from bitex.api.REST.ccex import CCEXREST
 from bitex.interface.rest import RESTInterface
@@ -32,7 +29,7 @@ class CCEX(RESTInterface):
 
     def _get_supported_pairs(self):
         """Return a list of supported pairs."""
-        return requests.get('https://c-cex.com/t/pairs.json').json()['pairs']
+        return self.request('/pairs.json').json()['pairs']
 
     # Public Endpoints
     @check_and_format_pair

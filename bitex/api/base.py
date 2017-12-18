@@ -125,4 +125,4 @@ class BaseAPI:
 
         :return: Nonce as string
         """
-        return str(int(round(1000 * time.time())) * 2)
+        return str(int(round(1000 * time.time())))

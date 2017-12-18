@@ -1,7 +1,4 @@
-#!/bin/bash
-
-python setup.py sdist;
-if [[ $BRANCH != "master" ]]
-    for file in dist/*.tar.gz; do mv $file ${file//.tar.gz/$TAG.tar.gz} ; done
+if [[$TRAVIS_TAG == ^.*rc[0-9][0-9]*$ ]]
+    python generate_rc_setup.py $TRAVIS_TAG
 fi
-twine upload --username $PYPI_NAME --password $PYPI_PW dist/*
+python setup.py sdist && twine upload --username $PYPI_NAME --password $PYPI_PW dist/*

@@ -1,8 +1,9 @@
 # Import Built-Ins
 import logging
 import unittest
-from unittest import TestCase
+from unittest import TestCase, mock
 import time
+import warnings
 from json import JSONDecodeError
 # Import Third-Party
 import requests
@@ -110,6 +111,52 @@ class BaseAPITests(TestCase):
             self.assertLess(previous_nonce, new_nonce)
             previous_nonce = new_nonce
 
+    @mock.patch('time.time', return_value=1000.1000)
+    def test_nonce(self, mock_time):
+        self.assertEqual(BaseAPI.nonce(), str(int(round(mock_time() * 1000))))
+
+    def test_load_config(self):
+        with self.assertRaises(FileNotFoundError):
+            open("non_existant_file.txt")
+
+        no_key_warning_msg = "Key parameter not present in config - authentication may not work!"
+        no_secret_warning_msg = "Key parameter not present in config - authentication may not work!"
+        no_version_warning_msg = "API version was not present in config - requests may not work!"
+        no_url_warning_msg = "API address not present in config - requests may not work!"
+
+        no_key_warning_args = (no_key_warning_msg, IncompleteCredentialConfigurationWarning)
+        no_secret_warning_args = (no_secret_warning_msg, IncompleteCredentialConfigurationWarning)
+        no_version_warning_args = (no_version_warning_msg, IncompleteAPIConfigurationWarning)
+        no_address_warning_args = (no_url_warning_msg, IncompleteAPIConfigurationWarning)
+
+        with mock.patch.object(warnings, 'warn') as mock_warn:
+            BaseAPI(config='./configs/config_empty.ini', key=None, secret=None, addr=None,
+                    version=None)
+            mock_warn.assert_any_call(*no_key_warning_args)
+            mock_warn.assert_any_call(*no_secret_warning_args)
+            mock_warn.assert_any_call(*no_address_warning_args)
+            mock_warn.assert_any_call(*no_version_warning_args)
+
+        with mock.patch.object(warnings, 'warn') as mock_warn:
+            BaseAPI(config='./configs/config_no_auth.ini', key=None, secret=None, addr=None,
+                    version=None)
+            mock_warn.assert_any_call(*no_key_warning_args)
+            mock_warn.assert_any_call(*no_secret_warning_args)
+            with self.assertRaises(AssertionError):
+                mock_warn.assert_any_call(*no_address_warning_args)
+            with self.assertRaises(AssertionError):
+                mock_warn.assert_any_call(*no_version_warning_args)
+
+        with mock.patch.object(warnings, 'warn') as mock_warn:
+            BaseAPI(config='./configs/config_no_api.ini', key=None, secret=None, addr=None,
+                    version=None)
+            mock_warn.assert_any_call(*no_address_warning_args)
+            mock_warn.assert_any_call(*no_version_warning_args)
+            with self.assertRaises(AssertionError):
+                mock_warn.assert_any_call(*no_key_warning_args)
+            with self.assertRaises(AssertionError):
+                mock_warn.assert_any_call(*no_secret_warning_args)
+
 
 class RESTAPITests(TestCase):
     def test_generate_methods_work_correctly(self):
@@ -149,11 +196,11 @@ class RESTAPITests(TestCase):
 
         # assert that _query() silently returns an requests.Response() obj, if
         # the request was good
-        try:
+        with mock.patch.object(requests, 'request') as mock_request:
+            mock_request.return_value = requests.Response()
             resp = RESTAPI('http://test.com')._query('GET', url='https://api.kraken.com/0/public/Time')
-        except requests.exceptions.ConnectionError:
-            self.fail("No Internet connection detected to ")
-        self.assertIsInstance(resp, requests.Response)
+            mock_request.assert_called_once_with('GET', timeout=10, url='https://api.kraken.com/0/public/Time')
+            self.assertIsInstance(resp, requests.Response)
 
 
 class BitstampRESTTests(TestCase):
@@ -168,19 +215,21 @@ class BitstampRESTTests(TestCase):
         self.assertIs(api.config_file, None)
         # Assert that a Warning is raised if user_id is None, and BaseAPI's
         # check mechanism is extended properly
-        with self.assertWarns(IncompleteCredentialsWarning):
-            api = BitstampREST(addr='Bangarang', user_id=None, key='SomeKey',
-                               secret='SomeSecret', config=None, version=None)
+        api = BitstampREST(addr='Bangarang', user_id=None, key='SomeKey', secret='SomeSecret',
+                           config=None, version=None)
+        with mock.patch('warnings.warn') as mock_warn:
+            api.load_config('./configs/config.ini')
+            mock_warn.assert_called_with("'user_id' not found in config!",
+                                         IncompleteCredentialConfigurationWarning)
 
         # make sure an exception is raised if user_id is passed as ''
         with self.assertRaises(ValueError):
-            api = BitstampREST(addr='Bangarang', user_id='', key='SomeKey',
-                               secret='SomeSecret', config=None,
-                               version=None)
+            BitstampREST(addr='Bangarang', user_id='', key='SomeKey', secret='SomeSecret',
+                         config=None, version=None)
 
         # make sure user_id is assigned properly
         api = BitstampREST(addr='Bangarang', user_id='woloho')
-        self.assertIs(api.user_id, 'woloho')
+        self.assertEqual(api.user_id, 'woloho')
 
         # Check that a IncompleteCredentialConfigurationWarning is issued if
         # user_id isn't available in config, and no user_id was given.
@@ -199,13 +248,13 @@ class BitstampRESTTests(TestCase):
         self.assertTrue(api.config_file == config_path)
         self.assertEqual(api.user_id, '267705')
 
-    def test_private_query_raises_error_on_incomplete_credentials(self):
+    def test_check_auth_requirements_fires_as_expected_on_empty_user_id(self):
         # config.ini is missing the key 'user_id' and hence should raise
-        # an error on attempting to query a private endpoint.
+        # an error on checking for authentication credentials when calling check_auth_requirements()
         config_path = '%s/configs/config.ini' % tests_folder_dir
         api = BitstampREST(config=config_path)
         with self.assertRaises(IncompleteCredentialsError):
-            api.private_query('POST', 'balance')
+            api.check_auth_requirements()
 
     def test_sign_request_kwargs_method_and_signature(self):
         # Test that the sign_request_kwargs generate appropriate kwargs:
