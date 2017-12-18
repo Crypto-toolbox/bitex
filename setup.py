@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 
-VERSION = '2.0.0dev'
+VERSION = '2.0.0'
 
 
 setup(name='BitEx', version=VERSION, author='Nils Diefenbach',
