@@ -458,17 +458,26 @@ class KrakenRESTTest(TestCase):
 
     def test_sign_request_kwargs_method_and_signature(self):
         # Test that the sign_request_kwargs generate appropriate kwargs:
-        config_path = '%s/auth/kraken.ini' % tests_folder_dir
-        api = KrakenREST(config=config_path)
-        self.assertEqual(api.config_file, config_path)
-
-        # Check signatured request kwargs
-        response = api.private_query('POST', 'private/Balance')
-        self.assertEqual(response.status_code, 200,
-                         msg="Unexpected status code (%s) for request to path "
-                             "%s!" % (response.status_code, response.request.url))
-
-        self.assertEqual(response.json()['error'], [], msg=response.json())
+        key = 'panda'
+        secret = '11LX0lqM9aExe63oe975Fjms5I9plFAPDxj0puwFBKGct79CP9GESjl5IRTDP8bqNaMYWXxEO8UbM0e4kacRtw=='
+        with mock.patch.object(RESTAPI, 'nonce', return_value=str(100)) as mock_rest:
+            api = KrakenREST(key=key, secret=secret, version='api')
+            self.assertEqual(api.generate_uri('testing/signature'), '/api/testing/signature')
+            ret_values = api.sign_request_kwargs('testing/signature', params={'param_1': 'abc'})
+            encoded_payloads = ('nonce=100&param_1=abc', 'param_1=abc&nonce=100')
+            expected_payload = {'nonce': '100', 'param_1': 'abc'}
+            sigs = []
+            for pl in encoded_payloads:
+                encoded = ('100' + pl).encode()
+                msg = '/api/testing/signature'.encode('utf-8') + hashlib.sha256(encoded).digest()
+                signature = hmac.new(base64.b64decode(secret), msg, hashlib.sha512)
+                sigdigest = base64.b64encode(signature.digest())
+                sigs.append(sigdigest.decode('utf-8'))
+            self.assertIn('API-Key', ret_values['headers'])
+            self.assertEqual(ret_values['headers']['API-Key'], key)
+            self.assertIn('API-Sign', ret_values['headers'])
+            self.assertIn(ret_values['headers']['API-Sign'], sigs)
+            self.assertEqual(ret_values['data'], expected_payload)
 
 
 class ITBitRESTTest(TestCase):
