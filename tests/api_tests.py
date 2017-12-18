@@ -368,17 +368,19 @@ class CoinCheckRESTTest(TestCase):
 
     def test_sign_request_kwargs_method_and_signature(self):
         # Test that the sign_request_kwargs generate appropriate kwargs:
-        config_path = '%s/auth/coincheck.ini' % tests_folder_dir
-        api = CoincheckREST(config=config_path)
-        self.assertEqual(api.config_file, config_path)
-
-        # Check signatured request kwargs
-        response = api.private_query('GET', 'accounts/balance')
-        self.assertEqual(response.status_code, 200,
-                         msg="Unexpected status code (%s) for request to path "
-                             "%s!" % (response.status_code, response.request.url))
-
-        self.assertTrue(response.json()['success'], msg=response.json())
+        key, secret, user = 'panda', 'shadow', 'leeroy'
+        with mock.patch.object(RESTAPI, 'nonce', return_value=str(100)) as mock_rest:
+            api = CoincheckREST(key=key, secret=secret, version='v1')
+            self.assertEqual(api.generate_uri('testing/signature'), '/v1/testing/signature')
+            ret_values = api.sign_request_kwargs('testing/signature', params={'param_1': 'abc'})
+            msg = '100https://bittrex.com/api/v1.1/testing/signature?param_1=abc'
+            sig = hmac.new(secret.encode('utf8'), msg.encode('utf8'), hashlib.sha256).hexdigest()
+            self.assertIn('ACCESS-NONCE', ret_values['headers'])
+            self.assertEqual(ret_values['headers']['ACCESS-NONCE'], "100")
+            self.assertIn('ACCESS-KEY', ret_values['headers'])
+            self.assertEqual(ret_values['headers']['ACCESS-KEY'], key)
+            self.assertIn('ACCESS-SIGNATURE', ret_values['headers'])
+            self.assertEqual(ret_values['headers']['ACCESS-SIGNATURE'], sig)
 
 
 class GDAXRESTTest(TestCase):
