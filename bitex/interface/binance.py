@@ -34,10 +34,6 @@ class Binance(RESTInterface):
         pairs = [entry['symbol'] for entry in r['symbols']]
         return pairs
 
-    # Automatically calls the RESTInterface method.
-    # def is_supported(self, pair):
-    #     return super(Binance, self).is_supported(pair)
-
     def ticker(self, pair, *args, **kwargs):
         """Return the ticker for the given pair."""
         payload = {'symbol': pair}
