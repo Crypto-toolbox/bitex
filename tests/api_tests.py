@@ -373,7 +373,7 @@ class CoinCheckRESTTest(TestCase):
             api = CoincheckREST(key=key, secret=secret, version='v1')
             self.assertEqual(api.generate_uri('testing/signature'), '/v1/testing/signature')
             ret_values = api.sign_request_kwargs('testing/signature', params={'param_1': 'abc'})
-            msg = '100https://bittrex.com/api/v1.1/testing/signature?param_1=abc'
+            msg = '100https://coincheck.com/v1/testing/signature?param_1=abc'
             sig = hmac.new(secret.encode('utf8'), msg.encode('utf8'), hashlib.sha256).hexdigest()
             self.assertIn('ACCESS-NONCE', ret_values['headers'])
             self.assertEqual(ret_values['headers']['ACCESS-NONCE'], "100")
