@@ -92,15 +92,17 @@ The Methods are:
  It automatically formats the pair accordingly when a standardized method 
  is invoked.
  
- You can create a custom `PairFormatter()` easily. Let's consider two 
- imaginary crypt currencies, Bla-Coin(BLA) and Fake-Coin (FKE): 
+You can create a custom `PairFormatter()` easily. Let's consider a common
+use case, when we want to query the price for Bitcoin against US Dollar.
  
 ```
-    from bitex.pairs import PairFormatter
-    
-    class BLAFKE(PairFormatter):
-        def __init__(self):
-            super(MySpecialPairFormatter).__init__(base='BLA', quote='FKE')
+from bitex.pairs import PairFormatter
+
+class BTCUSD(PairFormatter):
+    def __init__(self):
+        super(self.__class__, self).__init__(base='BTC', quote='USD')
+
+btcusd = BTCUSD()
 ```
 
 And that's all you need to do! Whenever you pass this to a standardized
@@ -108,13 +110,20 @@ method, the method will call the `PairFormatter()`'s `format_for()` method,
 and let it take care of the formatting:
 
 ```
-    >>>BLAFKE.format_for('Kraken')
-    'XBLAXFKE'
-    >>>BLAFKE.format_for('Bittrex')
-    'BLA-FKE'
+>>> btcusd.format_for("Bitstamp")
+'btcusd'
+>>> btcusd.format_for("Kraken")
+'XXBTZUSD'
 ```
 
+If we now want to query the rate on, e.g., Bitstamp:
 
+```
+>>> from bitex import Bitstamp
+>>> resp = Bitstamp().ticker(btcusd)
+>>> resp.json()
+{'high': '19666.00', 'last': '19663.94', 'timestamp': '1513513571', 'bid': '19647.18', 'vwap': '18920.32', 'volume': '9999.47455152', 'low': '17906.01', 'ask': '19663.93', 'open': '19187.78'}
+```
 
 # Installation
 

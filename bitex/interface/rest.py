@@ -13,6 +13,7 @@ log = logging.getLogger(__name__)
 
 class RESTInterface(Interface):
     """REST Interface base class."""
+
     __metaclass__ = abc.ABCMeta
 
     def __init__(self, name, rest_api):
