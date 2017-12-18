@@ -129,7 +129,7 @@ class BaseAPITests(TestCase):
         no_version_warning_args = (no_version_warning_msg, IncompleteAPIConfigurationWarning)
         no_address_warning_args = (no_url_warning_msg, IncompleteAPIConfigurationWarning)
 
-        with mock._patch_object(warnings, 'warn') as mock_warn:
+        with mock.patch.object(warnings, 'warn') as mock_warn:
             BaseAPI(config='./configs/config_empty.ini', key=None, secret=None, addr=None,
                     version=None)
             mock_warn.assert_any_call(*no_key_warning_args)
@@ -137,7 +137,7 @@ class BaseAPITests(TestCase):
             mock_warn.assert_any_call(*no_address_warning_args)
             mock_warn.assert_any_call(*no_version_warning_args)
 
-        with mock._patch_object(warnings, 'warn') as mock_warn:
+        with mock.patch.object(warnings, 'warn') as mock_warn:
             BaseAPI(config='./configs/config_no_auth.ini', key=None, secret=None, addr=None,
                     version=None)
             mock_warn.assert_any_call(*no_key_warning_args)
@@ -147,7 +147,7 @@ class BaseAPITests(TestCase):
             with self.assertRaises(AssertionError):
                 mock_warn.assert_any_call(*no_version_warning_args)
 
-        with mock._patch_object(warnings, 'warn') as mock_warn:
+        with mock.patch.object(warnings, 'warn') as mock_warn:
             BaseAPI(config='./configs/config_no_api.ini', key=None, secret=None, addr=None,
                     version=None)
             mock_warn.assert_any_call(*no_address_warning_args)
@@ -196,7 +196,7 @@ class RESTAPITests(TestCase):
 
         # assert that _query() silently returns an requests.Response() obj, if
         # the request was good
-        with mock._patch_object(requests, 'request') as mock_request:
+        with mock.patch.object(requests, 'request') as mock_request:
             mock_request.return_value = requests.Response()
             resp = RESTAPI('http://test.com')._query('GET', url='https://api.kraken.com/0/public/Time')
             mock_request.assert_called_once_with('GET', timeout=10, url='https://api.kraken.com/0/public/Time')
