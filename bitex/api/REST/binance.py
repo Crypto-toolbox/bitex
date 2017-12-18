@@ -6,11 +6,9 @@ Documentation available at:
 # pylint: disable=too-many-arguments
 # Import Built-ins
 import logging
-import json
 import hashlib
 import hmac
 import time
-import base64
 import urllib
 import urllib.parse
 
@@ -25,15 +23,13 @@ log = logging.getLogger(__name__)
 class BinanceREST(RESTAPI):
     """Bitfinex REST API class."""
 
-    def __init__(self, key=None, secret=None, version=None,
-                 addr=None, timeout=None, config=None):
+    def __init__(self, key=None, secret=None, version=None, addr=None, timeout=None, config=None):
         """Initialize the class instance."""
         addr = 'https://api.binance.com/api'
         # We force version to None here as different endpoints require different versions,
         # so the interface will have to define the version as part of the endpoint.
-        super(BinanceREST, self).__init__(addr=addr, version=None, key=key,
-                                          secret=secret, timeout=timeout,
-                                          config=config)
+        super(BinanceREST, self).__init__(addr=addr, version=None, key=key, secret=secret,
+                                          timeout=timeout, config=config)
 
     def private_query(self, method_verb, endpoint, **request_kwargs):
         """
@@ -50,8 +46,7 @@ class BinanceREST(RESTAPI):
 
     def sign_request_kwargs(self, method_verb, endpoint, **kwargs):
         """Sign the request."""
-        req_kwargs = super(BinanceREST, self).sign_request_kwargs(endpoint,
-                                                                   **kwargs)
+        req_kwargs = super(BinanceREST, self).sign_request_kwargs(endpoint, **kwargs)
         req_kwargs['params'] = {}
         # Prepare arguments for query request.
         try:
@@ -59,25 +54,22 @@ class BinanceREST(RESTAPI):
         except KeyError:
             params = {}
 
-        params['timestamp'] = str(int(time.time()*1000))
+        params['timestamp'] = str(int(time.time() * 1000))
 
         # Build request address
         req_string = urllib.parse.urlencode(params)
 
         # generate signature
-        signature = hmac.new(self.secret.encode('utf-8'),
-                             req_string.encode('utf-8'),
+        signature = hmac.new(self.secret.encode('utf-8'), req_string.encode('utf-8'),
                              hashlib.sha256).hexdigest()
 
         req_string += '&signature=' + signature
 
-        if method_verb == "GET" :
+        if method_verb == "GET":
             req_kwargs['url'] += '?' + req_string
-        else :
+        else:
             req_kwargs['data'] = req_string
 
         req_kwargs['headers'] = {'X-MBX-APIKEY': self.key.encode('utf-8')}
 
         return req_kwargs
-
-
