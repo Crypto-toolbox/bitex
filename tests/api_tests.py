@@ -5,6 +5,8 @@ from unittest import TestCase, mock
 import time
 import warnings
 from json import JSONDecodeError
+import hmac
+import hashlib
 # Import Third-Party
 import requests
 
@@ -257,19 +259,35 @@ class BitstampRESTTests(TestCase):
             api.check_auth_requirements()
 
     def test_sign_request_kwargs_method_and_signature(self):
+        """Test signature generation.
+
+
+        Example as seen on https://www.bitstamp.net/api/
+        ```
+        import hmac
+        import hashlib
+
+        message = nonce + customer_id + api_key
+        signature = hmac.new(API_SECRET, msg=message, digestmod=hashlib.sha256).hexdigest().upper()
+        ```
+        """
         # Test that the sign_request_kwargs generate appropriate kwargs:
-        config_path = '%s/auth/bitstamp.ini' % tests_folder_dir
-        api = BitstampREST(config=config_path)
-        self.assertEqual(api.config_file, config_path)
 
         # Check signatured request kwargs
-
-        response = api.private_query('POST', 'balance/')
-        self.assertEqual(response.status_code, 200,
-                         msg="Unexpected status code (%s) for request to path "
-                             "%s!" % (response.status_code, response.request.url))
-
-        self.assertIn('usd_balance', response.json(), msg=response.json())
+        key, secret, user = 'panda', 'shadow', 'leeroy'
+        with mock.patch.object(RESTAPI, 'nonce', return_value=str(10000)) as mock_rest:
+            api = BitstampREST(key=key, secret=secret, user_id=user)
+            self.assertEqual(api.nonce(), str(10000))
+            ret_values = api.sign_request_kwargs('testing/signature', param_1='a', param_2=1)
+            expected_signature = hmac.new(secret.encode('utf-8'),
+                                          (str(10000) + user + key).encode('utf-8'),
+                                          hashlib.sha256).hexdigest().upper()
+            self.assertIn('key', ret_values['data'])
+            self.assertIn(ret_values['data']['key'], key)
+            self.assertIn('signature', ret_values['data'])
+            self.assertIn(ret_values['data']['signature'], expected_signature)
+            self.assertIn('nonce', ret_values['data'])
+            self.assertIn(ret_values['data']['nonce'], str(10000))
 
 
 class BitfinexRESTTests(TestCase):
