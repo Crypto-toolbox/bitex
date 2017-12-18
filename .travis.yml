@@ -39,8 +39,10 @@ jobs:
       script: ./travis/deploy.sh
 
 stages:
-  - lint
+  - name: lint
+    if: branch != nightly
   - compile
-  - test
+  - name: test
+    if: branch != nightly
   - name: deploy
     if: tag IS present OR branch = nightly
