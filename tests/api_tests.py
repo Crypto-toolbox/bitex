@@ -4,7 +4,11 @@ import unittest
 from unittest import TestCase, mock
 import time
 import warnings
+import json
 from json import JSONDecodeError
+import hmac
+import hashlib
+import base64
 # Import Third-Party
 import requests
 
@@ -257,19 +261,35 @@ class BitstampRESTTests(TestCase):
             api.check_auth_requirements()
 
     def test_sign_request_kwargs_method_and_signature(self):
+        """Test signature generation.
+
+
+        Example as seen on https://www.bitstamp.net/api/
+        ```
+        import hmac
+        import hashlib
+
+        message = nonce + customer_id + api_key
+        signature = hmac.new(API_SECRET, msg=message, digestmod=hashlib.sha256).hexdigest().upper()
+        ```
+        """
         # Test that the sign_request_kwargs generate appropriate kwargs:
-        config_path = '%s/auth/bitstamp.ini' % tests_folder_dir
-        api = BitstampREST(config=config_path)
-        self.assertEqual(api.config_file, config_path)
 
         # Check signatured request kwargs
-
-        response = api.private_query('POST', 'balance/')
-        self.assertEqual(response.status_code, 200,
-                         msg="Unexpected status code (%s) for request to path "
-                             "%s!" % (response.status_code, response.request.url))
-
-        self.assertIn('usd_balance', response.json(), msg=response.json())
+        key, secret, user = 'panda', 'shadow', 'leeroy'
+        with mock.patch.object(RESTAPI, 'nonce', return_value=str(10000)) as mock_rest:
+            api = BitstampREST(key=key, secret=secret, user_id=user)
+            self.assertEqual(api.nonce(), str(10000))
+            ret_values = api.sign_request_kwargs('testing/signature', param_1='a', param_2=1)
+            expected_signature = hmac.new(secret.encode('utf-8'),
+                                          (str(10000) + user + key).encode('utf-8'),
+                                          hashlib.sha256).hexdigest().upper()
+            self.assertIn('key', ret_values['data'])
+            self.assertIn(ret_values['data']['key'], key)
+            self.assertIn('signature', ret_values['data'])
+            self.assertIn(ret_values['data']['signature'], expected_signature)
+            self.assertIn('nonce', ret_values['data'])
+            self.assertIn(ret_values['data']['nonce'], str(10000))
 
 
 class BitfinexRESTTests(TestCase):
@@ -285,16 +305,31 @@ class BitfinexRESTTests(TestCase):
 
     def test_sign_request_kwargs_method_and_signature(self):
         # Test that the sign_request_kwargs generate appropriate kwargs:
-        config_path = '%s/auth/bitfinex.ini' % tests_folder_dir
-        api = BitfinexREST(config=config_path)
-        self.assertEqual(api.config_file, config_path)
+        key, secret = 'panda', 'shadow'
+        with mock.patch.object(RESTAPI, 'nonce', return_value=str(100)):
+            api = BitfinexREST(key=key, secret=secret)
+            self.assertEqual(api.nonce(), str(100))
+            self.assertEqual(api.version, 'v1')
+            self.assertEqual(api.generate_uri('testing/signature'), '/v1/testing/signature')
+            ret_values = api.sign_request_kwargs('testing/signature', params={'param_1': 'abc'})
+            possible_json_dumps = ['{"param_1": "abc", "nonce": "100", "request": "/v1/testing/signature"}',
+                                   '{"param_1": "abc", "request": "/v1/testing/signature", "nonce": "100"}',
+                                   '{"nonce": "100", "param_1": "abc", "request": "/v1/testing/signature"}',
+                                   '{"nonce": "100", "request": "/v1/testing/signature", "param_1": "abc"}',
+                                   '{"request": "/v1/testing/signature", "param_1": "abc", "nonce": "100"}',
+                                   '{"request": "/v1/testing/signature", "nonce": "100", "param_1": "abc"}']
+            data = [base64.standard_b64encode(pl.encode('utf8'))
+                    for pl in possible_json_dumps]
+            signatures = [hmac.new(secret.encode('utf-8'), d, hashlib.sha384).hexdigest()
+                          for d in data]
 
-        # Check signatured request kwargs
+            self.assertIn('X-BFX-APIKEY', ret_values['headers'])
+            self.assertEqual(ret_values['headers']['X-BFX-APIKEY'], key)
+            self.assertIn('X-BFX-PAYLOAD', ret_values['headers'])
+            self.assertIn(ret_values['headers']['X-BFX-PAYLOAD'], data)
+            self.assertIn('X-BFX-SIGNATURE', ret_values['headers'])
+            self.assertIn(ret_values['headers']['X-BFX-SIGNATURE'], signatures)
 
-        response = api.private_query('POST', 'balances')
-        self.assertEqual(response.status_code, 200,
-                         msg="Unexpected status code (%s) for request to path "
-                             "%s!" % (response.status_code, response.request.url))
 
 
 class BittrexRESTTest(TestCase):
