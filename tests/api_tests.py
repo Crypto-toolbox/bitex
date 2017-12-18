@@ -285,11 +285,11 @@ class BitstampRESTTests(TestCase):
                                           (str(10000) + user + key).encode('utf-8'),
                                           hashlib.sha256).hexdigest().upper()
             self.assertIn('key', ret_values['data'])
-            self.assertIn(ret_values['data']['key'], key)
+            self.assertEqual(ret_values['data']['key'], key)
             self.assertIn('signature', ret_values['data'])
-            self.assertIn(ret_values['data']['signature'], expected_signature)
+            self.assertEqual(ret_values['data']['signature'], expected_signature)
             self.assertIn('nonce', ret_values['data'])
-            self.assertIn(ret_values['data']['nonce'], str(10000))
+            self.assertEqual(ret_values['data']['nonce'], str(10000))
 
 
 class BitfinexRESTTests(TestCase):
@@ -329,7 +329,6 @@ class BitfinexRESTTests(TestCase):
             self.assertIn(ret_values['headers']['X-BFX-PAYLOAD'], data)
             self.assertIn('X-BFX-SIGNATURE', ret_values['headers'])
             self.assertIn(ret_values['headers']['X-BFX-SIGNATURE'], signatures)
-
 
 
 class BittrexRESTTest(TestCase):
