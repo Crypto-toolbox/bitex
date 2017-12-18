@@ -4,9 +4,11 @@ import unittest
 from unittest import TestCase, mock
 import time
 import warnings
+import json
 from json import JSONDecodeError
 import hmac
 import hashlib
+import base64
 # Import Third-Party
 import requests
 
@@ -303,16 +305,31 @@ class BitfinexRESTTests(TestCase):
 
     def test_sign_request_kwargs_method_and_signature(self):
         # Test that the sign_request_kwargs generate appropriate kwargs:
-        config_path = '%s/auth/bitfinex.ini' % tests_folder_dir
-        api = BitfinexREST(config=config_path)
-        self.assertEqual(api.config_file, config_path)
+        key, secret = 'panda', 'shadow'
+        with mock.patch.object(RESTAPI, 'nonce', return_value=str(100)):
+            api = BitfinexREST(key=key, secret=secret)
+            self.assertEqual(api.nonce(), str(100))
+            self.assertEqual(api.version, 'v1')
+            self.assertEqual(api.generate_uri('testing/signature'), '/v1/testing/signature')
+            ret_values = api.sign_request_kwargs('testing/signature', params={'param_1': 'abc'})
+            possible_json_dumps = ['{"param_1": "abc", "nonce": "100", "request": "/v1/testing/signature"}',
+                                   '{"param_1": "abc", "request": "/v1/testing/signature", "nonce": "100"}',
+                                   '{"nonce": "100", "param_1": "abc", "request": "/v1/testing/signature"}',
+                                   '{"nonce": "100", "request": "/v1/testing/signature", "param_1": "abc"}',
+                                   '{"request": "/v1/testing/signature", "param_1": "abc", "nonce": "100"}',
+                                   '{"request": "/v1/testing/signature", "nonce": "100", "param_1": "abc"}']
+            data = [base64.standard_b64encode(pl.encode('utf8'))
+                    for pl in possible_json_dumps]
+            signatures = [hmac.new(secret.encode('utf-8'), d, hashlib.sha384).hexdigest()
+                          for d in data]
 
-        # Check signatured request kwargs
+            self.assertIn('X-BFX-APIKEY', ret_values['headers'])
+            self.assertEqual(ret_values['headers']['X-BFX-APIKEY'], key)
+            self.assertIn('X-BFX-PAYLOAD', ret_values['headers'])
+            self.assertIn(ret_values['headers']['X-BFX-PAYLOAD'], data)
+            self.assertIn('X-BFX-SIGNATURE', ret_values['headers'])
+            self.assertIn(ret_values['headers']['X-BFX-SIGNATURE'], signatures)
 
-        response = api.private_query('POST', 'balances')
-        self.assertEqual(response.status_code, 200,
-                         msg="Unexpected status code (%s) for request to path "
-                             "%s!" % (response.status_code, response.request.url))
 
 
 class BittrexRESTTest(TestCase):
