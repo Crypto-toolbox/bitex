@@ -543,21 +543,15 @@ class ITBitRESTTest(TestCase):
             instead of passing it to requests.request()'s ``data`` parameter.
             """
             req_url = 'https://api.itbit.com/v1/testing/signature'
-            json_bodies = ['{"userID": "leeroy", "param_1": "abc"}',
-                           '{"param_1": "abc", "userID": "leeroy"}']
+            json_bodies = ['{"param_1": "abc"}']
             req_strings = [['POST', 'https://api.itbit.com/v1/testing/signature',
-                           '{"userID": "leeroy", "param_1": "abc"}', '1', '1000'],
-                           ['POST', 'https://api.itbit.com/v1/testing/signature',
-                           '{"param_1": "abc", "userID": "leeroy"}', '1', '1000'],
+                           '{"param_1": "abc"}', '1', '1000'],
                            ['PUT', 'https://api.itbit.com/v1/testing/signature',
-                            '{"userID": "leeroy", "param_1": "abc"}', '2', '1000'],
-                           ['PUT', 'https://api.itbit.com/v1/testing/signature',
-                            '{"param_1": "abc", "userID": "leeroy"}', '2', '1000']
-                           ]
+                            '{"param_1": "abc"}', '2', '1000']]
             signatures = []
             for i, req_string in enumerate(req_strings):
                 message = json.dumps(req_string, separators=(',', ':'))
-                nonced = '1' if i < 2 else '2' + message
+                nonced = str(i+1) + message
                 hasher = hashlib.sha256()
                 hasher.update(nonced.encode('utf-8'))
                 hash_digest = hasher.digest()
@@ -575,7 +569,7 @@ class ITBitRESTTest(TestCase):
             self.assertIn('X-Auth-Timestamp', post_ret_values['headers'])
             self.assertEqual(post_ret_values['headers']['X-Auth-Timestamp'], '1000')
             self.assertIn('X-Auth-Nonce', post_ret_values['headers'])
-            self.assertEqual(post_ret_values['headers']['X-Auth-Nonce'], '100')
+            self.assertEqual(post_ret_values['headers']['X-Auth-Nonce'], '1')
             self.assertIn('Content-Type', post_ret_values['headers'])
             self.assertEqual(post_ret_values['headers']['Content-Type'], 'application/json')
             self.assertIn(post_ret_values['data'], json_bodies)
@@ -585,7 +579,7 @@ class ITBitRESTTest(TestCase):
             self.assertIn('X-Auth-Timestamp', put_ret_values['headers'])
             self.assertEqual(put_ret_values['headers']['X-Auth-Timestamp'], '1000')
             self.assertIn('X-Auth-Nonce', put_ret_values['headers'])
-            self.assertEqual(put_ret_values['headers']['X-Auth-Nonce'], '100')
+            self.assertEqual(put_ret_values['headers']['X-Auth-Nonce'], '2')
             self.assertIn('Content-Type', put_ret_values['headers'])
             self.assertEqual(put_ret_values['headers']['Content-Type'], 'application/json')
             self.assertIn(put_ret_values['data'], json_bodies)
