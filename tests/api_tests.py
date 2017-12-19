@@ -603,7 +603,7 @@ class ITBitRESTTest(TestCase):
             self.assertEqual(get_ret_values['headers']['Content-Type'], 'application/json')
             self.assertEqual(get_ret_values['data'], '')
 
-@unittest.expectedFailure
+
 class OKCoinRESTTest(TestCase):
     def test_initialization(self):
         # test that all default values are assigned correctly if No kwargs are
@@ -617,19 +617,32 @@ class OKCoinRESTTest(TestCase):
 
     def test_sign_request_kwargs_method_and_signature(self):
         # Test that the sign_request_kwargs generate appropriate kwargs:
-        config_path = '%s/auth/okcoin.ini' % tests_folder_dir
-        api = OKCoinREST(config=config_path)
-        self.assertEqual(api.config_file, config_path)
+        key, secret = 'panda', 'shadow'
 
-        # Check signatured request kwargs
-        response = api.private_query('POST', 'userinfo.do')
-        self.assertEqual(response.status_code, 200,
-                         msg="Unexpected status code (%s) for request to path "
-                             "%s!" % (response.status_code, response.request.url))
+        api = OKCoinREST(key=key, secret=secret, version='v1')
+        self.assertEqual(api.generate_uri('testing/signature'), '/v1/testing/signature')
+        ret_values = api.sign_request_kwargs('testing/signature', params={'param_1': 'abc'},
+                                                                          method='POST')
+        expected_params = {'api_key': key, 'param_1': 'abc'}
+        sign = '&'.join([k + '=' + expected_params[k] for k in sorted(expected_params.keys())])
+        sign += '&secret_key=' + secret
+        signature = hashlib.md5(sign.encode('utf-8')).hexdigest().upper()
+        url = 'https://www.okcoin.com/api/v1/testing/signature'
+        self.assertEqual(ret_values['url'], url)
+        self.assertIn('api_key=' + key, ret_values['data'])
+        self.assertIn('param_1=abc', ret_values['data'])
+        self.assertIn('sign=' + signature, ret_values['data'])
+        self.assertIn('Content-Type', ret_values['headers'])
+        self.assertIn(ret_values['headers']['Content-Type'], 'application/x-www-form-urlencoded')
 
-        self.assertTrue(response.json()['result'],
-                        msg=(response.json(), api.sign_request_kwargs('userinfo.do')))
-
+        url = 'https://www.okcoin.com/api/v1/testing/signature'
+        ret_values = api.sign_request_kwargs('testing/signature', params={'param_1': 'abc'},
+                                             method='GET')
+        self.assertEqual(ret_values['url'], url)
+        self.assertEqual(ret_values['data']['api_key'], key)
+        self.assertEqual(ret_values['data']['sign'], signature)
+        self.assertIn('param_1', ret_values['data'])
+        self.assertEqual(ret_values['data']['param_1'], 'abc')
 
 @unittest.expectedFailure
 class CCEXRESTTest(TestCase):
