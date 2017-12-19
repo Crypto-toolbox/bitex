@@ -524,9 +524,16 @@ class ITBitRESTTest(TestCase):
         self.assertEqual(api.user_id, 'testuser')
 
     def test_sign_request_kwargs_method_and_signature(self):
+        """Test itBit signature methoc.
+
+        ItBit requires both a Nonce value AND a timestamp value. Assert that both methods work
+        correctly:
+            nnoce() : returns an ever increasing int, starting at 1
+            timestamp() : returns a unix timestamp in milliseconds
+        """
         # Test that the sign_request_kwargs generate appropriate kwargs:
         key, secret, user = 'panda', 'shadow', 'leeroy'
-        with mock.patch.object(RESTAPI, 'nonce', return_value=str(100)) as mock_rest:
+        with mock.patch.object(RESTAPI, 'timestamp', return_value=str(1000)) as mock_rest:
             api = ITbitREST(key=key, secret=secret, version='v1', user_id=user)
             self.assertEqual(api.generate_uri('testing/signature'), '/v1/testing/signature')
             
@@ -539,13 +546,13 @@ class ITBitRESTTest(TestCase):
             json_bodies = ['{"userID": "leeroy", "param_1": "abc"}',
                            '{"param_1": "abc", "userID": "leeroy"}']
             req_strings = [['POST', 'https://api.itbit.com/v1/testing/signature',
-                           '{"userID": "leeroy", "param_1": "abc"}', '100', '1000'],
+                           '{"userID": "leeroy", "param_1": "abc"}', '1', '1000'],
                            ['POST', 'https://api.itbit.com/v1/testing/signature',
-                           '{"param_1": "abc", "userID": "leeroy"}', '100', '1000'],
+                           '{"param_1": "abc", "userID": "leeroy"}', '1', '1000'],
                            ['PUT', 'https://api.itbit.com/v1/testing/signature',
-                            '{"userID": "leeroy", "param_1": "abc"}', '100', '1000'],
+                            '{"userID": "leeroy", "param_1": "abc"}', '2', '1000'],
                            ['PUT', 'https://api.itbit.com/v1/testing/signature',
-                            '{"param_1": "abc", "userID": "leeroy"}', '100', '1000']
+                            '{"param_1": "abc", "userID": "leeroy"}', '2', '1000']
                            ]
             messages = [json.dumps(req_string, separators=(',', ':')) for req_string in req_strings]
             nonced_messages = ['100' + msg for msg in messages]
@@ -587,7 +594,7 @@ class ITBitRESTTest(TestCase):
             have the parameters present right in the endpoint, json_body needs to be an emptry 
             string.
             """
-            req_string = ['GET', 'https://api.itbit.com/v1/testing/signature', '', '100', '1000']
+            req_string = ['GET', 'https://api.itbit.com/v1/testing/signature', '', '3', '1000']
             message = json.dumps(req_string, separators=(',', ':'))
             nonced_message = '100' + message
             hashed_message = hashlib.sha256(nonced_message.encode('utf-8')).digest() 
