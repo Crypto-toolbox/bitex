@@ -9,6 +9,8 @@ from json import JSONDecodeError
 import hmac
 import hashlib
 import base64
+import urllib
+
 # Import Third-Party
 import requests
 
@@ -685,22 +687,31 @@ class CryptopiaRESTTest(TestCase):
         self.assertIs(api.config_file, None)
 
     def test_sign_request_kwargs_method_and_signature(self):
+        """Test Cryptopia signature method.
+
+        Reference:
+            https://github.com/Coac/cryptopia.js/blob/3b653c4530e730d1d14052cf2c606de88aec0962/index.js#L56
+        """
         # Test that the sign_request_kwargs generate appropriate kwargs:
-        config_path = '%s/auth/cryptopia.ini' % tests_folder_dir
-        api = CryptopiaREST(config=config_path)
-        self.assertEqual(api.config_file, config_path)
-
-        # Check signatured request kwargs
-        response = api.private_query('POST', 'GetBalance')
-        self.assertEqual(response.status_code, 200,
-                         msg="Unexpected status code (%s) for request to path "
-                             "%s!" % (response.status_code, response.request.url))
-
-        try:
-            self.assertTrue(response.json()['Success'], msg=response.json())
-        except JSONDecodeError:
-            self.fail('test_sign_request_kwargs_method_and_signature(): '
-                      'JSONDecodeError for %s' % response._content)
+        key, secret = 'panda', 'shadow'
+        with mock.patch.object(RESTAPI, 'nonce', return_value='100'):
+            api = CryptopiaREST(key=key, secret=secret, version='v1')
+            ret_values = api.sign_request_kwargs('test_signature', params={'param_1': 'abc'})
+            url = 'https://www.cryptopia.co.nz/api/v1/test_signature'
+            expected_params = {'param_1': 'abc'}
+            post_data = json.dumps(expected_params)
+            md5 = hashlib.md5()
+            md5.update(post_data.encode('utf-8'))
+            rcb64 = base64.b64encode(md5.digest())
+            sig = (key + 'POST' + urllib.parse.quote_plus(url).lower() + '100' +
+                   rcb64.decode('utf8'))
+            hmac_sig = base64.b64encode(hmac.new(base64.b64encode(secret.encode('utf-8')),
+                                                 sig.encode('utf-8'),
+                                                 hashlib.sha256).digest())
+            signature = 'amx ' + key + ':' + hmac_sig.decode('utf-8') + ':' + '100'
+            self.assertEqual(ret_values['data'], json.dumps(expected_params))
+            self.assertIn('Authorization', ret_values['headers'])
+            self.assertEqual(ret_values['headers']['Authorization'], signature)
 
 
 class GeminiRESTTest(TestCase):
