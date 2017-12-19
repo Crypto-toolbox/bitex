@@ -547,7 +547,8 @@ class ITBitRESTTest(TestCase):
             req_strings = [['POST', 'https://api.itbit.com/v1/testing/signature',
                            '{"param_1": "abc"}', '1', '1000'],
                            ['PUT', 'https://api.itbit.com/v1/testing/signature',
-                            '{"param_1": "abc"}', '2', '1000']]
+                            '{"param_1": "abc"}', '2', '1000'],
+                           ['GET', 'https://api.itbit.com/v1/testing/signature', '', '3', '1000']]
             signatures = []
             for i, req_string in enumerate(req_strings):
                 message = json.dumps(req_string, separators=(',', ':'))
@@ -565,7 +566,7 @@ class ITBitRESTTest(TestCase):
                                                      method='PUT')
             
             self.assertIn('Authorization', post_ret_values['headers'])
-            self.assertIn(post_ret_values['headers']['Authorization'], signatures)
+            self.assertIn(post_ret_values['headers']['Authorization'], signatures[0])
             self.assertIn('X-Auth-Timestamp', post_ret_values['headers'])
             self.assertEqual(post_ret_values['headers']['X-Auth-Timestamp'], '1000')
             self.assertIn('X-Auth-Nonce', post_ret_values['headers'])
@@ -575,7 +576,7 @@ class ITBitRESTTest(TestCase):
             self.assertIn(post_ret_values['data'], json_bodies)
 
             self.assertIn('Authorization', put_ret_values['headers'])
-            self.assertIn(put_ret_values['headers']['Authorization'], signatures)
+            self.assertIn(put_ret_values['headers']['Authorization'], signatures[1])
             self.assertIn('X-Auth-Timestamp', put_ret_values['headers'])
             self.assertEqual(put_ret_values['headers']['X-Auth-Timestamp'], '1000')
             self.assertIn('X-Auth-Nonce', put_ret_values['headers'])
@@ -589,22 +590,15 @@ class ITBitRESTTest(TestCase):
             have the parameters present right in the endpoint, json_body needs to be an emptry 
             string.
             """
-            req_string = ['GET', 'https://api.itbit.com/v1/testing/signature', '', '3', '1000']
-            message = json.dumps(req_string, separators=(',', ':'))
-            nonced_message = '100' + message
-            hashed_message = hashlib.sha256(nonced_message.encode('utf-8')).digest() 
-            hmaced_message = hmac.new(secret.encode('utf-8'), 
-                                       req_url.encode('utf-8') + hashed_message,
-                                       hashlib.sha256).digest()
-            signature = user + ':' + base64.b64encode(hmaced_message).decode('utf-8') 
+
             get_ret_values = api.sign_request_kwargs('testing/signature', 
-                                                      params={'param_1': 'abc'}, method='GET')
+                                                      params={}, method='GET')
             self.assertIn('Authorization', get_ret_values['headers'])
-            self.assertEqual(get_ret_values['headers']['Authorization'], signature)
+            self.assertEqual(get_ret_values['headers']['Authorization'], signatures[2])
             self.assertIn('X-Auth-Timestamp', get_ret_values['headers'])
             self.assertEqual(get_ret_values['headers']['X-Auth-Timestamp'], '1000')
             self.assertIn('X-Auth-Nonce', get_ret_values['headers'])
-            self.assertEqual(get_ret_values['headers']['X-Auth-Nonce'], '100')
+            self.assertEqual(get_ret_values['headers']['X-Auth-Nonce'], '3')
             self.assertIn('Content-Type', get_ret_values['headers'])
             self.assertEqual(get_ret_values['headers']['Content-Type'], 'application/json')
             self.assertEqual(get_ret_values['data'], '')
