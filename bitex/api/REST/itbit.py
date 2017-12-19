@@ -33,6 +33,7 @@ class ITbitREST(RESTAPI):
             raise ValueError("Invalid user id - cannot be empty string! "
                              "Pass None instead!")
         self.user_id = user_id
+        self._nonce = 0
         super(ITbitREST, self).__init__(addr=addr, version=version, key=key,
                                         secret=secret, timeout=timeout,
                                         config=config)
@@ -58,6 +59,13 @@ class ITbitREST(RESTAPI):
             warnings.warn("'user_id' not found in config!",
                           IncompleteCredentialConfigurationWarning)
 
+    def timestamp(self):
+        super(ITbitREST, self).nonce()
+
+    def nonce(self):
+        self._nonce += 1
+        return str(self._nonce)
+
     def sign_request_kwargs(self, endpoint, **kwargs):
         """Sign the request.
 
@@ -77,15 +85,15 @@ class ITbitREST(RESTAPI):
         verb = kwargs['method']
 
         if verb in ('PUT', 'POST'):
-            body = params
+            body = json.dumps(params)
         else:
-            body = {}
-
-        timestamp = self.nonce()
+            body = ""
+        timestamp = self.timestamp()
         nonce = self.nonce()
 
         message = json.dumps([verb, req_kwargs['url'], body, nonce, timestamp],
                              separators=(',', ':'))
+        print("JSON Body:", message)
         sha256_hash = hashlib.sha256()
         nonced_message = nonce + message
         sha256_hash.update(nonced_message.encode('utf8'))
@@ -96,8 +104,9 @@ class ITbitREST(RESTAPI):
         signature = base64.b64encode(hmac_digest)
 
         # Update request kwargs header variable
-        req_kwargs['headers'] = {'Authorization': self.key + ':' + signature.decode('utf8'),
+        req_kwargs['headers'] = {'Authorization': self.user_id + ':' + signature.decode('utf8'),
                                  'X-Auth-Timestamp': timestamp,
                                  'X-Auth-Nonce': nonce,
                                  'Content-Type': 'application/json'}
+        req_kwargs['data'] = body
         return req_kwargs
