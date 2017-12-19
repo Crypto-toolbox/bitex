@@ -41,14 +41,16 @@ class CCEXREST(RESTAPI):
 
         params['apikey'] = self.key
         params['nonce'] = nonce
-        url = self.addr + '/' + endpoint
+        url = self.addr + '/api.html?a=' + endpoint
+        encoded_params = '&'.join([k + '=' + params[k] for k in sorted(params.keys())])
+        url += '&' + encoded_params
 
         # generate signature
         sig = hmac.new(self.secret.encode('utf-8'), url.encode('utf-8'),
                        hashlib.sha512).hexdigest()
 
         # update req_kwargs keys
-        req_kwargs['params'] = params
+        req_kwargs['params'] = {}
         req_kwargs['headers'] = {'apisign': sig}
         req_kwargs['url'] = url
 
