@@ -34,10 +34,7 @@ class CoincheckREST(RESTAPI):
                                                                     **kwargs)
 
         # Prepare argument for signature
-        try:
-            params = kwargs.pop('params')
-        except KeyError:
-            params = {}
+        params = kwargs.pop('params', {})
         nonce = self.nonce()
         params = json.dumps(params)
 
