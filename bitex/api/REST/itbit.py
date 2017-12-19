@@ -93,7 +93,6 @@ class ITbitREST(RESTAPI):
 
         message = json.dumps([verb, req_kwargs['url'], body, nonce, timestamp],
                              separators=(',', ':'))
-        print("JSON Body:", message)
         sha256_hash = hashlib.sha256()
         nonced_message = nonce + message
         sha256_hash.update(nonced_message.encode('utf8'))
