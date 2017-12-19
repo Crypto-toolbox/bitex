@@ -666,11 +666,11 @@ class CCEXRESTTest(TestCase):
                                'a': 'test_signature'}
             sign = '&'.join([k + '=' + expected_params[k] for k in sorted(expected_params.keys())])
             sign += '&secret_key=' + secret
-            signature = hashlib.md5(sign.encode('utf-8')).hexdigest().upper()
-            url = 'https://c-cex.com/t/api.html?a=test_signature&api_key=%s&nonce=100&param_1=abc'
+            url = 'https://c-cex.com/t/api.html?a=test_signature&apikey=%s&nonce=100&param_1=abc' % key
+            signature = hmac.new(secret.encode('utf-8'), url.encode('utf-8'), hashlib.sha512).hexdigest()
             self.assertEqual(ret_values['url'], url)
             self.assertIn('apisign', ret_values['headers'])
-            self.assertIn(ret_values['headers']['apisign'], signature)
+            self.assertEqual(ret_values['headers']['apisign'], signature)
 
 
 class CryptopiaRESTTest(TestCase):
