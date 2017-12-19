@@ -69,17 +69,15 @@ class CryptopiaREST(RESTAPI):
         except KeyError:
             params = {}
 
-        post_data = json.dumps(params)
-
         # generate signature
+        post_data = json.dumps(params)
         md5 = hashlib.md5()
         md5.update(post_data.encode('utf-8'))
         request_content_b64_string = base64.b64encode(md5.digest()).decode('utf-8')
         signature = (self.key + 'POST' +
                      urllib.parse.quote_plus(req_kwargs['url']).lower() +
                      nonce + request_content_b64_string)
-
-        hmac_sig = base64.b64encode(hmac.new(base64.b64decode(self.secret),
+        hmac_sig = base64.b64encode(hmac.new(base64.b64encode(self.secret.encode('utf-8')),
                                              signature.encode('utf-8'),
                                              hashlib.sha256).digest())
         header_data = 'amx ' + self.key + ':' + hmac_sig.decode('utf-8') + ':' + nonce
