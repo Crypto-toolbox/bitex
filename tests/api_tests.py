@@ -523,22 +523,89 @@ class ITBitRESTTest(TestCase):
         self.assertTrue(api.config_file == config_path)
         self.assertEqual(api.user_id, 'testuser')
 
-    @unittest.expectedFailure
     def test_sign_request_kwargs_method_and_signature(self):
-        self.fail("Add config ini first!")
         # Test that the sign_request_kwargs generate appropriate kwargs:
-        config_path = '%s/auth/itbit.ini' % tests_folder_dir
-        api = ITbitREST(config=config_path)
-        self.assertEqual(api.config_file, config_path)
+        key, secret, user = 'panda', 'shadow', 'leeroy'
+        with mock.patch.object(RESTAPI, 'nonce', return_value=str(100)) as mock_rest:
+            api = ITbitREST(key=key, secret=secret, version='v1', user_id=user)
+            self.assertEqual(api.generate_uri('testing/signature'), '/v1/testing/signature')
+            
+            """
+            Assert PUT/POST requests are signed correctly. These are the only edge cases as their
+            body (i.e. parameters) need to be passed in the header's 'Authorization' parameter,
+            instead of passing it to requests.request()'s ``data`` parameter.
+            """
+            req_url = 'https://api.itbit.com/v1/testing/signature'
+            json_bodies = ['{"userID": "leeroy", "param_1": "abc"}',
+                           '{"param_1": "abc", "userID": "leeroy"}']
+            req_strings = [['POST', 'https://api.itbit.com/v1/testing/signature',
+                           '{"userID": "leeroy", "param_1": "abc"}', '100', '1000'],
+                           ['POST', 'https://api.itbit.com/v1/testing/signature',
+                           '{"param_1": "abc", "userID": "leeroy"}', '100', '1000'],
+                           ['PUT', 'https://api.itbit.com/v1/testing/signature',
+                            '{"userID": "leeroy", "param_1": "abc"}', '100', '1000'],
+                           ['PUT', 'https://api.itbit.com/v1/testing/signature',
+                            '{"param_1": "abc", "userID": "leeroy"}', '100', '1000']
+                           ]
+            messages = [json.dumps(req_string, separators=(',', ':')) for req_string in req_strings]
+            nonced_messages = ['100' + msg for msg in messages]
+            hashed_messages = [hashlib.sha256(msg.encode('utf-8')).digest() 
+                               for msg in nonced_messages]
+            hmaced_messages = [hmac.new(secret.encode('utf-8'), 
+                                        req_url.encode('utf-8') + hashed_message,
+                                        hashlib.sha256).digest() 
+                               for hashed_message in hashed_messages]
+            signatures = [user + ':' + base64.b64encode(hmac_message).decode('utf-8') 
+                          for hmac_message in hmaced_messages]
+            post_ret_values = api.sign_request_kwargs('testing/signature', 
+                                                      params={'param_1': 'abc'}, method='POST')
+            put_ret_values = api.sign_request_kwargs('testing/signature', params={'param_1': 'abc'},
+                                                     method='PUT')
+            
+            self.assertIn('Authorization', post_ret_values['headers'])
+            self.assertIn(post_ret_values['headers']['Authorization'], signatures)
+            self.assertIn('X-Auth-Timestamp', post_ret_values['headers'])
+            self.assertEqual(post_ret_values['headers']['X-Auth-Timestamp'], '1000')
+            self.assertIn('X-Auth-Nonce', post_ret_values['headers'])
+            self.assertEqual(post_ret_values['headers']['X-Auth-Nonce'], '100')
+            self.assertIn('Content-Type', post_ret_values['headers'])
+            self.assertEqual(post_ret_values['headers']['Content-Type'], 'application/json')
+            self.assertIn(post_ret_values['data'], json_bodies)
 
-        # Check signatured request kwargs
-        response = api.private_query('GET', 'wallets')
-        self.assertEqual(response.status_code, 200,
-                         msg="Unexpected status code (%s) for request to path "
-                             "%s!" % (response.status_code, response.request.url))
+            self.assertIn('Authorization', put_ret_values['headers'])
+            self.assertIn(put_ret_values['headers']['Authorization'], signatures)
+            self.assertIn('X-Auth-Timestamp', put_ret_values['headers'])
+            self.assertEqual(put_ret_values['headers']['X-Auth-Timestamp'], '1000')
+            self.assertIn('X-Auth-Nonce', put_ret_values['headers'])
+            self.assertEqual(put_ret_values['headers']['X-Auth-Nonce'], '100')
+            self.assertIn('Content-Type', put_ret_values['headers'])
+            self.assertEqual(put_ret_values['headers']['Content-Type'], 'application/json')
+            self.assertIn(put_ret_values['data'], json_bodies)
 
-        self.assertEqual(response.status_code, 200, msg=response.status_code)
-        self.assertNotIn('code', response.json(), msg=response.json())
+            """
+            Assert Non-PUT/POST requests are signed correctly. Since DELETE and GET methods for itBit
+            have the parameters present right in the endpoint, json_body needs to be an emptry 
+            string.
+            """
+            req_string = ['GET', 'https://api.itbit.com/v1/testing/signature', '', '100', '1000']
+            message = json.dumps(req_string, separators=(',', ':'))
+            nonced_message = '100' + message
+            hashed_message = hashlib.sha256(nonced_message.encode('utf-8')).digest() 
+            hmaced_message = hmac.new(secret.encode('utf-8'), 
+                                       req_url.encode('utf-8') + hashed_message,
+                                       hashlib.sha256).digest()
+            signature = user + ':' + base64.b64encode(hmaced_message).decode('utf-8') 
+            get_ret_values = api.sign_request_kwargs('testing/signature', 
+                                                      params={'param_1': 'abc'}, method='GET')
+            self.assertIn('Authorization', get_ret_values['headers'])
+            self.assertEqual(get_ret_values['headers']['Authorization'], signature)
+            self.assertIn('X-Auth-Timestamp', get_ret_values['headers'])
+            self.assertEqual(get_ret_values['headers']['X-Auth-Timestamp'], '1000')
+            self.assertIn('X-Auth-Nonce', get_ret_values['headers'])
+            self.assertEqual(get_ret_values['headers']['X-Auth-Nonce'], '100')
+            self.assertIn('Content-Type', get_ret_values['headers'])
+            self.assertEqual(get_ret_values['headers']['Content-Type'], 'application/json')
+            self.assertEqual(get_ret_values['data'], '')
 
 @unittest.expectedFailure
 class OKCoinRESTTest(TestCase):
