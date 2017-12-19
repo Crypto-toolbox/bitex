@@ -6,7 +6,7 @@ Documentation available here:
 # Import Built-ins
 import logging
 import hashlib
-
+from urllib.parse import urlencode
 
 # Import Third-Party
 
@@ -46,18 +46,14 @@ class OKCoinREST(RESTAPI):
         payload['api_key'] = self.key
 
         # Create the signature from payload and add it to params
-        encoded_params = ''
-        for k in sorted(payload.keys()):
-            encoded_params += str(k) + '=' + str(payload[k]) + '&'
-        sign = encoded_params + 'secret_key=' + self.secret
+        encoded_params = '&'.join([k + '=' + payload[k] for k in sorted(payload.keys())])
+        sign = encoded_params + '&secret_key=' + self.secret
         hash_sign = hashlib.md5(sign.encode('utf-8')).hexdigest().upper()
+        payload['sign'] = hash_sign
+        req_kwargs['data'] = payload
+        if kwargs['method'] == 'POST':
+            req_kwargs['headers'] = {"Content-Type": 'application/x-www-form-urlencoded'}
+            req_kwargs['data'] = '&'.join([k + '=' + payload[k] for k in sorted(payload.keys())])
 
-        # create params dict for body
-        body = {'api_key': self.key, 'sign': hash_sign}
-
-        # Update req_kwargs keys
-        req_kwargs['data'] = body
-        req_kwargs['headers'] = {"contentType": 'application/x-www-form-urlencoded'}
-        req_kwargs['url'] = self.generate_url(self.generate_uri(endpoint + '?' +
-                                                                encoded_params[:-1]))
+        req_kwargs['url'] = self.generate_url(self.generate_uri(endpoint))
         return req_kwargs
