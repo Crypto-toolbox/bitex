@@ -42,10 +42,9 @@ class KrakenREST(RESTAPI):
 
         # Generate Signature
         postdata = urllib.parse.urlencode(payload)
-        encoded = (str(payload['nonce']) + postdata).encode('utf-8')
+        encoded = (payload['nonce'] + postdata).encode('utf-8')
         message = (self.generate_uri(endpoint).encode('utf-8') +
                    hashlib.sha256(encoded).digest())
-
         sig_hmac = hmac.new(base64.b64decode(self.secret),
                             message, hashlib.sha512)
         signature = base64.b64encode(sig_hmac.digest())

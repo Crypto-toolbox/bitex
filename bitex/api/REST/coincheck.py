@@ -8,7 +8,7 @@ import logging
 import json
 import hashlib
 import hmac
-
+from urllib.parse import urlencode
 # Import Homebrew
 from bitex.api.REST import RESTAPI
 
@@ -39,12 +39,12 @@ class CoincheckREST(RESTAPI):
         except KeyError:
             params = {}
         nonce = self.nonce()
-        params = json.dumps(params)
+        params = urlencode(params)
 
         # Create signature
         # sig = nonce + url + req
 
-        data = (nonce + req_kwargs['url'] + params).encode('utf-8')
+        data = (nonce + req_kwargs['url'] + '?' + params).encode('utf-8')
         hmac_sig = hmac.new(self.secret.encode('utf8'), data, hashlib.sha256)
         signature = hmac_sig.hexdigest()
 

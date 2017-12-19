@@ -279,17 +279,16 @@ class BitstampRESTTests(TestCase):
         key, secret, user = 'panda', 'shadow', 'leeroy'
         with mock.patch.object(RESTAPI, 'nonce', return_value=str(10000)) as mock_rest:
             api = BitstampREST(key=key, secret=secret, user_id=user)
-            self.assertEqual(api.nonce(), str(10000))
             ret_values = api.sign_request_kwargs('testing/signature', param_1='a', param_2=1)
             expected_signature = hmac.new(secret.encode('utf-8'),
                                           (str(10000) + user + key).encode('utf-8'),
                                           hashlib.sha256).hexdigest().upper()
             self.assertIn('key', ret_values['data'])
-            self.assertIn(ret_values['data']['key'], key)
+            self.assertEqual(ret_values['data']['key'], key)
             self.assertIn('signature', ret_values['data'])
-            self.assertIn(ret_values['data']['signature'], expected_signature)
+            self.assertEqual(ret_values['data']['signature'], expected_signature)
             self.assertIn('nonce', ret_values['data'])
-            self.assertIn(ret_values['data']['nonce'], str(10000))
+            self.assertEqual(ret_values['data']['nonce'], str(10000))
 
 
 class BitfinexRESTTests(TestCase):
@@ -331,7 +330,6 @@ class BitfinexRESTTests(TestCase):
             self.assertIn(ret_values['headers']['X-BFX-SIGNATURE'], signatures)
 
 
-
 class BittrexRESTTest(TestCase):
     def test_initialization(self):
         # test that all default values are assigned correctly if No kwargs are
@@ -345,17 +343,16 @@ class BittrexRESTTest(TestCase):
 
     def test_sign_request_kwargs_method_and_signature(self):
         # Test that the sign_request_kwargs generate appropriate kwargs:
-        config_path = '%s/auth/bittrex.ini' % tests_folder_dir
-        api = BittrexREST(config=config_path)
-        self.assertEqual(api.config_file, config_path)
-
-        # Check signatured request kwargs
-        response = api.private_query('GET', 'account/getbalances')
-        self.assertEqual(response.status_code, 200,
-                         msg="Unexpected status code (%s) for request to path "
-                             "%s!" % (response.status_code, response.request.url))
-
-        self.assertTrue(response.json()['success'], msg=response.json())
+        key, secret, user = 'panda', 'shadow', 'leeroy'
+        with mock.patch.object(RESTAPI, 'nonce', return_value=str(100)) as mock_rest:
+            api = BittrexREST(key=key, secret=secret, version='v1.1')
+            self.assertEqual(api.generate_uri('testing/signature'), '/v1.1/testing/signature')
+            ret_values = api.sign_request_kwargs('testing/signature', params={'param_1': 'abc'})
+            url = 'https://bittrex.com/api/v1.1/testing/signature?apikey=panda&nonce=100&param_1=abc'
+            sig = hmac.new(secret.encode('utf8'), url.encode('utf8'), hashlib.sha512).hexdigest()
+            self.assertEqual(ret_values['url'], url)
+            self.assertIn('apisign', ret_values['headers'])
+            self.assertEqual(ret_values['headers']['apisign'], sig)
 
 
 class CoinCheckRESTTest(TestCase):
@@ -371,17 +368,19 @@ class CoinCheckRESTTest(TestCase):
 
     def test_sign_request_kwargs_method_and_signature(self):
         # Test that the sign_request_kwargs generate appropriate kwargs:
-        config_path = '%s/auth/coincheck.ini' % tests_folder_dir
-        api = CoincheckREST(config=config_path)
-        self.assertEqual(api.config_file, config_path)
-
-        # Check signatured request kwargs
-        response = api.private_query('GET', 'accounts/balance')
-        self.assertEqual(response.status_code, 200,
-                         msg="Unexpected status code (%s) for request to path "
-                             "%s!" % (response.status_code, response.request.url))
-
-        self.assertTrue(response.json()['success'], msg=response.json())
+        key, secret, user = 'panda', 'shadow', 'leeroy'
+        with mock.patch.object(RESTAPI, 'nonce', return_value=str(100)) as mock_rest:
+            api = CoincheckREST(key=key, secret=secret, version='v1')
+            self.assertEqual(api.generate_uri('testing/signature'), '/v1/testing/signature')
+            ret_values = api.sign_request_kwargs('testing/signature', params={'param_1': 'abc'})
+            msg = '100https://coincheck.com/v1/testing/signature?param_1=abc'
+            sig = hmac.new(secret.encode('utf8'), msg.encode('utf8'), hashlib.sha256).hexdigest()
+            self.assertIn('ACCESS-NONCE', ret_values['headers'])
+            self.assertEqual(ret_values['headers']['ACCESS-NONCE'], "100")
+            self.assertIn('ACCESS-KEY', ret_values['headers'])
+            self.assertEqual(ret_values['headers']['ACCESS-KEY'], key)
+            self.assertIn('ACCESS-SIGNATURE', ret_values['headers'])
+            self.assertEqual(ret_values['headers']['ACCESS-SIGNATURE'], sig)
 
 
 class GDAXRESTTest(TestCase):
@@ -459,17 +458,26 @@ class KrakenRESTTest(TestCase):
 
     def test_sign_request_kwargs_method_and_signature(self):
         # Test that the sign_request_kwargs generate appropriate kwargs:
-        config_path = '%s/auth/kraken.ini' % tests_folder_dir
-        api = KrakenREST(config=config_path)
-        self.assertEqual(api.config_file, config_path)
-
-        # Check signatured request kwargs
-        response = api.private_query('POST', 'private/Balance')
-        self.assertEqual(response.status_code, 200,
-                         msg="Unexpected status code (%s) for request to path "
-                             "%s!" % (response.status_code, response.request.url))
-
-        self.assertEqual(response.json()['error'], [], msg=response.json())
+        key = 'panda'
+        secret = '11LX0lqM9aExe63oe975Fjms5I9plFAPDxj0puwFBKGct79CP9GESjl5IRTDP8bqNaMYWXxEO8UbM0e4kacRtw=='
+        with mock.patch.object(RESTAPI, 'nonce', return_value=str(100)) as mock_rest:
+            api = KrakenREST(key=key, secret=secret, version='api')
+            self.assertEqual(api.generate_uri('testing/signature'), '/api/testing/signature')
+            ret_values = api.sign_request_kwargs('testing/signature', params={'param_1': 'abc'})
+            encoded_payloads = ('nonce=100&param_1=abc', 'param_1=abc&nonce=100')
+            expected_payload = {'nonce': '100', 'param_1': 'abc'}
+            sigs = []
+            for pl in encoded_payloads:
+                encoded = ('100' + pl).encode()
+                msg = '/api/testing/signature'.encode('utf-8') + hashlib.sha256(encoded).digest()
+                signature = hmac.new(base64.b64decode(secret), msg, hashlib.sha512)
+                sigdigest = base64.b64encode(signature.digest())
+                sigs.append(sigdigest.decode('utf-8'))
+            self.assertIn('API-Key', ret_values['headers'])
+            self.assertEqual(ret_values['headers']['API-Key'], key)
+            self.assertIn('API-Sign', ret_values['headers'])
+            self.assertIn(ret_values['headers']['API-Sign'], sigs)
+            self.assertEqual(ret_values['data'], expected_payload)
 
 
 class ITBitRESTTest(TestCase):
@@ -515,22 +523,85 @@ class ITBitRESTTest(TestCase):
         self.assertTrue(api.config_file == config_path)
         self.assertEqual(api.user_id, 'testuser')
 
-    @unittest.expectedFailure
     def test_sign_request_kwargs_method_and_signature(self):
-        self.fail("Add config ini first!")
+        """Test itBit signature methoc.
+
+        ItBit requires both a Nonce value AND a timestamp value. Assert that both methods work
+        correctly:
+            nnoce() : returns an ever increasing int, starting at 1
+            timestamp() : returns a unix timestamp in milliseconds
+        """
         # Test that the sign_request_kwargs generate appropriate kwargs:
-        config_path = '%s/auth/itbit.ini' % tests_folder_dir
-        api = ITbitREST(config=config_path)
-        self.assertEqual(api.config_file, config_path)
+        key, secret, user = 'panda', 'shadow', 'leeroy'
+        with mock.patch.object(ITbitREST, 'timestamp', return_value=str(1000)) as mock_rest:
+            api = ITbitREST(key=key, secret=secret, version='v1', user_id=user)
+            self.assertEqual(api.generate_uri('testing/signature'), '/v1/testing/signature')
+            
+            """
+            Assert PUT/POST requests are signed correctly. These are the only edge cases as their
+            body (i.e. parameters) need to be passed in the header's 'Authorization' parameter,
+            instead of passing it to requests.request()'s ``data`` parameter.
+            """
+            req_url = 'https://api.itbit.com/v1/testing/signature'
+            json_bodies = ['{"param_1": "abc"}']
+            req_strings = [['POST', 'https://api.itbit.com/v1/testing/signature',
+                           '{"param_1": "abc"}', '1', '1000'],
+                           ['PUT', 'https://api.itbit.com/v1/testing/signature',
+                            '{"param_1": "abc"}', '2', '1000'],
+                           ['GET', 'https://api.itbit.com/v1/testing/signature', '', '3', '1000']]
+            signatures = []
+            for i, req_string in enumerate(req_strings):
+                message = json.dumps(req_string, separators=(',', ':'))
+                nonced = str(i+1) + message
+                hasher = hashlib.sha256()
+                hasher.update(nonced.encode('utf-8'))
+                hash_digest = hasher.digest()
+                hmac_digest = hmac.new(secret.encode('utf-8'),
+                                       req_url.encode('utf-8') + hash_digest,
+                                       hashlib.sha512).digest()
+                signatures.append(user + ':' + base64.b64encode(hmac_digest).decode('utf-8'))
+            post_ret_values = api.sign_request_kwargs('testing/signature', 
+                                                      params={'param_1': 'abc'}, method='POST')
+            put_ret_values = api.sign_request_kwargs('testing/signature', params={'param_1': 'abc'},
+                                                     method='PUT')
+            
+            self.assertIn('Authorization', post_ret_values['headers'])
+            self.assertIn(post_ret_values['headers']['Authorization'], signatures[0])
+            self.assertIn('X-Auth-Timestamp', post_ret_values['headers'])
+            self.assertEqual(post_ret_values['headers']['X-Auth-Timestamp'], '1000')
+            self.assertIn('X-Auth-Nonce', post_ret_values['headers'])
+            self.assertEqual(post_ret_values['headers']['X-Auth-Nonce'], '1')
+            self.assertIn('Content-Type', post_ret_values['headers'])
+            self.assertEqual(post_ret_values['headers']['Content-Type'], 'application/json')
+            self.assertIn(post_ret_values['data'], json_bodies)
 
-        # Check signatured request kwargs
-        response = api.private_query('GET', 'wallets')
-        self.assertEqual(response.status_code, 200,
-                         msg="Unexpected status code (%s) for request to path "
-                             "%s!" % (response.status_code, response.request.url))
+            self.assertIn('Authorization', put_ret_values['headers'])
+            self.assertIn(put_ret_values['headers']['Authorization'], signatures[1])
+            self.assertIn('X-Auth-Timestamp', put_ret_values['headers'])
+            self.assertEqual(put_ret_values['headers']['X-Auth-Timestamp'], '1000')
+            self.assertIn('X-Auth-Nonce', put_ret_values['headers'])
+            self.assertEqual(put_ret_values['headers']['X-Auth-Nonce'], '2')
+            self.assertIn('Content-Type', put_ret_values['headers'])
+            self.assertEqual(put_ret_values['headers']['Content-Type'], 'application/json')
+            self.assertIn(put_ret_values['data'], json_bodies)
 
-        self.assertEqual(response.status_code, 200, msg=response.status_code)
-        self.assertNotIn('code', response.json(), msg=response.json())
+            """
+            Assert Non-PUT/POST requests are signed correctly. Since DELETE and GET methods for itBit
+            have the parameters present right in the endpoint, json_body needs to be an emptry 
+            string.
+            """
+
+            get_ret_values = api.sign_request_kwargs('testing/signature', 
+                                                      params={}, method='GET')
+            self.assertIn('Authorization', get_ret_values['headers'])
+            self.assertEqual(get_ret_values['headers']['Authorization'], signatures[2])
+            self.assertIn('X-Auth-Timestamp', get_ret_values['headers'])
+            self.assertEqual(get_ret_values['headers']['X-Auth-Timestamp'], '1000')
+            self.assertIn('X-Auth-Nonce', get_ret_values['headers'])
+            self.assertEqual(get_ret_values['headers']['X-Auth-Nonce'], '3')
+            self.assertIn('Content-Type', get_ret_values['headers'])
+            self.assertEqual(get_ret_values['headers']['Content-Type'], 'application/json')
+            self.assertEqual(get_ret_values['data'], '')
 
 @unittest.expectedFailure
 class OKCoinRESTTest(TestCase):
