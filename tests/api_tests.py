@@ -644,7 +644,6 @@ class OKCoinRESTTest(TestCase):
         self.assertIn('param_1', ret_values['data'])
         self.assertEqual(ret_values['data']['param_1'], 'abc')
 
-@unittest.expectedFailure
 class CCEXRESTTest(TestCase):
     def test_initialization(self):
         # test that all default values are assigned correctly if No kwargs are
@@ -658,21 +657,20 @@ class CCEXRESTTest(TestCase):
 
     def test_sign_request_kwargs_method_and_signature(self):
         # Test that the sign_request_kwargs generate appropriate kwargs:
-        config_path = '%s/auth/ccex.ini' % tests_folder_dir
-        api = CCEXREST(config=config_path)
-        self.assertEqual(api.config_file, config_path)
-
-        # Check signatured request kwargs
-        response = api.private_query('GET', 'api.html', params={'a': 'getbalance'})
-        self.assertEqual(response.status_code, 200,
-                         msg="Unexpected status code (%s) for request to path "
-                             "%s!" % (response.status_code, response.request.url))
-        try:
-            self.assertTrue(response.json()['success'], msg=response.json())
-        except JSONDecodeError:
-            self.fail(
-                "Error during decoding of JSON payload for response to "
-                "request URL: %s" % response.history[0].url)
+        key, secret = 'panda', 'shadow'
+        with mock.patch.object(RESTAPI, 'nonce', return_value='100'):
+            api = CCEXREST(key=key, secret=secret, version='v1')
+            ret_values = api.sign_request_kwargs('test_signature', params={'param_1': 'abc'},
+                                                 method='GET')
+            expected_params = {'api_key': key, 'param_1': 'abc', 'nonce': '100',
+                               'a': 'test_signature'}
+            sign = '&'.join([k + '=' + expected_params[k] for k in sorted(expected_params.keys())])
+            sign += '&secret_key=' + secret
+            url = 'https://c-cex.com/t/api.html?a=test_signature&apikey=%s&nonce=100&param_1=abc' % key
+            signature = hmac.new(secret.encode('utf-8'), url.encode('utf-8'), hashlib.sha512).hexdigest()
+            self.assertEqual(ret_values['url'], url)
+            self.assertIn('apisign', ret_values['headers'])
+            self.assertEqual(ret_values['headers']['apisign'], signature)
 
 
 class CryptopiaRESTTest(TestCase):
