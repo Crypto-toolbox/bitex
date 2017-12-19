@@ -533,7 +533,7 @@ class ITBitRESTTest(TestCase):
         """
         # Test that the sign_request_kwargs generate appropriate kwargs:
         key, secret, user = 'panda', 'shadow', 'leeroy'
-        with mock.patch.object(RESTAPI, 'timestamp', return_value=str(1000)) as mock_rest:
+        with mock.patch.object(ITbitREST, 'timestamp', return_value=str(1000)) as mock_rest:
             api = ITbitREST(key=key, secret=secret, version='v1', user_id=user)
             self.assertEqual(api.generate_uri('testing/signature'), '/v1/testing/signature')
             
@@ -554,16 +554,17 @@ class ITBitRESTTest(TestCase):
                            ['PUT', 'https://api.itbit.com/v1/testing/signature',
                             '{"param_1": "abc", "userID": "leeroy"}', '2', '1000']
                            ]
-            messages = [json.dumps(req_string, separators=(',', ':')) for req_string in req_strings]
-            nonced_messages = ['100' + msg for msg in messages]
-            hashed_messages = [hashlib.sha256(msg.encode('utf-8')).digest() 
-                               for msg in nonced_messages]
-            hmaced_messages = [hmac.new(secret.encode('utf-8'), 
-                                        req_url.encode('utf-8') + hashed_message,
-                                        hashlib.sha256).digest() 
-                               for hashed_message in hashed_messages]
-            signatures = [user + ':' + base64.b64encode(hmac_message).decode('utf-8') 
-                          for hmac_message in hmaced_messages]
+            signatures = []
+            for i, req_string in enumerate(req_strings):
+                message = json.dumps(req_string, separators=(',', ':'))
+                nonced = '1' if i < 2 else '2' + message
+                hasher = hashlib.sha256()
+                hasher.update(nonced.encode('utf-8'))
+                hash_digest = hasher.digest()
+                hmac_digest = hmac.new(secret.encode('utf-8'),
+                                       req_url.encode('utf-8') + hash_digest,
+                                       hashlib.sha512).digest()
+                signatures.append(user + ':' + base64.b64encode(hmac_digest).decode('utf-8'))
             post_ret_values = api.sign_request_kwargs('testing/signature', 
                                                       params={'param_1': 'abc'}, method='POST')
             put_ret_values = api.sign_request_kwargs('testing/signature', params={'param_1': 'abc'},
