@@ -39,10 +39,7 @@ class OKCoinREST(RESTAPI):
         req_kwargs = super(OKCoinREST, self).sign_request_kwargs(endpoint,
                                                                  **kwargs)
         # Prepare payload arguments
-        try:
-            payload = req_kwargs.pop('params')
-        except KeyError:
-            payload = {}
+        payload = req_kwargs.pop('params', {})
         payload['api_key'] = self.key
 
         # Create the signature from payload and add it to params
