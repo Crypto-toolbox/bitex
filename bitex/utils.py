@@ -72,3 +72,18 @@ def load_configuration(fname):
     config = configparser.ConfigParser()
     config.read(fname)
     return config
+
+
+# The following is a decorator which accepts a parameter, which should be a class that encapsulate
+# a response and add useful methods, such as formatter.
+def format_with(class_to_use):
+    """Pass a class to be used as a wrapper in the innermost function."""
+    def real_decorator(function):
+
+        @wraps(function)
+        def wrapper(*args, **kwargs):
+            return class_to_use(function(*args, **kwargs))
+
+        return wrapper
+
+    return real_decorator
