@@ -17,7 +17,7 @@ class PairTests(unittest.TestCase):
         # This excludes edge cases, which are tested separately
         self.assertEqual(pair.format_for('Kraken'), 'XXBTZUSD')
         self.assertEqual(pair.format_for('Bitstamp'), 'btcusd')
-        self.assertEqual(pair.format_for('Bitfinex'), 'btcusd')
+        self.assertEqual(pair.format_for('Bitfinex'), 'BTCUSD')
         self.assertEqual(pair.format_for('Binance'), 'BTCUSD')
         self.assertEqual(pair.format_for('Bittrex'), 'USD-BTC')
         self.assertEqual(pair.format_for('CoinCheck'), 'btc_usd')
