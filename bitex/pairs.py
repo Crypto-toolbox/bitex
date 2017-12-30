@@ -110,7 +110,7 @@ class PairFormatter:
         """
         base = 'DSH' if base == 'DASH' else base
         quote = 'DSH' if quote == 'DASH' else quote
-        return base.upper() + quote.upper()
+        return base.lower() + quote.lower()
 
     @staticmethod
     def bittrex_formatter(base, quote):
