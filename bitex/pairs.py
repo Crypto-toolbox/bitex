@@ -211,6 +211,15 @@ class PairFormatter:
         """Format currencies for BTer."""
         return base.lower() + '_' + quote.lower()
 
+    @staticmethod
+    def poloniex_unformatter(pair):
+        """Unformat the pair for poloniex exchange.
+        Removes seperator, removes trailing T in USDT, swapps base and quote.
+        Used to standardise poloniex 
+        """
+        (base, quote) = pair.split('_')
+        base = 'USD' if base == 'USDT' else base
+        return quote.upper() + base.upper()
 
 class BTCUSDFormatter(PairFormatter):
     """BTCUSD Pairformatter."""
