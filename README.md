@@ -3,21 +3,26 @@
 # BitEx
 BitEx is a collection of API Clients for Crypto Currency Exchanges.
 
-It comes with two parts - `bitex.api` represents the base level API
+It comes with two core components - `bitex.api` represents the base level API
 interfaces, on top of which the second part - `bitex.interfaces` - builds upon.
 `bitex.api` classes can be used without making use of the interface classes.
 
 Donations welcome!
 BTC @ 3D4yuyf84eQUauyZLoQKyouPuThoxMMRZa
 
+# BitEx's philosophy
+
+BitEx is a `REST API wrapper`, sprinkled with (partly optional) syntactic sugar. It returns `requests.Response`-like objects and offers parameterized API Methods for interaction between your bots and the exchange servers.
+
+It does not offer rate-limiting or HTTP status handling. From experience, we know how these may interfere with trading strategies in unexpected and unwanted ways.
+
+
 # State
---------------------------------
 
 **RESTAPI** : **Completed**
 
 **Interfaces** : **WIP**
 
---------------------------------
 
 
 # Supported Exchanges
