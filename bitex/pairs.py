@@ -211,6 +211,13 @@ class PairFormatter:
         """Format currencies for BTer."""
         return base.lower() + '_' + quote.lower()
 
+    @staticmethod
+    def poloniex_unformatter(pair):
+        """Unformat the pair for poloniex exchange.
+        Removes seperator, swapps base and quote.
+        """
+        (base, quote) = pair.split('_')
+        return quote.upper() + base.upper()
 
 class BTCUSDFormatter(PairFormatter):
     """BTCUSD Pairformatter."""
@@ -323,6 +330,14 @@ class BCHBTCFormatter(PairFormatter):
         """Initialize the Formatter instance."""
         super(BCHBTCFormatter, self).__init__('BCH', 'BTC')
 
+        
+class XRPUSDFormatter(PairFormatter):
+    """XRPUSD Pairformatter."""
+
+    def __init__(self):
+        """Initialize the Formatter instance."""
+        super(XRPUSDFormatter, self).__init__('XRP', 'USD')
+
 
 BTCUSD = BTCUSDFormatter()
 ETHUSD = ETHUSDFormatter()
@@ -331,6 +346,7 @@ ETCUSD = ETCUSDFormatter()
 ZECUSD = ZECUSDFormatter()
 DASHUSD = DASHUSDFormatter()
 BCHUSD = BCHUSDFormatter()
+XRPUSD = XRPUSDFormatter()
 
 ETHBTC = ETHBTCFormatter()
 LTCBTC = LTCBTCFormatter()
