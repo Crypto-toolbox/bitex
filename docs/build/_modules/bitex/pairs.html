@@ -1,0 +1,424 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>bitex.pairs &#8212; BitEx 2.0.0 documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '2.0.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for bitex.pairs</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Includes the base class for crypto currency pairs and the PairFormatter class.</span>
+
+<span class="sd">It also provides convencience wrappers for commonly used Pairs: these can be</span>
+<span class="sd">imported to avoid typos by the user, and can be directly passed to the APIs.</span>
+
+<span class="sd">If the pair you want to query isn&#39;t present in here, creating such a pair is</span>
+<span class="sd">simple enough - simply initialize the PairFormatter class with the currencies</span>
+<span class="sd">you want::</span>
+
+<span class="sd">    &gt;&gt;&gt; my_pair = PairFormatter(&#39;BaseCurrency&#39;, &#39;QuoteCurrency&#39;)</span>
+
+<span class="sd">The object ``my_pair`` now takes care of all formatting of any exchange,</span>
+<span class="sd">supported by Bitex, you pass it to.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="c1"># pylint: disable=too-many-public-methods,missing-docstring</span>
+
+<span class="c1"># Import Built-Ins</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+
+<span class="c1"># Import Third-Party</span>
+
+<span class="c1"># Import Homebrew</span>
+
+<span class="c1"># Init Logging Facilities</span>
+<span class="n">log</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="PairFormatter"><a class="viewcode-back" href="../../reference.html#bitex.pairs.PairFormatter">[docs]</a><span class="k">class</span> <span class="nc">PairFormatter</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Container Class which features formatting function for all supported exchanges.</span>
+
+<span class="sd">    These Formatter functions apply any changes to make a given</span>
+<span class="sd">    pair, pased as quote and base currency, compatible with an exchange.</span>
+<span class="sd">    This does NOT include an availability check of the pair.</span>
+<span class="sd">    It is therefore possible to format a given pair, even though it is not</span>
+<span class="sd">    supported by the requested exchange.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">base</span><span class="p">,</span> <span class="n">quote</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initialize formatter instance.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_base</span> <span class="o">=</span> <span class="n">base</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_quote</span> <span class="o">=</span> <span class="n">quote</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">formatters</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Kraken&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">kraken_formatter</span><span class="p">,</span>
+                           <span class="s1">&#39;Bitstamp&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">bitstamp_formatter</span><span class="p">,</span>
+                           <span class="s1">&#39;Bitfinex&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">bitfinex_formatter</span><span class="p">,</span>
+                           <span class="s1">&#39;Bittrex&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">bittrex_formatter</span><span class="p">,</span>
+                           <span class="s1">&#39;CoinCheck&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">coincheck_formatter</span><span class="p">,</span>
+                           <span class="s1">&#39;GDAX&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">gdax_formatter</span><span class="p">,</span>
+                           <span class="s1">&#39;ITBit&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">itbit_formatter</span><span class="p">,</span>
+                           <span class="s1">&#39;OKCoin&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">okcoin_formatter</span><span class="p">,</span>
+                           <span class="s1">&#39;C-CEX&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">ccex_formatter</span><span class="p">,</span>
+                           <span class="s1">&#39;Cryptopia&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">cryptopia_formatter</span><span class="p">,</span>
+                           <span class="s1">&#39;Gemini&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">gemini_formatter</span><span class="p">,</span>
+                           <span class="s1">&#39;The Rock Trading Ltd.&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">rocktrading_formatter</span><span class="p">,</span>
+                           <span class="s1">&#39;Poloniex&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">poloniex_formatter</span><span class="p">,</span>
+                           <span class="s1">&#39;Quoine&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">quoine_formatter</span><span class="p">,</span>
+                           <span class="s1">&#39;QuadrigaCX&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">quadriga_formatter</span><span class="p">,</span>
+                           <span class="s1">&#39;HitBTC&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">hitbtc_formatter</span><span class="p">,</span>
+                           <span class="s1">&#39;Vaultoro&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">vaultoro_formatter</span><span class="p">,</span>
+                           <span class="s1">&#39;Bter&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">bter_formatter</span><span class="p">,</span>
+                           <span class="s1">&#39;Yunbi&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">yunbi_formatter</span><span class="p">,</span>
+                           <span class="s2">&quot;Binance&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">binance_formatter</span><span class="p">}</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return the stored base and quote currency in proper pair format.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_base</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_quote</span>
+
+    <span class="k">def</span> <span class="nf">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Return currency pair when called.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span>
+
+<div class="viewcode-block" id="PairFormatter.format_for"><a class="viewcode-back" href="../../reference.html#bitex.pairs.PairFormatter.format_for">[docs]</a>    <span class="k">def</span> <span class="nf">format_for</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">exchange_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Format the pair for the given exchange.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">formatters</span><span class="p">[</span><span class="n">exchange_name</span><span class="p">](</span><span class="bp">self</span><span class="o">.</span><span class="n">_base</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_quote</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="PairFormatter.kraken_formatter"><a class="viewcode-back" href="../../reference.html#bitex.pairs.PairFormatter.kraken_formatter">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">kraken_formatter</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="n">quote</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Format the currencies for Kraken.</span>
+
+<span class="sd">        Generally speaking, Kraken prefixes digital currencies with a capital &#39;X&#39;, and fiat</span>
+<span class="sd">        Currencies with a capital &#39;Z&#39;. There exceptions to this rule, unfortunately,</span>
+<span class="sd">        which should be handled as well.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">base</span> <span class="o">=</span> <span class="s1">&#39;XBT&#39;</span> <span class="k">if</span> <span class="n">base</span> <span class="o">==</span> <span class="s1">&#39;BTC&#39;</span> <span class="k">else</span> <span class="n">base</span>
+        <span class="n">quote</span> <span class="o">=</span> <span class="s1">&#39;XBT&#39;</span> <span class="k">if</span> <span class="n">quote</span> <span class="o">==</span> <span class="s1">&#39;BTC&#39;</span> <span class="k">else</span> <span class="n">quote</span>
+
+        <span class="k">def</span> <span class="nf">add_prefix</span><span class="p">(</span><span class="n">cur</span><span class="p">):</span>
+            <span class="sd">&quot;&quot;&quot;Add the correct prefix to the currency.&quot;&quot;&quot;</span>
+            <span class="k">if</span> <span class="s1">&#39;BCH&#39;</span> <span class="ow">in</span> <span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="n">quote</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">cur</span>
+            <span class="k">elif</span> <span class="n">cur</span> <span class="ow">in</span> <span class="p">(</span><span class="s1">&#39;USD&#39;</span><span class="p">,</span> <span class="s1">&#39;EUR&#39;</span><span class="p">,</span> <span class="s1">&#39;GBP&#39;</span><span class="p">,</span> <span class="s1">&#39;JPY&#39;</span><span class="p">,</span> <span class="s1">&#39;CAD&#39;</span><span class="p">):</span>
+                <span class="k">return</span> <span class="s1">&#39;Z&#39;</span> <span class="o">+</span> <span class="n">cur</span>
+            <span class="k">return</span> <span class="s1">&#39;X&#39;</span> <span class="o">+</span> <span class="n">cur</span>
+
+        <span class="k">return</span> <span class="n">add_prefix</span><span class="p">(</span><span class="n">base</span><span class="p">)</span> <span class="o">+</span> <span class="n">add_prefix</span><span class="p">(</span><span class="n">quote</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="PairFormatter.bitstamp_formatter"><a class="viewcode-back" href="../../reference.html#bitex.pairs.PairFormatter.bitstamp_formatter">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">bitstamp_formatter</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="n">quote</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Format currencies for Bitstamp.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">base</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">+</span> <span class="n">quote</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="PairFormatter.bitfinex_formatter"><a class="viewcode-back" href="../../reference.html#bitex.pairs.PairFormatter.bitfinex_formatter">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">bitfinex_formatter</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="n">quote</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Format currencies for bitfinex.</span>
+
+<span class="sd">        Edgecase: ``DASH``</span>
+<span class="sd">            This symbol is shortened to ``DSH``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">base</span> <span class="o">=</span> <span class="s1">&#39;DSH&#39;</span> <span class="k">if</span> <span class="n">base</span> <span class="o">==</span> <span class="s1">&#39;DASH&#39;</span> <span class="k">else</span> <span class="n">base</span>
+        <span class="n">quote</span> <span class="o">=</span> <span class="s1">&#39;DSH&#39;</span> <span class="k">if</span> <span class="n">quote</span> <span class="o">==</span> <span class="s1">&#39;DASH&#39;</span> <span class="k">else</span> <span class="n">quote</span>
+        <span class="k">return</span> <span class="n">base</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">+</span> <span class="n">quote</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="PairFormatter.bittrex_formatter"><a class="viewcode-back" href="../../reference.html#bitex.pairs.PairFormatter.bittrex_formatter">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">bittrex_formatter</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="n">quote</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Format currencies for Bittrex.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">quote</span> <span class="o">+</span> <span class="s1">&#39;-&#39;</span> <span class="o">+</span> <span class="n">base</span></div>
+
+<div class="viewcode-block" id="PairFormatter.binance_formatter"><a class="viewcode-back" href="../../reference.html#bitex.pairs.PairFormatter.binance_formatter">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">binance_formatter</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="n">quote</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Format currencies for Binance.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">base</span> <span class="o">+</span> <span class="n">quote</span></div>
+
+<div class="viewcode-block" id="PairFormatter.coincheck_formatter"><a class="viewcode-back" href="../../reference.html#bitex.pairs.PairFormatter.coincheck_formatter">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">coincheck_formatter</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="n">quote</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Format currencies for CoinCheck.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">base</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">+</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="n">quote</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="PairFormatter.gdax_formatter"><a class="viewcode-back" href="../../reference.html#bitex.pairs.PairFormatter.gdax_formatter">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">gdax_formatter</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="n">quote</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Format currencies for GDAX.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">base</span> <span class="o">+</span> <span class="s1">&#39;-&#39;</span> <span class="o">+</span> <span class="n">quote</span></div>
+
+<div class="viewcode-block" id="PairFormatter.itbit_formatter"><a class="viewcode-back" href="../../reference.html#bitex.pairs.PairFormatter.itbit_formatter">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">itbit_formatter</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="n">quote</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Format currencies for ItBit.</span>
+
+<span class="sd">        Edge case: ``BTC``</span>
+<span class="sd">            BTC is denoted as ``XBT``.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">base</span> <span class="o">=</span> <span class="s1">&#39;XBT&#39;</span> <span class="k">if</span> <span class="n">base</span> <span class="o">==</span> <span class="s1">&#39;BTC&#39;</span> <span class="k">else</span> <span class="n">base</span>
+        <span class="n">quote</span> <span class="o">=</span> <span class="s1">&#39;XBT&#39;</span> <span class="k">if</span> <span class="n">base</span> <span class="o">==</span> <span class="s1">&#39;BTC&#39;</span> <span class="k">else</span> <span class="n">quote</span>
+        <span class="k">return</span> <span class="n">base</span> <span class="o">+</span> <span class="n">quote</span></div>
+
+<div class="viewcode-block" id="PairFormatter.okcoin_formatter"><a class="viewcode-back" href="../../reference.html#bitex.pairs.PairFormatter.okcoin_formatter">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">okcoin_formatter</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="n">quote</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Format currencies for OKCoin.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">base</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">+</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="n">quote</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="PairFormatter.ccex_formatter"><a class="viewcode-back" href="../../reference.html#bitex.pairs.PairFormatter.ccex_formatter">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">ccex_formatter</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="n">quote</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Format currencies for C-CEX.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">base</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">+</span> <span class="s1">&#39;-&#39;</span> <span class="o">+</span> <span class="n">quote</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="PairFormatter.cryptopia_formatter"><a class="viewcode-back" href="../../reference.html#bitex.pairs.PairFormatter.cryptopia_formatter">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">cryptopia_formatter</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="n">quote</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Format currencies for Cryptopia.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">base</span> <span class="o">+</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="n">quote</span></div>
+
+<div class="viewcode-block" id="PairFormatter.gemini_formatter"><a class="viewcode-back" href="../../reference.html#bitex.pairs.PairFormatter.gemini_formatter">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">gemini_formatter</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="n">quote</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Format currencies for Gemini.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">base</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">+</span> <span class="n">quote</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="PairFormatter.yunbi_formatter"><a class="viewcode-back" href="../../reference.html#bitex.pairs.PairFormatter.yunbi_formatter">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">yunbi_formatter</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="n">quote</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Format currencies for Yunbi.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">base</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">+</span> <span class="n">quote</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="PairFormatter.rocktrading_formatter"><a class="viewcode-back" href="../../reference.html#bitex.pairs.PairFormatter.rocktrading_formatter">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">rocktrading_formatter</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="n">quote</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Format currencies for The Rock Trading LTD.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">base</span> <span class="o">+</span> <span class="n">quote</span></div>
+
+<div class="viewcode-block" id="PairFormatter.poloniex_formatter"><a class="viewcode-back" href="../../reference.html#bitex.pairs.PairFormatter.poloniex_formatter">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">poloniex_formatter</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="n">quote</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Format currencies for Poloniex.</span>
+
+<span class="sd">        Edge Case: ``BTC``, ``USDT`` and ``XMR`` in Quote.</span>
+<span class="sd">            As theses symbols have their own markets (several currencies are quoted in them),</span>
+<span class="sd">            they must be handled accordingly.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="p">((</span><span class="n">quote</span> <span class="o">==</span> <span class="s1">&#39;BTC&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">quote</span> <span class="o">==</span> <span class="s1">&#39;USDT&#39;</span><span class="p">)</span> <span class="ow">or</span>
+                <span class="p">(</span><span class="n">quote</span> <span class="o">==</span> <span class="s1">&#39;XMR&#39;</span> <span class="ow">and</span> <span class="ow">not</span> <span class="p">(</span><span class="n">base</span> <span class="o">==</span> <span class="s1">&#39;BTC&#39;</span> <span class="ow">or</span> <span class="n">base</span> <span class="o">==</span> <span class="s1">&#39;USDT&#39;</span><span class="p">))):</span>
+            <span class="k">return</span> <span class="n">quote</span> <span class="o">+</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="n">base</span>
+        <span class="k">return</span> <span class="n">base</span> <span class="o">+</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="n">quote</span></div>
+
+<div class="viewcode-block" id="PairFormatter.quoine_formatter"><a class="viewcode-back" href="../../reference.html#bitex.pairs.PairFormatter.quoine_formatter">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">quoine_formatter</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="n">quote</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Format currencies for Quoine.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">base</span> <span class="o">+</span> <span class="n">quote</span></div>
+
+<div class="viewcode-block" id="PairFormatter.quadriga_formatter"><a class="viewcode-back" href="../../reference.html#bitex.pairs.PairFormatter.quadriga_formatter">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">quadriga_formatter</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="n">quote</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Format currencies for QuadrigaCX.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">base</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">+</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="n">quote</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="PairFormatter.hitbtc_formatter"><a class="viewcode-back" href="../../reference.html#bitex.pairs.PairFormatter.hitbtc_formatter">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">hitbtc_formatter</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="n">quote</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Format currencies for HitBTC.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">base</span> <span class="o">+</span> <span class="n">quote</span></div>
+
+<div class="viewcode-block" id="PairFormatter.vaultoro_formatter"><a class="viewcode-back" href="../../reference.html#bitex.pairs.PairFormatter.vaultoro_formatter">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">vaultoro_formatter</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="n">quote</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Format currencies for Vaultoro.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">base</span> <span class="o">+</span> <span class="s1">&#39;-&#39;</span> <span class="o">+</span> <span class="n">quote</span></div>
+
+<div class="viewcode-block" id="PairFormatter.bter_formatter"><a class="viewcode-back" href="../../reference.html#bitex.pairs.PairFormatter.bter_formatter">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">bter_formatter</span><span class="p">(</span><span class="n">base</span><span class="p">,</span> <span class="n">quote</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Format currencies for BTer.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">base</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">+</span> <span class="s1">&#39;_&#39;</span> <span class="o">+</span> <span class="n">quote</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="BTCUSDFormatter"><a class="viewcode-back" href="../../reference.html#bitex.pairs.BTCUSDFormatter">[docs]</a><span class="k">class</span> <span class="nc">BTCUSDFormatter</span><span class="p">(</span><span class="n">PairFormatter</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;BTC/USD PairFormatter object.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initialize the Formatter instance.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">BTCUSDFormatter</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s1">&#39;BTC&#39;</span><span class="p">,</span> <span class="s1">&#39;USD&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ETHUSDFormatter"><a class="viewcode-back" href="../../reference.html#bitex.pairs.ETHUSDFormatter">[docs]</a><span class="k">class</span> <span class="nc">ETHUSDFormatter</span><span class="p">(</span><span class="n">PairFormatter</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;ETH/USD PairFormatter object.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initialize the Formatter instance.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">ETHUSDFormatter</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s1">&#39;ETH&#39;</span><span class="p">,</span> <span class="s1">&#39;USD&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="XMRUSDFormatter"><a class="viewcode-back" href="../../reference.html#bitex.pairs.XMRUSDFormatter">[docs]</a><span class="k">class</span> <span class="nc">XMRUSDFormatter</span><span class="p">(</span><span class="n">PairFormatter</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;XMR/USD PairFormatter object.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initialize the Formatter instance.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">XMRUSDFormatter</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s1">&#39;XMR&#39;</span><span class="p">,</span> <span class="s1">&#39;USD&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ETCUSDFormatter"><a class="viewcode-back" href="../../reference.html#bitex.pairs.ETCUSDFormatter">[docs]</a><span class="k">class</span> <span class="nc">ETCUSDFormatter</span><span class="p">(</span><span class="n">PairFormatter</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;ETC/USD PairFormatter object.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initialize the Formatter instance.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">ETCUSDFormatter</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s1">&#39;ETC&#39;</span><span class="p">,</span> <span class="s1">&#39;USD&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ZECUSDFormatter"><a class="viewcode-back" href="../../reference.html#bitex.pairs.ZECUSDFormatter">[docs]</a><span class="k">class</span> <span class="nc">ZECUSDFormatter</span><span class="p">(</span><span class="n">PairFormatter</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;ZEC/USD PairFormatter object.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initialize the Formatter instance.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">ZECUSDFormatter</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s1">&#39;ZEC&#39;</span><span class="p">,</span> <span class="s1">&#39;USD&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DASHUSDFormatter"><a class="viewcode-back" href="../../reference.html#bitex.pairs.DASHUSDFormatter">[docs]</a><span class="k">class</span> <span class="nc">DASHUSDFormatter</span><span class="p">(</span><span class="n">PairFormatter</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;DASH/USD PairFormatter object.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initialize the Formatter instance.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">DASHUSDFormatter</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s1">&#39;DASH&#39;</span><span class="p">,</span> <span class="s1">&#39;USD&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="BCHUSDFormatter"><a class="viewcode-back" href="../../reference.html#bitex.pairs.BCHUSDFormatter">[docs]</a><span class="k">class</span> <span class="nc">BCHUSDFormatter</span><span class="p">(</span><span class="n">PairFormatter</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;BCH/USD PairFormatter object.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initialize the Formatter instance.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">BCHUSDFormatter</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s1">&#39;BCH&#39;</span><span class="p">,</span> <span class="s1">&#39;USD&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ETHBTCFormatter"><a class="viewcode-back" href="../../reference.html#bitex.pairs.ETHBTCFormatter">[docs]</a><span class="k">class</span> <span class="nc">ETHBTCFormatter</span><span class="p">(</span><span class="n">PairFormatter</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;ETH/BTC PairFormatter object.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initialize the Formatter instance.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">ETHBTCFormatter</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s1">&#39;ETH&#39;</span><span class="p">,</span> <span class="s1">&#39;BTC&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="LTCBTCFormatter"><a class="viewcode-back" href="../../reference.html#bitex.pairs.LTCBTCFormatter">[docs]</a><span class="k">class</span> <span class="nc">LTCBTCFormatter</span><span class="p">(</span><span class="n">PairFormatter</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;LTC/BTC PairFormatter object.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initialize the Formatter instance.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">LTCBTCFormatter</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s1">&#39;LTC&#39;</span><span class="p">,</span> <span class="s1">&#39;BTC&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="XMRBTCFormatter"><a class="viewcode-back" href="../../reference.html#bitex.pairs.XMRBTCFormatter">[docs]</a><span class="k">class</span> <span class="nc">XMRBTCFormatter</span><span class="p">(</span><span class="n">PairFormatter</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;XMR/BTC PairFormatter object.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initialize the Formatter instance.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">XMRBTCFormatter</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s1">&#39;XMR&#39;</span><span class="p">,</span> <span class="s1">&#39;BTC&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ETCBTCFormatter"><a class="viewcode-back" href="../../reference.html#bitex.pairs.ETCBTCFormatter">[docs]</a><span class="k">class</span> <span class="nc">ETCBTCFormatter</span><span class="p">(</span><span class="n">PairFormatter</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;ETC/BTC PairFormatter object.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initialize the Formatter instance.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">ETCBTCFormatter</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s1">&#39;ETC&#39;</span><span class="p">,</span> <span class="s1">&#39;BTC&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="ZECBTCFormatter"><a class="viewcode-back" href="../../reference.html#bitex.pairs.ZECBTCFormatter">[docs]</a><span class="k">class</span> <span class="nc">ZECBTCFormatter</span><span class="p">(</span><span class="n">PairFormatter</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;ZEC/BTC PairFormatter object.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initialize the Formatter instance.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">ZECBTCFormatter</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s1">&#39;ZEC&#39;</span><span class="p">,</span> <span class="s1">&#39;BTC&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="DASHBTCFormatter"><a class="viewcode-back" href="../../reference.html#bitex.pairs.DASHBTCFormatter">[docs]</a><span class="k">class</span> <span class="nc">DASHBTCFormatter</span><span class="p">(</span><span class="n">PairFormatter</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;DASH/BTC PairFormatter object.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initialize the Formatter instance.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">DASHBTCFormatter</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s1">&#39;DASH&#39;</span><span class="p">,</span> <span class="s1">&#39;BTC&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="BCHBTCFormatter"><a class="viewcode-back" href="../../reference.html#bitex.pairs.BCHBTCFormatter">[docs]</a><span class="k">class</span> <span class="nc">BCHBTCFormatter</span><span class="p">(</span><span class="n">PairFormatter</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;BCH/BTC PairFormatter object.&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Initialize the Formatter instance.&quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">BCHBTCFormatter</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="s1">&#39;BCH&#39;</span><span class="p">,</span> <span class="s1">&#39;BTC&#39;</span><span class="p">)</span></div>
+
+
+<span class="n">BTCUSD</span> <span class="o">=</span> <span class="n">BTCUSDFormatter</span><span class="p">()</span>
+<span class="n">ETHUSD</span> <span class="o">=</span> <span class="n">ETHUSDFormatter</span><span class="p">()</span>
+<span class="n">XMRUSD</span> <span class="o">=</span> <span class="n">XMRUSDFormatter</span><span class="p">()</span>
+<span class="n">ETCUSD</span> <span class="o">=</span> <span class="n">ETCUSDFormatter</span><span class="p">()</span>
+<span class="n">ZECUSD</span> <span class="o">=</span> <span class="n">ZECUSDFormatter</span><span class="p">()</span>
+<span class="n">DASHUSD</span> <span class="o">=</span> <span class="n">DASHUSDFormatter</span><span class="p">()</span>
+<span class="n">BCHUSD</span> <span class="o">=</span> <span class="n">BCHUSDFormatter</span><span class="p">()</span>
+
+<span class="n">ETHBTC</span> <span class="o">=</span> <span class="n">ETHBTCFormatter</span><span class="p">()</span>
+<span class="n">LTCBTC</span> <span class="o">=</span> <span class="n">LTCBTCFormatter</span><span class="p">()</span>
+<span class="n">XMRBTC</span> <span class="o">=</span> <span class="n">XMRBTCFormatter</span><span class="p">()</span>
+<span class="n">ETCBTC</span> <span class="o">=</span> <span class="n">ETCBTCFormatter</span><span class="p">()</span>
+<span class="n">ZECBTC</span> <span class="o">=</span> <span class="n">ZECBTCFormatter</span><span class="p">()</span>
+<span class="n">DASHBTC</span> <span class="o">=</span> <span class="n">DASHBTCFormatter</span><span class="p">()</span>
+<span class="n">BCHBTC</span> <span class="o">=</span> <span class="n">BCHBTCFormatter</span><span class="p">()</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Nils Diefenbach.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

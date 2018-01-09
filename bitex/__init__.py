@@ -1,9 +1,9 @@
 """BitEx - Crypto-Exchange REST API Framework.
 
-Author: Nils Diefenbach
-Email: 23okrs20+github@mykolab.com
-Repository at: https://github.com/nlsdfnbch/bitex
-License: MIT
+| Author: Nils Diefenbach
+| Email: 23okrs20+github@mykolab.com
+| Repository at: https://github.com/Crypto-toolbox/bitex/
+| License: MIT
 """
 from bitex.api.REST import BinanceREST, BitstampREST, BterREST, BitfinexREST
 from bitex.api.REST import CryptopiaREST, CoincheckREST, CCEXREST
