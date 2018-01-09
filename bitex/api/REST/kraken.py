@@ -34,10 +34,7 @@ class KrakenREST(RESTAPI):
         req_kwargs = super(KrakenREST, self).sign_request_kwargs(endpoint,
                                                                  **kwargs)
         # Prepare Payload
-        try:
-            payload = kwargs['params']
-        except KeyError:
-            payload = {}
+        payload = kwargs.get('params', {})
         payload['nonce'] = self.nonce()
 
         # Generate Signature

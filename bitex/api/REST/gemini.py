@@ -38,10 +38,7 @@ class GeminiREST(RESTAPI):
 
         # Prepare Payload
         nonce = self.nonce()
-        try:
-            params = kwargs['params']
-        except KeyError:
-            params = {}
+        params = kwargs.get('params', {})
         payload = params
         payload['nonce'] = nonce
         payload['request'] = self.generate_uri(endpoint)

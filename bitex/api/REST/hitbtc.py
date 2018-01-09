@@ -35,10 +35,7 @@ class HitBTCREST(RESTAPI):
                                                                  **kwargs)
 
         # prepare Payload arguments
-        try:
-            params = kwargs['params']
-        except KeyError:
-            params = {}
+        params = kwargs.get('params', {})
         nonce = self.nonce()
         params['nonce'] = nonce
         params['apikey'] = self.key

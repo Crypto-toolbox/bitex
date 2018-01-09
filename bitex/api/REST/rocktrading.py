@@ -36,10 +36,7 @@ class RockTradingREST(RESTAPI):
                                                                       **kwargs)
         # Prepare Payload arguments
         nonce = self.nonce()
-        try:
-            params = kwargs['params']
-        except KeyError:
-            params = {}
+        params = kwargs.get('params', {})
         payload = params
         payload['nonce'] = int(nonce)
 

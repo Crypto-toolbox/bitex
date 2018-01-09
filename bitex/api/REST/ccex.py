@@ -34,10 +34,7 @@ class CCEXREST(RESTAPI):
 
         # Prepare Payload arguments
         nonce = self.nonce()
-        try:
-            params = kwargs['params']
-        except KeyError:
-            params = {}
+        params = kwargs.get('params', {})
 
         params['apikey'] = self.key
         params['nonce'] = nonce

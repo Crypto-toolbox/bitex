@@ -34,10 +34,7 @@ class BterREST(RESTAPI):
         req_kwargs = super(BterREST, self).sign_request_kwargs(endpoint,
                                                                **kwargs)
         # prepare Payload arguments
-        try:
-            params = kwargs['params']
-        except KeyError:
-            params = {}
+        params = kwargs.get('params', {})
         nonce = self.nonce()
         kwargs['nonce'] = nonce
         encoded_params = urllib.parse.urlencode(params)

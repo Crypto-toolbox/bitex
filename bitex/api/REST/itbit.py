@@ -69,10 +69,7 @@ class ITbitREST(RESTAPI):
                                                                 **kwargs)
 
         # Prepare payload arguments
-        try:
-            params = kwargs['params']
-        except KeyError:
-            params = {}
+        params = kwargs.get('params', {})
 
         verb = kwargs['method']
 

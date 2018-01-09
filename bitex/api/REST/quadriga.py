@@ -64,10 +64,7 @@ class QuadrigaCXREST(RESTAPI):
                                                                      **kwargs)
 
         # Prepare Payload arguments
-        try:
-            params = kwargs['params']
-        except KeyError:
-            params = {}
+        params = kwargs.get('params', {})
         nonce = self.nonce()
         msg = nonce + self.client_id + self.key
 
