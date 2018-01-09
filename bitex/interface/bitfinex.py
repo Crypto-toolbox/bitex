@@ -42,11 +42,11 @@ class Bitfinex(RESTInterface):
                        'lends', 'funding_book']
 
     def __init__(self, **api_kwargs):
-        """Initialize class instance."""
+        """Initialize Interface class instance."""
         super(Bitfinex, self).__init__('Bitfinex', BitfinexREST(**api_kwargs))
 
     def request(self, endpoint, authenticate=False, **req_kwargs):
-        """Preprocess request to API."""
+        """Generate a request to the API."""
         if not authenticate:
             return super(Bitfinex, self).request('GET', endpoint, authenticate=authenticate,
                                                  **req_kwargs)

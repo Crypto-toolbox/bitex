@@ -76,13 +76,13 @@ def load_configuration(fname):
 
 # The following is a decorator which accepts a parameter, which should be a class that encapsulate
 # a response and add useful methods, such as formatter.
-def format_with(class_to_use):
+def format_with(formatter):
     """Pass a class to be used as a wrapper in the innermost function."""
-    def real_decorator(function):
 
+    def real_decorator(function):
         @wraps(function)
         def wrapper(*args, **kwargs):
-            return class_to_use(function(*args, **kwargs))
+            return formatter(function.__name__, function(*args, **kwargs), *args, **kwargs)
 
         return wrapper
 

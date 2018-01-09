@@ -9,4 +9,4 @@ from bitex.formatters.bitfinex import BitfinexFormattedResponse
 # from bitex.formatters.hitbtc import HitBTCFormattedResponse
 # from bitex.formatters.kraken import KrakenFormattedResponse
 # from bitex.formatters.okcoin import OkCoinFormattedResponse
-# from bitex.formatters.poloniex import PoloniexFormattedResponse
+from bitex.formatters.poloniex import PoloniexFormattedResponse

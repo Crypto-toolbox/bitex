@@ -5,14 +5,19 @@ import logging
 # Import Homebrew
 from bitex.api.REST.poloniex import PoloniexREST
 from bitex.interface.rest import RESTInterface
-from bitex.utils import check_and_format_pair
+from bitex.utils import check_and_format_pair, format_with
+from bitex.formatters import PoloniexFormattedResponse
 
 # Init Logging Facilities
 log = logging.getLogger(__name__)
 
 
 class Poloniex(RESTInterface):
-    """Poloniex Interface class."""
+    """Poloniex Interface class.
+
+    Includes standardized methods, as well as all other Endpoints
+    available on their REST API.
+    """
 
     def __init__(self, **api_kwargs):
         """Initialize Interface class instance."""
@@ -35,6 +40,7 @@ class Poloniex(RESTInterface):
         return ['BTC_ETH']
 
     # Public Endpoints
+    @format_with(PoloniexFormattedResponse)
     @check_and_format_pair
     def ticker(self, pair, *args, **kwargs):
         """Return the ticker for the given pair."""
