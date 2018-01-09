@@ -12,7 +12,6 @@ from bitex.api.REST import CryptopiaREST
 from bitex.utils import return_api_response
 from bitex.formatters.cryptopia import CrptFormatter as fmt
 # Init Logging Facilities
-logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger(__name__)
 
 

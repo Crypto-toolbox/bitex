@@ -14,7 +14,6 @@ from bitex.utils import return_api_response
 from bitex.formatters.gemini import GmniFormatter as fmt
 
 # Init Logging Facilities
-logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger(__name__)
 
 
