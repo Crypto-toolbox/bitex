@@ -49,10 +49,7 @@ class BinanceREST(RESTAPI):
         req_kwargs = super(BinanceREST, self).sign_request_kwargs(endpoint, **kwargs)
         req_kwargs['params'] = {}
         # Prepare arguments for query request.
-        try:
-            params = kwargs.pop('params')
-        except KeyError:
-            params = {}
+        params = kwargs.pop('params', {})
 
         params['timestamp'] = str(int(time.time() * 1000))
 

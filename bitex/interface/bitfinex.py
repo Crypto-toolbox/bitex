@@ -75,8 +75,7 @@ class Bitfinex(RESTInterface):
         self.is_supported(pair)
         if self.REST.version == 'v1':
             return self.request('book/%s' % pair, params=endpoint_kwargs)
-        prec = ('P0' if 'Precision' not in endpoint_kwargs else
-                endpoint_kwargs.pop('Precision'))
+        prec = endpoint_kwargs.pop('Precision', 'P0')
         return self.request('book/%s/%s' % (pair, prec),
                             params=endpoint_kwargs)
 

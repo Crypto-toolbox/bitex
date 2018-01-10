@@ -37,10 +37,7 @@ class PoloniexREST(RESTAPI):
                                                                    **kwargs)
 
         # Prepare Payload arguments
-        try:
-            params = kwargs['params']
-        except KeyError:
-            params = {}
+        params = kwargs.get('params', {})
         params['nonce'] = self.nonce()
         params['command'] = endpoint
         payload = params
