@@ -887,17 +887,23 @@ class QuadrigaCXRESTTest(TestCase):
 
     def test_sign_request_kwargs_method_and_signature(self):
         # Test that the sign_request_kwargs generate appropriate kwargs:
-        config_path = '%s/auth/quadrigacx.ini' % tests_folder_dir
-        api = QuadrigaCXREST(config=config_path)
-        self.assertEqual(api.config_file, config_path)
+        key, secret = 'panda', 'shadow'
+        client_id = '12345'
+        api = QuadrigaCXREST(key=key, secret=secret, client_id='12345')
 
         # Check signatured request kwargs
-        response = api.private_query('POST', 'balance')
-        self.assertEqual(response.status_code, 200,
-                         msg="Unexpected status code (%s) for request to path "
-                             "%s!" % (response.status_code, response.request.url))
+        with mock.patch.object(RESTAPI, 'nonce', return_value='100'):
+            ret_values = api.sign_request_kwargs('test_signature', params={'param_1': 'abc'})
 
-        self.assertIn('cad_balance', response.json(), msg=response.json())
+            nonce = '100'
+
+            msg = nonce + client_id + key
+            url = 'https://api.quadrigacx.com/v2/test_signature'
+            signature = hmac.new(secret.encode('utf8'), msg.encode('utf8'),
+                                 hashlib.sha256).hexdigest()
+            payload = {'param_1': 'abc', 'nonce': '100', 'key': key, 'signature': signature}
+            self.assertIn('json', ret_values)
+            self.assertEqual(ret_values['json'], payload)
 
 
 class HitBTCRESTTest(TestCase):
