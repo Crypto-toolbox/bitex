@@ -4,6 +4,8 @@ python:
   - 3.5
   - 3.6
 
+root: true
+
 install: pip install -r requirements.txt
 
 script:
@@ -37,7 +39,7 @@ jobs:
       script: python setup.py install
     - stage: deploy
       python: 3.5
-      script: ./travis/deploy.sh
+      script: sudo ./travis/deploy.sh
 
 stages:
   - name: lint
