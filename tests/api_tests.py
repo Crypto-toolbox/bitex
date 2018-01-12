@@ -920,23 +920,15 @@ class HitBTCRESTTest(TestCase):
 
     def test_sign_request_kwargs_method_and_signature(self):
         # Test that the sign_request_kwargs generate appropriate kwargs:
-        config_path = '%s/auth/hitbtc.ini' % tests_folder_dir
-        api = HitBTCREST(config=config_path)
-        self.assertEqual(api.config_file, config_path)
+        key, secret = 'panda', 'shadow'
+        client_id = '12345'
+        api = HitBTCREST(key=key, secret=secret)
 
         # Check signatured request kwargs
-
-        response = api.private_query('GET', 'trading/balance')
-        if response.status_code == 401:
-            try:
-                self.fail('Authorization failed: %s' % response.json())
-            except JSONDecodeError:
-                pass
-        self.assertEqual(response.status_code, 200,
-                         msg="Unexpected status code (%s) for request to path "
-                             "%s!" % (response.status_code, response.request.url))
-
-        self.assertIn('balance', response.text, msg=response.request.url)
+        with mock.patch.object(RESTAPI, 'nonce', return_value='100'):
+            ret_values = api.sign_request_kwargs('test_signature', params={'param_1': 'abc'})
+            self.assertIn('auth', ret_values)
+            self.assertEqual(ret_values['auth'], (key, secret))
 
 
 class VaultoroRESTTest(TestCase):
