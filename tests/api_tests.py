@@ -421,7 +421,7 @@ class GDAXRESTTest(TestCase):
         # check that passphrase is loaded correctly, and no
         # IncompleteCredentialsWarning is issued, if we dont pass a passphrase
         # kwarg but it is avaialable in the config file
-        config_path = '/home/nls/git/bitex/tests/auth/gdax.ini'
+        config_path = './auth/gdax.ini'
         with self.assertRaises(AssertionError):
             with self.assertWarns(IncompleteCredentialConfigurationWarning):
                 api = GDAXREST(config=config_path)
