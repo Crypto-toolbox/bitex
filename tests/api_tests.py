@@ -804,7 +804,7 @@ class PoloniexRESTTest(TestCase):
         # Check signatured request kwargs
         with mock.patch.object(RESTAPI, 'nonce', return_value='100'):
             ret_value = api.sign_request_kwargs('test_signature', params={'param_1': 'abc'})
-            request_string = 'https://poloniex.com/tradingApi?command=test_signature&nonce=100&param_1=abc'
+            request_string = 'command=test_signature&nonce=100&param_1=abc'
             # Construct expected result
 
             signature = hmac.new(secret.encode('utf8'), request_string.encode('utf8'),
