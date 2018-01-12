@@ -35,22 +35,6 @@ class HitBTCREST(RESTAPI):
                                                                  **kwargs)
 
         # prepare Payload arguments
-        try:
-            params = kwargs['params']
-        except KeyError:
-            params = {}
-        nonce = self.nonce()
-        params['nonce'] = nonce
-        params['apikey'] = self.key
-        path = self.generate_uri(endpoint) + '?' + urllib.parse.urlencode(params)
-
-        # generate signature
-        signature = hmac.new(self.secret.encode(encoding='utf-8'),
-                             path.encode(encoding='utf-8'),
-                             hashlib.sha512).hexdigest()
-
-        # update req_kwargs keys
-        req_kwargs['headers'] = {'Api-Signature': signature}
-        req_kwargs['url'] = self.generate_url(path)
+        req_kwargs['auth'] = self.key, self.secret
 
         return req_kwargs
