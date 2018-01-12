@@ -44,8 +44,9 @@ class BinanceREST(RESTAPI):
         request_kwargs = self.sign_request_kwargs(method_verb, endpoint, **request_kwargs)
         return self._query(method_verb, **request_kwargs)
 
-    def sign_request_kwargs(self, method_verb, endpoint, **kwargs):
+    def sign_request_kwargs(self, endpoint, method_verb=None, **kwargs):
         """Sign the request."""
+        method_verb = method_verb or 'GET'
         req_kwargs = super(BinanceREST, self).sign_request_kwargs(endpoint, **kwargs)
         req_kwargs['params'] = {}
         # Prepare arguments for query request.
