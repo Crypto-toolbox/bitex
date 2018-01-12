@@ -75,9 +75,7 @@ class QuadrigaCXREST(RESTAPI):
         signature = hmac.new(self.secret.encode(encoding='utf-8'),
                              msg.encode(encoding='utf-8'),
                              hashlib.sha256).hexdigest()
-
+        params.update({'key': self.key, 'signature': signature, 'nonce': nonce})
         # update req_kwargs keys
-        req_kwargs['json'] = {'key': self.key, 'signature': signature,
-                              'nonce': nonce}
-        req_kwargs['data'] = params
+        req_kwargs['json'] = params
         return req_kwargs
