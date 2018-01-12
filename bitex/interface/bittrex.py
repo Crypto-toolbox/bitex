@@ -6,7 +6,8 @@ import logging
 from bitex.api.REST.bittrex import BittrexREST
 
 from bitex.interface.rest import RESTInterface
-from bitex.utils import check_and_format_pair
+from bitex.utils import check_and_format_pair, format_with
+from bitex.formatters import BittrexFormattedResponse
 
 # Init Logging Facilities
 log = logging.getLogger(__name__)
@@ -33,6 +34,7 @@ class Bittrex(RESTInterface):
     ###############
     # Basic Methods
     ###############
+    @format_with(BittrexFormattedResponse)
     @check_and_format_pair
     def ticker(self, pair, *args, **kwargs):
         """Return the ticker for the given pair."""

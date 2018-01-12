@@ -3,8 +3,6 @@ from bitex.formatters.base import AbstractFormattedResponse, TickerFormattedResp
 from decimal import Decimal
 from datetime import datetime
 
-# fromtimestamp = datetime.fromtimestamp
-
 
 class PoloniexFormattedResponse(AbstractFormattedResponse):
 

@@ -6,17 +6,19 @@ from datetime import datetime
 fromtimestamp = datetime.utcfromtimestamp
 
 
-class BitfinexFormattedResponse(AbstractFormattedResponse):
+class HitBTCFormattedResponse(AbstractFormattedResponse):
 
     @property
     def ticker(self):
         data = self.json(parse_int=Decimal, parse_float=Decimal)
 
+        curr_timestamp = fromtimestamp(data["timestamp"] / Decimal(1000))
+
         return TickerFormattedResponseTuple(bid=Decimal(data["bid"]),
                                             ask=Decimal(data["ask"]),
                                             high=Decimal(data["high"]),
                                             low=Decimal(data["low"]),
-                                            last=Decimal(data["last_price"]),
+                                            last=Decimal(data["last"]),
                                             volume=Decimal(data["volume"]),
-                                            timestamp=fromtimestamp(Decimal(data["timestamp"]))
+                                            timestamp=curr_timestamp,
                                             )

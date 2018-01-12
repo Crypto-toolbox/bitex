@@ -6,7 +6,7 @@ from datetime import datetime
 fromtimestamp = datetime.utcfromtimestamp
 
 
-class BitfinexFormattedResponse(AbstractFormattedResponse):
+class BitstampFormattedResponse(AbstractFormattedResponse):
 
     @property
     def ticker(self):
@@ -16,7 +16,7 @@ class BitfinexFormattedResponse(AbstractFormattedResponse):
                                             ask=Decimal(data["ask"]),
                                             high=Decimal(data["high"]),
                                             low=Decimal(data["low"]),
-                                            last=Decimal(data["last_price"]),
+                                            last=Decimal(data["last"]),
                                             volume=Decimal(data["volume"]),
                                             timestamp=fromtimestamp(Decimal(data["timestamp"]))
                                             )
