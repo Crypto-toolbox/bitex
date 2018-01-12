@@ -921,7 +921,6 @@ class HitBTCRESTTest(TestCase):
     def test_sign_request_kwargs_method_and_signature(self):
         # Test that the sign_request_kwargs generate appropriate kwargs:
         key, secret = 'panda', 'shadow'
-        client_id = '12345'
         api = HitBTCREST(key=key, secret=secret)
 
         # Check signatured request kwargs
