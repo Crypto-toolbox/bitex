@@ -43,6 +43,7 @@ class PoloniexREST(RESTAPI):
             params = {}
         nonce = self.nonce()
         cmd = endpoint
+
         payload = params
 
         # generate signature

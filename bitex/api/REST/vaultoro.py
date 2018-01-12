@@ -37,10 +37,7 @@ class VaultoroREST(RESTAPI):
                                                                    **kwargs)
 
         # prepare Payload arguments
-        try:
-            params = kwargs['params']
-        except KeyError:
-            params = {}
+        params = kwargs.get('params', {})
         nonce = self.nonce()
         url = self.addr + '/1/' + endpoint + '?' + 'apikey=' + self.key + '&nonce=' + nonce + '&' + urllib.parse.urlencode(params)
 

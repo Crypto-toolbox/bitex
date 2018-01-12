@@ -64,10 +64,7 @@ class CryptopiaREST(RESTAPI):
 
         # Prepare POST Payload arguments
         nonce = self.nonce()
-        try:
-            params = kwargs['params']
-        except KeyError:
-            params = {}
+        params = kwargs.get('params', {})
 
         # generate signature
         post_data = json.dumps(params)

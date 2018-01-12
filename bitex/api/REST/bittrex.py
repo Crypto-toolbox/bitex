@@ -42,10 +42,7 @@ class BittrexREST(RESTAPI):
                                                                   **kwargs)
         req_kwargs['params'] = {}
         # Prepare arguments for query request.
-        try:
-            params = kwargs.pop('params')
-        except KeyError:
-            params = {}
+        params = kwargs.pop('params', {})
         nonce = self.nonce()
         uri = self.generate_uri(endpoint)
         url = self.generate_url(uri)

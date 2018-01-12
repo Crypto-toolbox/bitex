@@ -42,10 +42,7 @@ class YunbiREST(RESTAPI):
                                                                 **kwargs)
         # prepare Payload arguments
         nonce = self.nonce()
-        try:
-            params = kwargs['params']
-        except KeyError:
-            params = {}
+        params = kwargs.get('params', {})
         params['tonce'] = nonce
         params['access_key'] = self.key
         post_params = urllib.parse.urlencode(params)

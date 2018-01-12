@@ -45,10 +45,7 @@ class QuoineREST(RESTAPI):
                                                                  **kwargs)
 
         # Prepare Payload arguments
-        try:
-            params = kwargs['params']
-        except KeyError:
-            params = {}
+        params = kwargs.get('params', {})
 
         path = endpoint + urllib.parse.urlencode(params)
         msg = {'path': path, 'nonce': self.nonce(), 'token_id': self.key}
