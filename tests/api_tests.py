@@ -904,6 +904,7 @@ class QuadrigaCXRESTTest(TestCase):
             payload = {'param_1': 'abc', 'nonce': '100', 'key': key, 'signature': signature}
             self.assertIn('json', ret_values)
             self.assertEqual(ret_values['json'], payload)
+            self.assertEqual(ret_values['url'], url)
 
 
 class HitBTCRESTTest(TestCase):
