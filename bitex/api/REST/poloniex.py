@@ -41,13 +41,13 @@ class PoloniexREST(RESTAPI):
             params = kwargs['params']
         except KeyError:
             params = {}
-        params['nonce'] = self.nonce()
-        params['command'] = endpoint
+        nonce = self.nonce()
+        cmd = endpoint
         payload = params
 
         # generate signature
-        msg = urllib.parse.urlencode(payload).encode('utf-8')
-        sig = hmac.new(self.secret.encode('utf-8'), msg,
+        msg = 'command=' + cmd + '&nonce=' + nonce + '&' + urllib.parse.urlencode(payload)
+        sig = hmac.new(self.secret.encode('utf-8'), msg.encode('utf-8'),
                        hashlib.sha512).hexdigest()
 
         # update req_kwargs keys
