@@ -961,31 +961,5 @@ class VaultoroRESTTest(TestCase):
             self.assertEqual(ret_values['url'], url)
 
 
-class BterRESTTest(TestCase):
-    def test_initialization(self):
-        # test that all default values are assigned correctly if No kwargs are
-        # given
-        api = BterREST()
-        self.assertIs(api.secret, None)
-        self.assertIs(api.key, None)
-        self.assertEqual(api.addr, 'http://data.bter.com/api2')
-        self.assertIs(api.version, '1')
-        self.assertIs(api.config_file, None)
-
-    def test_sign_request_kwargs_method_and_signature(self):
-        # Test that the sign_request_kwargs generate appropriate kwargs:
-        config_path = '%s/auth/bter.ini' % tests_folder_dir
-        api = BterREST(config=config_path)
-        self.assertEqual(api.config_file, config_path)
-
-        # Assert signatured request kwargs are valid and api call is succesful
-        response = api.private_query('POST', 'private/balances')
-        self.assertEqual(response.status_code, 200,
-                         msg="Unexpected status code (%s) for request to path "
-                             "%s!" % (response.status_code, response.request.url))
-
-        self.assertTrue(response.json()['result'], msg=response.json())
-
-
 if __name__ == '__main__':
     unittest.main(verbosity=2)
