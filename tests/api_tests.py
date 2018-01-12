@@ -386,7 +386,6 @@ class CoinCheckRESTTest(TestCase):
 
 
 class GDAXRESTTest(TestCase):
-    @unittest.expectedFailure
     def test_initialization(self):
         # test that all default values are assigned correctly if No kwargs are
         # given
@@ -421,30 +420,18 @@ class GDAXRESTTest(TestCase):
         # check that passphrase is loaded correctly, and no
         # IncompleteCredentialsWarning is issued, if we dont pass a passphrase
         # kwarg but it is avaialable in the config file
-        self.fail("Add config ini first!")
         config_path = '/home/nls/git/bitex/tests/auth/gdax.ini'
         with self.assertRaises(AssertionError):
             with self.assertWarns(IncompleteCredentialConfigurationWarning):
                 api = GDAXREST(config=config_path)
         self.assertTrue(api.config_file == config_path)
-        self.assertEqual(api.passphrase, 'testuser')
+        self.assertEqual(api.passphrase, 'shadow_panda')
 
     @unittest.expectedFailure
     def test_sign_request_kwargs_method_and_signature(self):
-        self.fail("Add config ini first!")
-        # Test that the sign_request_kwargs generate appropriate kwargs:
-        config_path = '%s/auth/gdax.ini' % tests_folder_dir
-        api = GDAXREST(config=config_path)
-        self.assertEqual(api.config_file, config_path)
-
-        # Check signatured request kwargs
-        response = api.private_query('GET', 'accounts')
-        self.assertEqual(response.status_code, 200,
-                         msg="Unexpected status code (%s) for request to path "
-                             "%s!" % (response.status_code, response.request.url))
-
-        self.assertEqual(response.status_code, 200, msg=response.status_code)
-        self.assertIn('id', response.json()[0], msg=response.json())
+        # Implement using the Python documentation as reference.
+        # https://docs.gdax.com/#signing-a-message
+        self.fail('No test yet')
 
 
 class KrakenRESTTest(TestCase):
@@ -645,6 +632,7 @@ class OKCoinRESTTest(TestCase):
         self.assertEqual(ret_values['data']['sign'], signature)
         self.assertIn('param_1', ret_values['data'])
         self.assertEqual(ret_values['data']['param_1'], 'abc')
+
 
 class CCEXRESTTest(TestCase):
     def test_initialization(self):
