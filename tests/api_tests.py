@@ -13,6 +13,7 @@ import urllib
 
 # Import Third-Party
 import requests
+import jwt
 
 
 # Import Homebrew
@@ -797,17 +798,22 @@ class PoloniexRESTTest(TestCase):
 
     def test_sign_request_kwargs_method_and_signature(self):
         # Test that the sign_request_kwargs generate appropriate kwargs:
-        config_path = '%s/auth/poloniex.ini' % tests_folder_dir
-        api = PoloniexREST(config=config_path)
-        self.assertEqual(api.config_file, config_path)
+        key, secret = 'panda', 'shadow'
+        api = PoloniexREST(key=key, secret=secret)
 
         # Check signatured request kwargs
-        response = api.private_query('POST', 'returnBalances')
-        self.assertEqual(response.status_code, 200,
-                         msg="Unexpected status code (%s) for request to path "
-                             "%s!" % (response.status_code, response.request.url))
+        with mock.patch.object(RESTAPI, 'nonce', return_value='100'):
+            ret_value = api.sign_request_kwargs('test_signature', params={'param_1': 'abc'})
+            request_string = 'https://poloniex.com/tradingApi?command=test_signature&nonce=100&param_1=abc'
+            # Construct expected result
 
-        self.assertNotIn('error', response.json(), msg=(response.json(), response.request.url))
+            signature = hmac.new(secret.encode('utf8'), request_string.encode('utf8'),
+                                 hashlib.sha512).hexdigest()
+            self.assertIn('headers', ret_value)
+            self.assertIn('Sign', ret_value['headers'])
+            self.assertEqual(ret_value['headers']['Sign'], signature)
+            self.assertIn('Key', ret_value['headers'])
+            self.assertEqual(ret_value['headers']['Key'], key)
 
 
 class QuoineRESTTest(TestCase):
