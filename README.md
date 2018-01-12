@@ -48,10 +48,10 @@ It does not offer rate-limiting or HTTP status handling. From experience, we kno
 | ITBit                | Planned   | Planned        | Planned          | Planned           | DONE              |
 
 
-Additional clients will be added to (or removed from) this list, 
+Additional clients will be added to (or removed from) this list,
 according to their liquidity and market volume.
 
-_<sup>1</sup>): This table considers standardized methods only, when describing the state. 
+(<sup>1</sup>): This table considers standardized methods only, when describing the state.
 See section `Standardized Methods` for more information on these.
 
 
@@ -79,27 +79,28 @@ The Methods are:
 # Standardized Pairs
 
 `Bitex` comes with a `PairFormatter()` class, which formats a given symbol
- pair into a format which is recognized by the exchange you're querying.
- 
- This allows you to specify a pair once, without having to worry about
- whether or not you typed it correctly for each individual exchange.
- 
- An example:
- 
- The Pair `ETHBTC` is denoted as follows:
-  - At Kraken it goes by XETHXXBT
-  - At Poloniex it goes by BTC_ETH
-  - At Bittrex it goes by BTC-ETH
-  - at OKCoin it goes by btc_eth
- 
- Instead of passing a string to the standardized methods, then, you may
- pass a `PairFormatter()` object instead.
- It automatically formats the pair accordingly when a standardized method 
- is invoked.
- 
+pair into a format which is recognized by the exchange you're querying;
+moreover many common pairs are already available (see below ).
+
+This allows you to specify a pair once, without having to worry about
+whether or not you typed it correctly for each individual exchange.
+
+An example:
+
+The Pair `ETH/BTC` is denoted as follows:
+ - At Kraken it goes by XETHXXBT
+ - At Poloniex it goes by BTC_ETH
+ - At Bittrex it goes by BTC-ETH
+ - at OKCoin it goes by btc_eth
+
+Instead of passing a string to the standardized methods, then, you may
+pass a `PairFormatter()` object instead.
+It automatically formats the pair accordingly when a standardized method
+is invoked.
+
 You can create a custom `PairFormatter()` easily. Let's consider a common
 use case, when we want to query the price for Bitcoin against US Dollar.
- 
+
 ```
 from bitex.pairs import PairFormatter
 
@@ -129,6 +130,19 @@ If we now want to query the rate on, e.g., Bitstamp:
 >>> resp.json()
 {'high': '19666.00', 'last': '19663.94', 'timestamp': '1513513571', 'bid': '19647.18', 'vwap': '18920.32', 'volume': '9999.47455152', 'low': '17906.01', 'ask': '19663.93', 'open': '19187.78'}
 ```
+
+## Common standardized pairs
+
+Note that many common pairs (such as the `BTC/USD` pair implemented above) are
+already implemented and are available inside the main `bitex` module and can
+be passed to any method requiring a pair object, e.g.:
+
+```
+>>> from bitex import Bitfinex, ETHUSD
+>>> Bitfinex().ticker(ETHUSD)
+```
+
+For a complete list of the pairs already implemented, refer to the [relative documentation](http://bitex.readthedocs.io/en/release-2.0.0/reference.html#module-bitex.pairs).
 
 # Installation
 

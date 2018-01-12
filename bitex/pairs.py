@@ -1,18 +1,17 @@
 """
-Includes the base Class for crypto currency pairs,  and PairFormatter.
+Includes the base class for crypto currency pairs and the PairFormatter class.
 
-Also, convencience wrappers for commonly used Pairs.
-
-These can be imported to avoid typos by the user and passed to the APIs.
+It also provides convencience wrappers for commonly used Pairs: these can be
+imported to avoid typos by the user, and can be directly passed to the APIs.
 
 If the pair you want to query isn't present in here, creating such a pair is
-simple enough - simply initialize the PairFormatter Class with the currencies
-you want:
+simple enough - simply initialize the PairFormatter class with the currencies
+you want::
 
-    my_pair = PairFormatter('BaseCurrency', 'QuoteCurrency')
+    >>> my_pair = PairFormatter('BaseCurrency', 'QuoteCurrency')
 
-This object now takes care of all formatting of any exchange, supported by
-Bitex, you pass it to.
+The object ``my_pair`` now takes care of all formatting of any exchange,
+supported by Bitex, you pass it to.
 """
 
 # pylint: disable=too-many-public-methods,missing-docstring
@@ -42,26 +41,26 @@ class PairFormatter:
         """Initialize formatter instance."""
         self._base = base
         self._quote = quote
-        self.formatters = {'Kraken':                self.kraken_formatter,
-                           'Bitstamp':              self.bitstamp_formatter,
-                           'Bitfinex':              self.bitfinex_formatter,
-                           'Bittrex':               self.bittrex_formatter,
-                           'CoinCheck':             self.coincheck_formatter,
-                           'GDAX':                  self.gdax_formatter,
-                           'ITBit':                 self.itbit_formatter,
-                           'OKCoin':                self.okcoin_formatter,
-                           'C-CEX':                 self.ccex_formatter,
-                           'Cryptopia':             self.cryptopia_formatter,
-                           'Gemini':                self.gemini_formatter,
+        self.formatters = {'Kraken': self.kraken_formatter,
+                           'Bitstamp': self.bitstamp_formatter,
+                           'Bitfinex': self.bitfinex_formatter,
+                           'Bittrex': self.bittrex_formatter,
+                           'CoinCheck': self.coincheck_formatter,
+                           'GDAX': self.gdax_formatter,
+                           'ITBit': self.itbit_formatter,
+                           'OKCoin': self.okcoin_formatter,
+                           'C-CEX': self.ccex_formatter,
+                           'Cryptopia': self.cryptopia_formatter,
+                           'Gemini': self.gemini_formatter,
                            'The Rock Trading Ltd.': self.rocktrading_formatter,
-                           'Poloniex':              self.poloniex_formatter,
-                           'Quoine':                self.quoine_formatter,
-                           'QuadrigaCX':            self.quadriga_formatter,
-                           'HitBTC':                self.hitbtc_formatter,
-                           'Vaultoro':              self.vaultoro_formatter,
-                           'Bter':                  self.bter_formatter,
-                           'Yunbi':                 self.yunbi_formatter,
-                           "Binance":               self.binance_formatter}
+                           'Poloniex': self.poloniex_formatter,
+                           'Quoine': self.quoine_formatter,
+                           'QuadrigaCX': self.quadriga_formatter,
+                           'HitBTC': self.hitbtc_formatter,
+                           'Vaultoro': self.vaultoro_formatter,
+                           'Bter': self.bter_formatter,
+                           'Yunbi': self.yunbi_formatter,
+                           "Binance": self.binance_formatter}
 
     def __str__(self, *args, **kwargs):
         """Return the stored base and quote currency in proper pair format."""
@@ -105,8 +104,8 @@ class PairFormatter:
     def bitfinex_formatter(base, quote):
         """Format currencies for bitfinex.
 
-        Edgecase: DASH
-            This symbol is shortened to 'DSH'.
+        Edgecase: ``DASH``
+            This symbol is shortened to ``DSH``.
         """
         base = 'DSH' if base == 'DASH' else base
         quote = 'DSH' if quote == 'DASH' else quote
@@ -136,8 +135,8 @@ class PairFormatter:
     def itbit_formatter(base, quote):
         """Format currencies for ItBit.
 
-        Edge case: BTC
-            BTC is denoted as 'XBT'.
+        Edge case: ``BTC``
+            BTC is denoted as ``XBT``.
         """
         base = 'XBT' if base == 'BTC' else base
         quote = 'XBT' if base == 'BTC' else quote
@@ -177,12 +176,12 @@ class PairFormatter:
     def poloniex_formatter(base, quote):
         """Format currencies for Poloniex.
 
-        Edge Case: BTC, USDT and XMR in Quote
-            As theses Symbols have their own markets(several currencies are quoted in them),
+        Edge Case: ``BTC``, ``USDT`` and ``XMR`` in Quote.
+            As theses symbols have their own markets (several currencies are quoted in them),
             they must be handled accordingly.
         """
         if ((quote == 'BTC') or (quote == 'USDT') or
-                (quote == 'XMR' and not(base == 'BTC' or base == 'USDT'))):
+                (quote == 'XMR' and not (base == 'BTC' or base == 'USDT'))):
             return quote + '_' + base
         return base + '_' + quote
 
@@ -220,7 +219,7 @@ class PairFormatter:
         return quote.upper() + base.upper()
 
 class BTCUSDFormatter(PairFormatter):
-    """BTCUSD Pairformatter."""
+    """BTC/USD PairFormatter object."""
 
     def __init__(self):
         """Initialize the Formatter instance."""
@@ -228,7 +227,7 @@ class BTCUSDFormatter(PairFormatter):
 
 
 class ETHUSDFormatter(PairFormatter):
-    """ETHUSD Pairformatter."""
+    """ETH/USD PairFormatter object."""
 
     def __init__(self):
         """Initialize the Formatter instance."""
@@ -236,7 +235,7 @@ class ETHUSDFormatter(PairFormatter):
 
 
 class XMRUSDFormatter(PairFormatter):
-    """XMRUSD Pairformatter."""
+    """XMR/USD PairFormatter object."""
 
     def __init__(self):
         """Initialize the Formatter instance."""
@@ -244,7 +243,7 @@ class XMRUSDFormatter(PairFormatter):
 
 
 class ETCUSDFormatter(PairFormatter):
-    """ETCUSD Pairformatter."""
+    """ETC/USD PairFormatter object."""
 
     def __init__(self):
         """Initialize the Formatter instance."""
@@ -252,7 +251,7 @@ class ETCUSDFormatter(PairFormatter):
 
 
 class ZECUSDFormatter(PairFormatter):
-    """ZECUSD Pairformatter."""
+    """ZEC/USD PairFormatter object."""
 
     def __init__(self):
         """Initialize the Formatter instance."""
@@ -260,7 +259,7 @@ class ZECUSDFormatter(PairFormatter):
 
 
 class DASHUSDFormatter(PairFormatter):
-    """DASHUSD Pairformatter."""
+    """DASH/USD PairFormatter object."""
 
     def __init__(self):
         """Initialize the Formatter instance."""
@@ -268,7 +267,7 @@ class DASHUSDFormatter(PairFormatter):
 
 
 class BCHUSDFormatter(PairFormatter):
-    """BCHUSD Pairformatter."""
+    """BCH/USD PairFormatter object."""
 
     def __init__(self):
         """Initialize the Formatter instance."""
@@ -276,7 +275,7 @@ class BCHUSDFormatter(PairFormatter):
 
 
 class ETHBTCFormatter(PairFormatter):
-    """ETHBTC Pairformatter."""
+    """ETH/BTC PairFormatter object."""
 
     def __init__(self):
         """Initialize the Formatter instance."""
@@ -284,7 +283,7 @@ class ETHBTCFormatter(PairFormatter):
 
 
 class LTCBTCFormatter(PairFormatter):
-    """LTCBTC Pairformatter."""
+    """LTC/BTC PairFormatter object."""
 
     def __init__(self):
         """Initialize the Formatter instance."""
@@ -292,7 +291,7 @@ class LTCBTCFormatter(PairFormatter):
 
 
 class XMRBTCFormatter(PairFormatter):
-    """XMRBTC Pairformatter."""
+    """XMR/BTC PairFormatter object."""
 
     def __init__(self):
         """Initialize the Formatter instance."""
@@ -300,7 +299,7 @@ class XMRBTCFormatter(PairFormatter):
 
 
 class ETCBTCFormatter(PairFormatter):
-    """ETCBTC Pairformatter."""
+    """ETC/BTC PairFormatter object."""
 
     def __init__(self):
         """Initialize the Formatter instance."""
@@ -308,7 +307,7 @@ class ETCBTCFormatter(PairFormatter):
 
 
 class ZECBTCFormatter(PairFormatter):
-    """ZECBTC Pairformatter."""
+    """ZEC/BTC PairFormatter object."""
 
     def __init__(self):
         """Initialize the Formatter instance."""
@@ -316,7 +315,7 @@ class ZECBTCFormatter(PairFormatter):
 
 
 class DASHBTCFormatter(PairFormatter):
-    """DASHBTC Pairformatter."""
+    """DASH/BTC PairFormatter object."""
 
     def __init__(self):
         """Initialize the Formatter instance."""
@@ -324,7 +323,7 @@ class DASHBTCFormatter(PairFormatter):
 
 
 class BCHBTCFormatter(PairFormatter):
-    """BCHBTC Pairformatter."""
+    """BCH/BTC PairFormatter object."""
 
     def __init__(self):
         """Initialize the Formatter instance."""
