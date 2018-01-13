@@ -89,7 +89,7 @@ class Bittrex(RESTInterface):
             results.append(r)
         return results if len(results) > 1 else results[0]
 
-    def wallet(self, currency=None, *args, **kwargs):  # pylint: disable=arguments-differ
+    def wallet(self, *args, currency=None, **kwargs):  # pylint: disable=arguments-differ
         """Return the account wallet."""
         if currency:
             payload = {'currency': currency}
