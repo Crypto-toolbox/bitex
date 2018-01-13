@@ -218,6 +218,7 @@ class PairFormatter:
         (base, quote) = pair.split('_')
         return quote.upper() + base.upper()
 
+
 class BTCUSDFormatter(PairFormatter):
     """BTC/USD PairFormatter object."""
 
