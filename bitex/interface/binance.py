@@ -53,6 +53,7 @@ class Binance(RESTInterface):
         return self.request('GET', 'v1/trades', params=payload)
 
     # Private Endpoints
+    # pylint: disable=unused-argument
     def _place_order(self, pair, price, size, side, *args, **kwargs):
         payload = {'symbol': pair,
                    'side': side,

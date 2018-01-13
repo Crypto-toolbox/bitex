@@ -6,7 +6,6 @@ Documentation available here:
 # Import Built-ins
 import logging
 import hashlib
-from urllib.parse import urlencode
 
 # Import Third-Party
 

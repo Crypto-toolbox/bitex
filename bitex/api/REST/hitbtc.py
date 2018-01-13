@@ -5,10 +5,6 @@ Documentation available here:
 """
 # Import Built-ins
 import logging
-import hashlib
-import hmac
-import urllib
-import urllib.parse
 
 # Import Homebrew
 from bitex.api.REST import RESTAPI

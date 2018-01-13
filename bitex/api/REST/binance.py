@@ -44,6 +44,7 @@ class BinanceREST(RESTAPI):
         request_kwargs = self.sign_request_kwargs(method_verb, endpoint, **request_kwargs)
         return self._query(method_verb, **request_kwargs)
 
+    # pylint: disable=arguments-differ
     def sign_request_kwargs(self, endpoint, method_verb=None, **kwargs):
         """Sign the request."""
         method_verb = method_verb or 'GET'

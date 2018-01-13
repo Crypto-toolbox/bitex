@@ -329,7 +329,7 @@ class BCHBTCFormatter(PairFormatter):
         """Initialize the Formatter instance."""
         super(BCHBTCFormatter, self).__init__('BCH', 'BTC')
 
-        
+
 class XRPUSDFormatter(PairFormatter):
     """XRPUSD Pairformatter."""
 
