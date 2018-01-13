@@ -60,7 +60,7 @@ class ITbitREST(RESTAPI):
                           IncompleteCredentialConfigurationWarning)
 
     def timestamp(self):
-        super(ITbitREST, self).nonce()
+        return super(ITbitREST, self).nonce()
 
     def nonce(self):
         self._nonce += 1
