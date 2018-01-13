@@ -213,6 +213,7 @@ class PairFormatter:
     @staticmethod
     def poloniex_unformatter(pair):
         """Unformat the pair for poloniex exchange.
+
         Removes seperator, swapps base and quote.
         """
         (base, quote) = pair.split('_')

@@ -60,9 +60,11 @@ class ITbitREST(RESTAPI):
                           IncompleteCredentialConfigurationWarning)
 
     def timestamp(self):
+        """Return a timestamp as string as UNIX ts."""
         return super(ITbitREST, self).nonce()
 
     def nonce(self):
+        """Return an increasing NONCE value."""
         self._nonce += 1
         return str(self._nonce)
 
