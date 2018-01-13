@@ -13,7 +13,7 @@ from bitex.pairs import BTCUSD, ETHBTC, LTCBTC, ETHUSD
 from bitex.pairs import PairFormatter
 from bitex.interface.base import Interface
 from bitex.interface.rest import RESTInterface
-from bitex.interface import Bitfinex, Bitstamp, Bittrex, Bter, CCEX
+from bitex.interface import Bitfinex, Bitstamp, Bittrex, CCEX
 from bitex.interface import CoinCheck, Cryptopia, HitBTC, Kraken, OKCoin
 from bitex.interface import Poloniex, QuadrigaCX, TheRockTrading, Vaultoro
 from bitex.exceptions import UnsupportedEndpointError

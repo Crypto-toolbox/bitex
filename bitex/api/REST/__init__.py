@@ -4,7 +4,6 @@ from bitex.api.REST.binance import BinanceREST
 from bitex.api.REST.bitfinex import BitfinexREST
 from bitex.api.REST.bitstamp import BitstampREST
 from bitex.api.REST.bittrex import BittrexREST
-from bitex.api.REST.bter import BterREST
 from bitex.api.REST.ccex import CCEXREST
 from bitex.api.REST.coincheck import CoincheckREST
 from bitex.api.REST.cryptopia import CryptopiaREST

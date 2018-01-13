@@ -23,7 +23,7 @@ from bitex.api.REST import BitstampREST, BitfinexREST, BittrexREST
 from bitex.api.REST import HitBTCREST, CCEXREST, CoincheckREST, CryptopiaREST
 from bitex.api.REST import ITbitREST, GDAXREST, GeminiREST,  KrakenREST, OKCoinREST
 from bitex.api.REST import PoloniexREST, QuoineREST, QuadrigaCXREST, RockTradingREST
-from bitex.api.REST import VaultoroREST, YunbiREST, BterREST
+from bitex.api.REST import VaultoroREST, YunbiREST
 from bitex.exceptions import IncompleteCredentialsWarning
 from bitex.exceptions import IncompleteCredentialsError
 from bitex.exceptions import IncompleteAPIConfigurationWarning

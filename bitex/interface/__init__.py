@@ -3,7 +3,6 @@ from bitex.interface.binance import Binance
 from bitex.interface.bitfinex import Bitfinex
 from bitex.interface.bitstamp import Bitstamp
 from bitex.interface.bittrex import Bittrex
-from bitex.interface.bter import Bter
 from bitex.interface.ccex import CCEX
 from bitex.interface.coincheck import CoinCheck
 from bitex.interface.cryptopia import Cryptopia
