@@ -41,7 +41,7 @@ class BinanceREST(RESTAPI):
         :return: request.Response() object
         """
         self.check_auth_requirements()
-        request_kwargs = self.sign_request_kwargs(method_verb, endpoint, **request_kwargs)
+        request_kwargs = self.sign_request_kwargs(endpoint, method_verb, **request_kwargs)
         return self._query(method_verb, **request_kwargs)
 
     # pylint: disable=arguments-differ
