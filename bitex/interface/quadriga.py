@@ -16,8 +16,7 @@ class QuadrigaCX(RESTInterface):
 
     def __init__(self, **api_kwargs):
         """Initialize Interface class instance."""
-        super(QuadrigaCX, self).__init__('QuadrigaCX',
-                                         QuadrigaCXREST(**api_kwargs))
+        super(QuadrigaCX, self).__init__('QuadrigaCX', QuadrigaCXREST(**api_kwargs))
 
     # pylint: disable=arguments-differ
     def request(self, endpoint, authenticate=False, **req_kwargs):
@@ -27,6 +26,8 @@ class QuadrigaCX(RESTInterface):
         return super(QuadrigaCX, self).request('GET', endpoint, authenticate, **req_kwargs)
 
     def _get_supported_pairs(self):
+        """Return a list of supported pairs."""
+        # https://www.quadrigacx.com/api_info
         return ['btc_cad', 'btc_usd', 'eth_btc', 'eth_cad']
 
     # Public Endpoints
