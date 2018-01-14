@@ -83,6 +83,5 @@ class APIResponseTests(unittest.TestCase):
             api_response.wallet(None)
 
 
-
 if __name__ == '__main__':
     unittest.main()
