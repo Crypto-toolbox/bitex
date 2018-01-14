@@ -71,7 +71,7 @@ class Binance(RESTInterface):
         """Place a bid order."""
         return self._place_order(pair, price, size, "BUY", *args, **kwargs)
 
-    def order_status(self, pair, order_id, *args, **kwargs):
+    def order_status(self, order_id, pair, *args, **kwargs):
         """Return the status of an order with the given id."""
         payload = {'symbol': pair,
                    'orderId': order_id}
