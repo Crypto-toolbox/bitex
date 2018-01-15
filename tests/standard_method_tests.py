@@ -22,14 +22,14 @@ class StandardizedMethodTests(TestCase):
         super(StandardizedMethodTests, self).__init__(*args, **kwargs)
 
     @mock.patch('requests.request')
-    def _assert_method_passes(self, method_args, method_kwargs, expected_result, mock_json, method, mock_resp):
-        mock_resp.side_effect = [MockResponse({'BTC-USD'}, 200),  # mock supported_pairs
+    def _assert_method_passes(self, method_args, method_kwargs, expected_result, mock_json, method, mocked_request_method):
+        mocked_request_method.side_effect = [MockResponse({'BTC-USD'}, 200),  # mock supported_pairs
                                  MockResponse(mock_json, 200)]
         resp = method(*method_args, **method_kwargs)
         
         self.assertIsInstance(resp, APIResponse)
         self.assertEqual(method_args, expected_result, resp.formatted)
-        return resp
+        return mocked_request_method
 
     def test_ticker(self, expected_result, mock_json, method_args=None, method_kwargs=None):
         template_args = ['BTC-USD']
@@ -38,7 +38,6 @@ class StandardizedMethodTests(TestCase):
         method_kwargs.update(method_kwargs or {})
         return self._assert_method_passes(template_args, template_kwargs, expected_result,
                                           mock_json, self.exchange.ticker)
-
 
     def test_order_book(self, expected_result, mock_json, method_args=None, method_kwargs=None):
         template_args = ['BTC-USD']
