@@ -21,7 +21,7 @@ class StandardizedMethodTests(TestCase):
         self.exchange = exchange
         super(StandardizedMethodTests, self).__init__(*args, **kwargs)
 
-    @mock.patch('request.requests')
+    @mock.patch('requests.request')
     def _assert_method_passes(self, method_args, method_kwargs, expected_result, mock_json, method, mock_resp):
         mock_resp.side_effect = [MockResponse({'BTC-USD'}, 200),  # mock supported_pairs
                                  MockResponse(mock_json, 200)]
@@ -29,78 +29,80 @@ class StandardizedMethodTests(TestCase):
         
         self.assertIsInstance(resp, APIResponse)
         self.assertEqual(method_args, expected_result, resp.formatted)
+        return resp
 
     def test_ticker(self, expected_result, mock_json, method_args=None, method_kwargs=None):
         template_args = ['BTC-USD']
         template_args += method_args or []
         template_kwargs = {}
         method_kwargs.update(method_kwargs or {})
-        self._assert_method_passes(template_args, template_kwargs, expected_result, mock_json, 
-                                   self.exchange.ticker)
+        return self._assert_method_passes(template_args, template_kwargs, expected_result,
+                                          mock_json, self.exchange.ticker)
+
 
     def test_order_book(self, expected_result, mock_json, method_args=None, method_kwargs=None):
         template_args = ['BTC-USD']
         template_args += method_args or []
         template_kwargs = {}
         method_kwargs.update(method_kwargs or {})
-        self._assert_method_passes(template_args, template_kwargs, expected_result, mock_json, 
-                                   self.exchange.order_book)
+        return self._assert_method_passes(template_args, template_kwargs, expected_result,
+                                          mock_json, self.exchange.order_book)
     
     def test_trades(self, expected_result, mock_json, method_args=None, method_kwargs=None):
         template_args = ['BTC-USD']
         template_args += method_args or []
         template_kwargs = {}
         method_kwargs.update(method_kwargs or {})
-        self._assert_method_passes(template_args, template_kwargs, expected_result, mock_json, 
-                                   self.exchange.trades)
+        return self._assert_method_passes(template_args, template_kwargs, expected_result,
+                                          mock_json, self.exchange.trades)
 
     def test_ask(self, expected_result, mock_json, method_args=None, method_kwargs=None):
         template_args = ['BTC-USD', 1000, 50]
         template_args += method_args or []
         template_kwargs = {}
         method_kwargs.update(method_kwargs or {})
-        self._assert_method_passes(template_args, template_kwargs, expected_result, mock_json,
-                                   self.exchange.ask)
+        return self._assert_method_passes(template_args, template_kwargs, expected_result,
+                                          mock_json, self.exchange.ask)
 
     def test_bid(self, expected_result, mock_json, method_args=None, method_kwargs=None):
         template_args = ['BTC-USD', 1000, 50]
         template_args += method_args or []
         template_kwargs = {}
         method_kwargs.update(method_kwargs or {})
-        self._assert_method_passes(template_args, template_kwargs, expected_result, mock_json,
-                                   self.exchange.bid)
+        return self._assert_method_passes(template_args, template_kwargs, expected_result,
+                                          mock_json, self.exchange.bid)
 
     def test_order_status(self, expected_result, mock_json, method_args=None, method_kwargs=None):
         template_args = ['My_Order_ID']
         template_args += method_args or []
         template_kwargs = {}
         method_kwargs.update(method_kwargs or {})
-        self._assert_method_passes(template_args, template_kwargs, expected_result, mock_json,
-                                   self.exchange.order_status)
+        return self._assert_method_passes(template_args, template_kwargs, expected_result,
+                                          mock_json, self.exchange.order_status)
 
     def test_open_orders(self, expected_result, mock_json, method_args=None, method_kwargs=None):
         template_args = []
         template_args += method_args or []
         template_kwargs = {}
         method_kwargs.update(method_kwargs or {})
-        self._assert_method_passes(template_args, template_kwargs, expected_result, mock_json, 
-                                   self.exchange.open_orders)
+        return self._assert_method_passes(template_args, template_kwargs, expected_result,
+                                          mock_json, self.exchange.open_orders)
 
     def test_cancel_order(self, expected_result, mock_json, method_args=None, method_kwargs=None):
         template_args = ['My_Order_ID']
         template_args += method_args or []
         template_kwargs = {}
         method_kwargs.update(method_kwargs or {})
-        self._assert_method_passes(template_args, template_kwargs, expected_result, mock_json, 
-                                   self.exchange.cancel_order)
+        return self._assert_method_passes(template_args, template_kwargs, expected_result,
+                                          mock_json, self.exchange.cancel_order)
         
     def test_wallet(self, expected_result, mock_json, method_args=None, method_kwargs=None):
         template_args = ['BTC-USD']
         template_args += method_args or []
         template_kwargs = {}
         method_kwargs.update(method_kwargs or {})
-        self._assert_method_passes(template_args, template_kwargs, expected_result, mock_json, 
-                                   self.exchange.wallet)
+        return self._assert_method_passes(template_args, template_kwargs, expected_result,
+                                          mock_json, self.exchange.wallet)
 
 
 class SMTBinance(StandardizedMethodTests):
