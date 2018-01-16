@@ -85,7 +85,7 @@ class BitfinexInterfacTests(StandardizedMethodTests):
         expected_result = tuple()
         mock_json = {}
         super(BitfinexInterfacTests, self).test_order_status_formatter(expected_result, mock_json,
-                                                            method_args=additional_args)
+                                                                       method_args=additional_args)
 
 
 class SMTBinance(StandardizedMethodTests):
