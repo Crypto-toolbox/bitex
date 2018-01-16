@@ -6,7 +6,7 @@ import logging
 # Import Homebrew
 from bitex.api.REST.quoine import QuoineREST
 from bitex.interface.rest import RESTInterface
-
+from bitex.utils import check_and_format_pair
 
 # Init Logging Facilities
 log = logging.getLogger(__name__)
@@ -19,3 +19,127 @@ class Quoine(RESTInterface):
         """Initialize Interface class instance."""
         super(Quoine, self).__init__('Quoine', QuoineREST(**api_kwargs))
         raise NotImplementedError
+
+    def request(self, endpoint, authenticate=False, **req_kwargs):
+        if not authenticate:
+            return super(Quoine, self).request('GET', endpoint, authenticate, **req_kwargs)
+        else:
+            return super(Quoine, self).request('POST', endpoint, authenticate, **req_kwargs)
+
+    # Public Endpoints
+    @check_and_format_pair
+    def ticker(self, pair, *args, **kwargs):
+        """
+        Return the ticker for the given pair.
+
+        :param pair: Str, pair to request data for.
+        :param args: additional arguments.
+        :param kwargs: additional kwargs, passed to requests.Requests() as 'param' kwarg.
+        :return: :class:`requests.Response()` object.
+        """
+        return self.request('products/' + pair, params=kwargs)
+
+    @check_and_format_pair
+    def order_book(self, pair, *args, **kwargs):
+        """
+        Return the order book for the given pair.
+
+        :param pair: Str, pair to request data for.
+        :param args: additional arguments.
+        :param kwargs: additional kwargs, passed to requests.Requests() as 'param' kwarg.
+        :return: :class:`requests.Response()` object.
+        """
+        return self.request('products/%s/price_levels' % pair, params=kwargs)
+
+    @check_and_format_pair
+    def trades(self, pair, *args, **kwargs):
+        """
+        Return the trades for the given pair.
+
+        :param pair: Str, pair to request data for.
+        :param args: additional arguments.
+        :param kwargs: additional kwargs, passed to requests.Requests() as 'param' kwarg.
+        :return: :class:`requests.Response()` object.
+        """
+        params = {'product_id': pair}
+        params.update(kwargs)
+        return self.request('executions' % pair, params=params)
+
+    # Private Endpoints
+    def _place_order(self, pair, price, size, side, *args, **kwargs):
+        params = {'product_id': pair, 'side': side, 'quantity': size, 'price': price}
+        params.update(kwargs)
+        return self.request('orders/', authenticate=True, params=params)
+
+    @check_and_format_pair
+    def ask(self, pair, price, size, *args, **kwargs):
+        """
+        Place an ask order.
+
+        :param pair: Str, pair to post order for.
+        :param price: Float or str, price you'd like to ask.
+        :param size: Float or str, amount of currency you'd like to sell.
+        :param args: additional arguments.
+        :param kwargs: additional kwargs, passed to requests.Requests() as 'param' kwarg.
+        :return: :class:`requests.Response()` object.
+        """
+        return self._place_order(pair, price, size, 'sell', *args, **kwargs)
+
+    @check_and_format_pair
+    def bid(self, pair, price, size, *args, **kwargs):
+        """
+        Place a bid order.
+
+        :param pair: Str, pair to post order for.
+        :param price: Float or str, price you'd like to bid.
+        :param size: Float or str, amount of currency you'd like to buy.
+        :param args: additional arguments.
+        :param kwargs: additional kwargs, passed to requests.Requests() as 'param' kwarg.
+        :return: :class:`requests.Response()` object.
+        """
+        return self._place_order(pair, price, size, 'buy', *args, **kwargs)
+
+    def order_status(self, order_id, *args, **kwargs):
+        """
+        Return the status of an order with the given id.
+
+        :param order_id: Order ID of the order you'd like to have a status for.
+        :param args: additional arguments.
+        :param kwargs: additional kwargs, passed to requests.Requests() as 'param' kwarg.
+        :return: :class:`requests.Response()` object.
+        """
+        return self.request('orders/' + order_id, authenticate=True, params=kwargs)
+
+    def open_orders(self, *args, **kwargs):
+        """
+        Return all open orders.
+
+        :param args: additional arguments.
+        :param kwargs: additional kwargs, passed to requests.Requests() as 'param' kwarg.
+        :return: :class:`requests.Response()` object.
+        """
+        return self.request('orders', authenticate=True, params=kwargs)
+
+    def cancel_order(self, *order_ids, **kwargs):
+        """
+        Cancel the order(s) with the given id(s).
+
+        :param order_ids: variable amount of order IDs to cancel.
+        :param kwargs: additional kwargs, passed to requests.Requests() as 'param' kwarg.
+        :return: :class:`requests.Response()` object.
+        """
+        results = []
+        for oid in order_ids:
+            r = self.request('orders/%s/cancel' % oid, authenticate=True, params=kwargs)
+            results.append(r)
+        return results if len(results) > 1 else results[0]
+
+    def wallet(self, *args, **kwargs):
+        """
+        Return the wallet of this account.
+
+        :param args: additional arguments.
+        :param kwargs: additional kwargs, passed to requests.Requests() as 'param' kwarg.
+        :return: :class:`requests.Response()` object.
+        """
+        return self.request('accounts/balance', authenticate=True, params=kwargs)
