@@ -11,6 +11,7 @@ install: pip install -r requirements.txt
 script:
   - pip install coverage coveralls
   - coverage run --source=bitex setup.py test
+  - coveralls
 
 after_success: coveralls
 
