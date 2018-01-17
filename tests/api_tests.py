@@ -719,16 +719,23 @@ class GeminiRESTTest(TestCase):
 
         # Check signatured request kwargs
         with mock.patch.object(RESTAPI, 'nonce', return_value='100'):
-            r = api.sign_request_kwargs('/products', params={'param_1': 'abc'})
-            payload = json.dumps({'request': '', 'nonce': '100', 'param_1': 'abc'})
-            raw_sig = base64.standard_b64encode(payload)
-            expected_signature = hmac.new(secret.encode('utf8'), raw_sig.encode('utf8'), hashlib.sha384).hexdigest()
+            r = api.sign_request_kwargs('products', params={'param_1': 'abc'})
+            legit_loads = ['{"request": "/v1/products", "nonce": "100", "param_1": "abc"}',
+                           '{"request": "/v1/products", "param_1": "abc", "nonce": "100"}',
+                           '{"nonce": "100", "param_1": "abc", "request": "/v1/products"}',
+                           '{"nonce": "100", "request": "/v1/products", "param_1": "abc"}',
+                           '{"param_1": "abc", "nonce": "100", "request": "/v1/products"}',
+                           '{"param_1": "abc", "request": "/v1/products", "nonce": "100"}']
+            legit_payloads = [base64.standard_b64encode(p.encode('utf8')) for p in legit_loads]
+            legit_signatures = [hmac.new(secret.encode('utf8'), sig, hashlib.sha384).hexdigest()
+                                for sig in legit_payloads]
+
             self.assertIn('X-GEMINI-APIKEY', r['headers'])
             self.assertEqual(r['headers']['X-GEMINI-APIKEY'], key)
             self.assertIn('X-GEMINI-PAYLOAD', r['headers'])
-            self.assertEqual(r['headers']['X-GEMINI-PAYLOAD'], raw_sig)
+            self.assertIn(r['headers']['X-GEMINI-PAYLOAD'], [p.decode('utf8') for p in legit_payloads])
             self.assertIn('X-GEMINI-SIGNATURE', r['headers'])
-            self.assertEqual(r['headers']['X-GEMINI-SIGNATURE'], expected_signature)
+            self.assertIn(r['headers']['X-GEMINI-SIGNATURE'], legit_signatures)
             self.assertEqual(r['url'], 'https://api.gemini.com/v1/products')
 
 
