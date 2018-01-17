@@ -23,7 +23,7 @@ from bitex.api.REST import BitstampREST, BitfinexREST, BittrexREST
 from bitex.api.REST import HitBTCREST, CCEXREST, CoincheckREST, CryptopiaREST
 from bitex.api.REST import ITbitREST, GDAXREST, GeminiREST,  KrakenREST, OKCoinREST
 from bitex.api.REST import PoloniexREST, QuoineREST, QuadrigaCXREST, RockTradingREST
-from bitex.api.REST import VaultoroREST, YunbiREST
+from bitex.api.REST import VaultoroREST
 from bitex.exceptions import IncompleteCredentialsWarning
 from bitex.exceptions import IncompleteCredentialsError
 from bitex.exceptions import IncompleteAPIConfigurationWarning
@@ -750,14 +750,14 @@ class RockTradingRESTTest(TestCase):
 
         # Check signatured request kwargs
         with mock.patch.object(RESTAPI, 'nonce', return_value='100'):
-            r = api.sign_request_kwargs('/products', params={'param_1': 'abc'})
+            r = api.sign_request_kwargs('products', params={'param_1': 'abc'})
             raw_sig = '100https://api.therocktrading.com/v1/products?param_1=abc'
             expected_signature = hmac.new(secret.encode('utf8'), raw_sig.encode('utf8'),
-                                          hashlib.sha512)
+                                          hashlib.sha512).hexdigest()
             self.assertIn('X-TRT-KEY', r['headers'])
             self.assertEqual(r['headers']['X-TRT-KEY'], key)
             self.assertIn('X-TRT-NONCE', r['headers'])
-            self.assertEqual(r['headers']['X-TRT-NONCE'], '100')
+            self.assertEqual(r['headers']['X-TRT-NONCE'], 100)
             self.assertIn('X-TRT-SIGN', r['headers'])
             self.assertEqual(r['headers']['X-TRT-SIGN'], expected_signature)
 
