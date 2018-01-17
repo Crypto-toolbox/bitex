@@ -811,11 +811,12 @@ class QuoineRESTTest(TestCase):
 
         # Check signatured request kwargs
         with mock.patch.object(RESTAPI, 'nonce', return_value='100'):
-            r = api.sign_request_kwargs('/products', params={'param_1': 'abc'})
+            r = api.sign_request_kwargs('products', params={'param_1': 'abc'})
 
             url = 'https://api.quoine.com'
-            path = '/products?param_1=abc'
-            expected_signature = jwt.encode({'path': path, 'nonce': '100', 'token_id': key}, secret)
+            path = 'products?param_1=abc'
+            expected_signature = jwt.encode({'path': path, 'nonce': '100', 'token_id': key},
+                                            secret, algorithm='HS256')
             self.assertIn('X-Quoine-Auth', r['headers'])
             self.assertEqual(r['headers']['X-Quoine-Auth'], expected_signature)
             self.assertIn('X-Quoine-API-Version', r['headers'])

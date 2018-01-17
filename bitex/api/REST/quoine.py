@@ -47,7 +47,8 @@ class QuoineREST(RESTAPI):
         # Prepare Payload arguments
         params = kwargs.get('params', {})
 
-        path = endpoint + urllib.parse.urlencode(params)
+        path = endpoint + '?' + urllib.parse.urlencode(params)
+        print(path)
         msg = {'path': path, 'nonce': self.nonce(), 'token_id': self.key}
 
         # generate signature
