@@ -25,9 +25,10 @@ from payloads import hitbtc_symbols_parsed, cryptopia_trade_pairs_parsed, ccex_p
 from payloads import bittrex_getmarkets_parsed, bitstamp_trading_pairs_parsed
 from payloads import binance_exchange_info_parsed, bitfinex_symbols_parsed
 from bitex.interface.rest import RESTInterface
-from bitex.interface import Binance, Bitfinex, Bitstamp, Bittrex, CCEX
-from bitex.interface import CoinCheck, Cryptopia, HitBTC, Kraken, OKCoin
-from bitex.interface import Poloniex, QuadrigaCX, TheRockTrading, Vaultoro
+from bitex.interface import Binance, Bitfinex, Bitstamp, Bittrex
+from bitex.interface import CCEX, CoinCheck, Cryptopia
+from bitex.interface import GDAX, Gemini, HitBTC, ItBit, Kraken, OKCoin
+from bitex.interface import Poloniex, QuadrigaCX, Quoine, TheRockTrading, Vaultoro
 
 # Init Logging Facilities
 log = logging.getLogger(__name__)
