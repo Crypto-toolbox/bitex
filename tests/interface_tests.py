@@ -488,7 +488,7 @@ class GDAXInterfaceTests(StandardizedMethodTests):
     def test_get_supported_pairs_retrieves_data_from_online_endpoint_and_returns_json_content(self, mocked_request_func):
         b = GDAX()
         mocked_request_func.assert_called_with('GET', 'https://api.gdax.com/products')
-        expected_list = sorted([d['id'] for d in gdax_products_parsed)
+        expected_list = sorted([d['id'] for d in gdax_products_parsed])
         self.assertEqual(sorted(b.supported_pairs), expected_list)
 
     def test_ticker_formatter(self):
