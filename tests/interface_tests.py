@@ -1,15 +1,4 @@
-"""Interface Test Cases.
-
-Interface test cases are classes that test basic functionality of extended core methods.
-
-These methods include:
-    - request()
-    - is_supported()
-    - _get_supported_pairs()
-
-
-Tests for formatted responses and the standardized methods can be found in standard_method_tests.py
-"""
+"""Interface Test Cases."""
 # Import Built-Ins
 import logging
 import unittest
