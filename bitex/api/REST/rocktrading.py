@@ -7,7 +7,7 @@ Documentation available here:
 import logging
 import hashlib
 import hmac
-
+from urllib.parse import urlencode
 
 # Import Third-Party
 
@@ -38,16 +38,18 @@ class RockTradingREST(RESTAPI):
         nonce = self.nonce()
         params = kwargs.get('params', {})
         payload = params
-        payload['nonce'] = int(nonce)
 
         # generate signature
-        msg = nonce + req_kwargs['url']
+        encoded_params = urlencode(params)
+        encoded_url = req_kwargs['url'] + '?' + encoded_params
+        msg = nonce + encoded_url
         sig = hmac.new(self.secret.encode(), msg.encode(),
                        hashlib.sha512).hexdigest()
 
         # Update req_kwargs keys
-        req_kwargs['headers'] = {'X-TRT-KEY': self.key, 'X-TRT-Nonce': nonce,
+        req_kwargs['headers'] = {'X-TRT-KEY': self.key, 'X-TRT-NONCE': int(nonce),
                                  'X-TRT-SIGN': sig,
                                  'Content-Type': 'application/json'}
         req_kwargs['json'] = payload
+        req_kwargs['url'] = encoded_url
         return req_kwargs
