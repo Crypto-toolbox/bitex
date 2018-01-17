@@ -25,7 +25,10 @@ from bitex.exceptions import IncompleteCredentialConfigurationWarning
 # Init Logging Facilities
 log = logging.getLogger(__name__)
 
-tests_folder_dir = '.'
+try:
+    tests_folder_dir = os.environ['TRAVIS_BUILD_DIR'] + '/tests/'
+except KeyError:
+    tests_folder_dir = '.'
 
 
 class BaseAPITests(TestCase):
@@ -130,16 +133,16 @@ class BaseAPITests(TestCase):
         no_address_warning_args = (no_url_warning_msg, IncompleteAPIConfigurationWarning)
 
         with mock.patch.object(warnings, 'warn') as mock_warn:
-            BaseAPI(config='./configs/config_empty.ini', key=None, secret=None, addr=None,
-                    version=None)
+            BaseAPI(config='%s/configs/config_empty.ini' % tests_folder_dir,
+                    key=None, secret=None, addr=None, version=None)
             mock_warn.assert_any_call(*no_key_warning_args)
             mock_warn.assert_any_call(*no_secret_warning_args)
             mock_warn.assert_any_call(*no_address_warning_args)
             mock_warn.assert_any_call(*no_version_warning_args)
 
         with mock.patch.object(warnings, 'warn') as mock_warn:
-            BaseAPI(config='./configs/config_no_auth.ini', key=None, secret=None, addr=None,
-                    version=None)
+            BaseAPI(config='%s/configs/config_no_auth.ini' % tests_folder_dir,
+                    key=None, secret=None, addr=None, version=None)
             mock_warn.assert_any_call(*no_key_warning_args)
             mock_warn.assert_any_call(*no_secret_warning_args)
             with self.assertRaises(AssertionError):
@@ -148,7 +151,7 @@ class BaseAPITests(TestCase):
                 mock_warn.assert_any_call(*no_version_warning_args)
 
         with mock.patch.object(warnings, 'warn') as mock_warn:
-            BaseAPI(config='./configs/config_no_api.ini', key=None, secret=None, addr=None,
+            BaseAPI(config='%s/configs/config_no_api.ini' % tests_folder_dir, key=None, secret=None, addr=None,
                     version=None)
             mock_warn.assert_any_call(*no_address_warning_args)
             mock_warn.assert_any_call(*no_version_warning_args)
