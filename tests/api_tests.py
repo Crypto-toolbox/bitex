@@ -821,7 +821,7 @@ class QuoineRESTTest(TestCase):
             self.assertEqual(r['headers']['X-Quoine-Auth'], expected_signature)
             self.assertIn('X-Quoine-API-Version', r['headers'])
             self.assertEqual(r['headers']['X-Quoine-API-Version'], '2')
-            self.assertEqual(r['url'], url + path)
+            self.assertEqual(r['url'], url + '/products')
 
 
 class QuadrigaCXRESTTest(TestCase):
