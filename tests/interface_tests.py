@@ -23,7 +23,8 @@ from helpers import MockResponse, StandardizedMethodTests
 from payloads import rock_trading_tickers_parsed, kraken_asset_pairs_parsed, poloniex_tickers_parsed
 from payloads import hitbtc_symbols_parsed, cryptopia_trade_pairs_parsed, ccex_pairs_parsed
 from payloads import bittrex_getmarkets_parsed, bitstamp_trading_pairs_parsed
-from payloads import binance_exchange_info_parsed, bitfinex_symbols_parsed
+from payloads import binance_exchange_info_parsed, bitfinex_symbols_parsed, gdax_products_parsed
+from payloads import quoinex_pairs_parsed, itbit_ticker_parsed, gemini_symbols_parsed
 from bitex.interface.rest import RESTInterface
 from bitex.interface import Binance, Bitfinex, Bitstamp, Bittrex
 from bitex.interface import CCEX, CoinCheck, Cryptopia
@@ -490,11 +491,135 @@ class CryptopiaInterfaceTests(StandardizedMethodTests):
 
 
 class GDAXInterfaceTests(StandardizedMethodTests):
-    pass
+    @patch(RESTInterface, 'request')
+    def test_request_generates_params_for_RESTInterface_request_correctly(self, mocked_api):
+        api = GDAX(key='1231', secret='152561')
+        api.request('some_endpoint', authenticate=True)
+        mocked_api.assert_called_with('POST', 'some_endpoint', authenticate=True)
+        api.request('some_endpoint', authenticate=False)
+        mocked_api.assert_called_with('GET', 'some_endpoint', authenticate=False)
+
+    @patch('requests.request', return_value=MockResponse(gdax_products_parsed, 200))
+    def test_get_supported_pairs_retrieves_data_from_online_endpoint_and_returns_json_content(self, mocked_request_func):
+        b = GDAX()
+        mocked_request_func.assert_called_with('GET', 'https://api.gdax.com/products')
+        expected_list = sorted([d['id'] for d in gdax_products_parsed)
+        self.assertEqual(sorted(b.supported_pairs), expected_list)
+
+    def test_ticker_formatter(self):
+        expected_result = tuple()
+        mock_json =
+        super(GDAXInterfaceTests, self).test_ticker_formatter(expected_result, mock_json)
+
+    def test_order_book_formatter(self):
+        expected_result = tuple()
+        mock_json = {}
+        super(GDAXInterfaceTests, self).test_order_book_formatter(expected_result, mock_json)
+
+    def test_trades_formatter(self):
+        expected_result = tuple()
+        mock_json = {}
+        super(GDAXInterfaceTests, self).test_trades_formatter(expected_result, mock_json)
+
+    def test_bid_formatter(self):
+        expected_result = tuple()
+        mock_json = {}
+        super(GDAXInterfaceTests, self).test_bid_formatter(expected_result, mock_json)
+
+    def test_ask_formatter(self):
+        expected_result = tuple()
+        mock_json = {}
+        super(GDAXInterfaceTests, self).test_ask_formatter(expected_result, mock_json)
+
+    def test_open_orders_formatter(self):
+        expected_result = tuple()
+        mock_json = {}
+        super(GDAXInterfaceTests, self).test_open_orders_formatter(expected_result, mock_json)
+
+    def test_order_status_formatter(self):
+        additional_args = ['BTC-USD']
+        expected_result = tuple()
+        mock_json = {}
+        super(GDAXInterfaceTests, self).test_order_status_formatter(expected_result, mock_json,
+                                                                       method_args=additional_args)
+
+    def test_cancel_order_formatter(self):
+        additional_args = ['BTC-USD']
+        expected_result = tuple()
+        mock_json = {}
+        super(GDAXInterfaceTests, self).test_cancel_order_formatter(expected_result, mock_json,
+                                                                       method_args=additional_args)
+
+    def test_wallet_formatter(self):
+        expected_result = tuple()
+        mock_json = {}
+        super(GDAXInterfaceTests, self).test_wallet_formatter(expected_result, mock_json)
 
 
 class GeminiInterfaceTests(StandardizedMethodTests):
-    pass
+    @patch(RESTInterface, 'request')
+    def test_request_generates_params_for_RESTInterface_request_correctly(self, mocked_api):
+        api = Gemini(key='1231', secret='152561')
+        api.request('some_endpoint', authenticate=True)
+        mocked_api.assert_called_with('POST', 'some_endpoint', authenticate=True)
+        api.request('some_endpoint', authenticate=False)
+        mocked_api.assert_called_with('GET', 'some_endpoint', authenticate=False)
+
+    @patch('requests.request', return_value=MockResponse(gemini_symbols_parsed, 200))
+    def test_get_supported_pairs_retrieves_data_from_online_endpoint_and_returns_json_content(self, mocked_request_func):
+        b = Gemini()
+        mocked_request_func.assert_called_with('GET', 'https://api.gemini.com/v1/symbols')
+        expected_list = sorted([d['symbol'] for d in gemini_symbols_parsed['symbols']])
+        self.assertEqual(sorted(b.supported_pairs), expected_list)
+
+    def test_ticker_formatter(self):
+        expected_result = tuple()
+        mock_json =
+        super(GeminiInterfaceTests, self).test_ticker_formatter(expected_result, mock_json)
+
+    def test_order_book_formatter(self):
+        expected_result = tuple()
+        mock_json = {}
+        super(GeminiInterfaceTests, self).test_order_book_formatter(expected_result, mock_json)
+
+    def test_trades_formatter(self):
+        expected_result = tuple()
+        mock_json = {}
+        super(GeminiInterfaceTests, self).test_trades_formatter(expected_result, mock_json)
+
+    def test_bid_formatter(self):
+        expected_result = tuple()
+        mock_json = {}
+        super(GeminiInterfaceTests, self).test_bid_formatter(expected_result, mock_json)
+
+    def test_ask_formatter(self):
+        expected_result = tuple()
+        mock_json = {}
+        super(GeminiInterfaceTests, self).test_ask_formatter(expected_result, mock_json)
+
+    def test_open_orders_formatter(self):
+        expected_result = tuple()
+        mock_json = {}
+        super(GeminiInterfaceTests, self).test_open_orders_formatter(expected_result, mock_json)
+
+    def test_order_status_formatter(self):
+        additional_args = ['BTC-USD']
+        expected_result = tuple()
+        mock_json = {}
+        super(GeminiInterfaceTests, self).test_order_status_formatter(expected_result, mock_json,
+                                                                       method_args=additional_args)
+
+    def test_cancel_order_formatter(self):
+        additional_args = ['BTC-USD']
+        expected_result = tuple()
+        mock_json = {}
+        super(GeminiInterfaceTests, self).test_cancel_order_formatter(expected_result, mock_json,
+                                                                       method_args=additional_args)
+
+    def test_wallet_formatter(self):
+        expected_result = tuple()
+        mock_json = {}
+        super(GeminiInterfaceTests, self).test_wallet_formatter(expected_result, mock_json)
 
 
 class HitBTCInterfaceTests(StandardizedMethodTests):
@@ -565,7 +690,68 @@ class HitBTCInterfaceTests(StandardizedMethodTests):
 
 
 class ItBitInterfaceTests(StandardizedMethodTests):
-    pass
+    @patch(RESTInterface, 'request')
+    def test_request_generates_params_for_RESTInterface_request_correctly(self, mocked_api):
+        api = ItBit(key='1231', secret='152561')
+        api.request('some_endpoint', authenticate=True)
+        mocked_api.assert_called_with('POST', 'some_endpoint', authenticate=True)
+        api.request('some_endpoint', authenticate=False)
+        mocked_api.assert_called_with('GET', 'some_endpoint', authenticate=False)
+
+
+    def test_get_supported_pairs_retrieves_data_from_online_endpoint_and_returns_json_content(self, mocked_request_func):
+        b = ItBit()
+        expected_list = sorted(['XBTUSD', 'XBTSGD', 'XBTEUR'])
+        self.assertEqual(sorted(b.supported_pairs), expected_list)
+
+    def test_ticker_formatter(self):
+        expected_result = tuple()
+        mock_json =
+        super(ItBitInterfaceTests, self).test_ticker_formatter(expected_result, mock_json)
+
+    def test_order_book_formatter(self):
+        expected_result = tuple()
+        mock_json = {}
+        super(ItBitInterfaceTests, self).test_order_book_formatter(expected_result, mock_json)
+
+    def test_trades_formatter(self):
+        expected_result = tuple()
+        mock_json = {}
+        super(ItBitInterfaceTests, self).test_trades_formatter(expected_result, mock_json)
+
+    def test_bid_formatter(self):
+        expected_result = tuple()
+        mock_json = {}
+        super(ItBitInterfaceTests, self).test_bid_formatter(expected_result, mock_json)
+
+    def test_ask_formatter(self):
+        expected_result = tuple()
+        mock_json = {}
+        super(ItBitInterfaceTests, self).test_ask_formatter(expected_result, mock_json)
+
+    def test_open_orders_formatter(self):
+        expected_result = tuple()
+        mock_json = {}
+        super(ItBitInterfaceTests, self).test_open_orders_formatter(expected_result, mock_json)
+
+    def test_order_status_formatter(self):
+        additional_args = ['BTC-USD']
+        expected_result = tuple()
+        mock_json = {}
+        super(ItBitInterfaceTests, self).test_order_status_formatter(expected_result, mock_json,
+                                                                       method_args=additional_args)
+
+    def test_cancel_order_formatter(self):
+        additional_args = ['BTC-USD']
+        expected_result = tuple()
+        mock_json = {}
+        super(ItBitInterfaceTests, self).test_cancel_order_formatter(expected_result, mock_json,
+                                                                       method_args=additional_args)
+
+    def test_wallet_formatter(self):
+        expected_result = tuple()
+        mock_json = {}
+        super(ItBitInterfaceTests, self).test_wallet_formatter(expected_result, mock_json)
 
 
 class KrakenInterfaceTests(StandardizedMethodTests):
@@ -833,7 +1019,70 @@ class QuadrigaCXInterfaceTests(StandardizedMethodTests):
 
 
 class QuoinexInterfaceTests(StandardizedMethodTests):
-    pass
+
+    @patch(RESTInterface, 'request')
+    def test_request_generates_params_for_RESTInterface_request_correctly(self, mocked_api):
+        api = Quoinex(key='1231', secret='152561')
+        api.request('some_endpoint', authenticate=True)
+        mocked_api.assert_called_with('POST', 'some_endpoint', authenticate=True)
+        api.request('some_endpoint', authenticate=False)
+        mocked_api.assert_called_with('GET', 'some_endpoint', authenticate=False)
+
+    @patch('requests.request', return_value=MockResponse(quoinex_pairs_parsed, 200))
+    def test_get_supported_pairs_retrieves_data_from_online_endpoint_and_returns_json_content(self, mocked_request_func):
+        b = Quoinex()
+        mocked_request_func.assert_called_with('GET', 'https://api.quoine.com/products')
+        expected_list = sorted({d['currency_pair_code']: d['id'] for d in quoinex_pairs_parsed})
+        self.assertEqual(sorted(b.supported_pairs), expected_list)
+
+    def test_ticker_formatter(self):
+        expected_result = tuple()
+        mock_json =
+        super(QuoinexInterfaceTests, self).test_ticker_formatter(expected_result, mock_json)
+
+    def test_order_book_formatter(self):
+        expected_result = tuple()
+        mock_json = {}
+        super(QuoinexInterfaceTests, self).test_order_book_formatter(expected_result, mock_json)
+
+    def test_trades_formatter(self):
+        expected_result = tuple()
+        mock_json = {}
+        super(QuoinexInterfaceTests, self).test_trades_formatter(expected_result, mock_json)
+
+    def test_bid_formatter(self):
+        expected_result = tuple()
+        mock_json = {}
+        super(QuoinexInterfaceTests, self).test_bid_formatter(expected_result, mock_json)
+
+    def test_ask_formatter(self):
+        expected_result = tuple()
+        mock_json = {}
+        super(QuoinexInterfaceTests, self).test_ask_formatter(expected_result, mock_json)
+
+    def test_open_orders_formatter(self):
+        expected_result = tuple()
+        mock_json = {}
+        super(QuoinexInterfaceTests, self).test_open_orders_formatter(expected_result, mock_json)
+
+    def test_order_status_formatter(self):
+        additional_args = ['BTC-USD']
+        expected_result = tuple()
+        mock_json = {}
+        super(QuoinexInterfaceTests, self).test_order_status_formatter(expected_result, mock_json,
+                                                                       method_args=additional_args)
+
+    def test_cancel_order_formatter(self):
+        additional_args = ['BTC-USD']
+        expected_result = tuple()
+        mock_json = {}
+        super(QuoinexInterfaceTests, self).test_cancel_order_formatter(expected_result, mock_json,
+                                                                       method_args=additional_args)
+
+    def test_wallet_formatter(self):
+        expected_result = tuple()
+        mock_json = {}
+        super(QuoinexInterfaceTests, self).test_wallet_formatter(expected_result, mock_json)
 
 
 class TheRockTradingInterfaceTests(StandardizedMethodTests):
