@@ -22,6 +22,7 @@ class Quoine(RESTInterface):
 
     # pylint: disable=arguments-differ
     def request(self, endpoint, authenticate=False, **req_kwargs):
+        """Request data for given endpoint from a RESTAPI object."""
         if not authenticate:
             return super(Quoine, self).request('GET', endpoint, authenticate, **req_kwargs)
         return super(Quoine, self).request('POST', endpoint, authenticate, **req_kwargs)
