@@ -47,7 +47,6 @@ It does not offer rate-limiting or HTTP status handling. From experience, we kno
 | QuadrigaCX           | DONE      | DONE           | DONE             | DONE              | DONE              |
 | The Rock Trading LTD | DONE      | DONE           | DONE             | DONE              | DONE              |
 | Vaultoro             | DONE      | DONE           | DONE             | DONE              | DONE              |
-| Yunbi                | Planned   | Planned        | Planned          | Planned           | DONE              |
 | Quoine               | Planned   | Planned        | Planned          | Planned           | DONE              |
 | ITBit                | Planned   | Planned        | Planned          | Planned           | DONE              |
 
