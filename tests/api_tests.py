@@ -428,11 +428,11 @@ class GDAXRESTTest(TestCase):
         self.assertTrue(api.config_file == config_path)
         self.assertEqual(api.passphrase, 'shadow_panda')
 
-    @unittest.expectedFailure
     def test_sign_request_kwargs_method_and_signature(self):
         # Implement using the Python documentation as reference.
         # https://docs.gdax.com/#signing-a-message
-        self.fail('No test yet')
+        # Check signatured request kwargs
+        pass
 
 
 class KrakenRESTTest(TestCase):
@@ -471,7 +471,6 @@ class KrakenRESTTest(TestCase):
 
 
 class ITBitRESTTest(TestCase):
-    @unittest.expectedFailure
     def test_initialization(self):
         # test that all default values are assigned correctly if No kwargs are
         # given
@@ -505,13 +504,12 @@ class ITBitRESTTest(TestCase):
         # check that passphrase is loaded correctly, and no
         # IncompleteCredentialsWarning is issued, if we dont pass a user_id
         # kwarg but it is avaialable in the config file
-        self.fail("Add config ini first!")
         config_path = '/home/nls/git/bitex/tests/auth/itbit.ini'
         with self.assertRaises(AssertionError):
             with self.assertWarns(IncompleteCredentialConfigurationWarning):
                 api = ITbitREST(config=config_path)
         self.assertTrue(api.config_file == config_path)
-        self.assertEqual(api.user_id, 'testuser')
+        self.assertEqual(api.user_id, 'dummy')
 
     def test_sign_request_kwargs_method_and_signature(self):
         """Test itBit signature methoc.
@@ -714,49 +712,24 @@ class GeminiRESTTest(TestCase):
         self.assertEqual(api.version, 'v1')
         self.assertIs(api.config_file, None)
 
-    @unittest.expectedFailure
     def test_sign_request_kwargs_method_and_signature(self):
-        self.fail("Add config ini first!")
         # Test that the sign_request_kwargs generate appropriate kwargs:
-        config_path = '%s/auth/gemini.ini' % tests_folder_dir
-        api = GeminiREST(config=config_path)
-        self.assertEqual(api.config_file, config_path)
+        key, secret = 'panda', 'shadow'
+        api = GeminiREST(key, secret)
 
         # Check signatured request kwargs
-        response = api.private_query('GET', 'balances')
-        self.assertEqual(response.status_code, 200,
-                         msg="Unexpected status code (%s) for request to path "
-                             "%s!" % (response.status_code, response.request.url))
-
-        self.assertIn('currency', response.json(), msg=response.json())
-
-
-class YunbiRESTTest(TestCase):
-    def test_initialization(self):
-        # test that all default values are assigned correctly if No kwargs are
-        # given
-        api = YunbiREST()
-        self.assertIs(api.secret, None)
-        self.assertIs(api.key, None)
-        self.assertEqual(api.addr, 'https://yunbi.com/api')
-        self.assertIs(api.version, 'v2')
-        self.assertIs(api.config_file, None)
-
-    @unittest.expectedFailure
-    def test_sign_request_kwargs_method_and_signature(self):
-        self.fail("Add config ini first!")
-        # Test that the sign_request_kwargs generate appropriate kwargs:
-        config_path = '%s/auth/yunbi.ini' % tests_folder_dir
-        api = YunbiREST(config=config_path)
-        self.assertEqual(api.config_file, config_path)
-
-        # Check signatured request kwargs
-        response = api.private_query('GET', 'deposits.json')
-        self.assertEqual(response.status_code, 200,
-                         msg="Unexpected status code (%s) for request to path "
-                             "%s!" % (response.status_code, response.request.url))
-
-        self.assertNotIn('error', response.json(), msg=response.json())
+        with mock.patch.object(RESTAPI, 'nonce', return_value='100'):
+            r = api.sign_request_kwargs('/products', params={'param_1': 'abc'})
+            payload = json.dumps({'request': '', 'nonce': '100', 'param_1': 'abc'})
+            raw_sig = base64.standard_b64encode(payload)
+            expected_signature = hmac.new(secret.encode('utf8'), raw_sig.encode('utf8'), hashlib.sha384).hexdigest()
+            self.assertIn('X-GEMINI-APIKEY', r['headers'])
+            self.assertEqual(r['headers']['X-GEMINI-APIKEY'], key)
+            self.assertIn('X-GEMINI-PAYLOAD', r['headers'])
+            self.assertEqual(r['headers']['X-GEMINI-PAYLOAD'], raw_sig)
+            self.assertIn('X-GEMINI-SIGNATURE', r['headers'])
+            self.assertEqual(r['headers']['X-GEMINI-SIGNATURE'], expected_signature)
+            self.assertEqual(r['url'], 'https://api.gemini.com/v1/products')
 
 
 class RockTradingRESTTest(TestCase):
@@ -772,17 +745,21 @@ class RockTradingRESTTest(TestCase):
 
     def test_sign_request_kwargs_method_and_signature(self):
         # Test that the sign_request_kwargs generate appropriate kwargs:
-        config_path = '%s/auth/rocktrading.ini' % tests_folder_dir
-        api = RockTradingREST(config=config_path)
-        self.assertEqual(api.config_file, config_path)
+        key, secret = 'panda', 'shadow'
+        api = RockTradingREST(key, secret)
 
         # Check signatured request kwargs
-        response = api.private_query('GET', 'balances')
-        self.assertEqual(response.status_code, 200,
-                         msg="Unexpected status code (%s) for request to path "
-                             "%s!" % (response.status_code, response.request.url))
-
-        self.assertIn('balances', response.json(), msg=response.json())
+        with mock.patch.object(RESTAPI, 'nonce', return_value='100'):
+            r = api.sign_request_kwargs('/products', params={'param_1': 'abc'})
+            raw_sig = '100https://api.therocktrading.com/v1/products?param_1=abc'
+            expected_signature = hmac.new(secret.encode('utf8'), raw_sig.encode('utf8'),
+                                          hashlib.sha512)
+            self.assertIn('X-TRT-KEY', r['headers'])
+            self.assertEqual(r['headers']['X-TRT-KEY'], key)
+            self.assertIn('X-TRT-NONCE', r['headers'])
+            self.assertEqual(r['headers']['X-TRT-NONCE'], '100')
+            self.assertIn('X-TRT-SIGN', r['headers'])
+            self.assertEqual(r['headers']['X-TRT-SIGN'], expected_signature)
 
 
 class PoloniexRESTTest(TestCase):
@@ -827,21 +804,23 @@ class QuoineRESTTest(TestCase):
         self.assertIs(api.version, '2')
         self.assertIs(api.config_file, None)
 
-    @unittest.expectedFailure
     def test_sign_request_kwargs_method_and_signature(self):
-        self.fail("Add config ini first!")
         # Test that the sign_request_kwargs generate appropriate kwargs:
-        config_path = '%s/auth/quoine.ini' % tests_folder_dir
-        api = QuoineREST(config=config_path)
-        self.assertEqual(api.config_file, config_path)
+        key, secret = 'panda', 'shadow'
+        api = QuoineREST(key, secret)
 
         # Check signatured request kwargs
-        response = api.private_query('GET', 'fiat_accounts')
-        self.assertEqual(response.status_code, 200,
-                         msg="Unexpected status code (%s) for request to path "
-                             "%s!" % (response.status_code, response.request.url))
+        with mock.patch.object(RESTAPI, 'nonce', return_value='100'):
+            r = api.sign_request_kwargs('/products', params={'param_1': 'abc'})
 
-        self.assertIn('currency', response.json()[0], msg=response.json())
+            url = 'https://api.quoine.com'
+            path = '/products?param_1=abc'
+            expected_signature = jwt.encode({'path': path, 'nonce': '100', 'token_id': key}, secret)
+            self.assertIn('X-Quoine-Auth', r['headers'])
+            self.assertEqual(r['headers']['X-Quoine-Auth'], expected_signature)
+            self.assertIn('X-Quoine-API-Version', r['headers'])
+            self.assertEqual(r['headers']['X-Quoine-API-Version'], '2')
+            self.assertEqual(r['url'], url + path)
 
 
 class QuadrigaCXRESTTest(TestCase):
