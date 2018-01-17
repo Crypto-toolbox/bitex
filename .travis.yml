@@ -15,7 +15,7 @@ script:
 
 after_success: coveralls
 
-after_failure: $TRAVIS_BUILD_DIR/travis/force_deploy_on_nightly.sh
+after_failure: sudo bash $TRAVIS_BUILD_DIR/travis/force_deploy_on_nightly.sh
 
 jobs:
   allow_failures:
