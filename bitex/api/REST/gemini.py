@@ -45,10 +45,10 @@ class GeminiREST(RESTAPI):
         payload = base64.b64encode(json.dumps(payload).encode('utf-8'))
 
         # generate signature
-        sig = hmac.new(self.secret, payload, hashlib.sha384).hexdigest()
+        sig = hmac.new(self.secret.encode('utf-8'), payload, hashlib.sha384).hexdigest()
 
         # update req_kwargs keys
         req_kwargs['headers'] = {'X-GEMINI-APIKEY': self.key,
-                                 'X-GEMINI-PAYLOAD': payload,
+                                 'X-GEMINI-PAYLOAD': payload.decode('utf8'),
                                  'X-GEMINI-SIGNATURE': sig}
         return req_kwargs
