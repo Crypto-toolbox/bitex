@@ -20,11 +20,11 @@ class Quoine(RESTInterface):
         super(Quoine, self).__init__('Quoine', QuoineREST(**api_kwargs))
         raise NotImplementedError
 
+    # pylint: disable=arguments-differ
     def request(self, endpoint, authenticate=False, **req_kwargs):
         if not authenticate:
             return super(Quoine, self).request('GET', endpoint, authenticate, **req_kwargs)
-        else:
-            return super(Quoine, self).request('POST', endpoint, authenticate, **req_kwargs)
+        return super(Quoine, self).request('POST', endpoint, authenticate, **req_kwargs)
 
     # Public Endpoints
     @check_and_format_pair
@@ -66,6 +66,7 @@ class Quoine(RESTInterface):
         return self.request('executions' % pair, params=params)
 
     # Private Endpoints
+    # pylint: disable=unused-argument
     def _place_order(self, pair, price, size, side, *args, **kwargs):
         params = {'product_id': pair, 'side': side, 'quantity': size, 'price': price}
         params.update(kwargs)
