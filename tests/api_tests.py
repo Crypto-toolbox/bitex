@@ -504,7 +504,7 @@ class ITBitRESTTest(TestCase):
         # check that passphrase is loaded correctly, and no
         # IncompleteCredentialsWarning is issued, if we dont pass a user_id
         # kwarg but it is avaialable in the config file
-        config_path = '/home/nls/git/bitex/tests/auth/itbit.ini'
+        config_path = './auth/itbit.ini'
         with self.assertRaises(AssertionError):
             with self.assertWarns(IncompleteCredentialConfigurationWarning):
                 api = ITbitREST(config=config_path)
