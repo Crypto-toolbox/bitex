@@ -18,4 +18,3 @@ from bitex.api.REST import QuadrigaCXREST
 from bitex.api.REST import QuoineREST
 from bitex.api.REST import RockTradingREST
 from bitex.api.REST import VaultoroREST
-from bitex.api.REST import YunbiREST

@@ -35,6 +35,73 @@ log = logging.getLogger(__name__)
 tests_folder_dir = '.'
 
 
+class BinanceInterfaceTests(StandardizedMethodTests):
+
+    @patch(RESTInterface, 'request')
+    def test_request_generates_params_for_RESTInterface_request_correctly(self, mocked_api):
+        api = Binance(key='1231', secret='152561')
+        api.request('some_endpoint', authenticate=True)
+        mocked_api.assert_called_with('POST', 'some_endpoint', authenticate=True)
+        api.request('some_endpoint', authenticate=False)
+        mocked_api.assert_called_with('GET', 'some_endpoint', authenticate=False)
+
+    @patch('requests.request', return_value=MockResponse(binance_exchange_info_parsed, 200))
+    def test_get_supported_pairs_retrieves_data_from_online_endpoint_and_returns_json_content(self, mocked_request_func):
+        b = Binance()
+        mocked_request_func.assert_called_with('GET', 'https://api.binance.com/api/v1/exchangeInfo')
+        expected_list = sorted([d['symbol'] for d in binance_exchange_info_parsed['symbols']])
+        self.assertEqual(sorted(b.supported_pairs), expected_list)
+
+    def test_ticker_formatter(self):
+        expected_result = tuple()
+        mock_json =
+        super(BinanceInterfaceTests, self).test_ticker_formatter(expected_result, mock_json)
+
+    def test_order_book_formatter(self):
+        expected_result = tuple()
+        mock_json = {}
+        super(BinanceInterfaceTests, self).test_order_book_formatter(expected_result, mock_json)
+
+    def test_trades_formatter(self):
+        expected_result = tuple()
+        mock_json = {}
+        super(BinanceInterfaceTests, self).test_trades_formatter(expected_result, mock_json)
+
+    def test_bid_formatter(self):
+        expected_result = tuple()
+        mock_json = {}
+        super(BinanceInterfaceTests, self).test_bid_formatter(expected_result, mock_json)
+
+    def test_ask_formatter(self):
+        expected_result = tuple()
+        mock_json = {}
+        super(BinanceInterfaceTests, self).test_ask_formatter(expected_result, mock_json)
+
+    def test_open_orders_formatter(self):
+        expected_result = tuple()
+        mock_json = {}
+        super(BinanceInterfaceTests, self).test_open_orders_formatter(expected_result, mock_json)
+
+    def test_order_status_formatter(self):
+        additional_args = ['BTC-USD']
+        expected_result = tuple()
+        mock_json = {}
+        super(BinanceInterfaceTests, self).test_order_status_formatter(expected_result, mock_json,
+                                                                       method_args=additional_args)
+
+    def test_cancel_order_formatter(self):
+        additional_args = ['BTC-USD']
+        expected_result = tuple()
+        mock_json = {}
+        super(BinanceInterfaceTests, self).test_cancel_order_formatter(expected_result, mock_json,
+                                                                       method_args=additional_args)
+
+    def test_wallet_formatter(self):
+        expected_result = tuple()
+        mock_json = {}
+        super(BinanceInterfaceTests, self).test_wallet_formatter(expected_result, mock_json)
+
+
 class BitfinexInterfacTests(StandardizedMethodTests):
 
     @patch(RESTInterface, 'request')
@@ -88,73 +155,6 @@ class BitfinexInterfacTests(StandardizedMethodTests):
         mock_json = {}
         super(BitfinexInterfacTests, self).test_order_status_formatter(expected_result, mock_json,
                                                                        method_args=additional_args)
-
-
-class BinanceInterfaceTests(StandardizedMethodTests):
-
-    @patch(RESTInterface, 'request')
-    def test_request_generates_params_for_RESTInterface_request_correctly(self, mocked_api):
-        api = Binance(key='1231', secret='152561')
-        api.request('some_endpoint', authenticate=True)
-        mocked_api.assert_called_with('POST', 'some_endpoint', authenticate=True)
-        api.request('some_endpoint', authenticate=False)
-        mocked_api.assert_called_with('GET', 'some_endpoint', authenticate=False)
-
-    @patch('requests.request', return_value=MockResponse(binance_exchange_info_parsed, 200))
-    def test_get_supported_pairs_retrieves_data_from_online_endpoint_and_returns_json_content(self, mocked_request_func):
-        b = Binance()
-        mocked_request_func.assert_called_with('GET', 'https://api.binance.com/api/v1/exchangeInfo')
-        expected_list = sorted([d['symbol'] for d in binance_exchange_info_parsed['symbols']])
-        self.assertEqual(sorted(b.supported_pairs), expected_list)
-
-    def test_ticker_formatter(self):
-        expected_result = tuple()
-        mock_json = {}
-        super(BinanceInterfaceTests, self).test_ticker_formatter(expected_result, mock_json)
-
-    def test_order_book_formatter(self):
-        expected_result = tuple()
-        mock_json = {}
-        super(BinanceInterfaceTests, self).test_order_book_formatter(expected_result, mock_json)
-
-    def test_trades_formatter(self):
-        expected_result = tuple()
-        mock_json = {}
-        super(BinanceInterfaceTests, self).test_trades_formatter(expected_result, mock_json)
-
-    def test_bid_formatter(self):
-        expected_result = tuple()
-        mock_json = {}
-        super(BinanceInterfaceTests, self).test_bid_formatter(expected_result, mock_json)
-
-    def test_ask_formatter(self):
-        expected_result = tuple()
-        mock_json = {}
-        super(BinanceInterfaceTests, self).test_ask_formatter(expected_result, mock_json)
-
-    def test_open_orders_formatter(self):
-        expected_result = tuple()
-        mock_json = {}
-        super(BinanceInterfaceTests, self).test_open_orders_formatter(expected_result, mock_json)
-
-    def test_order_status_formatter(self):
-        additional_args = ['BTC-USD']
-        expected_result = tuple()
-        mock_json = {}
-        super(BinanceInterfaceTests, self).test_order_status_formatter(expected_result, mock_json,
-                                                                       method_args=additional_args)
-
-    def test_cancel_order_formatter(self):
-        additional_args = ['BTC-USD']
-        expected_result = tuple()
-        mock_json = {}
-        super(BinanceInterfaceTests, self).test_cancel_order_formatter(expected_result, mock_json,
-                                                                       method_args=additional_args)
-
-    def test_wallet_formatter(self):
-        expected_result = tuple()
-        mock_json = {}
-        super(BinanceInterfaceTests, self).test_wallet_formatter(expected_result, mock_json)
 
 
 class BitstampInterfaceTests(StandardizedMethodTests):
@@ -488,6 +488,14 @@ class CryptopiaInterfaceTests(StandardizedMethodTests):
         super(CryptopiaInterfaceTests, self).test_wallet_formatter(expected_result, mock_json)
 
 
+class GDAXInterfaceTests(StandardizedMethodTests):
+    pass
+
+
+class GeminiInterfaceTests(StandardizedMethodTests):
+    pass
+
+
 class HitBTCInterfaceTests(StandardizedMethodTests):
 
     @patch(RESTInterface, 'request')
@@ -553,6 +561,10 @@ class HitBTCInterfaceTests(StandardizedMethodTests):
         expected_result = tuple()
         mock_json = {}
         super(HitBTCInterfaceTests, self).test_wallet_formatter(expected_result, mock_json)
+
+
+class ItBitInterfaceTests(StandardizedMethodTests):
+    pass
 
 
 class KrakenInterfaceTests(StandardizedMethodTests):
@@ -817,6 +829,10 @@ class QuadrigaCXInterfaceTests(StandardizedMethodTests):
         expected_result = tuple()
         mock_json = {}
         super(QuadrigaCXInterfaceTests, self).test_wallet_formatter(expected_result, mock_json)
+
+
+class QuoinexInterfaceTests(StandardizedMethodTests):
+    pass
 
 
 class TheRockTradingInterfaceTests(StandardizedMethodTests):
