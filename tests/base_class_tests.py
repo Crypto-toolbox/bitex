@@ -6,6 +6,7 @@ import logging
 import unittest
 from unittest.mock import patch
 import time
+import os
 
 # Import Third-Party
 import requests
