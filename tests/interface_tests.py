@@ -20,11 +20,7 @@ from unittest.mock import patch
 
 # Import Homebrew
 from helpers import MockResponse, StandardizedMethodTests
-from payloads import rock_trading_tickers_parsed, kraken_asset_pairs_parsed, poloniex_tickers_parsed
-from payloads import hitbtc_symbols_parsed, cryptopia_trade_pairs_parsed, ccex_pairs_parsed
-from payloads import bittrex_getmarkets_parsed, bitstamp_trading_pairs_parsed
-from payloads import binance_exchange_info_parsed, bitfinex_symbols_parsed, gdax_products_parsed
-from payloads import quoinex_pairs_parsed, itbit_ticker_parsed, gemini_symbols_parsed
+from payloads import *
 from bitex.interface.rest import RESTInterface
 from bitex.interface import Binance, Bitfinex, Bitstamp, Bittrex
 from bitex.interface import CCEX, CoinCheck, Cryptopia
@@ -56,17 +52,17 @@ class BinanceInterfaceTests(StandardizedMethodTests):
 
     def test_ticker_formatter(self):
         expected_result = tuple()
-        mock_json =
+        mock_json = binance_ticker
         super(BinanceInterfaceTests, self).test_ticker_formatter(expected_result, mock_json)
 
     def test_order_book_formatter(self):
         expected_result = tuple()
-        mock_json = {}
+        mock_json = binance_order_book
         super(BinanceInterfaceTests, self).test_order_book_formatter(expected_result, mock_json)
 
     def test_trades_formatter(self):
         expected_result = tuple()
-        mock_json = {}
+        mock_json = binance_trades
         super(BinanceInterfaceTests, self).test_trades_formatter(expected_result, mock_json)
 
     def test_bid_formatter(self):
@@ -123,17 +119,17 @@ class BitfinexInterfacTests(StandardizedMethodTests):
 
     def test_ticker_formatter(self):
         expected_result = tuple()
-        mock_json = {}
+        mock_json = bitfinex_ticker
         super(BitfinexInterfacTests, self).test_ticker_formatter(expected_result, mock_json)
 
     def test_order_book_formatter(self):
         expected_result = tuple()
-        mock_json = {}
+        mock_json = bitfinex_order_book
         super(BitfinexInterfacTests, self).test_order_book_formatter(expected_result, mock_json)
 
     def test_trades_formatter(self):
         expected_result = tuple()
-        mock_json = {}
+        mock_json = bitfinex_trades
         super(BitfinexInterfacTests, self).test_trades_formatter(expected_result, mock_json)
 
     def test_bid_formatter(self):
@@ -178,17 +174,17 @@ class BitstampInterfaceTests(StandardizedMethodTests):
 
     def test_ticker_formatter(self):
         expected_result = tuple()
-        mock_json = {}
+        mock_json = bitstamp_ticker
         super(BitstampInterfaceTests, self).test_ticker_formatter(expected_result, mock_json)
 
     def test_order_book_formatter(self):
         expected_result = tuple()
-        mock_json = {}
+        mock_json = bitstamp_order_book
         super(BitstampInterfaceTests, self).test_order_book_formatter(expected_result, mock_json)
 
     def test_trades_formatter(self):
         expected_result = tuple()
-        mock_json = {}
+        mock_json = bitstamp_trades
         super(BitstampInterfaceTests, self).test_trades_formatter(expected_result, mock_json)
 
     def test_bid_formatter(self):
@@ -245,17 +241,17 @@ class BittrexInterfaceTests(StandardizedMethodTests):
 
     def test_ticker_formatter(self):
         expected_result = tuple()
-        mock_json = {}
+        mock_json = bittrex_ticker
         super(BittrexInterfaceTests, self).test_ticker_formatter(expected_result, mock_json)
 
     def test_order_book_formatter(self):
         expected_result = tuple()
-        mock_json = {}
+        mock_json = bittrex_order_book
         super(BittrexInterfaceTests, self).test_order_book_formatter(expected_result, mock_json)
 
     def test_trades_formatter(self):
         expected_result = tuple()
-        mock_json = {}
+        mock_json = bittrex_trades
         super(BittrexInterfaceTests, self).test_trades_formatter(expected_result, mock_json)
 
     def test_bid_formatter(self):
@@ -312,17 +308,17 @@ class CCEXInterfaceTests(StandardizedMethodTests):
 
     def test_ticker_formatter(self):
         expected_result = tuple()
-        mock_json = {}
+        mock_json = ccex_ticker
         super(CCEXInterfaceTests, self).test_ticker_formatter(expected_result, mock_json)
 
     def test_order_book_formatter(self):
         expected_result = tuple()
-        mock_json = {}
+        mock_json = ccex_order_book
         super(CCEXInterfaceTests, self).test_order_book_formatter(expected_result, mock_json)
 
     def test_trades_formatter(self):
         expected_result = tuple()
-        mock_json = {}
+        mock_json = ccex_trades
         super(CCEXInterfaceTests, self).test_trades_formatter(expected_result, mock_json)
 
     def test_bid_formatter(self):
@@ -375,17 +371,17 @@ class CoinCheckInterfaceTests(StandardizedMethodTests):
 
     def test_ticker_formatter(self):
         expected_result = tuple()
-        mock_json = {}
+        mock_json = coincheck_ticker
         super(CoinCheckInterfaceTests, self).test_ticker_formatter(expected_result, mock_json)
 
     def test_order_book_formatter(self):
         expected_result = tuple()
-        mock_json = {}
+        mock_json = coincheck_order_book
         super(CoinCheckInterfaceTests, self).test_order_book_formatter(expected_result, mock_json)
 
     def test_trades_formatter(self):
         expected_result = tuple()
-        mock_json = {}
+        mock_json = coincheck_trades
         super(CoinCheckInterfaceTests, self).test_trades_formatter(expected_result, mock_json)
 
     def test_bid_formatter(self):
@@ -442,17 +438,17 @@ class CryptopiaInterfaceTests(StandardizedMethodTests):
 
     def test_ticker_formatter(self):
         expected_result = tuple()
-        mock_json = {}
+        mock_json = cryptopia_tickers
         super(CryptopiaInterfaceTests, self).test_ticker_formatter(expected_result, mock_json)
 
     def test_order_book_formatter(self):
         expected_result = tuple()
-        mock_json = {}
+        mock_json = cryptopia_order_book
         super(CryptopiaInterfaceTests, self).test_order_book_formatter(expected_result, mock_json)
 
     def test_trades_formatter(self):
         expected_result = tuple()
-        mock_json = {}
+        mock_json = cryptopia_trades
         super(CryptopiaInterfaceTests, self).test_trades_formatter(expected_result, mock_json)
 
     def test_bid_formatter(self):
@@ -508,17 +504,17 @@ class GDAXInterfaceTests(StandardizedMethodTests):
 
     def test_ticker_formatter(self):
         expected_result = tuple()
-        mock_json =
+        mock_json = gdax_ticker
         super(GDAXInterfaceTests, self).test_ticker_formatter(expected_result, mock_json)
 
     def test_order_book_formatter(self):
         expected_result = tuple()
-        mock_json = {}
+        mock_json = gdax_order_book
         super(GDAXInterfaceTests, self).test_order_book_formatter(expected_result, mock_json)
 
     def test_trades_formatter(self):
         expected_result = tuple()
-        mock_json = {}
+        mock_json = gdax_trades
         super(GDAXInterfaceTests, self).test_trades_formatter(expected_result, mock_json)
 
     def test_bid_formatter(self):
@@ -574,17 +570,17 @@ class GeminiInterfaceTests(StandardizedMethodTests):
 
     def test_ticker_formatter(self):
         expected_result = tuple()
-        mock_json =
+        mock_json = gemini_ticker
         super(GeminiInterfaceTests, self).test_ticker_formatter(expected_result, mock_json)
 
     def test_order_book_formatter(self):
         expected_result = tuple()
-        mock_json = {}
+        mock_json = gemini_order_book
         super(GeminiInterfaceTests, self).test_order_book_formatter(expected_result, mock_json)
 
     def test_trades_formatter(self):
         expected_result = tuple()
-        mock_json = {}
+        mock_json = gemini_trades
         super(GeminiInterfaceTests, self).test_trades_formatter(expected_result, mock_json)
 
     def test_bid_formatter(self):
@@ -641,17 +637,17 @@ class HitBTCInterfaceTests(StandardizedMethodTests):
 
     def test_ticker_formatter(self):
         expected_result = tuple()
-        mock_json = {}
+        mock_json = hitbtc_ticker
         super(HitBTCInterfaceTests, self).test_ticker_formatter(expected_result, mock_json)
 
     def test_order_book_formatter(self):
         expected_result = tuple()
-        mock_json = {}
+        mock_json = hitbtc_order_book
         super(HitBTCInterfaceTests, self).test_order_book_formatter(expected_result, mock_json)
 
     def test_trades_formatter(self):
         expected_result = tuple()
-        mock_json = {}
+        mock_json = hitbtc_trades
         super(HitBTCInterfaceTests, self).test_trades_formatter(expected_result, mock_json)
 
     def test_bid_formatter(self):
@@ -706,17 +702,17 @@ class ItBitInterfaceTests(StandardizedMethodTests):
 
     def test_ticker_formatter(self):
         expected_result = tuple()
-        mock_json =
+        mock_json = itbit_ticker
         super(ItBitInterfaceTests, self).test_ticker_formatter(expected_result, mock_json)
 
     def test_order_book_formatter(self):
         expected_result = tuple()
-        mock_json = {}
+        mock_json = itbit_order_book
         super(ItBitInterfaceTests, self).test_order_book_formatter(expected_result, mock_json)
 
     def test_trades_formatter(self):
         expected_result = tuple()
-        mock_json = {}
+        mock_json = itbit_trades
         super(ItBitInterfaceTests, self).test_trades_formatter(expected_result, mock_json)
 
     def test_bid_formatter(self):
@@ -773,17 +769,17 @@ class KrakenInterfaceTests(StandardizedMethodTests):
 
     def test_ticker_formatter(self):
         expected_result = tuple()
-        mock_json = {}
+        mock_json = kraken_ticker
         super(KrakenInterfaceTests, self).test_ticker_formatter(expected_result, mock_json)
 
     def test_order_book_formatter(self):
         expected_result = tuple()
-        mock_json = {}
+        mock_json = kraken_order_book
         super(KrakenInterfaceTests, self).test_order_book_formatter(expected_result, mock_json)
 
     def test_trades_formatter(self):
         expected_result = tuple()
-        mock_json = {}
+        mock_json = kraken_trades
         super(KrakenInterfaceTests, self).test_trades_formatter(expected_result, mock_json)
 
     def test_bid_formatter(self):
@@ -838,17 +834,17 @@ class OKCoinInterfaceTests(StandardizedMethodTests):
 
     def test_ticker_formatter(self):
         expected_result = tuple()
-        mock_json = {}
+        mock_json = okcoin_ticker
         super(OKCoinInterfaceTests, self).test_ticker_formatter(expected_result, mock_json)
 
     def test_order_book_formatter(self):
         expected_result = tuple()
-        mock_json = {}
+        mock_json = okcoin_order_book
         super(OKCoinInterfaceTests, self).test_order_book_formatter(expected_result, mock_json)
 
     def test_trades_formatter(self):
         expected_result = tuple()
-        mock_json = {}
+        mock_json = okcoin_trades
         super(OKCoinInterfaceTests, self).test_trades_formatter(expected_result, mock_json)
 
     def test_bid_formatter(self):
@@ -905,17 +901,17 @@ class PoloniexInterfaceTests(StandardizedMethodTests):
 
     def test_ticker_formatter(self):
         expected_result = tuple()
-        mock_json = {}
+        mock_json = poloniex_ticker
         super(PoloniexInterfaceTests, self).test_ticker_formatter(expected_result, mock_json)
 
     def test_order_book_formatter(self):
         expected_result = tuple()
-        mock_json = {}
+        mock_json = poloniex_order_book
         super(PoloniexInterfaceTests, self).test_order_book_formatter(expected_result, mock_json)
 
     def test_trades_formatter(self):
         expected_result = tuple()
-        mock_json = {}
+        mock_json = poloniex_trades
         super(PoloniexInterfaceTests, self).test_trades_formatter(expected_result, mock_json)
 
     def test_bid_formatter(self):
@@ -970,17 +966,17 @@ class QuadrigaCXInterfaceTests(StandardizedMethodTests):
 
     def test_ticker_formatter(self):
         expected_result = tuple()
-        mock_json = {}
+        mock_json = quadriga_ticker
         super(QuadrigaCXInterfaceTests, self).test_ticker_formatter(expected_result, mock_json)
 
     def test_order_book_formatter(self):
         expected_result = tuple()
-        mock_json = {}
+        mock_json = quadriga_order_book
         super(QuadrigaCXInterfaceTests, self).test_order_book_formatter(expected_result, mock_json)
 
     def test_trades_formatter(self):
         expected_result = tuple()
-        mock_json = {}
+        mock_json = quadriga_trades
         super(QuadrigaCXInterfaceTests, self).test_trades_formatter(expected_result, mock_json)
 
     def test_bid_formatter(self):
@@ -1037,17 +1033,17 @@ class QuoinexInterfaceTests(StandardizedMethodTests):
 
     def test_ticker_formatter(self):
         expected_result = tuple()
-        mock_json =
+        mock_json = quoinex_ticker
         super(QuoinexInterfaceTests, self).test_ticker_formatter(expected_result, mock_json)
 
     def test_order_book_formatter(self):
         expected_result = tuple()
-        mock_json = {}
+        mock_json = quoinex_order_book
         super(QuoinexInterfaceTests, self).test_order_book_formatter(expected_result, mock_json)
 
     def test_trades_formatter(self):
         expected_result = tuple()
-        mock_json = {}
+        mock_json = quoinex_trades
         super(QuoinexInterfaceTests, self).test_trades_formatter(expected_result, mock_json)
 
     def test_bid_formatter(self):
@@ -1104,17 +1100,17 @@ class TheRockTradingInterfaceTests(StandardizedMethodTests):
 
     def test_ticker_formatter(self):
         expected_result = tuple()
-        mock_json = {}
+        mock_json = rock_trading_ticker
         super(TheRockTradingInterfaceTests, self).test_ticker_formatter(expected_result, mock_json)
 
     def test_order_book_formatter(self):
         expected_result = tuple()
-        mock_json = {}
+        mock_json = rock_trading_order_book
         super(TheRockTradingInterfaceTests, self).test_order_book_formatter(expected_result, mock_json)
 
     def test_trades_formatter(self):
         expected_result = tuple()
-        mock_json = {}
+        mock_json = rock_trading_trades
         super(TheRockTradingInterfaceTests, self).test_trades_formatter(expected_result, mock_json)
 
     def test_bid_formatter(self):
@@ -1168,17 +1164,17 @@ class VaultoroInterfaceTests(StandardizedMethodTests):
 
     def test_ticker_formatter(self):
         expected_result = tuple()
-        mock_json = {}
+        mock_json = vaultoro_ticker
         super(VaultoroInterfaceTests, self).test_ticker_formatter(expected_result, mock_json)
 
     def test_order_book_formatter(self):
         expected_result = tuple()
-        mock_json = {}
+        mock_json = vaultoro_order_book
         super(VaultoroInterfaceTests, self).test_order_book_formatter(expected_result, mock_json)
 
     def test_trades_formatter(self):
         expected_result = tuple()
-        mock_json = {}
+        mock_json = vaultoro_trades
         super(VaultoroInterfaceTests, self).test_trades_formatter(expected_result, mock_json)
 
     def test_bid_formatter(self):
