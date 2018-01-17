@@ -228,7 +228,7 @@ class BitstampRESTTests(TestCase):
         api = BitstampREST(addr='Bangarang', user_id=None, key='SomeKey', secret='SomeSecret',
                            config=None, version=None)
         with mock.patch('warnings.warn') as mock_warn:
-            api.load_config('./configs/config.ini')
+            api.load_config('%s/configs/config.ini' % tests_folder_dir)
             mock_warn.assert_called_with("'user_id' not found in config!",
                                          IncompleteCredentialConfigurationWarning)
 
@@ -251,7 +251,7 @@ class BitstampRESTTests(TestCase):
         # check that user_id is loaded correctly, and no
         # IncompleteCredentialsWarning is issued, if we dont pass a user_id
         # kwarg but it is avaialable in the config file
-        config_path = './auth/bitstamp.ini'
+        config_path = '%s/auth/bitstamp.ini' % tests_folder_dir
         with self.assertRaises(AssertionError):
             with self.assertWarns(IncompleteCredentialConfigurationWarning):
                 api = BitstampREST(config=config_path)
@@ -424,7 +424,7 @@ class GDAXRESTTest(TestCase):
         # check that passphrase is loaded correctly, and no
         # IncompleteCredentialsWarning is issued, if we dont pass a passphrase
         # kwarg but it is avaialable in the config file
-        config_path = './auth/gdax.ini'
+        config_path = '%s/auth/gdax.ini' % tests_folder_dir
         with self.assertRaises(AssertionError):
             with self.assertWarns(IncompleteCredentialConfigurationWarning):
                 api = GDAXREST(config=config_path)
@@ -507,7 +507,7 @@ class ITBitRESTTest(TestCase):
         # check that passphrase is loaded correctly, and no
         # IncompleteCredentialsWarning is issued, if we dont pass a user_id
         # kwarg but it is avaialable in the config file
-        config_path = './auth/itbit.ini'
+        config_path = '%s/auth/itbit.ini' % tests_folder_dir
         with self.assertRaises(AssertionError):
             with self.assertWarns(IncompleteCredentialConfigurationWarning):
                 api = ITbitREST(config=config_path)
