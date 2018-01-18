@@ -1,4 +1,14 @@
-"""Interface Test Cases."""
+"""Interface Test Cases.
+
+Any methods that require a symbol pair are called with 'BTC-USD' - since the api calls are offline
+this should not cause any error, even for exchanges that do not support that pair.
+You must, however, properly patch _get_supported_pairs() of the exchange instance for
+each test case:
+
+    with patch('bitex.interface.vaultoro.Vaultoro._get_supported_pairs', return_value=['BTC-USD']):
+        exchange = Vaultoro()
+
+"""
 # Import Built-Ins
 import logging
 import unittest
@@ -22,7 +32,9 @@ tests_folder_dir = '.'
 
 
 class BinanceInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
-    exchange = Binance()
+    with patch('bitex.interface.binance.Binance._get_supported_pairs',
+               return_value=['BTC-USD']):
+        exchange = Binance()
 
     @patch('bitex.interface.rest.RESTInterface', 'request')
     def test_request_generates_params_for_RESTInterface_request_correctly(self, mocked_api):
@@ -90,7 +102,9 @@ class BinanceInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
 
 
 class BitfinexInterfacTests(BaseInterfaceTests.StandardizedMethodTestCase):
-    exchange = Bitfinex()
+    with patch('bitex.interface.bitfinex.Bitfinex._get_supported_pairs',
+               return_value=['BTC-USD']):
+        exchange = Bitfinex()
 
     @patch('bitex.interface.rest.RESTInterface', 'request')
     def test_request_generates_params_for_RESTInterface_request_correctly(self, mocked_api):
@@ -146,7 +160,9 @@ class BitfinexInterfacTests(BaseInterfaceTests.StandardizedMethodTestCase):
 
 
 class BitstampInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
-    exchange = Bitstamp()
+    with patch('bitex.interface.bitstamp.Bitstamp._get_supported_pairs',
+               return_value=['BTC-USD']):
+        exchange = Bitstamp()
 
     @patch('bitex.interface.rest.RESTInterface', 'request')
     def test_request_generates_params_for_RESTInterface_request_correctly(self, mocked_api):
@@ -214,7 +230,9 @@ class BitstampInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
 
 
 class BittrexInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
-    exchange = Bittrex()
+    with patch('bitex.interface.bittrex.Bittrex._get_supported_pairs',
+               return_value=['BTC-USD']):
+        exchange = Bittrex()
 
     @patch('bitex.interface.rest.RESTInterface', 'request')
     def test_request_generates_params_for_RESTInterface_request_correctly(self, mocked_api):
@@ -282,7 +300,9 @@ class BittrexInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
 
 
 class CCEXInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
-    exchange = CCEX()
+    with patch('bitex.interface.ccex.CCEX._get_supported_pairs',
+               return_value=['BTC-USD']):
+        exchange = CCEX()
 
     @patch('bitex.interface.rest.RESTInterface', 'request')
     def test_request_generates_params_for_RESTInterface_request_correctly(self, mocked_api):
@@ -350,7 +370,8 @@ class CCEXInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
 
 
 class CoinCheckInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
-    exchange = CoinCheck()
+    with patch('bitex.interface.coincheck.CoinCheck._get_supported_pairs', return_value=['BTC-USD']):
+        exchange = CoinCheck()
 
     @patch('bitex.interface.rest.RESTInterface', 'request')
     def test_request_generates_params_for_RESTInterface_request_correctly(self, mocked_api):
@@ -414,7 +435,8 @@ class CoinCheckInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
 
 
 class CryptopiaInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
-    exchange = Cryptopia()
+    with patch('bitex.interface.cryptopia.Cryptopia._get_supported_pairs', return_value=['BTC-USD']):
+        exchange = Cryptopia()
 
     @patch('bitex.interface.rest.RESTInterface', 'request')
     def test_request_generates_params_for_RESTInterface_request_correctly(self, mocked_api):
@@ -482,7 +504,8 @@ class CryptopiaInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
 
 
 class GDAXInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
-    exchange = GDAX()
+    with patch('bitex.interface.gdax.GDAX._get_supported_pairs', return_value=['BTC-USD']):
+        exchange = GDAX()
 
     @patch('bitex.interface.rest.RESTInterface', 'request')
     def test_request_generates_params_for_RESTInterface_request_correctly(self, mocked_api):
@@ -550,7 +573,8 @@ class GDAXInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
 
 
 class GeminiInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
-    exchange = Gemini()
+    with patch('bitex.interface.gemini.Gemini._get_supported_pairs', return_value=['BTC-USD']):
+        exchange = Gemini()
 
     @patch('bitex.interface.rest.RESTInterface', 'request')
     def test_request_generates_params_for_RESTInterface_request_correctly(self, mocked_api):
@@ -618,7 +642,8 @@ class GeminiInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
 
 
 class HitBTCInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
-    exchange = HitBTC()
+    with patch('bitex.interface.hitbtc.HitBTC._get_supported_pairs', return_value=['BTC-USD']):
+        exchange = HitBTC()
 
     @patch('bitex.interface.rest.RESTInterface', 'request')
     def test_request_generates_params_for_RESTInterface_request_correctly(self, mocked_api):
@@ -686,7 +711,8 @@ class HitBTCInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
 
 
 class ItBitInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
-    exchange = ItBit()
+    with patch('bitex.interface.itbit.ItBit._get_supported_pairs', return_value=['BTC-USD']):
+        exchange = ItBit()
 
     @patch('bitex.interface.rest.RESTInterface', 'request')
     def test_request_generates_params_for_RESTInterface_request_correctly(self, mocked_api):
@@ -753,7 +779,8 @@ class ItBitInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
 
 
 class KrakenInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
-    exchange = Kraken()
+    with patch('bitex.interface.kraken.Kraken._get_supported_pairs', return_value=['BTC-USD']):
+        exchange = Kraken()
 
     @patch('bitex.interface.rest.RESTInterface', 'request')
     def test_request_generates_params_for_RESTInterface_request_correctly(self, mocked_api):
@@ -821,7 +848,8 @@ class KrakenInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
 
 
 class OKCoinInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
-    exchange = OKCoin()
+    with patch('bitex.interface.okcoin.OKCoin._get_supported_pairs', return_value=['BTC-USD']):
+        exchange = OKCoin()
 
     @patch('bitex.interface.rest.RESTInterface', 'request')
     def test_request_generates_params_for_RESTInterface_request_correctly(self, mocked_api):
@@ -887,7 +915,8 @@ class OKCoinInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
 
 
 class PoloniexInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
-    exchange = Poloniex()
+    with patch('bitex.interface.poloniex.Poloniex._get_supported_pairs', return_value=['BTC-USD']):
+        exchange = Poloniex()
 
     @patch('bitex.interface.rest.RESTInterface', 'request')
     def test_request_generates_params_for_RESTInterface_request_correctly(self, mocked_api):
@@ -955,7 +984,8 @@ class PoloniexInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
 
 
 class QuadrigaCXInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
-    exchange = QuadrigaCX()
+    with patch('bitex.interface.quadriga.QuadrigaCX._get_supported_pairs', return_value=['BTC-USD']):
+        exchange = QuadrigaCX()
 
     @patch('bitex.interface.rest.RESTInterface', 'request')
     def test_request_generates_params_for_RESTInterface_request_correctly(self, mocked_api):
@@ -1021,7 +1051,8 @@ class QuadrigaCXInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
 
 
 class QuoinexInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
-    exchange = Quoine()
+    with patch('bitex.interface.quoine.Quoine._get_supported_pairs', return_value=['BTC-USD']):
+        exchange = Quoine()
 
     @patch('bitex.interface.rest.RESTInterface', 'request')
     def test_request_generates_params_for_RESTInterface_request_correctly(self, mocked_api):
@@ -1089,7 +1120,8 @@ class QuoinexInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
 
 
 class TheRockTradingInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
-    exchange = TheRockTrading()
+    with patch('bitex.interface.rocktrading.TheRockTrading._get_supported_pairs', return_value=['BTC-USD']):
+        exchange = TheRockTrading()
 
     @patch('bitex.interface.rest.RESTInterface', 'request')
     def test_request_generates_params_for_RESTInterface_request_correctly(self, mocked_api):
@@ -1157,7 +1189,7 @@ class TheRockTradingInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase
 
 
 class VaultoroInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
-    with patch('requests.request', return_value=['BTC-USD']):
+    with patch('bitex.interface.vaultoro.Vaultoro._get_supported_pairs', return_value=['BTC-USD']):
         exchange = Vaultoro()
 
     @patch('bitex.interface.rest.RESTInterface', 'request')
