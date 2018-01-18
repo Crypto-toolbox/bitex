@@ -6,7 +6,7 @@ from unittest import TestCase, mock
 import requests
 
 # Import Homebrew
-from bitex.interface.rest import APIResponse
+from bitex.formatters import APIResponse
 
 # Init Logging Facilities
 log = logging.getLogger(__name__)
