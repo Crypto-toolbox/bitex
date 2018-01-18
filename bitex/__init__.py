@@ -20,3 +20,4 @@ from bitex.interface import Binance, Bitfinex, Bittrex, Bitstamp, CCEX, CoinChec
 from bitex.interface import Cryptopia, HitBTC, Kraken, OKCoin, Poloniex, QuadrigaCX
 from bitex.interface import TheRockTrading, Vaultoro
 from bitex.pairs import BTCUSD, ZECUSD, XMRUSD, ETCUSD, ETHUSD, DASHUSD
+from bitex.formatters import APIResponse
