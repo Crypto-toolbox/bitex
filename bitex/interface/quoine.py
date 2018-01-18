@@ -18,7 +18,6 @@ class Quoine(RESTInterface):
     def __init__(self, **api_kwargs):
         """Initialize Interface class instance."""
         super(Quoine, self).__init__('Quoine', QuoineREST(**api_kwargs))
-        raise NotImplementedError
 
     # pylint: disable=arguments-differ
     def request(self, endpoint, authenticate=False, **req_kwargs):
@@ -26,6 +25,9 @@ class Quoine(RESTInterface):
         if not authenticate:
             return super(Quoine, self).request('GET', endpoint, authenticate, **req_kwargs)
         return super(Quoine, self).request('POST', endpoint, authenticate, **req_kwargs)
+
+    def _get_supported_pairs(self):
+        return []
 
     # Public Endpoints
     @check_and_format_pair
