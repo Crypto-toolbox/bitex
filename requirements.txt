@@ -2,3 +2,4 @@ requests
 pyjwt
 twine
 nose
+pytz
