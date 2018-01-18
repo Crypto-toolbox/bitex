@@ -8,6 +8,7 @@ from bitex.formatters.base import APIResponse
 class VaultoroFormattedResponse(APIResponse):
 
     def ticker(self, *args):
+        """Return namedtuple with given data."""
         data = self.json(parse_int=str, parse_float=str)
         bid = data["bidPrice"]
         ask = data["askPrice"]

@@ -8,7 +8,8 @@ from bitex.formatters.base import APIResponse
 
 class CCEXFormattedResponse(APIResponse):
 
-    def ticker(self):
+    def ticker(self, *args):
+        """Return namedtuple with given data."""
         data = self.json(parse_int=str, parse_float=str)
         data = data["ticker"]
 

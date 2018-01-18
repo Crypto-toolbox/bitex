@@ -8,6 +8,7 @@ from bitex.formatters.base import APIResponse
 class PoloniexFormattedResponse(APIResponse):
 
     def ticker(self, *args):
+        """Return namedtuple with given data."""
         # The Poloniex public ticker returns a json containing the ticker of all the pairs traded
         # on the exchange. This is why we had to store the arguments passed to the method (ticker,
         # ask, etc..) of the Poloniex class, in order to extract the pair the user wants, and

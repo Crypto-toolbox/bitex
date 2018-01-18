@@ -11,6 +11,7 @@ from bitex.formatters.base import APIResponse
 class BittrexFormattedResponse(APIResponse):
 
     def ticker(self, *args):
+        """Return namedtuple with given data."""
         data = self.json(parse_int=str, parse_float=str)
         data = data["result"][0]
 

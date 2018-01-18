@@ -5,6 +5,7 @@ class KrakenFormattedResponse(APIResponse):
 
     @property
     def ticker(self):
+        """Return namedtuple with given data."""
         # data = self.json(parse_int=str, parse_float=str)
 
         # return TickerFormattedResponseTuple(bid=Decimal(data["bid"]),
