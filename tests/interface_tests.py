@@ -1060,7 +1060,7 @@ class QuoinexInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
 
     @patch('bitex.interface.rest.RESTInterface', 'request')
     def test_request_generates_params_for_RESTInterface_request_correctly(self, mocked_api):
-        api = Quoinex(key='1231', secret='152561')
+        api = Quoine(key='1231', secret='152561')
         api.request('some_endpoint', authenticate=True)
         mocked_api.assert_called_with('POST', 'some_endpoint', authenticate=True)
         api.request('some_endpoint', authenticate=False)
@@ -1068,7 +1068,7 @@ class QuoinexInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
 
     @patch('requests.request', return_value=MockResponse(quoinex_pairs_parsed, 200))
     def test_get_supported_pairs_retrieves_data_from_online_endpoint_and_returns_json_content(self, mocked_request_func):
-        b = Quoinex()
+        b = Quoine()
         mocked_request_func.assert_called_with('GET', 'https://api.quoine.com/products')
         expected_list = sorted({d['currency_pair_code']: d['id'] for d in quoinex_pairs_parsed})
         self.assertEqual(sorted(b.supported_pairs), expected_list)
