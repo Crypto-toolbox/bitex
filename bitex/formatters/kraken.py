@@ -1,13 +1,11 @@
-from bitex.formatters.base import AbstractFormattedResponse, TickerFormattedResponseTuple
-
-from decimal import Decimal
+from bitex.formatters.base import APIResponse
 
 
-class KrakenFormattedResponse(AbstractFormattedResponse):
+class KrakenFormattedResponse(APIResponse):
 
     @property
     def ticker(self):
-        data = self.json(parse_int=Decimal, parse_float=Decimal)
+        data = self.json(parse_int=str, parse_float=str)
 
         # return TickerFormattedResponseTuple(bid=Decimal(data["bid"]),
         #                                     ask=Decimal(data["ask"]),

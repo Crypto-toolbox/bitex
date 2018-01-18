@@ -1,4 +1,4 @@
-from bitex.formatters.base import AbstractFormattedResponse, TickerFormattedResponseTuple
+from bitex.formatters.base import APIResponse, TickerFormattedResponseTuple
 
 from decimal import Decimal
 from datetime import datetime
@@ -6,7 +6,7 @@ from datetime import datetime
 fromtimestamp = datetime.utcfromtimestamp
 
 
-class BitfinexFormattedResponse(AbstractFormattedResponse):
+class BitfinexFormattedResponse(APIResponse):
 
     @property
     def ticker(self):

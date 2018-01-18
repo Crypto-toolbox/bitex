@@ -1,22 +1,21 @@
-from bitex.formatters.base import AbstractFormattedResponse, TickerFormattedResponseTuple
-
-from decimal import Decimal
+# Import Built-ins
 from datetime import datetime
 
-fromtimestamp = datetime.utcfromtimestamp
+# Import Home-brewed
+from bitex.formatters.base import APIResponse
 
 
-class OKCoinFormattedResponse(AbstractFormattedResponse):
+class OKCoinFormattedResponse(APIResponse):
 
-    @property
-    def ticker(self):
-        data = self.json(parse_int=Decimal, parse_float=Decimal)
+    def ticker(self, *args):
+        data = self.json(parse_int=str, parse_float=str)
+        bid = data["ticker"]["buy"]
+        ask = data["ticker"]["sell"]
+        high = data["ticker"]["high"]
+        low = data["ticker"]["low"]
+        last = data["ticker"]["last"]
+        volume = data["ticker"]["vol"]
+        timestamp = datetime.utcfromtimestamp(data["date"])
 
-        return TickerFormattedResponseTuple(bid=Decimal(data["ticker"]["buy"]),
-                                            ask=Decimal(data["ticker"]["sell"]),
-                                            high=Decimal(data["ticker"]["high"]),
-                                            low=Decimal(data["ticker"]["low"]),
-                                            last=Decimal(data["ticker"]["last"]),
-                                            volume=Decimal(data["ticker"]["vol"]),
-                                            timestamp=fromtimestamp(Decimal(data["date"])),
-                                            )
+        return super(OKCoinFormattedResponse, self).ticker(bid, ask, high, low, last, volume,
+                                                             timestamp)

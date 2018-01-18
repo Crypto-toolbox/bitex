@@ -1,20 +1,20 @@
-from bitex.formatters.base import APIResponse
-
-from decimal import Decimal
+# Import Built-ins
 from datetime import datetime
+
+# Import Home-brewed
+from bitex.formatters.base import APIResponse
 
 
 class BinanceFormattedResponse(APIResponse):
 
     def ticker(self, *args):
         data = self.json(parse_int=str, parse_float=str)
-        bid = Decimal(data["bidPrice"]),
-        ask = Decimal(data["askPrice"]),
-        high = Decimal(data["highPrice"]),
-        low = Decimal(data["lowPrice"]),
-        last = Decimal(data["lastPrice"]),
-        volume = Decimal(data["volume"]),
+        bid = data["bidPrice"]
+        ask = data["askPrice"]
+        high = data["highPrice"]
+        low = data["lowPrice"]
+        last = data["lastPrice"]
+        volume = data["volume"]
         timestamp = datetime.utcnow()
         return super(BinanceFormattedResponse, self).ticker(bid, ask, high, low, last, volume,
                                                             timestamp)
-
