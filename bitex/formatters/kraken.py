@@ -1,7 +1,17 @@
+"""FormattedResponse Class for Standardized methods of the Kraken Interface class."""
+# Import Built-Ins
+
+# Import Third-party
+
+# Import home-brew
 from bitex.formatters.base import APIResponse
 
 
 class KrakenFormattedResponse(APIResponse):
+    """FormattedResponse class.
+
+    Returns the standardized method's json results as a formatted data in a namedTuple.
+    """
 
     @property
     def ticker(self):

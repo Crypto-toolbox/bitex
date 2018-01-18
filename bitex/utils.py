@@ -76,7 +76,6 @@ def load_configuration(fname):
 # a response and add useful methods, such as formatter.
 def format_with(formatter):
     """Pass a class to be used as a wrapper in the innermost function."""
-
     def real_decorator(function):
         @wraps(function)
         def wrapper(*args, **kwargs):

@@ -1,3 +1,4 @@
+"""Formatter Objects for interface classes."""
 from bitex.formatters.base import APIResponse
 from bitex.formatters.binance import BinanceFormattedResponse
 from bitex.formatters.bitfinex import BitfinexFormattedResponse

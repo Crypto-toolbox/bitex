@@ -17,6 +17,7 @@ class APIResponse(requests.Response, metaclass=ABCMeta):
     """
 
     def __init__(self, method, response_obj, *args, **kwargs):
+        """Initialize the object."""
         self.response = response_obj
         self.method = method
         self.method_args = args
@@ -72,16 +73,20 @@ class APIResponse(requests.Response, metaclass=ABCMeta):
 
     @abstractmethod
     def order_status(self, *args):
+        """Return namedtuple with given data."""
         raise NotImplementedError
 
     @abstractmethod
     def cancel_order(self, *args):
+        """Return namedtuple with given data."""
         raise NotImplementedError
 
     @abstractmethod
     def open_orders(self, *args):
+        """Return namedtuple with given data."""
         raise NotImplementedError
 
     @abstractmethod
     def wallet(self, *args):
+        """Return namedtuple with given data."""
         raise NotImplementedError

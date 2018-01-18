@@ -1,3 +1,4 @@
+"""FormattedResponse Class for Standardized methods of the CCEX Interface class."""
 # Import Built-ins
 from datetime import datetime
 
@@ -5,8 +6,11 @@ from datetime import datetime
 from bitex.formatters.base import APIResponse
 
 
-
 class CCEXFormattedResponse(APIResponse):
+    """FormattedResponse class.
+
+    Returns the standardized method's json results as a formatted data in a namedTuple.
+    """
 
     def ticker(self, *args):
         """Return namedtuple with given data."""

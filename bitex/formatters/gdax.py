@@ -1,3 +1,4 @@
+"""FormattedResponse Class for Standardized methods of the GDAX Interface class."""
 # Import Built-ins
 from datetime import datetime
 
@@ -6,6 +7,10 @@ from bitex.formatters.base import APIResponse
 
 
 class GDAXFormattedResponse(APIResponse):
+    """FormattedResponse class.
+
+    Returns the standardized method's json results as a formatted data in a namedTuple.
+    """
 
     def ticker(self, *args):
         """Return namedtuple with given data."""
