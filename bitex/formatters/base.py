@@ -67,5 +67,19 @@ class APIResponse(requests.Response, metaclass=ABCMeta):
         t = namedtuple('Ask', ("price", "size", "side", "order_id", "order_type", "timestamp"))
         return t(price, size, side, oid, otype, ts)
 
+    @abstractmethod
+    def order_status(self, *args):
+        raise NotImplementedError
 
+    @abstractmethod
+    def cancel_order(self, *args):
+        raise NotImplementedError
+
+    @abstractmethod
+    def open_orders(self, *args):
+        raise NotImplementedError
+
+    @abstractmethod
+    def wallet(self, *args):
+        raise NotImplementedError
 
