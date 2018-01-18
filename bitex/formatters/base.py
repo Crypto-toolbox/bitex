@@ -4,14 +4,14 @@ import requests
 import datetime
 from collections import namedtuple
 from abc import abstractmethod
-"""The base class that each formatter has to implement.
-
-It adds a `formatted` property, which returns a namedtuple with data
-converted from the json response.
-"""
 
 
 class APIResponse(requests.Response):
+    """The base class that each formatter has to implement.
+
+    It adds a `formatted` property, which returns a namedtuple with data
+    converted from the json response.
+    """
 
     def __init__(self, method, response_obj, *args, **kwargs):
         self.response = response_obj
