@@ -7,7 +7,9 @@ import logging
 from bitex.exceptions import UnsupportedPairError
 from bitex.api.REST.bitstamp import BitstampREST
 from bitex.interface.rest import RESTInterface
-from bitex.utils import check_and_format_pair
+from bitex.utils import check_and_format_pair, format_with
+from bitex.formatters import BitstampFormattedResponse
+
 
 # Init Logging Facilities
 log = logging.getLogger(__name__)
@@ -39,6 +41,7 @@ class Bitstamp(RESTInterface):
     ###############
 
     # Public Endpoints
+    @format_with(BitstampFormattedResponse)
     @check_and_format_pair
     def ticker(self, pair, *args, **kwargs):
         """Return the ticker for the given pair."""

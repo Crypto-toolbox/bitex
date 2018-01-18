@@ -5,7 +5,8 @@ import logging
 # Import Homebrew
 from bitex.api.REST.coincheck import CoincheckREST
 from bitex.interface.rest import RESTInterface
-from bitex.utils import check_and_format_pair
+from bitex.utils import check_and_format_pair, format_with
+from bitex.formatters import CoinCheckFormattedResponse
 
 # Init Logging Facilities
 log = logging.getLogger(__name__)
@@ -31,6 +32,7 @@ class CoinCheck(RESTInterface):
         return ['btc-jpy']
 
     # Public Endpoints
+    @format_with(CoinCheckFormattedResponse)
     @check_and_format_pair
     def ticker(self, pair, *args, **kwargs):
         """Return the ticker for the given pair."""
