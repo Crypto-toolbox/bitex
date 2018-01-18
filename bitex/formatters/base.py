@@ -1,6 +1,7 @@
 """Base class for formatters."""
 
 import requests
+import datetime
 from collections import namedtuple
 from abc import abstractmethod
 """The base class that each formatter has to implement.
@@ -17,6 +18,7 @@ class APIResponse(requests.Response):
         self.method = method
         self.method_args = args
         self.method_kwargs = kwargs
+        self.received_at_dt = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc)
 
     def __getattr__(self, attr):
         """Use methods of the encapsulated object, otherwise use what available in the wrapper."""
@@ -24,6 +26,11 @@ class APIResponse(requests.Response):
             return getattr(self.response, attr)
         except AttributeError:
             return getattr(self, attr)
+
+    @property
+    def received_at(self):
+        """Return APIResponse timestamp as ISO formatted string."""
+        return self.received_at_dt.isoformat()
 
     @property
     def formatted(self):
