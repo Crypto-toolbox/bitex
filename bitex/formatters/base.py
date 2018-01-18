@@ -2,7 +2,7 @@
 
 import requests
 from collections import namedtuple
-
+from abc import abstractmethod
 """The base class that each formatter has to implement.
 
 It adds a `formatted` property, which returns a namedtuple with data
@@ -10,7 +10,7 @@ converted from the json response.
 """
 
 
-class AbstractFormattedResponse(requests.Response):
+class APIResponse(requests.Response):
 
     def __init__(self, method, response_obj, *args, **kwargs):
         self.response = response_obj
@@ -30,28 +30,35 @@ class AbstractFormattedResponse(requests.Response):
         """Return the formatted data, extracted from the json response."""
         return getattr(self, self.method)
 
-    def ticker(*args, **kwargs):
-        raise NotImplementedError
+    @abstractmethod
+    def ticker(self, bid, ask, high, low, last, volume, ts):
+        """Return namedtuple with given data."""
+        t = namedtuple("Ticker", ("bid", "ask", "high", "low", "last", "volume", "timestamp"))
+        return t(bid, ask, high, low, last, volume, ts)
 
-    def order_book(*args, **kwargs):
-        raise NotImplementedError
+    @abstractmethod
+    def order_book(self, bids, asks, ts):
+        """Return namedtuple with given data."""
+        ob = namedtuple("Order Book", ("bids", "asks", "timestamp"))
+        return ob(bids, asks, ts)
 
-    def trades(*args, **kwargs):
-        raise NotImplementedError
+    @abstractmethod
+    def trades(self, trades, ts):
+        """Return namedtuple with given data."""
+        t = namedtuple('Trades', ("trades", "timestamp"))
+        return t(trades, ts)
 
-    def bid(*args, **kwargs):
-        raise NotImplementedError
+    @abstractmethod
+    def bid(self, price, size, side, oid, otype, ts):
+        """Return namedtuple with given data."""
+        t = namedtuple('Bid', ("price", "size", "side", "order_id", "order_type", "timestamp"))
+        return t(price, size, side, oid, otype, ts)
 
-    def ask(*args, **kwargs):
-        raise NotImplementedError
+    @abstractmethod
+    def ask(self, price, size, side, oid, otype, ts):
+        """Return namedtuple with given data."""
+        t = namedtuple('Ask', ("price", "size", "side", "order_id", "order_type", "timestamp"))
+        return t(price, size, side, oid, otype, ts)
 
 
-# Every method should return a tuple with the same structure, so that data can be managed in the
-# same "standard" way for every exchange.
-TickerFormattedResponseTuple = namedtuple("TickerResponse", ("bid",
-                                                             "ask",
-                                                             "high",
-                                                             "low",
-                                                             "last",
-                                                             "volume",
-                                                             "timestamp"))
+
