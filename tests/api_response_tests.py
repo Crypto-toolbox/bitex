@@ -8,7 +8,7 @@ import requests
 
 # Import Homebrew
 try:
-    from bitex.interface.rest import APIResponse
+    from bitex.formatters import APIResponse
 except ImportError:
     raise AssertionError("'APIResponse' not implemented!")
 
@@ -17,10 +17,28 @@ log = logging.getLogger(__name__)
 
 
 class APIResponseTests(unittest.TestCase):
+    def __init__(self, *args, **kwargs):
+        super(APIResponseTests, self).__init__(*args, **kwargs)
+        self.dummy_request = requests.get('https://google.com')
 
     def test_class_instance_handles_like_requestsResponse_instance(self):
-        response = mock.MagicMock(spec=requests.Response)
-        api_response = APIResponse(response)
+        class TestAPIResponse(APIResponse):
+            def ticker(self, bid, ask, high, low, last, volume, ts):
+                pass
+
+            def order_book(self, bids, asks, ts):
+                pass
+
+            def trades(self, trades, ts):
+                pass
+
+            def bid(self, price, size, side, oid, otype, ts):
+                pass
+
+            def ask(self, price, size, side, oid, otype, ts):
+                pass
+
+        api_response = TestAPIResponse('test_method', self.dummy_request)
 
         # Assert all expected attributes are present
         expected_attributes = ['apparent_encoding', 'content', 'cookies', 'elapsed', 'encoding',
@@ -33,7 +51,7 @@ class APIResponseTests(unittest.TestCase):
 
         # Assert that we can access the original Response object via the APIResponse.response
         # attribute.
-        self.assertEqual(api_response.response, response)
+        self.assertEqual(api_response.response, self.dummy_request)
 
         # Assert that all callable methods of requests.Response are also callable in APIResponse
         try:
@@ -52,36 +70,12 @@ class APIResponseTests(unittest.TestCase):
             else:
                 raise
 
-    def test_formatter_methods_raise_NotImplementedError_for_base_class(self):
+    def test_APIResponse_is_a_meta_class(self):
         response = mock.MagicMock(spec=requests.Response)
-        api_response = APIResponse(response)
-        with self.assertRaises(NotImplementedError):
-            api_response.ticker(None)
+        with self.assertRaises(TypeError):
+            APIResponse('test_method', response())
 
-        with self.assertRaises(NotImplementedError):
-            api_response.order_book(None)
-
-        with self.assertRaises(NotImplementedError):
-            api_response.trades(None)
-
-        with self.assertRaises(NotImplementedError):
-            api_response.bid(1, 2, 3)
-
-        with self.assertRaises(NotImplementedError):
-            api_response.ask(1, 2, 3)
-
-        with self.assertRaises(NotImplementedError):
-            api_response.order_status(None)
-
-        with self.assertRaises(NotImplementedError):
-            api_response.open_orders(None)
-
-        with self.assertRaises(NotImplementedError):
-            api_response.cancel_order(None)
-
-        with self.assertRaises(NotImplementedError):
-            api_response.wallet(None)
 
 
 if __name__ == '__main__':
-    unittest.main()
+    unittest.main(verbosity=2)
