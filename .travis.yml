@@ -4,18 +4,16 @@ python:
   - "3.6"
 
 install:
-  - pip install bitex
+  - pip install bitex coverage coveralls
 
 
 # command to run tests
 script:
-  - cd tests
-  - python api.py
-  - python formatters.py
+  - coverage run --source=bitex setup.py test
+  - coveralls
 
 
 
 branches:
   only:
   - master
-  - dev
