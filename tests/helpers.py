@@ -42,7 +42,7 @@ class BaseInterfaceTests:
 
             :param method_args: Method arguments to pass as ``*args`` to the method.
             :param method_kwargs:  Method keyword arguments to pass as ``**kwargs`` to the method.
-            :param expected_result: The expected Tuple
+            :param expected_result: The expected Tuple to be found in ApiResponse.formatted
             :param mock_json: The json data to feed the formatter
             :param method: The method to call
             :param mock_resp: a ``MockedResponse`` instance
