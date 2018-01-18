@@ -3,10 +3,10 @@
 import requests
 import datetime
 from collections import namedtuple
-from abc import abstractmethod
+from abc import abstractmethod, ABCMeta
 
 
-class APIResponse(requests.Response):
+class APIResponse(requests.Response, metaclass=ABCMeta):
     """The base class that each formatter has to implement.
 
     It adds a `formatted` property, which returns a namedtuple with data
@@ -21,7 +21,7 @@ class APIResponse(requests.Response):
         self.received_at_dt = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc)
 
     def __getattr__(self, attr):
-        """Use methods of the encapsulated object, otherwise use what available in the wrapper."""
+        """Use methods of the encapsulated object, otherwise use what's available in the wrapper."""
         try:
             return getattr(self.response, attr)
         except AttributeError:
