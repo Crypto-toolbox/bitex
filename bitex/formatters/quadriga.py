@@ -18,3 +18,35 @@ class QuadrigaCXFormattedResponse(APIResponse):
         timestamp = datetime.utcnow()
         return super(QuadrigaCXFormattedResponse, self).ticker(bid, ask, high, low, last, volume,
                                                                timestamp)
+
+    def order_book(self, bids, asks, ts):
+        """Return namedtuple with given data."""
+        raise NotImplementedError
+
+    def trades(self, trades, ts):
+        """Return namedtuple with given data."""
+        raise NotImplementedError
+
+    def bid(self, price, size, side, oid, otype, ts):
+        """Return namedtuple with given data."""
+        raise NotImplementedError
+
+    def ask(self, price, size, side, oid, otype, ts):
+        """Return namedtuple with given data."""
+        raise NotImplementedError
+
+    def order_status(self, *args):
+        """Return namedtuple with given data."""
+        raise NotImplementedError
+
+    def cancel_order(self, *args):
+        """Return namedtuple with given data."""
+        raise NotImplementedError
+
+    def open_orders(self, *args):
+        """Return namedtuple with given data."""
+        raise NotImplementedError
+
+    def wallet(self, *args):
+        """Return namedtuple with given data."""
+        raise NotImplementedError

@@ -1,11 +1,14 @@
 """Base class for formatters."""
-
-import requests
+# Import Built-ins
 import datetime
 from collections import namedtuple
 from abc import abstractmethod, ABCMeta
 
+# Import third-party
+import requests
 
+
+# pylint: disable=super-init-not-called
 class APIResponse(requests.Response, metaclass=ABCMeta):
     """The base class that each formatter has to implement.
 
@@ -40,32 +43,32 @@ class APIResponse(requests.Response, metaclass=ABCMeta):
     @abstractmethod
     def ticker(self, bid, ask, high, low, last, volume, ts):
         """Return namedtuple with given data."""
-        t = namedtuple("Ticker", ("bid", "ask", "high", "low", "last", "volume", "timestamp"))
-        return t(bid, ask, high, low, last, volume, ts)
+        ticker = namedtuple("Ticker", ("bid", "ask", "high", "low", "last", "volume", "timestamp"))
+        return ticker(bid, ask, high, low, last, volume, ts)
 
     @abstractmethod
     def order_book(self, bids, asks, ts):
         """Return namedtuple with given data."""
-        ob = namedtuple("Order Book", ("bids", "asks", "timestamp"))
-        return ob(bids, asks, ts)
+        order_book = namedtuple("OrderBook", ("bids", "asks", "timestamp"))
+        return order_book(bids, asks, ts)
 
     @abstractmethod
     def trades(self, trades, ts):
         """Return namedtuple with given data."""
-        t = namedtuple('Trades', ("trades", "timestamp"))
-        return t(trades, ts)
+        fmt_trades = namedtuple('Trades', ("trades", "timestamp"))
+        return fmt_trades(trades, ts)
 
     @abstractmethod
     def bid(self, price, size, side, oid, otype, ts):
         """Return namedtuple with given data."""
-        t = namedtuple('Bid', ("price", "size", "side", "order_id", "order_type", "timestamp"))
-        return t(price, size, side, oid, otype, ts)
+        bid = namedtuple('Bid', ("price", "size", "side", "order_id", "order_type", "timestamp"))
+        return bid(price, size, side, oid, otype, ts)
 
     @abstractmethod
     def ask(self, price, size, side, oid, otype, ts):
         """Return namedtuple with given data."""
-        t = namedtuple('Ask', ("price", "size", "side", "order_id", "order_type", "timestamp"))
-        return t(price, size, side, oid, otype, ts)
+        ask = namedtuple('Ask', ("price", "size", "side", "order_id", "order_type", "timestamp"))
+        return ask(price, size, side, oid, otype, ts)
 
     @abstractmethod
     def order_status(self, *args):
@@ -82,4 +85,3 @@ class APIResponse(requests.Response, metaclass=ABCMeta):
     @abstractmethod
     def wallet(self, *args):
         raise NotImplementedError
-
