@@ -6,7 +6,7 @@ import logging
 from bitex.api.REST.kraken import KrakenREST
 from bitex.interface.rest import RESTInterface
 from bitex.utils import check_and_format_pair, format_with
-# from bitex.formatters import KrakenFormattedResponse
+from bitex.formatters import KrakenFormattedResponse
 
 # Init Logging Facilities
 log = logging.getLogger(__name__)
@@ -37,6 +37,7 @@ class Kraken(RESTInterface):
     # pylint: disable=arguments-differ
     # @format_with(KrakenFormattedResponse)
     @check_and_format_pair
+    @format_with(KrakenFormattedResponse)
     def ticker(self, *pairs, **kwargs):
         """Return the ticker for the given pair."""
         payload = {'pair': pairs}
@@ -44,6 +45,7 @@ class Kraken(RESTInterface):
         return self.request('Ticker', params=payload)
 
     @check_and_format_pair
+    @format_with(KrakenFormattedResponse)
     def order_book(self, pair, *args, **kwargs):
         """Return the order book for the given pair."""
         payload = {'pair': pair}
@@ -51,6 +53,7 @@ class Kraken(RESTInterface):
         return self.request('Depth', params=payload)
 
     @check_and_format_pair
+    @format_with(KrakenFormattedResponse)
     def trades(self, pair, *args, **kwargs):
         """Return the trades for the given pair."""
         payload = {'pair': pair}
@@ -66,23 +69,28 @@ class Kraken(RESTInterface):
         return self.request('AddOrder', authenticate=True, data=payload)
 
     @check_and_format_pair
+    @format_with(KrakenFormattedResponse)
     def ask(self, pair, price, size, *args, **kwargs):
         """Place an ask order."""
         return self._place_order(pair, price, size, 'sell', **kwargs)
 
     @check_and_format_pair
+    @format_with(KrakenFormattedResponse)
     def bid(self, pair, price, size, *args, **kwargs):
         """Place a bid order."""
         return self._place_order(pair, price, size, 'buy', **kwargs)
 
+    @format_with(KrakenFormattedResponse)
     def order_status(self, order_id, *args, **kwargs):
         """Return the order status of the order with given ID."""
         raise NotImplementedError
 
+    @format_with(KrakenFormattedResponse)
     def open_orders(self, *args, **kwargs):
         """Return all open orders."""
         return self.request('OpenOrders', authenticate=True, data=kwargs)
 
+    @format_with(KrakenFormattedResponse)
     def cancel_order(self, *order_ids, **kwargs):
         """Cancel order(s) with the given ID(s)."""
         results = []
@@ -93,6 +101,7 @@ class Kraken(RESTInterface):
             results.append(r)
         return results if len(results) > 1 else results[0]
 
+    @format_with(KrakenFormattedResponse)
     def wallet(self, *args, **kwargs):
         """Return the account's wallet."""
         return self.request('Balance', authenticate=True, data=kwargs)
