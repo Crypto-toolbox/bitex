@@ -8,9 +8,8 @@ from unittest.mock import patch
 # Import Third-Party
 
 # Import Homebrew
-from helpers import MockResponse, StandardizedMethodTests
+from helpers import MockResponse, BaseInterfaceTests
 from payloads import *
-from bitex.interface.rest import RESTInterface
 from bitex.interface import Binance, Bitfinex, Bitstamp, Bittrex
 from bitex.interface import CCEX, CoinCheck, Cryptopia
 from bitex.interface import GDAX, Gemini, HitBTC, ItBit, Kraken, OKCoin
@@ -22,9 +21,10 @@ log = logging.getLogger(__name__)
 tests_folder_dir = '.'
 
 
-class BinanceInterfaceTests(StandardizedMethodTests):
+class BinanceInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
+    exchange = Binance
 
-    @patch(RESTInterface, 'request')
+    @patch('bitex.interface.rest.RESTInterface', 'request')
     def test_request_generates_params_for_RESTInterface_request_correctly(self, mocked_api):
         api = Binance(key='1231', secret='152561')
         api.request('some_endpoint', authenticate=True)
@@ -89,9 +89,10 @@ class BinanceInterfaceTests(StandardizedMethodTests):
         super(BinanceInterfaceTests, self).test_wallet_formatter(expected_result, mock_json)
 
 
-class BitfinexInterfacTests(StandardizedMethodTests):
+class BitfinexInterfacTests(BaseInterfaceTests.StandardizedMethodTestCase):
+    exchange = Bitfinex
 
-    @patch(RESTInterface, 'request')
+    @patch('bitex.interface.rest.RESTInterface', 'request')
     def test_request_generates_params_for_RESTInterface_request_correctly(self, mocked_api):
         api = Bitfinex(key='1231', secret='152561')
         api.request('some_endpoint', authenticate=True)
@@ -144,9 +145,10 @@ class BitfinexInterfacTests(StandardizedMethodTests):
                                                                        method_args=additional_args)
 
 
-class BitstampInterfaceTests(StandardizedMethodTests):
+class BitstampInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
+    exchange = Bitstamp
 
-    @patch(RESTInterface, 'request')
+    @patch('bitex.interface.rest.RESTInterface', 'request')
     def test_request_generates_params_for_RESTInterface_request_correctly(self, mocked_api):
         api = Bitstamp(key='1231', secret='152561')
         api.request('some_endpoint', authenticate=True)
@@ -211,9 +213,10 @@ class BitstampInterfaceTests(StandardizedMethodTests):
         super(BitstampInterfaceTests, self).test_wallet_formatter(expected_result, mock_json)
 
 
-class BittrexInterfaceTests(StandardizedMethodTests):
+class BittrexInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
+    exchange = Bittrex
 
-    @patch(RESTInterface, 'request')
+    @patch('bitex.interface.rest.RESTInterface', 'request')
     def test_request_generates_params_for_RESTInterface_request_correctly(self, mocked_api):
         api = Bittrex(key='1231', secret='152561')
         api.request('some_endpoint', authenticate=True)
@@ -278,9 +281,10 @@ class BittrexInterfaceTests(StandardizedMethodTests):
         super(BittrexInterfaceTests, self).test_wallet_formatter(expected_result, mock_json)
 
 
-class CCEXInterfaceTests(StandardizedMethodTests):
+class CCEXInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
+    exchange = CCEX
 
-    @patch(RESTInterface, 'request')
+    @patch('bitex.interface.rest.RESTInterface', 'request')
     def test_request_generates_params_for_RESTInterface_request_correctly(self, mocked_api):
         api = CCEX(key='1231', secret='152561')
         api.request('some_endpoint', authenticate=True)
@@ -345,9 +349,10 @@ class CCEXInterfaceTests(StandardizedMethodTests):
         super(CCEXInterfaceTests, self).test_wallet_formatter(expected_result, mock_json)
 
 
-class CoinCheckInterfaceTests(StandardizedMethodTests):
+class CoinCheckInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
+    exchange = CoinCheck
 
-    @patch(RESTInterface, 'request')
+    @patch('bitex.interface.rest.RESTInterface', 'request')
     def test_request_generates_params_for_RESTInterface_request_correctly(self, mocked_api):
         api = CoinCheck(key='1231', secret='152561')
         api.request('some_endpoint', authenticate=True)
@@ -408,9 +413,10 @@ class CoinCheckInterfaceTests(StandardizedMethodTests):
         super(CoinCheckInterfaceTests, self).test_wallet_formatter(expected_result, mock_json)
 
 
-class CryptopiaInterfaceTests(StandardizedMethodTests):
+class CryptopiaInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
+    exchange = Cryptopia
 
-    @patch(RESTInterface, 'request')
+    @patch('bitex.interface.rest.RESTInterface', 'request')
     def test_request_generates_params_for_RESTInterface_request_correctly(self, mocked_api):
         api = Cryptopia(key='1231', secret='152561')
         api.request('some_endpoint', authenticate=True)
@@ -475,8 +481,10 @@ class CryptopiaInterfaceTests(StandardizedMethodTests):
         super(CryptopiaInterfaceTests, self).test_wallet_formatter(expected_result, mock_json)
 
 
-class GDAXInterfaceTests(StandardizedMethodTests):
-    @patch(RESTInterface, 'request')
+class GDAXInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
+    exchange = GDAX
+
+    @patch('bitex.interface.rest.RESTInterface', 'request')
     def test_request_generates_params_for_RESTInterface_request_correctly(self, mocked_api):
         api = GDAX(key='1231', secret='152561')
         api.request('some_endpoint', authenticate=True)
@@ -541,8 +549,10 @@ class GDAXInterfaceTests(StandardizedMethodTests):
         super(GDAXInterfaceTests, self).test_wallet_formatter(expected_result, mock_json)
 
 
-class GeminiInterfaceTests(StandardizedMethodTests):
-    @patch(RESTInterface, 'request')
+class GeminiInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
+    exchange = Gemini
+
+    @patch('bitex.interface.rest.RESTInterface', 'request')
     def test_request_generates_params_for_RESTInterface_request_correctly(self, mocked_api):
         api = Gemini(key='1231', secret='152561')
         api.request('some_endpoint', authenticate=True)
@@ -607,9 +617,10 @@ class GeminiInterfaceTests(StandardizedMethodTests):
         super(GeminiInterfaceTests, self).test_wallet_formatter(expected_result, mock_json)
 
 
-class HitBTCInterfaceTests(StandardizedMethodTests):
+class HitBTCInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
+    exchange = HitBTC
 
-    @patch(RESTInterface, 'request')
+    @patch('bitex.interface.rest.RESTInterface', 'request')
     def test_request_generates_params_for_RESTInterface_request_correctly(self, mocked_api):
         api = HitBTC(key='1231', secret='152561')
         api.request('some_endpoint', authenticate=True)
@@ -674,8 +685,10 @@ class HitBTCInterfaceTests(StandardizedMethodTests):
         super(HitBTCInterfaceTests, self).test_wallet_formatter(expected_result, mock_json)
 
 
-class ItBitInterfaceTests(StandardizedMethodTests):
-    @patch(RESTInterface, 'request')
+class ItBitInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
+    exchange = ItBit
+
+    @patch('bitex.interface.rest.RESTInterface', 'request')
     def test_request_generates_params_for_RESTInterface_request_correctly(self, mocked_api):
         api = ItBit(key='1231', secret='152561')
         api.request('some_endpoint', authenticate=True)
@@ -739,9 +752,10 @@ class ItBitInterfaceTests(StandardizedMethodTests):
         super(ItBitInterfaceTests, self).test_wallet_formatter(expected_result, mock_json)
 
 
-class KrakenInterfaceTests(StandardizedMethodTests):
+class KrakenInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
+    exchange = Kraken
 
-    @patch(RESTInterface, 'request')
+    @patch('bitex.interface.rest.RESTInterface', 'request')
     def test_request_generates_params_for_RESTInterface_request_correctly(self, mocked_api):
         api = Kraken(key='1231', secret='152561')
         api.request('some_endpoint', authenticate=True)
@@ -806,9 +820,10 @@ class KrakenInterfaceTests(StandardizedMethodTests):
         super(KrakenInterfaceTests, self).test_wallet_formatter(expected_result, mock_json)
 
 
-class OKCoinInterfaceTests(StandardizedMethodTests):
+class OKCoinInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
+    exchange = OKCoin
 
-    @patch(RESTInterface, 'request')
+    @patch('bitex.interface.rest.RESTInterface', 'request')
     def test_request_generates_params_for_RESTInterface_request_correctly(self, mocked_api):
         api = OKCoin(key='1231', secret='152561')
         api.request('some_endpoint', authenticate=True)
@@ -871,9 +886,10 @@ class OKCoinInterfaceTests(StandardizedMethodTests):
         super(OKCoinInterfaceTests, self).test_wallet_formatter(expected_result, mock_json)
 
 
-class PoloniexInterfaceTests(StandardizedMethodTests):
+class PoloniexInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
+    exchange = Poloniex
 
-    @patch(RESTInterface, 'request')
+    @patch('bitex.interface.rest.RESTInterface', 'request')
     def test_request_generates_params_for_RESTInterface_request_correctly(self, mocked_api):
         api = Poloniex(key='1231', secret='152561')
         api.request('some_endpoint', authenticate=True)
@@ -938,9 +954,10 @@ class PoloniexInterfaceTests(StandardizedMethodTests):
         super(PoloniexInterfaceTests, self).test_wallet_formatter(expected_result, mock_json)
 
 
-class QuadrigaCXInterfaceTests(StandardizedMethodTests):
+class QuadrigaCXInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
+    exchange = QuadrigaCX
 
-    @patch(RESTInterface, 'request')
+    @patch('bitex.interface.rest.RESTInterface', 'request')
     def test_request_generates_params_for_RESTInterface_request_correctly(self, mocked_api):
         api = QuadrigaCX(key='1231', secret='152561')
         api.request('some_endpoint', authenticate=True)
@@ -1003,9 +1020,10 @@ class QuadrigaCXInterfaceTests(StandardizedMethodTests):
         super(QuadrigaCXInterfaceTests, self).test_wallet_formatter(expected_result, mock_json)
 
 
-class QuoinexInterfaceTests(StandardizedMethodTests):
+class QuoinexInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
+    exchange = Quoine
 
-    @patch(RESTInterface, 'request')
+    @patch('bitex.interface.rest.RESTInterface', 'request')
     def test_request_generates_params_for_RESTInterface_request_correctly(self, mocked_api):
         api = Quoinex(key='1231', secret='152561')
         api.request('some_endpoint', authenticate=True)
@@ -1070,9 +1088,10 @@ class QuoinexInterfaceTests(StandardizedMethodTests):
         super(QuoinexInterfaceTests, self).test_wallet_formatter(expected_result, mock_json)
 
 
-class TheRockTradingInterfaceTests(StandardizedMethodTests):
+class TheRockTradingInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
+    exchange = TheRockTrading
 
-    @patch(RESTInterface, 'request')
+    @patch('bitex.interface.rest.RESTInterface', 'request')
     def test_request_generates_params_for_RESTInterface_request_correctly(self, mocked_api):
         api = TheRockTrading(key='1231', secret='152561')
         api.request('some_endpoint', authenticate=True)
@@ -1137,9 +1156,10 @@ class TheRockTradingInterfaceTests(StandardizedMethodTests):
         super(TheRockTradingInterfaceTests, self).test_wallet_formatter(expected_result, mock_json)
 
 
-class VaultoroInterfaceTests(StandardizedMethodTests):
+class VaultoroInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
+    exchange = Vaultoro
 
-    @patch(RESTInterface, 'request')
+    @patch('bitex.interface.rest.RESTInterface', 'request')
     def test_request_generates_params_for_RESTInterface_request_correctly(self, mocked_api):
         api = Vaultoro(key='1231', secret='152561')
         api.request('some_endpoint', authenticate=True)
