@@ -6,46 +6,62 @@ python:
 
 root: true
 
-install: pip install -r requirements.txt
+env:
+  global:
+    - IS_NIGHTLY = `[ "$TRAVIS_BRANCH" == "nightly" ] then echo 1 else echo 0`
 
-script:
+allow_failures:
+  - python: 3.5
+    env: ALLOW_FAILURE=1
+  - python: 3.6
+    env: ALLOW_FAILURE=1
+
+install:
+  - pip install -r requirements.txt
   - pip install coverage coveralls
+  - pip install pylint pydocstyle pycodestyle
+
+
+
+# Script for the `Test` stage
+script:
   - coverage run --source=bitex setup.py test
   - coveralls
 
-after_success: coveralls
-
-after_failure: sudo bash $TRAVIS_BUILD_DIR/travis/force_deploy_on_nightly.sh
-
 jobs:
-  allow_failures:
   include:
     - stage: lint
       python: 3.6
+      env: ALLOW_FAILURE=$IS_NIGHTLY
       script:
-        - pip install pylint
         - pylint --rcfile=pylint.rc bitex
+
     - stage: lint
       python: 3.6
+      env: ALLOW_FAILURE=$IS_NIGHTLY
       script:
-        - pip install pydocstyle
         - pydocstyle bitex
+
     - stage: lint
       python: 3.6
+      env: ALLOW_FAILURE=$IS_NIGHTLY
       script:
-        - pip install pycodestyle
         - pycodestyle --max-line-length=100 bitex
+
     - stage: compile
       python: 3.5
+      env: ALLOW_FAILURE=$IS_NIGHTLY
       script: python setup.py install
+
     - stage: deploy
       python: 3.5
+      env: ALLOW_FAILURE=$IS_NIGHTLY
       script: sudo bash $TRAVIS_BUILD_DIR/travis/deploy.sh
 
 stages:
   - name: lint
     if: branch != nightly
-  - compile
+  - name: compile
   - name: test
     if: branch != nightly
   - name: deploy
