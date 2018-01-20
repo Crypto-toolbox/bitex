@@ -56,7 +56,7 @@ Classes found in `bitex.api.REST` provide wrapper classes and methods for Python
 procedure.
 
 An example:
-```
+```py
 from bitex.api.REST import KrakenREST
 
 k = KrakenREST()
@@ -100,7 +100,7 @@ Their prime objective is to provide a raw, realtime interface to all of an excha
 Websocket endpoint.
 
 ## Usage
-```
+```py
 from.bitex.api.WSS import GeminiWSS
 import time
 
@@ -126,7 +126,7 @@ across all of them (see next section, `Standardized Methods`, for more informati
 For example, querying tickers looks the same on all exchanges, as well as
 placing an order, using `bitex.interface`:
 
-```
+```py
 from bitex import Kraken, Bitstamp, Gemini
 k = Kraken(key_file='krkn.key')
 b = Bitstamp(key_file='btst.key')
@@ -160,7 +160,7 @@ This module provide formatters for the standardized methods, formatting their js
 
 Be mindful that, in order to provide a unified output format, some fields have been dropped in the formatted output! If you rely on one of these dropped fields, be sure to use the `APIResponse`'s `json` attribute instead, and parse the json yourself:
 
-```
+```py
 from bitex import Kraken
 k = Kraken()
 response = k.ticker()
