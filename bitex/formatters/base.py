@@ -19,7 +19,7 @@ class APIResponse(requests.Response, metaclass=ABCMeta):
     def __init__(self, method, response_obj, *args, **kwargs):
         """Initialize the object."""
         if not isinstance(response_obj, requests.Response):
-            return response_obj
+            raise TypeError("Response obj must be requests.Response instance, not %s" % type(response_obj))
         self.response = response_obj
         self.method = method
         self.method_args = args
