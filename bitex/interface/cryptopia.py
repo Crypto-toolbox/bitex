@@ -57,8 +57,7 @@ class Cryptopia(RESTInterface):
         """Place an order with the given parameters."""
         payload = {'Market': pair, 'Type': side, 'Rate': price, 'Amount': size}
         payload.update(kwargs)
-        return self.request('POST', 'SubmitTrade', params=payload,
-                            authenticate=True)
+        return self.request('SubmitTrade', params=payload, authenticate=True)
 
     @check_and_format_pair
     @format_with(CryptopiaFormattedResponse)
@@ -80,8 +79,7 @@ class Cryptopia(RESTInterface):
     @format_with(CryptopiaFormattedResponse)
     def open_orders(self, *args, **kwargs):
         """Return all open orders."""
-        return self.request('POST', 'GetOpenOrders', params=kwargs,
-                            authenticate=True)
+        return self.request('GetOpenOrders', params=kwargs, authenticate=True)
 
     @format_with(CryptopiaFormattedResponse)
     def cancel_order(self, *order_ids, **kwargs):
@@ -90,7 +88,7 @@ class Cryptopia(RESTInterface):
         payload = {'Type': 'Trade'}
         for oid in order_ids:
             payload.update({'OrderId': oid})
-            r = self.request('POST', 'CancelTrade', params=payload,
+            r = self.request('CancelTrade', params=payload,
                              authenticate=True)
             results.append(r)
         return results if len(results) > 1 else results[0]
@@ -98,5 +96,4 @@ class Cryptopia(RESTInterface):
     @format_with(CryptopiaFormattedResponse)
     def wallet(self, *args, **kwargs):
         """Return the account's wallet."""
-        return self.request('POST', 'GetBalance', params=kwargs,
-                            authenticate=True)
+        return self.request('GetBalance', params=kwargs, authenticate=True)
