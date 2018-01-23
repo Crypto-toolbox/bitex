@@ -23,8 +23,8 @@ class OKCoin(RESTInterface):
     def request(self, endpoint, authenticate=False, **req_kwargs):
         """Generate a request to the API."""
         if authenticate:
-            return super(OKCoin, self).request('POST', endpoint, authenticate, **req_kwargs)
-        return super(OKCoin, self).request('GET', endpoint, authenticate, **req_kwargs)
+            return super(OKCoin, self).request('POST', endpoint, authenticate=True, **req_kwargs)
+        return super(OKCoin, self).request('GET', endpoint, authenticate=False, **req_kwargs)
 
     def _get_supported_pairs(self):
         """Return a list of supported pairs."""
