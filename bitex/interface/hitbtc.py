@@ -2,6 +2,9 @@
 # Import Built-Ins
 import logging
 
+# Import third-party
+import requests
+
 # Import Homebrew
 from bitex.api.REST.hitbtc import HitBTCREST
 from bitex.interface.rest import RESTInterface
@@ -21,8 +24,8 @@ class HitBTC(RESTInterface):
 
     def _get_supported_pairs(self):
         """Return a list of supported pairs."""
-        r = self.request('symbols')
-        return [entry['symbol'] for entry in r.json()['symbols']]
+        r = requests.get('https://api.hitbtc.com/api/2/public/symbol')
+        return [entry['id'] for entry in r.json()]
 
     # pylint: disable=arguments-differ
     def request(self, endpoint, authenticate=False, verb=None, **req_kwargs):
