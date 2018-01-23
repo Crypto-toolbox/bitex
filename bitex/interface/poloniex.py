@@ -106,10 +106,10 @@ class Poloniex(RESTInterface):
     def cancel_order(self, *order_ids, **kwargs):
         """Cancel order(s) with the given ID(s)."""
         results = []
-        payload = kwargs
+        payload = kwargs or {}
         for oid in order_ids:
             payload.update({'orderNumber': oid})
-            r = self.request('cancelOrder', authenticate=True, params=oid)
+            r = self.request('cancelOrder', authenticate=True, params=payload)
             results.append(r)
         return results if len(results) > 1 else results[0]
 
