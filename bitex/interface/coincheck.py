@@ -101,10 +101,10 @@ class CoinCheck(RESTInterface):
         payload = kwargs
         for oid in order_ids:
             payload.update({'order_id': oid})
-            r = self.request('DELETE', 'exchange/orders/' + oid,
-                             params=payload, authenticate=True)
-            result.append(r)
-        return r if len(r) > 1 else r[0]
+            resp = self.request('DELETE', 'exchange/orders/' + oid, params=payload,
+                                authenticate=True)
+            result.append(resp)
+        return result if len(result) > 1 else result[0]
 
     @format_with(CoinCheckFormattedResponse)
     def wallet(self, *args, **kwargs):
