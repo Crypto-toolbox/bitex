@@ -47,7 +47,7 @@ class OKCoinREST(RESTAPI):
         hash_sign = hashlib.md5(sign.encode('utf-8')).hexdigest().upper()
         payload['sign'] = hash_sign
         req_kwargs['data'] = payload
-        if kwargs['method'] == 'POST':
+        if req_kwargs['method'] == 'POST':
             req_kwargs['headers'] = {"Content-Type": 'application/x-www-form-urlencoded'}
             req_kwargs['data'] = encoded_params
 
