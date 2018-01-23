@@ -6,7 +6,7 @@ from functools import wraps
 # Import Homebrew
 from bitex.exceptions import UnsupportedEndpointError
 from bitex.pairs import PairFormatter
-
+from bitex.formatters import APIResponse
 
 def check_version_compatibility(**version_func_pairs):
     """Check for correct version before method execution.
@@ -79,10 +79,13 @@ def format_with(formatter):
     def real_decorator(function):
         @wraps(function)
         def wrapper(*args, **kwargs):
-            response = function(*args, **kwargs)
+            try:
+                response = function(*args, **kwargs)
+            except NotImplementedError:
+                return None
             try:
                 return formatter(function.__name__, response, *args, **kwargs)
-            except Exception:
+            except NotImplementedError:
                 return response
 
         return wrapper
