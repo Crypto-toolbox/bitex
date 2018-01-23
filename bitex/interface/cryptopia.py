@@ -24,6 +24,13 @@ class Cryptopia(RESTInterface):
         pairs = [entry['Label'].replace('/', '_') for entry in r['Data']]
         return pairs
 
+    def request(self, endpoint, authenticate=False, **req_kwargs):
+        if authenticate:
+            return super(Cryptopia, self).request('POST', endpoint, authenticate=authenticate,
+                                                  **req_kwargs)
+        return super(Cryptopia, self).request('GET', endpoint, authenticate=authenticate,
+                                              **req_kwargs)
+
     # Public Endpoints
 
     @check_and_format_pair
