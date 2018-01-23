@@ -70,7 +70,7 @@ class Quoine(RESTInterface):
         """
         params = {'product_id': pair}
         params.update(kwargs)
-        return self.request('executions' % pair, params=params)
+        return self.request('executions', params=params)
 
     # Private Endpoints
     # pylint: disable=unused-argument
