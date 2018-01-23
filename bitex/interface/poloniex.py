@@ -108,7 +108,7 @@ class Poloniex(RESTInterface):
         results = []
         payload = kwargs
         for oid in order_ids:
-            payload.update({'orderNumber', oid})
+            payload.update({'orderNumber': oid})
             r = self.request('cancelOrder', authenticate=True, params=oid)
             results.append(r)
         return results if len(results) > 1 else results[0]
