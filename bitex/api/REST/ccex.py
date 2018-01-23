@@ -39,7 +39,7 @@ class CCEXREST(RESTAPI):
         params['apikey'] = self.key
         params['nonce'] = nonce
         url = self.addr + '/api.html?a=' + endpoint
-        encoded_params = '&'.join([k + '=' + params[k] for k in sorted(params.keys())])
+        encoded_params = '&'.join([str(k) + '=' + str(params[k]) for k in sorted(params.keys())])
         url += '&' + encoded_params
 
         # generate signature
