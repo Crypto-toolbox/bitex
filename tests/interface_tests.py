@@ -93,15 +93,15 @@ class BinanceInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
                                                                        method_args=additional_args)
 
     def test_cancel_order_formatter(self):
-        additional_args = ['BTC-USD']
+        kwargs = {'pair': 'BTC-USD'}
         expected_result = tuple()
         mock_json = {}
         super(BinanceInterfaceTests, self).test_cancel_order_formatter(expected_result, mock_json,
-                                                                       method_args=additional_args)
+                                                                       method_kwargs=kwargs)
 
     def test_wallet_formatter(self):
         expected_result = tuple()
-        mock_json = {}
+        mock_json = dict()
         super(BinanceInterfaceTests, self).test_wallet_formatter(expected_result, mock_json)
 
 
@@ -744,7 +744,7 @@ class ItBitInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
         self.fail("GDAX employs various HTTP verbs for private endpoints - these must be "
                   "tested! So far no tests have been written for these, failing..")
 
-    def test_get_supported_pairs_retrieves_data_from_online_endpoint_and_returns_json_content(self, mocked_request_func):
+    def test_get_supported_pairs_retrieves_data_from_online_endpoint_and_returns_json_content(self):
         b = ItBit()
         expected_list = sorted(['XBTUSD', 'XBTSGD', 'XBTEUR'])
         self.assertEqual(sorted(b.supported_pairs), expected_list)
@@ -805,7 +805,7 @@ class KrakenInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
 
     @patch('bitex.interface.rest.RESTInterface.request')
     def test_request_generates_params_for_RESTInterface_request_correctly(self, mocked_api):
-        api = Kraken(key='1231', secret='152561')
+        api = Kraken(key='1231', secret='YW55IGNhcm5hbCBwbGVhc3VyZS4=')
         api.request('some_endpoint', authenticate=True)
         mocked_api.assert_called_with('POST', 'private/some_endpoint', authenticate=True)
         api.request('some_endpoint', authenticate=False)
