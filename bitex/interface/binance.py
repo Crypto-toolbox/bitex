@@ -111,4 +111,4 @@ class Binance(RESTInterface):
     @format_with(BinanceFormattedResponse)
     def wallet(self, *args, **kwargs):
         """Return the wallet of this account."""
-        return self.request('GET', "v3/account", True).json()['balances']
+        return self.request('GET', "v3/account", True)
