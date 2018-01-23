@@ -28,11 +28,9 @@ class HitBTC(RESTInterface):
     def request(self, endpoint, authenticate=False, verb=None, **req_kwargs):
         """Generate a request to the API."""
         verb = verb if verb else 'GET'
-        if authenticate:
-            endpoint = 'trading/' + endpoint
-        else:
+        if not authenticate:
             endpoint = 'public/' + endpoint
-        return super(HitBTC, self).request(verb, endpoint, authenticate,
+        return super(HitBTC, self).request(verb, endpoint, authenticate=authenticate,
                                            **req_kwargs)
 
     # Public Endpoints
