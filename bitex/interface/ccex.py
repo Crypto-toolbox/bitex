@@ -24,9 +24,9 @@ class CCEX(RESTInterface):
         """Generate a request to the API."""
         if authenticate:
             endpoint = endpoint if endpoint else 'api.html'
-            return super(CCEX, self).request('GET', endpoint, authenticate=True, **req_kwargs)
-        endpoint = endpoint if endpoint else 'api_pub.html'
-        return super(CCEX, self).request('GET', endpoint, **req_kwargs)
+        else:
+            endpoint = endpoint if endpoint else 'api_pub.html'
+        return super(CCEX, self).request('GET', endpoint, authenticate=authenticate, **req_kwargs)
 
     def _get_supported_pairs(self):
         """Return a list of supported pairs."""
