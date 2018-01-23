@@ -2,6 +2,9 @@
 # Import Built-Ins
 import logging
 
+# Import third-party
+import requests
+
 # Import Homebrew
 from bitex.api.REST.rocktrading import RockTradingREST
 from bitex.interface.rest import RESTInterface
@@ -21,7 +24,8 @@ class TheRockTrading(RESTInterface):
 
     def _get_supported_pairs(self):
         """Return a list of all supported pairs."""
-        return [d['id'] for d in self.request('GET', 'funds').json()['funds']]
+        resp = requests.get('https://api.therocktrading.com/v1/funds')
+        return [d['id'] for d in resp.json()['funds']]
 
     # Public Endpoints
     @check_and_format_pair
