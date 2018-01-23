@@ -2,6 +2,9 @@
 # Import Built-Ins
 import logging
 
+# Import third-party
+import requests
+
 # Import Homebrew
 from bitex.api.REST.cryptopia import CryptopiaREST
 from bitex.interface.rest import RESTInterface
@@ -20,7 +23,7 @@ class Cryptopia(RESTInterface):
         super(Cryptopia, self).__init__('Cryptopia', CryptopiaREST(**api_kwargs))
 
     def _get_supported_pairs(self):
-        r = self.request('GET', 'GetTradePairs').json()
+        r = requests.get('https://www.cryptopia.co.nz/api/GetTradePairs').json()
         pairs = [entry['Label'].replace('/', '_') for entry in r['Data']]
         return pairs
 
