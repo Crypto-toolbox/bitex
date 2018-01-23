@@ -6,7 +6,8 @@ import logging
 # Import Homebrew
 from bitex.api.REST.quoine import QuoineREST
 from bitex.interface.rest import RESTInterface
-from bitex.utils import check_and_format_pair
+from bitex.utils import check_and_format_pair, format_with
+from bitex.formatters import QuoineFormattedResponse
 
 # Init Logging Facilities
 log = logging.getLogger(__name__)
@@ -31,6 +32,7 @@ class Quoine(RESTInterface):
 
     # Public Endpoints
     @check_and_format_pair
+    @format_with(QuoineFormattedResponse)
     def ticker(self, pair, *args, **kwargs):
         """
         Return the ticker for the given pair.
@@ -43,6 +45,7 @@ class Quoine(RESTInterface):
         return self.request('products/' + pair, params=kwargs)
 
     @check_and_format_pair
+    @format_with(QuoineFormattedResponse)
     def order_book(self, pair, *args, **kwargs):
         """
         Return the order book for the given pair.
@@ -55,6 +58,7 @@ class Quoine(RESTInterface):
         return self.request('products/%s/price_levels' % pair, params=kwargs)
 
     @check_and_format_pair
+    @format_with(QuoineFormattedResponse)
     def trades(self, pair, *args, **kwargs):
         """
         Return the trades for the given pair.
@@ -76,6 +80,7 @@ class Quoine(RESTInterface):
         return self.request('orders/', authenticate=True, params=params)
 
     @check_and_format_pair
+    @format_with(QuoineFormattedResponse)
     def ask(self, pair, price, size, *args, **kwargs):
         """
         Place an ask order.
@@ -90,6 +95,7 @@ class Quoine(RESTInterface):
         return self._place_order(pair, price, size, 'sell', *args, **kwargs)
 
     @check_and_format_pair
+    @format_with(QuoineFormattedResponse)
     def bid(self, pair, price, size, *args, **kwargs):
         """
         Place a bid order.
@@ -103,6 +109,7 @@ class Quoine(RESTInterface):
         """
         return self._place_order(pair, price, size, 'buy', *args, **kwargs)
 
+    @format_with(QuoineFormattedResponse)
     def order_status(self, order_id, *args, **kwargs):
         """
         Return the status of an order with the given id.
@@ -114,6 +121,7 @@ class Quoine(RESTInterface):
         """
         return self.request('orders/' + order_id, authenticate=True, params=kwargs)
 
+    @format_with(QuoineFormattedResponse)
     def open_orders(self, *args, **kwargs):
         """
         Return all open orders.
@@ -124,6 +132,7 @@ class Quoine(RESTInterface):
         """
         return self.request('orders', authenticate=True, params=kwargs)
 
+    @format_with(QuoineFormattedResponse)
     def cancel_order(self, *order_ids, **kwargs):
         """
         Cancel the order(s) with the given id(s).
@@ -138,6 +147,7 @@ class Quoine(RESTInterface):
             results.append(r)
         return results if len(results) > 1 else results[0]
 
+    @format_with(QuoineFormattedResponse)
     def wallet(self, *args, **kwargs):
         """
         Return the wallet of this account.

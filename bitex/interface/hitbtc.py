@@ -36,18 +36,21 @@ class HitBTC(RESTInterface):
                                            **req_kwargs)
 
     # Public Endpoints
-    @format_with(HitBTCFormattedResponse)
+
     @check_and_format_pair
+    @format_with(HitBTCFormattedResponse)
     def ticker(self, pair, *args, **kwargs):
         """Return the ticker for the given pair."""
         return self.request('%s/ticker' % pair, params=kwargs)
 
     @check_and_format_pair
+    @format_with(HitBTCFormattedResponse)
     def order_book(self, pair, *args, **kwargs):
         """Return the order book for the given pair."""
         return self.request('%s/orderbook' % pair, params=kwargs)
 
     @check_and_format_pair
+    @format_with(HitBTCFormattedResponse)
     def trades(self, pair, *args, **kwargs):
         """Return the trades for the given pair."""
         if 'from' not in kwargs:
@@ -65,26 +68,31 @@ class HitBTC(RESTInterface):
                             params=kwargs)
 
     @check_and_format_pair
+    @format_with(HitBTCFormattedResponse)
     def ask(self, pair, price, size, *args, **kwargs):
         """Place an ask order."""
         return self._place_order(pair, price, size, 'sell')
 
     @check_and_format_pair
+    @format_with(HitBTCFormattedResponse)
     def bid(self, pair, price, size, *args, **kwargs):
         """Place a bid order."""
         return self._place_order(pair, price, size, 'buy')
 
+    @format_with(HitBTCFormattedResponse)
     def order_status(self, order_id, *args, **kwargs):
         """Return the order status of the order with given ID."""
         payload = {'client_order_id': order_id}
         payload.update(kwargs)
         return self.request('order', params=payload, authenticate=True)
 
+    @format_with(HitBTCFormattedResponse)
     def open_orders(self, *args, **kwargs):
         """Return all open orders."""
         return self.request('orders/active', authenticate=True, params=kwargs)
 
     # pylint: disable=arguments-differ
+    @format_with(HitBTCFormattedResponse)
     def cancel_order(self, *order_ids, cancel_all=False, **kwargs):
         """Cancel order(s) with the given ID(s)."""
         if cancel_all:
@@ -99,6 +107,7 @@ class HitBTC(RESTInterface):
             results.append(r)
             return results if len(results) > 1 else results[0]
 
+    @format_with(HitBTCFormattedResponse)
     def wallet(self, *args, **kwargs):
         """Return the account's wallet."""
         return self.request('balance', authenticate=True, params=kwargs)

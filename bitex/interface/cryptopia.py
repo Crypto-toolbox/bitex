@@ -25,18 +25,21 @@ class Cryptopia(RESTInterface):
         return pairs
 
     # Public Endpoints
-    @format_with(CryptopiaFormattedResponse)
+
     @check_and_format_pair
+    @format_with(CryptopiaFormattedResponse)
     def ticker(self, pair, *args, **kwargs):
         """Return the ticker for the given pair."""
         return self.request('GET', 'GetMarket/' + pair, params=kwargs)
 
     @check_and_format_pair
+    @format_with(CryptopiaFormattedResponse)
     def order_book(self, pair, *args, **kwargs):
         """Return the order book for the given pair."""
         return self.request('GET', 'GetMarketOrders/' + pair, params=kwargs)
 
     @check_and_format_pair
+    @format_with(CryptopiaFormattedResponse)
     def trades(self, pair, *args, **kwargs):
         """Return the trades for the given pair."""
         return self.request('GET', 'GetMarketHistory/' + pair, params=kwargs)
@@ -51,24 +54,29 @@ class Cryptopia(RESTInterface):
                             authenticate=True)
 
     @check_and_format_pair
+    @format_with(CryptopiaFormattedResponse)
     def ask(self, pair, price, size, *args, **kwargs):
         """Place an ask order."""
         return self._place_order(pair, price, size, 'Sell', *args, **kwargs)
 
     @check_and_format_pair
+    @format_with(CryptopiaFormattedResponse)
     def bid(self, pair, price, size, *args, **kwargs):
         """Place a bid order."""
         return self._place_order(pair, price, size, 'Buy', *args, **kwargs)
 
+    @format_with(CryptopiaFormattedResponse)
     def order_status(self, order_id, *args, **kwargs):
         """Return the order status of the order with given ID."""
         raise NotImplementedError
 
+    @format_with(CryptopiaFormattedResponse)
     def open_orders(self, *args, **kwargs):
         """Return all open orders."""
         return self.request('POST', 'GetOpenOrders', params=kwargs,
                             authenticate=True)
 
+    @format_with(CryptopiaFormattedResponse)
     def cancel_order(self, *order_ids, **kwargs):
         """Cancel order(s) with the given ID(s)."""
         results = []
@@ -80,6 +88,7 @@ class Cryptopia(RESTInterface):
             results.append(r)
         return results if len(results) > 1 else results[0]
 
+    @format_with(CryptopiaFormattedResponse)
     def wallet(self, *args, **kwargs):
         """Return the account's wallet."""
         return self.request('POST', 'GetBalance', params=kwargs,

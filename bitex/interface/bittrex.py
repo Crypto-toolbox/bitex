@@ -43,6 +43,7 @@ class Bittrex(RESTInterface):
         return self.request('public/getmarketsummary', params=payload)
 
     @check_and_format_pair
+    @format_with(BittrexFormattedResponse)
     def order_book(self, pair, *args, **kwargs):
         """Return the order book for the given pair."""
         payload = {'market': pair, 'type': 'both'}
@@ -50,6 +51,7 @@ class Bittrex(RESTInterface):
         return self.request('public/getorderbook', params=payload)
 
     @check_and_format_pair
+    @format_with(BittrexFormattedResponse)
     def trades(self, pair, *args, **kwargs):
         """Return the trades for the given pair."""
         payload = {'market': pair}
@@ -58,6 +60,7 @@ class Bittrex(RESTInterface):
 
     # Private Endpoints
     @check_and_format_pair
+    @format_with(BittrexFormattedResponse)
     def ask(self, pair, price, size, *args, **kwargs):
         """Place an ask order."""
         payload = {'market': pair, 'quantity': size, 'rate': price}
@@ -65,22 +68,26 @@ class Bittrex(RESTInterface):
         return self.request('market/selllimit', params=payload, authenticate=True)
 
     @check_and_format_pair
+    @format_with(BittrexFormattedResponse)
     def bid(self, pair, price, size, *args, **kwargs):
         """Place a bid order."""
         payload = {'market': pair, 'quantity': size, 'rate': price}
         payload.update(kwargs)
         return self.request('market/buylimit', params=payload, authenticate=True)
 
+    @format_with(BittrexFormattedResponse)
     def order_status(self, order_id, *args, **kwargs):
         """Return order status of order with given id."""
         payload = {'uuid': order_id}
         payload.update(kwargs)
         return self.request('account/getorder', params=payload, authenticate=True)
 
+    @format_with(BittrexFormattedResponse)
     def open_orders(self, *args, **kwargs):
         """Return all open orders."""
         return self.request('market/getopenorders', params=kwargs, authenticate=True)
 
+    @format_with(BittrexFormattedResponse)
     def cancel_order(self, *order_ids, **kwargs):
         """Cancel order(s) with given ID(s)."""
         results = []
@@ -91,6 +98,7 @@ class Bittrex(RESTInterface):
             results.append(r)
         return results if len(results) > 1 else results[0]
 
+    @format_with(BittrexFormattedResponse)
     def wallet(self, *args, currency=None, **kwargs):  # pylint: disable=arguments-differ
         """Return the account wallet."""
         if currency:

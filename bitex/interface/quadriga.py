@@ -5,7 +5,8 @@ import logging
 # Import Homebrew
 from bitex.api.REST.quadriga import QuadrigaCXREST
 from bitex.interface.rest import RESTInterface
-from bitex.utils import check_and_format_pair
+from bitex.utils import check_and_format_pair, format_with
+from bitex.formatters import QuadrigaCXFormattedResponse
 
 # Init Logging Facilities
 log = logging.getLogger(__name__)
@@ -31,7 +32,9 @@ class QuadrigaCX(RESTInterface):
         return ['btc_cad', 'btc_usd', 'eth_btc', 'eth_cad']
 
     # Public Endpoints
+
     @check_and_format_pair
+    @format_with(QuadrigaCXFormattedResponse)
     def ticker(self, pair, *args, **kwargs):
         """Return the ticker for the given pair."""
         payload = {'book': pair}
@@ -39,6 +42,7 @@ class QuadrigaCX(RESTInterface):
         return self.request('ticker', params=payload)
 
     @check_and_format_pair
+    @format_with(QuadrigaCXFormattedResponse)
     def order_book(self, pair, *args, **kwargs):
         """Return the order book for the given pair."""
         payload = {'book': pair}
@@ -46,6 +50,7 @@ class QuadrigaCX(RESTInterface):
         return self.request('order_book', params=payload)
 
     @check_and_format_pair
+    @format_with(QuadrigaCXFormattedResponse)
     def trades(self, pair, *args, **kwargs):
         """Return the trades for the given pair."""
         payload = {'book': pair}
@@ -60,25 +65,30 @@ class QuadrigaCX(RESTInterface):
         return self.request(side, authenticate=True, params=payload)
 
     @check_and_format_pair
+    @format_with(QuadrigaCXFormattedResponse)
     def ask(self, pair, price, size, *args, **kwargs):
         """Place an ask order."""
         return self._place_order(pair, price, size, 'sell', **kwargs)
 
     @check_and_format_pair
+    @format_with(QuadrigaCXFormattedResponse)
     def bid(self, pair, price, size, *args, **kwargs):
         """Place a bid order."""
         return self._place_order(pair, price, size, 'buy', **kwargs)
 
+    @format_with(QuadrigaCXFormattedResponse)
     def order_status(self, order_id, *args, **kwargs):
         """Return the order status of the order with given ID."""
         payload = {'id': order_id}
         payload.update(kwargs)
         return self.request('lookup_order', authenticate=True, params=payload)
 
+    @format_with(QuadrigaCXFormattedResponse)
     def open_orders(self, *args, **kwargs):
         """Return all open orders."""
         return self.request('open_orders', authenticate=True, params=kwargs)
 
+    @format_with(QuadrigaCXFormattedResponse)
     def cancel_order(self, *order_ids, **kwargs):
         """Cancel order(s) with the given ID(s)."""
         results = []
@@ -89,6 +99,7 @@ class QuadrigaCX(RESTInterface):
             results.append(r)
         return results if len(results) > 1 else results[0]
 
+    @format_with(QuadrigaCXFormattedResponse)
     def wallet(self, *args, **kwargs):
         """Return the account's wallet."""
         return self.request('balance', authenticate=True, params=kwargs)

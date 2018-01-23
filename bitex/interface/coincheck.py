@@ -32,18 +32,21 @@ class CoinCheck(RESTInterface):
         return ['btc-jpy']
 
     # Public Endpoints
-    @format_with(CoinCheckFormattedResponse)
+
     @check_and_format_pair
+    @format_with(CoinCheckFormattedResponse)
     def ticker(self, pair, *args, **kwargs):
         """Return the ticker for the given pair."""
         return self.request('GET', 'ticker', params=kwargs)
 
     @check_and_format_pair
+    @format_with(CoinCheckFormattedResponse)
     def order_book(self, pair, *args, **kwargs):
         """Return the order book for the given pair."""
         return self.request('GET', 'order_books', params=kwargs)
 
     @check_and_format_pair
+    @format_with(CoinCheckFormattedResponse)
     def trades(self, pair, *args, **kwargs):
         """Return the trades for the given pair."""
         return self.request('GET', 'trades', params=kwargs)
@@ -58,6 +61,7 @@ class CoinCheck(RESTInterface):
                             authenticate=True)
 
     @check_and_format_pair
+    @format_with(CoinCheckFormattedResponse)
     def ask(self, pair, price, size, *args, **kwargs):
         """Place an ask orders."""
         if 'order_type' in kwargs:
@@ -67,6 +71,7 @@ class CoinCheck(RESTInterface):
         return self._place_order(pair, price, size, 'sell', **kwargs)
 
     @check_and_format_pair
+    @format_with(CoinCheckFormattedResponse)
     def bid(self, pair, price, size, *args, **kwargs):
         """Place a bid order."""
         if 'order_type' in kwargs:
@@ -75,6 +80,7 @@ class CoinCheck(RESTInterface):
                 raise ValueError("order_type not supported by this function!")
         return self._place_order(pair, price, size, 'sell', **kwargs)
 
+    @format_with(CoinCheckFormattedResponse)
     def order_status(self, order_id, *args, **kwargs):
         """Return the status of the order with the given ID.
 
@@ -82,11 +88,13 @@ class CoinCheck(RESTInterface):
         """
         raise NotImplementedError
 
+    @format_with(CoinCheckFormattedResponse)
     def open_orders(self, *args, **kwargs):
         """Return a list of all open orders."""
         return self.request('GET', 'exchange/orders/open', params=kwargs,
                             authenticate=True)
 
+    @format_with(CoinCheckFormattedResponse)
     def cancel_order(self, *order_ids, **kwargs):
         """Cancel order(s) with the given ID(s)."""
         result = []
@@ -98,6 +106,7 @@ class CoinCheck(RESTInterface):
             result.append(r)
         return r if len(r) > 1 else r[0]
 
+    @format_with(CoinCheckFormattedResponse)
     def wallet(self, *args, **kwargs):
         """Return the account's wallet."""
         return self.request('GET', 'accounts/balance', params=kwargs,

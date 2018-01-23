@@ -5,7 +5,8 @@ import logging
 # Import Homebrew
 from bitex.api.REST.rocktrading import RockTradingREST
 from bitex.interface.rest import RESTInterface
-from bitex.utils import check_and_format_pair
+from bitex.utils import check_and_format_pair, format_with
+from bitex.formatters import RockTradingFormattedResponse
 
 # Init Logging Facilities
 log = logging.getLogger(__name__)
@@ -24,16 +25,19 @@ class TheRockTrading(RESTInterface):
 
     # Public Endpoints
     @check_and_format_pair
+    @format_with(RockTradingFormattedResponse)
     def ticker(self, pair, *args, **kwargs):
         """Return the ticker for the given pair."""
         return self.request('GET', 'funds/%s/ticker' % pair, params=kwargs)
 
     @check_and_format_pair
+    @format_with(RockTradingFormattedResponse)
     def order_book(self, pair, *args, **kwargs):
         """Return the order book for the given pair."""
         return self.request('GET', 'funds/%s/orderbook' % pair, params=kwargs)
 
     @check_and_format_pair
+    @format_with(RockTradingFormattedResponse)
     def trades(self, pair, *args, **kwargs):
         """Return the trades for the given pair."""
         return self.request('GET', 'funds/%s/trades' % pair, params=kwargs)
@@ -46,15 +50,18 @@ class TheRockTrading(RESTInterface):
         return self.request('POST', 'funds/%s/orders' % pair, authenticate=True, params=payload)
 
     @check_and_format_pair
+    @format_with(RockTradingFormattedResponse)
     def ask(self, pair, price, size, *args, **kwargs):
         """Place an ask order."""
         return self._place_order(pair, price, size, 'sell', **kwargs)
 
     @check_and_format_pair
+    @format_with(RockTradingFormattedResponse)
     def bid(self, pair, price, size, *args, **kwargs):
         """Place a bid order."""
         return self._place_order(pair, price, size, 'buy', **kwargs)
 
+    @format_with(RockTradingFormattedResponse)
     def order_status(self, order_id, *args, **kwargs):
         """Return the status of the order with the given ID."""
         if 'pair' not in kwargs and 'fund_id' not in kwargs:
@@ -66,6 +73,7 @@ class TheRockTrading(RESTInterface):
         return self.request('GET', 'funds/%s/orders/%s' % (pair, order_id), authenticate=True,
                             params=kwargs)
 
+    @format_with(RockTradingFormattedResponse)
     def open_orders(self, *args, **kwargs):
         """Return all open orders."""
         if 'pair' not in kwargs and 'fund_id' not in kwargs:
@@ -83,6 +91,7 @@ class TheRockTrading(RESTInterface):
         return self.request('GET', 'funds/%s/orders' % pair, authenticate=True, params=kwargs)
 
     # pylint: disable=arguments-differ
+    @format_with(RockTradingFormattedResponse)
     def cancel_order(self, *order_ids, all_orders=False, **kwargs):
         """Cancel order(s) with the given ID(s)."""
         results = []
@@ -105,6 +114,7 @@ class TheRockTrading(RESTInterface):
             results.append(r)
         return results if len(results) > 1 else results[0]
 
+    @format_with(RockTradingFormattedResponse)
     def wallet(self, *args, **kwargs):
         """Return the account's wallet."""
         return self.request('GET', 'balances', authenticate=True, params=kwargs)

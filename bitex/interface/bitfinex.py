@@ -63,6 +63,17 @@ class Bitfinex(RESTInterface):
     # Basic Methods
     ###############
 
+    @check_and_format_pair
+    @format_with(BitfinexFormattedResponse)
+    def order_book(self, pair, **endpoint_kwargs):
+        """Return the order book for a given pair."""
+        self.is_supported(pair)
+        if self.REST.version == 'v1':
+            return self.request('book/%s' % pair, params=endpoint_kwargs)
+        prec = endpoint_kwargs.pop('Precision', 'P0')
+        return self.request('book/%s/%s' % (pair, prec),
+                            params=endpoint_kwargs)
+
     @format_with(BitfinexFormattedResponse)
     @check_and_format_pair
     def ticker(self, pair, **endpoint_kwargs):
@@ -73,16 +84,7 @@ class Bitfinex(RESTInterface):
         return self.request('ticker/%s' % pair, params=endpoint_kwargs)
 
     @check_and_format_pair
-    def order_book(self, pair, **endpoint_kwargs):
-        """Return the order book for a given pair."""
-        self.is_supported(pair)
-        if self.REST.version == 'v1':
-            return self.request('book/%s' % pair, params=endpoint_kwargs)
-        prec = endpoint_kwargs.pop('Precision', 'P0')
-        return self.request('book/%s/%s' % (pair, prec),
-                            params=endpoint_kwargs)
-
-    @check_and_format_pair
+    @format_with(BitfinexFormattedResponse)
     def trades(self, pair, **endpoint_kwargs):
         """Return trades for a given pair."""
         self.is_supported(pair)
@@ -91,11 +93,13 @@ class Bitfinex(RESTInterface):
         return self.request('trades/%s/hist' % pair, params=endpoint_kwargs)
 
     @check_and_format_pair
+    @format_with(BitfinexFormattedResponse)
     def ask(self, pair, price, size, *args, **kwargs):
         """Place an ask order with the given parameters."""
         return self._place_order(pair, price, size, 'sell', **kwargs)
 
     @check_and_format_pair
+    @format_with(BitfinexFormattedResponse)
     def bid(self, pair, price, size, *args, **kwargs):
         """Place a bid order with the given parameters."""
         return self._place_order(pair, price, size, 'buy', **kwargs)
@@ -108,16 +112,19 @@ class Bitfinex(RESTInterface):
         return self.new_order(pair, **payload)
 
     @check_version_compatibility(v1=v1_only_methods, v2=v2_only_methods)
+    @format_with(BitfinexFormattedResponse)
     def order_status(self, order_id, *args, **kwargs):
         """Return the order status for the given id."""
         return self.request('order/status', authenticate=True, params={'order_id': order_id})
 
     @check_version_compatibility(v1=v1_only_methods, v2=v2_only_methods)
+    @format_with(BitfinexFormattedResponse)
     def open_orders(self, *args, **kwargs):
         """Return a list of open orders."""
         return self.active_orders(*args, **kwargs)
 
     @check_version_compatibility(v1=v1_only_methods, v2=v2_only_methods)
+    @format_with(BitfinexFormattedResponse)
     def cancel_order(self, *order_ids, **kwargs):
         """Cancel orders with the given ids."""
         results = []
@@ -129,6 +136,7 @@ class Bitfinex(RESTInterface):
             results.append(r)
         return results if len(results) > 1 else results[0]
 
+    @format_with(BitfinexFormattedResponse)
     def wallet(self, *args, **kwargs):
         """Return the account's wallet."""
         return self.balances()

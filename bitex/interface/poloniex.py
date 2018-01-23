@@ -44,13 +44,15 @@ class Poloniex(RESTInterface):
         return list(resp.json().keys())
 
     # Public Endpoints
-    @format_with(PoloniexFormattedResponse)
+
     @check_and_format_pair
+    @format_with(PoloniexFormattedResponse)
     def ticker(self, pair, *args, **kwargs):
         """Return the ticker for the given pair."""
         return self.request('returnTicker', params=kwargs)
 
     @check_and_format_pair
+    @format_with(PoloniexFormattedResponse)
     def order_book(self, pair, *args, **kwargs):
         """Return the order book for the given pair."""
         payload = {'currencyPair': pair}
@@ -58,6 +60,7 @@ class Poloniex(RESTInterface):
         return self.request('returnOrderBook', params=payload)
 
     @check_and_format_pair
+    @format_with(PoloniexFormattedResponse)
     def trades(self, pair, *args, **kwargs):
         """Return the trades for the given pair."""
         payload = {'currencyPair': pair}
@@ -74,27 +77,32 @@ class Poloniex(RESTInterface):
         return self.request('sell', authenticate=True, params=payload)
 
     @check_and_format_pair
+    @format_with(PoloniexFormattedResponse)
     def ask(self, pair, price, size, *args, **kwargs):
         """Place an ask order."""
         raise NotImplementedError
 
     @check_and_format_pair
+    @format_with(PoloniexFormattedResponse)
     def bid(self, pair, price, size, *args, **kwargs):
         """Place a bid order."""
         raise NotImplementedError
 
+    @format_with(PoloniexFormattedResponse)
     def order_status(self, order_id, *args, **kwargs):
         """Return the order status of the order with given ID."""
         payload = {'orderNumber': order_id}
         payload.update(kwargs)
         return self.request('returnOrderTrades', authenticate=True, params=payload)
 
+    @format_with(PoloniexFormattedResponse)
     def open_orders(self, *args, **kwargs):
         """Return all open orders."""
         payload = {'currencyPair': 'all'}
         payload.update(kwargs)
         return self.request('returnOpenOrders', authenticate=True, params=payload)
 
+    @format_with(PoloniexFormattedResponse)
     def cancel_order(self, *order_ids, **kwargs):
         """Cancel order(s) with the given ID(s)."""
         results = []
@@ -105,6 +113,7 @@ class Poloniex(RESTInterface):
             results.append(r)
         return results if len(results) > 1 else results[0]
 
+    @format_with(PoloniexFormattedResponse)
     def wallet(self, *args, **kwargs):
         """Return the account's wallet."""
         return self.request('returnTradableBalances', authenticate=True, params=kwargs)
