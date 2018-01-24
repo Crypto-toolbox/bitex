@@ -6,7 +6,7 @@ from functools import wraps
 # Import Homebrew
 from bitex.exceptions import UnsupportedEndpointError
 from bitex.pairs import PairFormatter
-from bitex.formatters import APIResponse
+
 
 def check_version_compatibility(**version_func_pairs):
     """Check for correct version before method execution.

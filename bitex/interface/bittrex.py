@@ -23,7 +23,8 @@ class Bittrex(RESTInterface):
     # pylint: disable=arguments-differ
     def request(self, endpoint, authenticate=False, **req_kwargs):
         """Generate a request to the API."""
-        return super(Bittrex, self).request('GET', endpoint, authenticate=authenticate, **req_kwargs)
+        return super(Bittrex, self).request('GET', endpoint, authenticate=authenticate,
+                                            **req_kwargs)
 
     def _get_supported_pairs(self):
         """Return a list of supported pairs."""
