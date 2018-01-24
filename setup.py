@@ -14,4 +14,3 @@ setup(name='BitEx', version=VERSION, author='Nils Diefenbach',
       license='MIT',  classifiers=['Development Status :: 4 - Beta',
                                    'Intended Audience :: Developers'],
       )
-
