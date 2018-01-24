@@ -1,7 +1,7 @@
 if [ "$TRAVIS_TAG" =~ ^.*rc[0-9][0-9]*$ ]; then
     echo "ReleaseCandidate Tag found, running RC setup.."
     python generate_rc_setup.py $TRAVIS_TAG && echo "done!"
-elif [ $TRAVIS_BRANCH" = "nightly" ]; then
+elif [ "$TRAVIS_BRANCH" = "nightly" ]; then
     echo "Branch is nightly, running nightly setup.."
     python generate_nightly_setup.py && echo "done!"
 fi
