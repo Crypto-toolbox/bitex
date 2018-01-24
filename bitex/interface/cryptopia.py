@@ -28,6 +28,7 @@ class Cryptopia(RESTInterface):
         return pairs
 
     def request(self, endpoint, authenticate=False, **req_kwargs):
+        """Query the API and return its result."""
         if authenticate:
             return super(Cryptopia, self).request('POST', endpoint, authenticate=authenticate,
                                                   **req_kwargs)
