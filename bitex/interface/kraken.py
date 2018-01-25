@@ -31,7 +31,8 @@ class Kraken(RESTInterface):
         if authenticate:
             return super(Kraken, self).request('POST', 'private/' + endpoint,
                                                authenticate=True, **req_kwargs)
-        return super(Kraken, self).request('GET', 'public/' + endpoint, **req_kwargs)
+        return super(Kraken, self).request('GET', 'public/' + endpoint, authenticate=False,
+                                           **req_kwargs)
 
     # Public Endpoints
     # pylint: disable=arguments-differ

@@ -42,15 +42,14 @@ class OKCoinREST(RESTAPI):
         payload['api_key'] = self.key
 
         # Create the signature from payload and add it to params
-        encoded_params = '&'.join([k + '=' + payload[k] for k in sorted(payload.keys())])
+        encoded_params = '&'.join([k + '=' + str(payload[k]) for k in sorted(payload.keys())])
         sign = encoded_params + '&secret_key=' + self.secret
         hash_sign = hashlib.md5(sign.encode('utf-8')).hexdigest().upper()
         payload['sign'] = hash_sign
         req_kwargs['data'] = payload
-        if kwargs['method'] == 'POST':
+        if req_kwargs['method'] == 'POST':
             req_kwargs['headers'] = {"Content-Type": 'application/x-www-form-urlencoded'}
-            req_kwargs['data'] = '&'.join([k + '=' + str(payload[k])
-                                           for k in sorted(payload.keys())])
+            req_kwargs['data'] = encoded_params
 
         req_kwargs['url'] = self.generate_url(self.generate_uri(endpoint))
         return req_kwargs

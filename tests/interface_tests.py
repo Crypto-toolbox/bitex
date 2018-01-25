@@ -40,12 +40,12 @@ class BinanceInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
                return_value=['BTC-USD']):
         exchange = Binance(key='shadow', secret='panda')
 
-    @patch('bitex.interface.rest.RESTInterface', 'request')
+    @patch('bitex.interface.rest.RESTInterface.request')
     def test_request_generates_params_for_RESTInterface_request_correctly(self, mocked_api):
         api = Binance(key='1231', secret='152561')
-        api.request('some_endpoint', authenticate=True)
+        api.request('POST', 'some_endpoint', authenticate=True)
         mocked_api.assert_called_with('POST', 'some_endpoint', authenticate=True)
-        api.request('some_endpoint', authenticate=False)
+        api.request('GET', 'some_endpoint', authenticate=False)
         mocked_api.assert_called_with('GET', 'some_endpoint', authenticate=False)
 
     @patch('requests.request', return_value=MockResponse(binance_exchange_info_parsed, 200))
@@ -93,15 +93,15 @@ class BinanceInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
                                                                        method_args=additional_args)
 
     def test_cancel_order_formatter(self):
-        additional_args = ['BTC-USD']
+        kwargs = {'pair': 'BTC-USD'}
         expected_result = tuple()
         mock_json = {}
         super(BinanceInterfaceTests, self).test_cancel_order_formatter(expected_result, mock_json,
-                                                                       method_args=additional_args)
+                                                                       method_kwargs=kwargs)
 
     def test_wallet_formatter(self):
         expected_result = tuple()
-        mock_json = {}
+        mock_json = dict()
         super(BinanceInterfaceTests, self).test_wallet_formatter(expected_result, mock_json)
 
 
@@ -110,7 +110,7 @@ class BitfinexInterfacTests(BaseInterfaceTests.StandardizedMethodTestCase):
                return_value=['BTC-USD']):
         exchange = Bitfinex(key='shadow', secret='panda')
 
-    @patch('bitex.interface.rest.RESTInterface', 'request')
+    @patch('bitex.interface.rest.RESTInterface.request')
     def test_request_generates_params_for_RESTInterface_request_correctly(self, mocked_api):
         api = Bitfinex(key='1231', secret='152561')
         api.request('some_endpoint', authenticate=True)
@@ -162,13 +162,25 @@ class BitfinexInterfacTests(BaseInterfaceTests.StandardizedMethodTestCase):
         super(BitfinexInterfacTests, self).test_order_status_formatter(expected_result, mock_json,
                                                                        method_args=additional_args)
 
+    def test_cancel_order_formatter(self):
+        additional_args = ['BTC-USD']
+        expected_result = tuple()
+        mock_json = {}
+        super(BitfinexInterfacTests, self).test_cancel_order_formatter(expected_result, mock_json,
+                                                                       method_args=additional_args)
+
+    def test_wallet_formatter(self):
+        expected_result = tuple()
+        mock_json = {}
+        super(BitfinexInterfacTests, self).test_wallet_formatter(expected_result, mock_json)
+
 
 class BitstampInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
     with patch('bitex.interface.bitstamp.Bitstamp._get_supported_pairs',
                return_value=['BTC-USD']):
         exchange = Bitstamp(key='shadow', secret='panda', user_id='1234')
 
-    @patch('bitex.interface.rest.RESTInterface', 'request')
+    @patch('bitex.interface.rest.RESTInterface.request')
     def test_request_generates_params_for_RESTInterface_request_correctly(self, mocked_api):
         api = Bitstamp(key='1231', secret='152561')
         api.request('some_endpoint', authenticate=True)
@@ -218,14 +230,14 @@ class BitstampInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
         expected_result = tuple()
         mock_json = {}
         super(BitstampInterfaceTests, self).test_order_status_formatter(expected_result, mock_json,
-                                                            method_args=additional_args)
+                                                                        method_args=additional_args)
 
     def test_cancel_order_formatter(self):
         additional_args = ['BTC-USD']
         expected_result = tuple()
         mock_json = {}
         super(BitstampInterfaceTests, self).test_cancel_order_formatter(expected_result, mock_json,
-                                                            method_args=additional_args)
+                                                                        method_args=additional_args)
 
     def test_wallet_formatter(self):
         expected_result = tuple()
@@ -238,11 +250,11 @@ class BittrexInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
                return_value=['BTC-USD']):
         exchange = Bittrex(key='shadow', secret='panda')
 
-    @patch('bitex.interface.rest.RESTInterface', 'request')
+    @patch('bitex.interface.rest.RESTInterface.request')
     def test_request_generates_params_for_RESTInterface_request_correctly(self, mocked_api):
         api = Bittrex(key='1231', secret='152561')
         api.request('some_endpoint', authenticate=True)
-        mocked_api.assert_called_with('POST', 'some_endpoint', authenticate=True)
+        mocked_api.assert_called_with('GET', 'some_endpoint', authenticate=True)
         api.request('some_endpoint', authenticate=False)
         mocked_api.assert_called_with('GET', 'some_endpoint', authenticate=False)
 
@@ -308,11 +320,11 @@ class CCEXInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
                return_value=['BTC-USD']):
         exchange = CCEX(key='shadow', secret='panda')
 
-    @patch('bitex.interface.rest.RESTInterface', 'request')
+    @patch('bitex.interface.rest.RESTInterface.request')
     def test_request_generates_params_for_RESTInterface_request_correctly(self, mocked_api):
         api = CCEX(key='1231', secret='152561')
         api.request('some_endpoint', authenticate=True)
-        mocked_api.assert_called_with('POST', 'some_endpoint', authenticate=True)
+        mocked_api.assert_called_with('GET', 'some_endpoint', authenticate=True)
         api.request('some_endpoint', authenticate=False)
         mocked_api.assert_called_with('GET', 'some_endpoint', authenticate=False)
 
@@ -377,13 +389,15 @@ class CoinCheckInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
     with patch('bitex.interface.coincheck.CoinCheck._get_supported_pairs', return_value=['BTC-USD']):
         exchange = CoinCheck(key='shadow', secret='panda')
 
-    @patch('bitex.interface.rest.RESTInterface', 'request')
+    @patch('bitex.interface.rest.RESTInterface.request')
     def test_request_generates_params_for_RESTInterface_request_correctly(self, mocked_api):
         api = CoinCheck(key='1231', secret='152561')
-        api.request('some_endpoint', authenticate=True)
-        mocked_api.assert_called_with('POST', 'some_endpoint', authenticate=True)
-        api.request('some_endpoint', authenticate=False)
+        api.request('DELETE', 'some_endpoint', authenticate=True)
+        mocked_api.assert_called_with('DELETE', 'some_endpoint', authenticate=True)
+        api.request('GET','some_endpoint', authenticate=False)
         mocked_api.assert_called_with('GET', 'some_endpoint', authenticate=False)
+        self.fail("CoinCheck Employs various HTTP Verbs for private endpoints - these must be "
+                  "tested! So far no tests have been written for these, failing..")
 
     def test_get_supported_pairs_retrieves_data_from_online_endpoint_and_returns_json_content(self):
         self.assertEqual(['btc-jpy'], CoinCheck()._get_supported_pairs())
@@ -442,7 +456,7 @@ class CryptopiaInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
     with patch('bitex.interface.cryptopia.Cryptopia._get_supported_pairs', return_value=['BTC-USD']):
         exchange = Cryptopia(key='shadow', secret='panda')
 
-    @patch('bitex.interface.rest.RESTInterface', 'request')
+    @patch('bitex.interface.rest.RESTInterface.request')
     def test_request_generates_params_for_RESTInterface_request_correctly(self, mocked_api):
         api = Cryptopia(key='1231', secret='152561')
         api.request('some_endpoint', authenticate=True)
@@ -511,13 +525,15 @@ class GDAXInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
     with patch('bitex.interface.gdax.GDAX._get_supported_pairs', return_value=['BTC-USD']):
         exchange = GDAX(key='shadow', secret='panda', passphrase='1234')
 
-    @patch('bitex.interface.rest.RESTInterface', 'request')
+    @patch('bitex.interface.rest.RESTInterface.request')
     def test_request_generates_params_for_RESTInterface_request_correctly(self, mocked_api):
         api = GDAX(key='1231', secret='152561')
         api.request('some_endpoint', authenticate=True)
         mocked_api.assert_called_with('POST', 'some_endpoint', authenticate=True)
         api.request('some_endpoint', authenticate=False)
         mocked_api.assert_called_with('GET', 'some_endpoint', authenticate=False)
+        self.fail("GDAX employs various HTTP verbs for private endpoints - these must be "
+                  "tested! So far no tests have been written for these, failing..")
 
     @patch('requests.request', return_value=MockResponse(gdax_products_parsed, 200))
     def test_get_supported_pairs_retrieves_data_from_online_endpoint_and_returns_json_content(self, mocked_request_func):
@@ -580,7 +596,7 @@ class GeminiInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
     with patch('bitex.interface.gemini.Gemini._get_supported_pairs', return_value=['BTC-USD']):
         exchange = Gemini(key='shadow', secret='panda')
 
-    @patch('bitex.interface.rest.RESTInterface', 'request')
+    @patch('bitex.interface.rest.RESTInterface.request')
     def test_request_generates_params_for_RESTInterface_request_correctly(self, mocked_api):
         api = Gemini(key='1231', secret='152561')
         api.request('some_endpoint', authenticate=True)
@@ -649,13 +665,13 @@ class HitBTCInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
     with patch('bitex.interface.hitbtc.HitBTC._get_supported_pairs', return_value=['BTC-USD']):
         exchange = HitBTC(key='shadow', secret='panda')
 
-    @patch('bitex.interface.rest.RESTInterface', 'request')
+    @patch('bitex.interface.rest.RESTInterface.request')
     def test_request_generates_params_for_RESTInterface_request_correctly(self, mocked_api):
         api = HitBTC(key='1231', secret='152561')
-        api.request('some_endpoint', authenticate=True)
+        api.request('some_endpoint', verb='POST', authenticate=True)
         mocked_api.assert_called_with('POST', 'some_endpoint', authenticate=True)
         api.request('some_endpoint', authenticate=False)
-        mocked_api.assert_called_with('GET', 'some_endpoint', authenticate=False)
+        mocked_api.assert_called_with('GET', 'public/some_endpoint', authenticate=False)
 
     @patch('requests.request', return_value=MockResponse(hitbtc_symbols_parsed, 200))
     def test_get_supported_pairs_retrieves_data_from_online_endpoint_and_returns_json_content(self, mocked_request_func):
@@ -718,16 +734,17 @@ class ItBitInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
     with patch('bitex.interface.itbit.ItBit._get_supported_pairs', return_value=['BTC-USD']):
         exchange = ItBit(key='shadow', secret='panda', user_id='1234')
 
-    @patch('bitex.interface.rest.RESTInterface', 'request')
+    @patch('bitex.interface.rest.RESTInterface.request')
     def test_request_generates_params_for_RESTInterface_request_correctly(self, mocked_api):
         api = ItBit(key='1231', secret='152561')
-        api.request('some_endpoint', authenticate=True)
+        api.request('POST', 'some_endpoint', authenticate=True)
         mocked_api.assert_called_with('POST', 'some_endpoint', authenticate=True)
-        api.request('some_endpoint', authenticate=False)
+        api.request('GET', 'some_endpoint', authenticate=False)
         mocked_api.assert_called_with('GET', 'some_endpoint', authenticate=False)
+        self.fail("GDAX employs various HTTP verbs for private endpoints - these must be "
+                  "tested! So far no tests have been written for these, failing..")
 
-
-    def test_get_supported_pairs_retrieves_data_from_online_endpoint_and_returns_json_content(self, mocked_request_func):
+    def test_get_supported_pairs_retrieves_data_from_online_endpoint_and_returns_json_content(self):
         b = ItBit()
         expected_list = sorted(['XBTUSD', 'XBTSGD', 'XBTEUR'])
         self.assertEqual(sorted(b.supported_pairs), expected_list)
@@ -786,13 +803,13 @@ class KrakenInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
     with patch('bitex.interface.kraken.Kraken._get_supported_pairs', return_value=['BTC-USD']):
         exchange = Kraken(key='shadow', secret='panda')
 
-    @patch('bitex.interface.rest.RESTInterface', 'request')
+    @patch('bitex.interface.rest.RESTInterface.request')
     def test_request_generates_params_for_RESTInterface_request_correctly(self, mocked_api):
-        api = Kraken(key='1231', secret='152561')
+        api = Kraken(key='1231', secret='YW55IGNhcm5hbCBwbGVhc3VyZS4=')
         api.request('some_endpoint', authenticate=True)
-        mocked_api.assert_called_with('POST', 'some_endpoint', authenticate=True)
+        mocked_api.assert_called_with('POST', 'private/some_endpoint', authenticate=True)
         api.request('some_endpoint', authenticate=False)
-        mocked_api.assert_called_with('GET', 'some_endpoint', authenticate=False)
+        mocked_api.assert_called_with('GET', 'public/some_endpoint', authenticate=False)
 
     @patch('requests.request', return_value=MockResponse(kraken_asset_pairs_parsed, 200))
     def test_get_supported_pairs_retrieves_data_from_online_endpoint_and_returns_json_content(self, mocked_request_func):
@@ -855,7 +872,7 @@ class OKCoinInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
     with patch('bitex.interface.okcoin.OKCoin._get_supported_pairs', return_value=['BTC-USD']):
         exchange = OKCoin(key='shadow', secret='panda')
 
-    @patch('bitex.interface.rest.RESTInterface', 'request')
+    @patch('bitex.interface.rest.RESTInterface.request')
     def test_request_generates_params_for_RESTInterface_request_correctly(self, mocked_api):
         api = OKCoin(key='1231', secret='152561')
         api.request('some_endpoint', authenticate=True)
@@ -922,13 +939,14 @@ class PoloniexInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
     with patch('bitex.interface.poloniex.Poloniex._get_supported_pairs', return_value=['BTC-USD']):
         exchange = Poloniex(key='shadow', secret='panda')
 
-    @patch('bitex.interface.rest.RESTInterface', 'request')
+    @patch('bitex.interface.rest.RESTInterface.request')
     def test_request_generates_params_for_RESTInterface_request_correctly(self, mocked_api):
         api = Poloniex(key='1231', secret='152561')
         api.request('some_endpoint', authenticate=True)
-        mocked_api.assert_called_with('POST', 'some_endpoint', authenticate=True)
+        mocked_api.assert_called_with('POST', 'some_endpoint', authenticate=True, params={'command': 'some_endpoint'})
         api.request('some_endpoint', authenticate=False)
-        mocked_api.assert_called_with('GET', 'some_endpoint', authenticate=False)
+        mocked_api.assert_called_with('GET', 'some_endpoint', authenticate=False, params={'command': 'some_endpoint'})
+
 
     @patch('requests.request', return_value=MockResponse(poloniex_tickers_parsed, 200))
     def test_get_supported_pairs_retrieves_data_from_online_endpoint_and_returns_json_content(self, mocked_request_func):
@@ -991,7 +1009,7 @@ class QuadrigaCXInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
     with patch('bitex.interface.quadriga.QuadrigaCX._get_supported_pairs', return_value=['BTC-USD']):
         exchange = QuadrigaCX(key='shadow', secret='panda', client_id='1234')
 
-    @patch('bitex.interface.rest.RESTInterface', 'request')
+    @patch('bitex.interface.rest.RESTInterface.request')
     def test_request_generates_params_for_RESTInterface_request_correctly(self, mocked_api):
         api = QuadrigaCX(key='1231', secret='152561')
         api.request('some_endpoint', authenticate=True)
@@ -1058,7 +1076,7 @@ class QuoinexInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
     with patch('bitex.interface.quoine.Quoine._get_supported_pairs', return_value=['BTC-USD']):
         exchange = Quoine(key='shadow', secret='panda')
 
-    @patch('bitex.interface.rest.RESTInterface', 'request')
+    @patch('bitex.interface.rest.RESTInterface.request')
     def test_request_generates_params_for_RESTInterface_request_correctly(self, mocked_api):
         api = Quoine(key='1231', secret='152561')
         api.request('some_endpoint', authenticate=True)
@@ -1127,13 +1145,15 @@ class TheRockTradingInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase
     with patch('bitex.interface.rocktrading.TheRockTrading._get_supported_pairs', return_value=['BTC-USD']):
         exchange = TheRockTrading(key='shadow', secret='panda')
 
-    @patch('bitex.interface.rest.RESTInterface', 'request')
+    @patch('bitex.interface.rest.RESTInterface.request')
     def test_request_generates_params_for_RESTInterface_request_correctly(self, mocked_api):
         api = TheRockTrading(key='1231', secret='152561')
-        api.request('some_endpoint', authenticate=True)
+        api.request('POST', 'some_endpoint', authenticate=True)
         mocked_api.assert_called_with('POST', 'some_endpoint', authenticate=True)
-        api.request('some_endpoint', authenticate=False)
+        api.request('GET', 'some_endpoint', authenticate=False)
         mocked_api.assert_called_with('GET', 'some_endpoint', authenticate=False)
+        self.fail("TheRockTrading employs various HTTP verbs for private endpoints - these must be "
+                  "tested! So far no tests have been written for these, failing..")
 
     @patch('requests.request', return_value=MockResponse(rock_trading_tickers_parsed, 200))
     def test_get_supported_pairs_retrieves_data_from_online_endpoint_and_returns_json_content(self, mocked_request_func):
@@ -1196,12 +1216,12 @@ class VaultoroInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
     with patch('bitex.interface.vaultoro.Vaultoro._get_supported_pairs', return_value=['BTC-USD']):
         exchange = Vaultoro(key='shadow', secret='panda')
 
-    @patch('bitex.interface.rest.RESTInterface', 'request')
+    @patch('bitex.interface.rest.RESTInterface.request')
     def test_request_generates_params_for_RESTInterface_request_correctly(self, mocked_api):
         api = Vaultoro(key='1231', secret='152561')
-        api.request('some_endpoint', authenticate=True)
-        mocked_api.assert_called_with('POST', 'some_endpoint', authenticate=True)
-        api.request('some_endpoint', authenticate=False)
+        api.request('some_endpoint', post=True, authenticate=True)
+        mocked_api.assert_called_with('POST', '1/some_endpoint', authenticate=True)
+        api.request('some_endpoint', post=False, authenticate=False)
         mocked_api.assert_called_with('GET', 'some_endpoint', authenticate=False)
 
     def test_get_supported_pairs_retrieves_data_from_online_endpoint_and_returns_json_content(self):

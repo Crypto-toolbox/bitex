@@ -79,10 +79,16 @@ def format_with(formatter):
     def real_decorator(function):
         @wraps(function)
         def wrapper(*args, **kwargs):
-            response = function(*args, **kwargs)
+            try:
+                response = function(*args, **kwargs)
+            except NotImplementedError:
+                return None
+            if isinstance(response, list):
+                return [formatter(function.__name__, r, *args, **kwargs) for r in response]
+
             try:
                 return formatter(function.__name__, response, *args, **kwargs)
-            except Exception:
+            except NotImplementedError:
                 return response
 
         return wrapper
