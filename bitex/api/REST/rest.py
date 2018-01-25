@@ -70,7 +70,7 @@ class RESTAPI(BaseAPI):
         url = self.generate_url(uri)
         template = {'url': url, 'headers': {}, 'files': {},
                     'data': {}, 'params': {}, 'auth': {}, 'cookies': {},
-                    'hooks': {}, 'json': {}, 'method': 'GET'}
+                    'hooks': {}, 'json': {}, }
         template.update(kwargs)
         return template
 
