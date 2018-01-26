@@ -125,7 +125,7 @@ class Bittrex(RESTInterface):
 
     def trade_history(self, *args, **kwargs):  # pylint: disable=unused-argument
         """Return the account's trade history."""
-        return self.request('account/getorderhistory', params=kwargs)
+        return self.request('account/getorderhistory', params=kwargs, authenticate=True)
 
     def withdrawal_history(self, *args, **kwargs):  # pylint: disable=unused-argument
         """Return the account's withdrawal history."""
