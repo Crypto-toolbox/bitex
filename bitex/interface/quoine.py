@@ -24,11 +24,11 @@ class Quoine(RESTInterface):
     def request(self, endpoint, authenticate=False, **req_kwargs):
         """Request data for given endpoint from a RESTAPI object."""
         if not authenticate:
-            return super(Quoine, self).request('GET', endpoint, authenticate=False, **req_kwargs)
-        return super(Quoine, self).request('POST', endpoint, authenticate=True, **req_kwargs)
+            return super(Quoine, self).request(req_kwargs.get('method', 'GET'), endpoint, authenticate=False, **req_kwargs)
+        return super(Quoine, self).request(req_kwargs.get('method', 'POST'), endpoint, authenticate=True, **req_kwargs)
 
     def _get_supported_pairs(self):
-        return []
+        return [p['id'] for p in self.request('products').json()]
 
     # Public Endpoints
     @check_and_format_pair
@@ -119,7 +119,8 @@ class Quoine(RESTInterface):
         :param kwargs: additional kwargs, passed to requests.Requests() as 'param' kwarg.
         :return: :class:`requests.Response()` object.
         """
-        return self.request('orders/' + order_id, authenticate=True, params=kwargs)
+        return self.request('orders/' + order_id, authenticate=True,
+                            params=kwargs, method='GET')
 
     @format_with(QuoineFormattedResponse)
     def open_orders(self, *args, **kwargs):
@@ -130,7 +131,8 @@ class Quoine(RESTInterface):
         :param kwargs: additional kwargs, passed to requests.Requests() as 'param' kwarg.
         :return: :class:`requests.Response()` object.
         """
-        return self.request('orders', authenticate=True, params=kwargs)
+        return self.request('orders', authenticate=True, params=kwargs,
+                            method='GET')
 
     @format_with(QuoineFormattedResponse)
     def cancel_order(self, *order_ids, **kwargs):
@@ -143,7 +145,8 @@ class Quoine(RESTInterface):
         """
         results = []
         for oid in order_ids:
-            r = self.request('orders/%s/cancel' % oid, authenticate=True, params=kwargs)
+            r = self.request('orders/%s/cancel' % oid, authenticate=True,
+                             params=kwargs, method='PUT')
             results.append(r)
         return results if len(results) > 1 else results[0]
 
@@ -156,4 +159,5 @@ class Quoine(RESTInterface):
         :param kwargs: additional kwargs, passed to requests.Requests() as 'param' kwarg.
         :return: :class:`requests.Response()` object.
         """
-        return self.request('accounts/balance', authenticate=True, params=kwargs)
+        return self.request('accounts/balance', authenticate=True,
+                            params=kwargs, method='GET')
