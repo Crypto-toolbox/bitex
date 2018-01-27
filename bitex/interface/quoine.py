@@ -119,7 +119,7 @@ class Quoine(RESTInterface):
         :param kwargs: additional kwargs, passed to requests.Requests() as 'param' kwarg.
         :return: :class:`requests.Response()` object.
         """
-        return self.request('orders/' + order_id, authenticate=True,
+        return self.request('orders/%s' % order_id, authenticate=True,
                             params=kwargs, method='GET')
 
     @format_with(QuoineFormattedResponse)
