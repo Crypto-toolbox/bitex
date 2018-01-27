@@ -5,12 +5,12 @@ Documentation available here:
 """
 # Import Built-ins
 import logging
+import time
 import urllib
 import urllib.parse
 
 # Import Third-Party
 import jwt
-
 # Import Homebrew
 from bitex.api.REST import RESTAPI
 
@@ -63,3 +63,12 @@ class QuoineREST(RESTAPI):
                                  'X-Quoine-Auth': signature,
                                  'Content-Type': 'application/json'}
         return req_kwargs
+
+    @staticmethod
+    def nonce():
+        """
+        Create a Nonce value for signature generation.
+
+        :return: Nonce as string
+        """
+        return str(int(round(1000 * 10000 * time.time())))
