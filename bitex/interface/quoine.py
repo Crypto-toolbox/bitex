@@ -75,9 +75,16 @@ class Quoine(RESTInterface):
     # Private Endpoints
     # pylint: disable=unused-argument
     def _place_order(self, pair, price, size, side, *args, **kwargs):
-        params = {'product_id': pair, 'side': side, 'quantity': size, 'price': price}
+        params = {
+            'product_id': pair,
+            'side': side,
+            'quantity': size,
+            'price': price,
+            'order_type': 'limit'
+        }
         params.update(kwargs)
-        return self.request('orders/', authenticate=True, params=params)
+        return self.request('orders', authenticate=True,
+                            params={'order': params})
 
     @check_and_format_pair
     @format_with(QuoineFormattedResponse)

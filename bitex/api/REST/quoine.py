@@ -49,9 +49,10 @@ class QuoineREST(RESTAPI):
 
         path = '/' + endpoint
 
-        if kwargs.get('method') == 'POST':
+        if req_kwargs.get('method', 'POST') == 'POST':
             req_kwargs['json'] = params
-        elif kwargs.get('method') == 'GET' and params:
+            del req_kwargs['params']
+        elif req_kwargs.get('method') == 'GET' and params:
             path += '?' + urllib.parse.urlencode(params)
 
         msg = {'path': path, 'nonce': self.nonce(), 'token_id': self.key}
@@ -62,13 +63,5 @@ class QuoineREST(RESTAPI):
         req_kwargs['headers'] = {'X-Quoine-API-Version': self.version,
                                  'X-Quoine-Auth': signature,
                                  'Content-Type': 'application/json'}
+
         return req_kwargs
-
-    @staticmethod
-    def nonce():
-        """
-        Create a Nonce value for signature generation.
-
-        :return: Nonce as string
-        """
-        return str(int(round(1000 * 10000 * time.time())))
