@@ -22,7 +22,7 @@ class BitstampFormattedResponse(APIResponse):
         low = data["low"]
         last = data["last"]
         volume = data["volume"]
-        timestamp = datetime.utcfromtimestamp(data["timestamp"])
+        timestamp = datetime.utcfromtimestamp(float(data["timestamp"]))
         return super(BitstampFormattedResponse, self).ticker(bid, ask, high, low, last, volume,
                                                              timestamp)
 
