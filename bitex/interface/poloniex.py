@@ -72,7 +72,7 @@ class Poloniex(RESTInterface):
         """Place an order with the given parameters."""
         payload = {'currencyPair': pair, 'rate': price, 'amount': size}
         payload.update(kwargs)
-        if side == 'bid':
+        if side == 'buy':
             return self.request('buy', authenticate=True, params=payload)
         return self.request('sell', authenticate=True, params=payload)
 
