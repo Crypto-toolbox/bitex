@@ -3,9 +3,14 @@
 import os
 import configparser
 from functools import wraps
+import logging
+
 # Import Homebrew
 from bitex.exceptions import UnsupportedEndpointError
 from bitex.pairs import PairFormatter
+
+
+log = logging.getLogger(__name__)
 
 
 def check_version_compatibility(**version_func_pairs):
@@ -82,6 +87,7 @@ def format_with(formatter):
             try:
                 response = function(*args, **kwargs)
             except NotImplementedError:
+                log.error("Function %s has not been implemented yet!", function.__name__)
                 return None
             if isinstance(response, list):
                 return [formatter(function.__name__, r, *args, **kwargs) for r in response]
