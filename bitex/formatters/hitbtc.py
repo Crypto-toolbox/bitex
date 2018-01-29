@@ -16,7 +16,7 @@ class HitBTCFormattedResponse(APIResponse):
         """Return namedtuple with given data."""
         data = self.json(parse_int=str, parse_float=str)
 
-        curr_timestamp = datetime.utcfromtimestamp(data["timestamp"] / 1000)
+        curr_timestamp = datetime.utcfromtimestamp(float(data["timestamp"]) / 1000)
 
         bid = data["bid"]
         ask = data["ask"]

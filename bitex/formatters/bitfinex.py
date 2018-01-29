@@ -22,7 +22,7 @@ class BitfinexFormattedResponse(APIResponse):
         low = data["low"]
         last = data["last_price"]
         volume = data["volume"]
-        timestamp = datetime.utcfromtimestamp(data["timestamp"])
+        timestamp = datetime.utcfromtimestamp(float(data["timestamp"]))
 
         return super(BitfinexFormattedResponse, self).ticker(bid, ask, high, low, last, volume,
                                                              timestamp)
