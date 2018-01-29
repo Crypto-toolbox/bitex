@@ -17,7 +17,7 @@ class KrakenFormattedResponse(APIResponse):
     @property
     def ticker(self):
         """Return namedtuple with given data."""
-        pair = self.method_kwargs['params']['pair']
+        pair = self.method_args[0]
         data = self.json(parse_int=str, parse_float=str)['result'][pair]
         bid = data["b"][0]
         ask = data["a"][0]
