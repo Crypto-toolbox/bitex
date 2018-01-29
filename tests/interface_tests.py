@@ -22,8 +22,8 @@ from unittest.mock import patch
 # Import Third-Party
 
 # Import Homebrew
-from helpers import MockResponse, BaseInterfaceTests
-from payloads import *
+from tests.helpers import MockResponse, BaseInterfaceTests
+from tests.payloads import *
 from bitex.interface import Binance, Bitfinex, Bitstamp, Bittrex
 from bitex.interface import CCEX, CoinCheck, Cryptopia
 from bitex.interface import GDAX, Gemini, HitBTC, ItBit, Kraken, OKCoin
