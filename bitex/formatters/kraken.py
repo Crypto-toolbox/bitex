@@ -1,5 +1,6 @@
 """FormattedResponse Class for Standardized methods of the Kraken Interface class."""
 # Import Built-Ins
+from datetime import datetime
 
 # Import Third-party
 
@@ -16,17 +17,17 @@ class KrakenFormattedResponse(APIResponse):
     @property
     def ticker(self):
         """Return namedtuple with given data."""
-        # data = self.json(parse_int=str, parse_float=str)
-
-        # return TickerFormattedResponseTuple(bid=Decimal(data["bid"]),
-        #                                     ask=Decimal(data["ask"]),
-        #                                     high=Decimal(data["high"]),
-        #                                     low=Decimal(data["low"]),
-        #                                     last=Decimal(data["last"]),
-        #                                     volume=Decimal(data["volume"]),
-        #                                     timestamp=data["timestamp"] / Decimal(1000),
-        #                                     )
-        raise NotImplementedError
+        pair = self.method_kwargs['params']['pair']
+        data = self.json(parse_int=str, parse_float=str)['result'][pair]
+        bid = data["b"][0]
+        ask = data["a"][0]
+        high = data["h"][1]
+        low = data["l"][1]
+        last = data["c"][0]
+        volume = data["v"][1]
+        timestamp = datetime.utcnow()
+        return super(KrakenFormattedResponse, self).ticker(bid, ask, high, low, last, volume,
+                                                           timestamp)
 
     def order_book(self, bids, asks, ts):
         """Return namedtuple with given data."""
