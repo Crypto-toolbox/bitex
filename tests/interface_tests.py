@@ -801,11 +801,11 @@ class ItBitInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
 
 class KrakenInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
     with patch('bitex.interface.kraken.Kraken._get_supported_pairs', return_value=['BTC-USD']):
-        exchange = Kraken(key='shadow', secret='panda')
+        exchange = Kraken(key='shadow', secret='11LX0lqM9aExe63oe975Fjms5I9plFAPDxj0puwFBKGct79CP9GESjl5IRTDP8bqNaMYWXxEO8UbM0e4kacRtw==')
 
     @patch('bitex.interface.rest.RESTInterface.request')
     def test_request_generates_params_for_RESTInterface_request_correctly(self, mocked_api):
-        api = Kraken(key='1231', secret='YW55IGNhcm5hbCBwbGVhc3VyZS4=')
+        api = Kraken(key='1231', secret='11LX0lqM9aExe63oe975Fjms5I9plFAPDxj0puwFBKGct79CP9GESjl5IRTDP8bqNaMYWXxEO8UbM0e4kacRtw==')
         api.request('some_endpoint', authenticate=True)
         mocked_api.assert_called_with('POST', 'private/some_endpoint', authenticate=True)
         api.request('some_endpoint', authenticate=False)
@@ -1193,18 +1193,18 @@ class TheRockTradingInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase
         super(TheRockTradingInterfaceTests, self).test_open_orders_formatter(expected_result, mock_json)
 
     def test_order_status_formatter(self):
-        additional_args = ['BTC-USD']
+        additional_kwargs = {'pair': 'BTC-USD'}
         expected_result = tuple()
         mock_json = {}
         super(TheRockTradingInterfaceTests, self).test_order_status_formatter(expected_result, mock_json,
-                                                            method_args=additional_args)
+                                                            method_kwargs=additional_kwargs)
 
     def test_cancel_order_formatter(self):
-        additional_args = ['BTC-USD']
+        additional_kwargs = {'pair': 'BTC-USD'}
         expected_result = tuple()
         mock_json = {}
         super(TheRockTradingInterfaceTests, self).test_cancel_order_formatter(expected_result, mock_json,
-                                                            method_args=additional_args)
+                                                            method_kwargs=additional_kwargs)
 
     def test_wallet_formatter(self):
         expected_result = tuple()
