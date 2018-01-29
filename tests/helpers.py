@@ -1,6 +1,7 @@
 # Import Built-Ins
 import logging
 from unittest import TestCase, mock
+from collections import namedtuple
 
 # Import Third-Party
 import requests
@@ -35,102 +36,152 @@ class BaseInterfaceTests:
             mocked_request_function.assert_called_with(*expected_request_args,
                                                        **expected_request_kwargs)
 
-        @mock.patch('requests.request')
-        def _assert_method_formatter_passes(self, method_args, method_kwargs, expected_result,
-                                            mock_json, method, mock_resp):
-            """Assert that the given order returns the expected result in the expected format.
+        def _assert_method_formatter_passes(self, method, method_args, method_kwargs,
+                                            mock_resp_json, expected_result):
+            """Assert that the given method returns the expected result in the expected format.
+
+            :param method: The Interface method to call
+            :param method_args: Method arguments to pass as ``*args`` to the method.
+            :param method_kwargs:  Method keyword arguments to pass as ``**kwargs`` to the method.
+            :param mock_resp_json: The json data to return when calling MockResponse class
+            :param expected_result: The expected Tuple to be found in ApiResponse.formatted
+            :return: None
+            """
+            with mock.patch('requests.request') as mock_request:
+                mock_request.side_effect = [MockResponse(mock_resp_json, 200)]
+                resp = method(*method_args, **method_kwargs)
+    
+                self.assertIsInstance(resp, APIResponse)
+                self.assertIsInstance(resp.formatted, type(expected_result))
+                return resp
+
+        def test_ticker_formatter(self, method_args, method_kwargs, mock_resp_json, expected_result):
+            """Test the formatter for the ticker endpoint.
+            
+            :param method_args: Method arguments to pass as ``*args`` to the method.
+            :param method_kwargs:  Method keyword arguments to pass as ``**kwargs`` to the method.
+            :param mock_resp_json: The json data to return when calling MockResponse class
+            :param expected_result: The expected namedtuple to be found in ApiResponse.formatted
+            :return: None
+            """
+            method = self.exchange.ticker
+            result = self._assert_method_formatter_passes(method, method_args, method_kwargs, 
+                                                          mock_resp_json, expected_result)
+            self.fail("formatter test not implemented yet!")
+
+        def test_order_book_formatter(self, method_args, method_kwargs, mock_resp_json, expected_result):
+            """Test the formatter for the order book endpoint.
 
             :param method_args: Method arguments to pass as ``*args`` to the method.
             :param method_kwargs:  Method keyword arguments to pass as ``**kwargs`` to the method.
-            :param expected_result: The expected Tuple to be found in ApiResponse.formatted
-            :param mock_json: The json data to feed the formatter
-            :param method: The method to call
-            :param mock_resp: a ``MockedResponse`` instance
+            :param mock_resp_json: The json data to return when calling MockResponse class
+            :param expected_result: The expected namedtuple to be found in ApiResponse.formatted
             :return: None
             """
-            mock_resp.side_effect = [MockResponse({'BTC-USD'}, 200),  # mock supported_pairs
-                                     MockResponse(mock_json, 200)]
-            resp = method(*method_args, **method_kwargs)
+            method = self.exchange.order_book
+            result = self._assert_method_formatter_passes(method, method_args, method_kwargs, 
+                                                          mock_resp_json, expected_result)
+            self.fail("formatter test not implemented yet!")
 
-            self.assertIsInstance(resp, APIResponse)
-            self.assertEqual(method_args, expected_result, resp.formatted)
+        def test_trades_formatter(self, method_args, method_kwargs, mock_resp_json, expected_result):
+            """Test the formatter for the trades endpoint.
 
-        def test_ticker_formatter(self, expected_result, mock_json, method_args=None,
-                                  method_kwargs=None):
-            template_args = ['BTC-USD']
-            template_args += method_args or []
-            template_kwargs = {}
-            template_kwargs.update(method_kwargs or {})
-            self._assert_method_formatter_passes(template_args, template_kwargs, expected_result,
-                                                 mock_json, self.exchange.ticker)
+            :param method_args: Method arguments to pass as ``*args`` to the method.
+            :param method_kwargs:  Method keyword arguments to pass as ``**kwargs`` to the method.
+            :param mock_resp_json: The json data to return when calling MockResponse class
+            :param expected_result: The expected namedtuple to be found in ApiResponse.formatted
+            :return: None
+            """
+            method = self.exchange.trades
+            result = self._assert_method_formatter_passes(method, method_args, method_kwargs, 
+                                                          mock_resp_json, expected_result)
+            self.fail("formatter test not implemented yet!")
 
-        def test_order_book_formatter(self, expected_result, mock_json, method_args=None,
-                                      method_kwargs=None):
-            template_args = ['BTC-USD']
-            template_args += method_args or []
-            template_kwargs = {}
-            template_kwargs.update(method_kwargs or {})
-            self._assert_method_formatter_passes(template_args, template_kwargs, expected_result,
-                                                 mock_json, self.exchange.order_book)
+        def test_ask_formatter(self, method_args, method_kwargs, mock_resp_json, expected_result):
+            """Test the formatter for the ask endpoint.
 
-        def test_trades_formatter(self, expected_result, mock_json, method_args=None,
-                                  method_kwargs=None):
-            template_args = ['BTC-USD']
-            template_args += method_args or []
-            template_kwargs = {}
-            template_kwargs.update(method_kwargs or {})
-            self._assert_method_formatter_passes(template_args, template_kwargs, expected_result,
-                                                 mock_json, self.exchange.trades)
+            :param method_args: Method arguments to pass as ``*args`` to the method.
+            :param method_kwargs:  Method keyword arguments to pass as ``**kwargs`` to the method.
+            :param mock_resp_json: The json data to return when calling MockResponse class
+            :param expected_result: The expected namedtuple to be found in ApiResponse.formatted
+            :return: None
+            """
+            method = self.exchange.ask
+            result = self._assert_method_formatter_passes(method, method_args, method_kwargs, 
+                                                          mock_resp_json, expected_result)
+            self.fail("formatter test not implemented yet!")
 
-        def test_ask_formatter(self, expected_result, mock_json, method_args=None, method_kwargs=None):
-            template_args = ['BTC-USD', 1000, 50]
-            template_args += method_args or []
-            template_kwargs = {}
-            template_kwargs.update(method_kwargs or {})
-            self._assert_method_formatter_passes(template_args, template_kwargs, expected_result,
-                                                 mock_json, self.exchange.ask)
+        def test_bid_formatter(self, method_args, method_kwargs, mock_resp_json, expected_result):
+            """Test the formatter for the bid endpoint.
 
-        def test_bid_formatter(self, expected_result, mock_json, method_args=None, method_kwargs=None):
-            template_args = ['BTC-USD', 1000, 50]
-            template_args += method_args or []
-            template_kwargs = {}
-            template_kwargs.update(method_kwargs or {})
-            self._assert_method_formatter_passes(template_args, template_kwargs, expected_result,
-                                                 mock_json, self.exchange.bid)
+            :param method_args: Method arguments to pass as ``*args`` to the method.
+            :param method_kwargs:  Method keyword arguments to pass as ``**kwargs`` to the method.
+            :param mock_resp_json: The json data to return when calling MockResponse class
+            :param expected_result: The expected namedtuple to be found in ApiResponse.formatted
+            :return: None
+            """
+            method = self.exchange.bid
+            result = self._assert_method_formatter_passes(method, method_args, method_kwargs, 
+                                                          mock_resp_json, expected_result)
+            self.fail("formatter test not implemented yet!")
 
-        def test_order_status_formatter(self, expected_result, mock_json, method_args=None,
-                                        method_kwargs=None):
-            template_args = ['My_Order_ID']
-            template_args += method_args or []
-            template_kwargs = {}
-            template_kwargs.update(method_kwargs or {})
-            self._assert_method_formatter_passes(template_args, template_kwargs, expected_result,
-                                                 mock_json, self.exchange.order_status)
+        def test_order_status_formatter(self, method_args, method_kwargs, mock_resp_json,
+                                        expected_result):
+            """Test the formatter for the order_status endpoint.
 
-        def test_open_orders_formatter(self, expected_result, mock_json, method_args=None,
-                                       method_kwargs=None):
-            template_args = []
-            template_args += method_args or []
-            template_kwargs = {}
-            template_kwargs.update(method_kwargs or {})
-            self._assert_method_formatter_passes(template_args, template_kwargs, expected_result,
-                                                 mock_json, self.exchange.open_orders)
+            :param method_args: Method arguments to pass as ``*args`` to the method.
+            :param method_kwargs:  Method keyword arguments to pass as ``**kwargs`` to the method.
+            :param mock_resp_json: The json data to return when calling MockResponse class
+            :param expected_result: The expected namedtuple to be found in ApiResponse.formatted
+            :return: None
+            """
+            method = self.exchange.order_status
+            result = self._assert_method_formatter_passes(method, method_args, method_kwargs, 
+                                                          mock_resp_json, expected_result)
+            self.fail("formatter test not implemented yet!")
 
-        def test_cancel_order_formatter(self, expected_result, mock_json, method_args=None,
-                                        method_kwargs=None):
-            template_args = ['My_Order_ID']
-            template_args += method_args or []
-            template_kwargs = {}
-            template_kwargs.update(method_kwargs or {})
-            self._assert_method_formatter_passes(template_args, template_kwargs, expected_result,
-                                                 mock_json, self.exchange.cancel_order)
+        def test_open_orders_formatter(self, method_args, method_kwargs, mock_resp_json,
+                                       expected_result):
+            """Test the formatter for the open_orders endpoint.
 
-        def test_wallet_formatter(self, expected_result, mock_json, method_args=None,
-                                  method_kwargs=None):
-            template_args = ['BTC-USD']
-            template_args += method_args or []
-            template_kwargs = {}
-            template_kwargs.update(method_kwargs or {})
-            self._assert_method_formatter_passes(template_args, template_kwargs, expected_result,
-                                                 mock_json, self.exchange.wallet)
+            :param method_args: Method arguments to pass as ``*args`` to the method.
+            :param method_kwargs:  Method keyword arguments to pass as ``**kwargs`` to the method.
+            :param mock_resp_json: The json data to return when calling MockResponse class
+            :param expected_result: The expected namedtuple to be found in ApiResponse.formatted
+            :return: None
+            """
+            method = self.exchange.open_orders
+            result = self._assert_method_formatter_passes(method, method_args, method_kwargs, 
+                                                          mock_resp_json, expected_result)
+            self.fail("formatter test not implemented yet!")
+
+        def test_cancel_order_formatter(self, method_args, method_kwargs, mock_resp_json,
+                                        expected_result):
+            """Test the formatter for the cancel_order endpoint.
+
+            :param method_args: Method arguments to pass as ``*args`` to the method.
+            :param method_kwargs:  Method keyword arguments to pass as ``**kwargs`` to the method.
+            :param mock_resp_json: The json data to return when calling MockResponse class
+            :param expected_result: The expected namedtuple to be found in ApiResponse.formatted
+            :return: None
+            """
+            method = self.exchange.cancel_order
+            result = self._assert_method_formatter_passes(method, method_args, method_kwargs, 
+                                                          mock_resp_json, expected_result)
+            self.fail("formatter test not implemented yet!")
+
+        def test_wallet_formatter(self, method_args, method_kwargs, mock_resp_json,
+                                  expected_result):
+            """Test the formatter for the wallet endpoint.
+
+            :param method_args: Method arguments to pass as ``*args`` to the method.
+            :param method_kwargs:  Method keyword arguments to pass as ``**kwargs`` to the method.
+            :param mock_resp_json: The json data to return when calling MockResponse class
+            :param expected_result: The expected namedtuple to be found in ApiResponse.formatted
+            :return: None
+            """
+            method = self.exchange.wallet
+            result = self._assert_method_formatter_passes(method, method_args, method_kwargs, 
+                                                          mock_resp_json, expected_result)
+            self.fail("formatter test not implemented yet!")
 
