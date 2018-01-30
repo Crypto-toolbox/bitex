@@ -44,7 +44,7 @@ class APIResponse(requests.Response, metaclass=ABCMeta):
     def formatted(self):
         """Return the formatted data, extracted from the json response."""
         if not self._cached_formatted:
-            self._cached_formatted = getattr(self, self.method)
+            self._cached_formatted = getattr(self, self.method)()
         return self._cached_formatted
 
     @abstractmethod
