@@ -1,7 +1,9 @@
 # Import Built-Ins
 import logging
+import json
 from unittest import TestCase, mock
 from collections import namedtuple
+
 
 # Import Third-Party
 import requests
@@ -19,8 +21,11 @@ class MockResponse(requests.Response):
         self.json_data = json_data
         self.status_code = status_code
 
-    def json(self):
-        return self.json_data
+    def json(self, **kwargs):
+        try:
+            return json.loads(self.json_data, **kwargs)
+        except json.JSONDecodeError:
+            return self.json_data
 
 
 class BaseInterfaceTests:
