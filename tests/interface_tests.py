@@ -378,7 +378,6 @@ class BittrexInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
         super(BittrexInterfaceTests, self).test_order_status_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_cancel_order_formatter(self):
-        additional_args = ['BTC-USD']
         method_args = ['BTC-USD']
         method_kwargs = {}
         expected_result = tuple()
