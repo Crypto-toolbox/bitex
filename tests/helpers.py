@@ -2,8 +2,6 @@
 import logging
 import json
 from unittest import TestCase, mock
-from collections import namedtuple
-
 
 # Import Third-Party
 import requests
