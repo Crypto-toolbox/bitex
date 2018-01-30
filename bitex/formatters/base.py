@@ -26,6 +26,7 @@ class APIResponse(requests.Response, metaclass=ABCMeta):
         self.method_args = args
         self.method_kwargs = kwargs
         self.received_at_dt = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc)
+        self._cached_formatted = None
 
     def __getattr__(self, attr):
         """Use methods of the encapsulated object, otherwise use what's available in the wrapper."""
@@ -42,7 +43,9 @@ class APIResponse(requests.Response, metaclass=ABCMeta):
     @property
     def formatted(self):
         """Return the formatted data, extracted from the json response."""
-        return getattr(self, self.method)
+        if not self._cached_formatted:
+            self._cached_formatted = getattr(self, self.method)
+        return self._cached_formatted
 
     @abstractmethod
     def ticker(self, bid, ask, high, low, last, volume, ts):
