@@ -52,7 +52,7 @@ class BaseInterfaceTests:
                 resp = method(*method_args, **method_kwargs)
     
                 self.assertIsInstance(resp, APIResponse)
-                self.assertIsInstance(resp.formatted, type(expected_result))
+                self.assertIsInstance(resp.formatted, namedtuple)
                 return resp
 
         def test_ticker_formatter(self, method_args, method_kwargs, mock_resp_json, expected_result):
@@ -67,7 +67,9 @@ class BaseInterfaceTests:
             method = self.exchange.ticker
             result = self._assert_method_formatter_passes(method, method_args, method_kwargs, 
                                                           mock_resp_json, expected_result)
-            self.fail("formatter test not implemented yet!")
+            expected_fields = ["bid", "ask", "high", "low", "last", "volume", "timestamp"]
+            for field in expected_fields:
+                self.assertIn(field, result.formatted._fields)
 
         def test_order_book_formatter(self, method_args, method_kwargs, mock_resp_json, expected_result):
             """Test the formatter for the order book endpoint.
@@ -81,7 +83,9 @@ class BaseInterfaceTests:
             method = self.exchange.order_book
             result = self._assert_method_formatter_passes(method, method_args, method_kwargs, 
                                                           mock_resp_json, expected_result)
-            self.fail("formatter test not implemented yet!")
+            expected_fields = ["bids", "asks", "timestamp"]
+            for field in expected_fields:
+                self.assertIn(field, result.formatted._fields)
 
         def test_trades_formatter(self, method_args, method_kwargs, mock_resp_json, expected_result):
             """Test the formatter for the trades endpoint.
@@ -95,7 +99,9 @@ class BaseInterfaceTests:
             method = self.exchange.trades
             result = self._assert_method_formatter_passes(method, method_args, method_kwargs, 
                                                           mock_resp_json, expected_result)
-            self.fail("formatter test not implemented yet!")
+            expected_fields = ["trades", "timestamp"]
+            for field in expected_fields:
+                self.assertIn(field, result.formatted._fields)
 
         def test_ask_formatter(self, method_args, method_kwargs, mock_resp_json, expected_result):
             """Test the formatter for the ask endpoint.
@@ -109,7 +115,9 @@ class BaseInterfaceTests:
             method = self.exchange.ask
             result = self._assert_method_formatter_passes(method, method_args, method_kwargs, 
                                                           mock_resp_json, expected_result)
-            self.fail("formatter test not implemented yet!")
+            expected_fields = ["price", "size", "side", "order_id", "order_type", "timestamp"]
+            for field in expected_fields:
+                self.assertIn(field, result.formatted._fields)
 
         def test_bid_formatter(self, method_args, method_kwargs, mock_resp_json, expected_result):
             """Test the formatter for the bid endpoint.
@@ -123,7 +131,9 @@ class BaseInterfaceTests:
             method = self.exchange.bid
             result = self._assert_method_formatter_passes(method, method_args, method_kwargs, 
                                                           mock_resp_json, expected_result)
-            self.fail("formatter test not implemented yet!")
+            expected_fields = ["price", "size", "side", "order_id", "order_type", "timestamp"]
+            for field in expected_fields:
+                self.assertIn(field, result.formatted._fields)
 
         def test_order_status_formatter(self, method_args, method_kwargs, mock_resp_json,
                                         expected_result):
@@ -138,7 +148,9 @@ class BaseInterfaceTests:
             method = self.exchange.order_status
             result = self._assert_method_formatter_passes(method, method_args, method_kwargs, 
                                                           mock_resp_json, expected_result)
-            self.fail("formatter test not implemented yet!")
+            expected_fields = ["price", "size", "side", "order_id", "order_type", "state", "timestamp"]
+            for field in expected_fields:
+                self.assertIn(field, result.formatted._fields)
 
         def test_open_orders_formatter(self, method_args, method_kwargs, mock_resp_json,
                                        expected_result):
@@ -153,7 +165,9 @@ class BaseInterfaceTests:
             method = self.exchange.open_orders
             result = self._assert_method_formatter_passes(method, method_args, method_kwargs, 
                                                           mock_resp_json, expected_result)
-            self.fail("formatter test not implemented yet!")
+            expected_fields = ['orders', 'timestamp']
+            for field in expected_fields:
+                self.assertIn(field, result.formatted._fields)
 
         def test_cancel_order_formatter(self, method_args, method_kwargs, mock_resp_json,
                                         expected_result):
@@ -168,7 +182,9 @@ class BaseInterfaceTests:
             method = self.exchange.cancel_order
             result = self._assert_method_formatter_passes(method, method_args, method_kwargs, 
                                                           mock_resp_json, expected_result)
-            self.fail("formatter test not implemented yet!")
+            expected_fields = ["order_id", "successful", "timestamp"]
+            for field in expected_fields:
+                self.assertIn(field, result.formatted._fields)
 
         def test_wallet_formatter(self, method_args, method_kwargs, mock_resp_json,
                                   expected_result):
@@ -183,5 +199,7 @@ class BaseInterfaceTests:
             method = self.exchange.wallet
             result = self._assert_method_formatter_passes(method, method_args, method_kwargs, 
                                                           mock_resp_json, expected_result)
-            self.fail("formatter test not implemented yet!")
+
+            self.assertIn('timestamp', result.formatted._fields)
+            self.fail("Finish this test!")
 
