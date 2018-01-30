@@ -18,7 +18,7 @@ log = logging.getLogger(__name__)
 
 class HitBTCREST(APIClient):
     def __init__(self, key=None, secret=None, api_version='1',
-                 url='http://api.hitbtc.com/', timeout=5):
+                 url='http://api.hitbtc.com/api/', timeout=5):
         api_version = '' if not api_version else api_version
         super(HitBTCREST, self).__init__(url, api_version=api_version,
                                          key=key, secret=secret,
