@@ -5,6 +5,8 @@ ABC for Exchange APIs
 import logging
 import time
 from abc import ABCMeta, abstractmethod
+from urllib.parse import urljoin
+from os.path import join
 
 # Import Third-Party
 import requests
@@ -97,11 +99,11 @@ class APIClient(metaclass=ABCMeta):
         :return: request.response() obj
         """
         if self.version:
-            endpoint_path = '/' + self.version + '/' + endpoint
+            endpoint_path = join(self.version, endpoint)
         else:
-            endpoint_path = '/' + endpoint
+            endpoint_path = endpoint
 
-        url = self.uri + endpoint_path
+        url = urljoin(self.uri, endpoint_path)
         if authenticate:  # sign off kwargs and url before sending request
             url, request_kwargs = self.sign(url, endpoint, endpoint_path,
                                             method_verb, *args, **kwargs)
