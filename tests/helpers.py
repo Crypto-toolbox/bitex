@@ -49,10 +49,19 @@ class BaseInterfaceTests:
             """
             with mock.patch('requests.request') as mock_request:
                 mock_request.side_effect = [MockResponse(mock_resp_json, 200)]
-                resp = method(*method_args, **method_kwargs)
+                try:
+                    resp = method(*method_args, **method_kwargs)
+                except NotImplementedError:
+                    raise AssertionError("Interface method %r has not been implemented yet!" % method.__name__)
     
                 self.assertIsInstance(resp, APIResponse)
-                self.assertIsInstance(resp.formatted, namedtuple)
+                try:
+                    resp.formatted._fields
+                except AttributeError:
+                    raise AssertionError("APIResponse.formatted does not return "
+                                         "namedtuple-like object! Returns %r instead!" % type(resp.formatted))
+                except NotImplementedError:
+                    raise AssertionError("Formatter method %r has not been implemented yet!" % method.__name__)
                 return resp
 
         def test_ticker_formatter(self, method_args, method_kwargs, mock_resp_json, expected_result):
