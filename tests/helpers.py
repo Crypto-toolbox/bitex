@@ -24,7 +24,7 @@ class MockResponse(requests.Response):
     def json(self, **kwargs):
         try:
             return json.loads(self.json_data, **kwargs)
-        except json.JSONDecodeError:
+        except TypeError:
             return self.json_data
 
 
@@ -42,15 +42,14 @@ class BaseInterfaceTests:
                                                        **expected_request_kwargs)
 
         def _assert_method_formatter_passes(self, method, method_args, method_kwargs,
-                                            mock_resp_json, expected_result):
+                                            mock_resp_json):
             """Assert that the given method returns the expected result in the expected format.
 
             :param method: The Interface method to call
             :param method_args: Method arguments to pass as ``*args`` to the method.
             :param method_kwargs:  Method keyword arguments to pass as ``**kwargs`` to the method.
             :param mock_resp_json: The json data to return when calling MockResponse class
-            :param expected_result: The expected Tuple to be found in ApiResponse.formatted
-            :return: None
+            :return: resp
             """
             with mock.patch('requests.request') as mock_request:
                 mock_request.side_effect = [MockResponse(mock_resp_json, 200)]
@@ -80,7 +79,7 @@ class BaseInterfaceTests:
             """
             method = self.exchange.ticker
             result = self._assert_method_formatter_passes(method, method_args, method_kwargs, 
-                                                          mock_resp_json, expected_result)
+                                                          mock_resp_json)
             expected_fields = ["bid", "ask", "high", "low", "last", "volume", "timestamp"]
             for field in expected_fields:
                 self.assertIn(field, result.formatted._fields)
@@ -96,7 +95,7 @@ class BaseInterfaceTests:
             """
             method = self.exchange.order_book
             result = self._assert_method_formatter_passes(method, method_args, method_kwargs, 
-                                                          mock_resp_json, expected_result)
+                                                          mock_resp_json)
             expected_fields = ["bids", "asks", "timestamp"]
             for field in expected_fields:
                 self.assertIn(field, result.formatted._fields)
@@ -112,7 +111,7 @@ class BaseInterfaceTests:
             """
             method = self.exchange.trades
             result = self._assert_method_formatter_passes(method, method_args, method_kwargs, 
-                                                          mock_resp_json, expected_result)
+                                                          mock_resp_json)
             expected_fields = ["trades", "timestamp"]
             for field in expected_fields:
                 self.assertIn(field, result.formatted._fields)
@@ -128,7 +127,7 @@ class BaseInterfaceTests:
             """
             method = self.exchange.ask
             result = self._assert_method_formatter_passes(method, method_args, method_kwargs, 
-                                                          mock_resp_json, expected_result)
+                                                          mock_resp_json)
             expected_fields = ["price", "size", "side", "order_id", "order_type", "timestamp"]
             for field in expected_fields:
                 self.assertIn(field, result.formatted._fields)
@@ -144,7 +143,7 @@ class BaseInterfaceTests:
             """
             method = self.exchange.bid
             result = self._assert_method_formatter_passes(method, method_args, method_kwargs, 
-                                                          mock_resp_json, expected_result)
+                                                          mock_resp_json)
             expected_fields = ["price", "size", "side", "order_id", "order_type", "timestamp"]
             for field in expected_fields:
                 self.assertIn(field, result.formatted._fields)
@@ -161,7 +160,7 @@ class BaseInterfaceTests:
             """
             method = self.exchange.order_status
             result = self._assert_method_formatter_passes(method, method_args, method_kwargs, 
-                                                          mock_resp_json, expected_result)
+                                                          mock_resp_json)
             expected_fields = ["price", "size", "side", "order_id", "order_type", "state", "timestamp"]
             for field in expected_fields:
                 self.assertIn(field, result.formatted._fields)
@@ -178,7 +177,7 @@ class BaseInterfaceTests:
             """
             method = self.exchange.open_orders
             result = self._assert_method_formatter_passes(method, method_args, method_kwargs, 
-                                                          mock_resp_json, expected_result)
+                                                          mock_resp_json)
             expected_fields = ['orders', 'timestamp']
             for field in expected_fields:
                 self.assertIn(field, result.formatted._fields)
@@ -195,7 +194,7 @@ class BaseInterfaceTests:
             """
             method = self.exchange.cancel_order
             result = self._assert_method_formatter_passes(method, method_args, method_kwargs, 
-                                                          mock_resp_json, expected_result)
+                                                          mock_resp_json)
             expected_fields = ["order_id", "successful", "timestamp"]
             for field in expected_fields:
                 self.assertIn(field, result.formatted._fields)
@@ -212,7 +211,7 @@ class BaseInterfaceTests:
             """
             method = self.exchange.wallet
             result = self._assert_method_formatter_passes(method, method_args, method_kwargs, 
-                                                          mock_resp_json, expected_result)
+                                                          mock_resp_json)
 
             self.assertIn('timestamp', result.formatted._fields)
             self.fail("Finish this test!")
