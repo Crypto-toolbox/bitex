@@ -1,6 +1,8 @@
 """Basic REST API object."""
 # Import Built-Ins
 import logging
+from urllib.parse import urljoin
+from os.path import join as join_path
 
 # Import Third-Party
 import requests
@@ -42,9 +44,7 @@ class RESTAPI(BaseAPI):
         :param endpoint: str, endpoint path (i.e. /market/btcusd)
         :return: str, URI
         """
-        if self.version:
-            return '/' + self.version + '/' + endpoint
-        return '/' + endpoint
+        return '/' + join_path(self.version or '', endpoint)
 
     def generate_url(self, uri):
         """
@@ -53,7 +53,7 @@ class RESTAPI(BaseAPI):
         :param uri: str, URI
         :return: str, URL
         """
-        return self.addr + uri
+        return urljoin(self.addr, uri)
 
     def sign_request_kwargs(self, endpoint, **kwargs):
         """
