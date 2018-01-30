@@ -28,6 +28,10 @@ class APIResponse(requests.Response, metaclass=ABCMeta):
         self.received_at_dt = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc)
         self._cached_formatted = None
 
+    def json(self, **kwargs):
+        """Wrap around response.json() to avoid None value in returned data."""
+        return self.response.json(**kwargs)
+
     def __getattr__(self, attr):
         """Use methods of the encapsulated object, otherwise use what's available in the wrapper."""
         try:
