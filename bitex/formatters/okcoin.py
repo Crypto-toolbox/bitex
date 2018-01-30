@@ -21,7 +21,7 @@ class OKCoinFormattedResponse(APIResponse):
         low = data["ticker"]["low"]
         last = data["ticker"]["last"]
         volume = data["ticker"]["vol"]
-        timestamp = datetime.utcfromtimestamp(data["date"])
+        timestamp = datetime.utcfromtimestamp(float(data["date"]))
 
         return super(OKCoinFormattedResponse, self).ticker(bid, ask, high, low, last, volume,
                                                            timestamp)

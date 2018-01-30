@@ -30,7 +30,7 @@ class CCEXFormattedResponse(APIResponse):
         low = data["low"]
         last = data["lastprice"]
         volume = None
-        timestamp = datetime.utcfromtimestamp(data["updated"])
+        timestamp = datetime.utcfromtimestamp(float(data["updated"]))
         return super(CCEXFormattedResponse, self).ticker(bid, ask, high, low, last, volume,
                                                          timestamp)
 
