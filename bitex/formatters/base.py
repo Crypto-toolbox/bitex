@@ -78,21 +78,29 @@ class APIResponse(requests.Response, metaclass=ABCMeta):
         return ask(price, size, side, oid, otype, ts)
 
     @abstractmethod
-    def order_status(self, *args):
+    def order_status(self, price, size, side, oid, otype, ts):
         """Return namedtuple with given data."""
-        raise NotImplementedError
+        order_status = namedtuple('Order', ("price", "size", "side", "order_id", "order_type",
+                                            "state", "timestamp"))
+        return order_status(price, size, side, oid, otype, ts)
 
     @abstractmethod
-    def cancel_order(self, *args):
+    def cancel_order(self, oid, success, timestamp):
         """Return namedtuple with given data."""
-        raise NotImplementedError
+        cancelled_order = namedtuple('Cancelled_Order', ("order_id", "successful", "timestamp"))
+        return cancelled_order(oid, success, timestamp)
 
     @abstractmethod
-    def open_orders(self, *args):
+    def open_orders(self, orders, timestamp):
         """Return namedtuple with given data."""
-        raise NotImplementedError
+        open_orders = namedtuple('Open_Orders', ('orders', 'timestamp'))
+        return open_orders(orders, timestamp)
 
     @abstractmethod
-    def wallet(self, *args):
-        """Return namedtuple with given data."""
-        raise NotImplementedError
+    def wallet(self, balances, timestamp):
+        """Return namedtuple with given data.
+
+        :param balances: dict of currency=value kwargs
+        """
+        wallet = namedtuple('Wallet', list(balances.keys()) + 'timestamp')
+        return wallet(timestamp=timestamp, **balances)
