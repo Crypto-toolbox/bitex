@@ -27,11 +27,18 @@ class BinanceFormattedResponse(APIResponse):
 
     def order_book(self):
         """Return namedtuple with given data."""
-        raise NotImplementedError
+        data = self.json()
+        bids = data['bids']
+        asks = data['asks']
+        timestamp = datetime.utcnow()
+        return super(BinanceFormattedResponse, self).order_book(bids, asks, timestamp)
 
     def trades(self):
         """Return namedtuple with given data."""
-        raise NotImplementedError
+        data = self.json()
+        trades = data
+        timestamp = datetime.utcnow()
+        return super(BinanceFormattedResponse, self).trades(trades, timestamp)
 
     def bid(self):
         """Return namedtuple with given data."""
