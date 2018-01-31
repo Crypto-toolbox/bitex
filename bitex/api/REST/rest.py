@@ -52,7 +52,7 @@ class RESTAPI(BaseAPI):
         :param uri: str, URI
         :return: str, URL
         """
-        return self.addr + '/' + uri
+        return self.addr + uri
 
     def sign_request_kwargs(self, endpoint, **kwargs):
         """
