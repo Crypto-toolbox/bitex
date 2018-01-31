@@ -69,7 +69,7 @@ class RESTAPI(BaseAPI):
         url = self.generate_url(uri)
         template = {'url': url, 'headers': {}, 'files': {},
                     'data': {}, 'params': {}, 'auth': {}, 'cookies': {},
-                    'hooks': {}, 'json': {}, 'method': 'GET'}
+                    'hooks': {}, 'json': {}}
         template.update(kwargs)
         return template
 
@@ -81,7 +81,9 @@ class RESTAPI(BaseAPI):
         :param request_kwargs: kwargs for request.Request()
         :return: request.Response() object
         """
+
         request_kwargs['method'] = method_verb
+
         resp = requests.request(**request_kwargs, timeout=self.timeout)
         return resp
 
