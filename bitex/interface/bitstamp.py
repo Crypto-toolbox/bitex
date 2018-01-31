@@ -111,8 +111,12 @@ class Bitstamp(RESTInterface):
     @format_with(BitstampFormattedResponse)
     def wallet(self, *args, **kwargs):
         """Return account's wallet."""
-        pair = kwargs['pair'].format_for(self.name).lower() if 'pair' in kwargs else None
-        if pair:
+        if 'pair' in kwargs:
+            try:
+                pair = kwargs['pair'].format_for(self.name).lower()
+            except AttributeError:
+                pair = kwargs['pair']
+                
             return self.request('balance/%s/' % pair, authenticate=True, data=kwargs)
         return self.request('balance/', authenticate=True, data=kwargs)
 
