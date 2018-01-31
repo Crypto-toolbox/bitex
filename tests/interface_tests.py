@@ -14,7 +14,8 @@ properly patch _get_supported_pairs() of the exchange instance to be used in eac
 If you do not, this may cause an error when instantiation the exchange, since it calls the real API.
 
 It's important to pass credentials, as without them the Interface is designed to throw an exception
-and not make the call. These do not need to be working and may be dummy values.
+and not make the call on private endpoint. These do not need to be real credentials and may be
+dummy values.
 
 Each method test function within the TestCase classes needs the following parameters
 to run properly:
