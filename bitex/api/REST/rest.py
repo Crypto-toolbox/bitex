@@ -81,10 +81,8 @@ class RESTAPI(BaseAPI):
         :param request_kwargs: kwargs for request.Request()
         :return: request.Response() object
         """
+        resp = requests.request(method_verb, **request_kwargs, timeout=self.timeout)
 
-        request_kwargs['method'] = method_verb
-
-        resp = requests.request(**request_kwargs, timeout=self.timeout)
         return resp
 
     def private_query(self, method_verb, endpoint, **request_kwargs):
