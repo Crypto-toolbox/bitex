@@ -110,4 +110,5 @@ class RESTAPI(BaseAPI):
         :return: request.Response() object
         """
         request_kwargs['url'] = self.generate_url(self.generate_uri(endpoint))
-        return self._query(method_verb, **request_kwargs)
+        request_kwargs['method'] = method_verb
+        return self._query(**request_kwargs)
