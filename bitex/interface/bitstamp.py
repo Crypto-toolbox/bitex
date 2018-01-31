@@ -3,6 +3,8 @@
 # Import Built-Ins
 import logging
 
+import requests
+
 # Import Homebrew
 from bitex.exceptions import UnsupportedPairError
 from bitex.api.REST.bitstamp import BitstampREST
@@ -28,7 +30,7 @@ class Bitstamp(RESTInterface):
 
     def _get_supported_pairs(self):
         """Return a list of supported pairs."""
-        resp = self.request("trading-pairs-info/")
+        resp = requests.request('GET', 'https://www.bitstamp.net/api/v2/trading-pairs-info/')
         return [pair["name"].replace("/", "").lower() for pair in resp.json()]
 
     def request(self, endpoint, authenticate=False, **kwargs):
