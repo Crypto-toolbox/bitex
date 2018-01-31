@@ -1,7 +1,6 @@
 """Basic REST API object."""
 # Import Built-Ins
 import logging
-from urllib.parse import urljoin
 from os.path import join as join_path
 
 # Import Third-Party
@@ -74,7 +73,7 @@ class RESTAPI(BaseAPI):
         template.update(kwargs)
         return template
 
-    def _query(self, **request_kwargs):
+    def _query(self, method_verb, **request_kwargs):
         """
         Send the request to the API via requests.
 
@@ -82,8 +81,8 @@ class RESTAPI(BaseAPI):
         :param request_kwargs: kwargs for request.Request()
         :return: request.Response() object
         """
-        resp = requests.request(**request_kwargs,
-                                timeout=self.timeout)
+        request_kwargs['method'] = method_verb
+        resp = requests.request(**request_kwargs, timeout=self.timeout)
         return resp
 
     def private_query(self, method_verb, endpoint, **request_kwargs):
@@ -97,8 +96,7 @@ class RESTAPI(BaseAPI):
         """
         self.check_auth_requirements()
         request_kwargs = self.sign_request_kwargs(endpoint, **request_kwargs)
-        request_kwargs['method'] = method_verb
-        return self._query(**request_kwargs)
+        return self._query(method_verb, **request_kwargs)
 
     def public_query(self, method_verb, endpoint, **request_kwargs):
         """
@@ -110,5 +108,4 @@ class RESTAPI(BaseAPI):
         :return: request.Response() object
         """
         request_kwargs['url'] = self.generate_url(self.generate_uri(endpoint))
-        request_kwargs['method'] = method_verb
-        return self._query(**request_kwargs)
+        return self._query(method_verb, **request_kwargs)
