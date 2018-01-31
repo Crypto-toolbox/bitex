@@ -53,7 +53,7 @@ class RESTAPI(BaseAPI):
         :param uri: str, URI
         :return: str, URL
         """
-        return urljoin(self.addr, uri)
+        return self.addr + '/' + uri
 
     def sign_request_kwargs(self, endpoint, **kwargs):
         """
@@ -74,7 +74,7 @@ class RESTAPI(BaseAPI):
         template.update(kwargs)
         return template
 
-    def _query(self, method_verb, **request_kwargs):
+    def _query(self, **request_kwargs):
         """
         Send the request to the API via requests.
 
@@ -82,7 +82,7 @@ class RESTAPI(BaseAPI):
         :param request_kwargs: kwargs for request.Request()
         :return: request.Response() object
         """
-        resp = requests.request(method_verb, **request_kwargs,
+        resp = requests.request(**request_kwargs,
                                 timeout=self.timeout)
         return resp
 
@@ -97,7 +97,8 @@ class RESTAPI(BaseAPI):
         """
         self.check_auth_requirements()
         request_kwargs = self.sign_request_kwargs(endpoint, **request_kwargs)
-        return self._query(method_verb, **request_kwargs)
+        request_kwargs['method'] = method_verb
+        return self._query(**request_kwargs)
 
     def public_query(self, method_verb, endpoint, **request_kwargs):
         """
