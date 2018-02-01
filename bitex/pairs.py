@@ -114,11 +114,13 @@ class PairFormatter:
     @staticmethod
     def bittrex_formatter(base, quote):
         """Format currencies for Bittrex."""
+        quote = 'USDT' if quote == 'USD' else quote
         return quote + '-' + base
 
     @staticmethod
     def binance_formatter(base, quote):
         """Format currencies for Binance."""
+        quote = 'USDT' if quote == 'USD' else quote
         return base + quote
 
     @staticmethod
