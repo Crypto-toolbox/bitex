@@ -21,14 +21,14 @@ class Quoine(RESTInterface):
         super(Quoine, self).__init__('Quoine', QuoineREST(**api_kwargs))
 
     # pylint: disable=arguments-differ
-    def request(self, endpoint, authenticate=False, **req_kwargs):
+    def request(self, verb, endpoint, authenticate=False, **req_kwargs):
         """Request data for given endpoint from a RESTAPI object."""
         if not authenticate:
-            return super(Quoine, self).request(req_kwargs.get('method', 'GET'), endpoint, authenticate=False, **req_kwargs)
-        return super(Quoine, self).request(req_kwargs.get('method', 'POST'), endpoint, authenticate=True, **req_kwargs)
+            return super(Quoine, self).request(verb, endpoint, authenticate=False, **req_kwargs)
+        return super(Quoine, self).request(verb, endpoint, authenticate=True, **req_kwargs)
 
     def _get_supported_pairs(self):
-        return [p['id'] for p in self.request('products').json()]
+        return [p['id'] for p in self.request('GET', 'products').json()]
 
     # Public Endpoints
     @check_and_format_pair
@@ -42,7 +42,7 @@ class Quoine(RESTInterface):
         :param kwargs: additional kwargs, passed to requests.Requests() as 'param' kwarg.
         :return: :class:`requests.Response()` object.
         """
-        return self.request('products/' + pair, params=kwargs)
+        return self.request('GET', 'products/' + pair, params=kwargs)
 
     @check_and_format_pair
     @format_with(QuoineFormattedResponse)
@@ -55,7 +55,7 @@ class Quoine(RESTInterface):
         :param kwargs: additional kwargs, passed to requests.Requests() as 'param' kwarg.
         :return: :class:`requests.Response()` object.
         """
-        return self.request('products/%s/price_levels' % pair, params=kwargs)
+        return self.request('GET', 'products/%s/price_levels' % pair, params=kwargs)
 
     @check_and_format_pair
     @format_with(QuoineFormattedResponse)
@@ -70,7 +70,7 @@ class Quoine(RESTInterface):
         """
         params = {'product_id': pair}
         params.update(kwargs)
-        return self.request('executions', params=params)
+        return self.request('GET', 'executions', params=params)
 
     # Private Endpoints
     # pylint: disable=unused-argument
@@ -83,7 +83,7 @@ class Quoine(RESTInterface):
             'order_type': 'limit'
         }
         params.update(kwargs)
-        return self.request('orders', authenticate=True,
+        return self.request('POST', 'orders', authenticate=True,
                             params={'order': params})
 
     @check_and_format_pair
@@ -126,8 +126,8 @@ class Quoine(RESTInterface):
         :param kwargs: additional kwargs, passed to requests.Requests() as 'param' kwarg.
         :return: :class:`requests.Response()` object.
         """
-        return self.request('orders/%s' % order_id, authenticate=True,
-                            params=kwargs, method='GET')
+        return self.request('GET', 'orders/%s' % order_id, authenticate=True,
+                            params=kwargs)
 
     @format_with(QuoineFormattedResponse)
     def open_orders(self, *args, **kwargs):
@@ -138,8 +138,7 @@ class Quoine(RESTInterface):
         :param kwargs: additional kwargs, passed to requests.Requests() as 'param' kwarg.
         :return: :class:`requests.Response()` object.
         """
-        return self.request('orders', authenticate=True, params=kwargs,
-                            method='GET')
+        return self.request('GET', 'orders', authenticate=True, params=kwargs)
 
     @format_with(QuoineFormattedResponse)
     def cancel_order(self, *order_ids, **kwargs):
@@ -152,8 +151,8 @@ class Quoine(RESTInterface):
         """
         results = []
         for oid in order_ids:
-            r = self.request('orders/%s/cancel' % oid, authenticate=True,
-                             params=kwargs, method='PUT')
+            r = self.request('PUT', 'orders/%s/cancel' % oid, authenticate=True,
+                             params=kwargs)
             results.append(r)
         return results if len(results) > 1 else results[0]
 
@@ -166,5 +165,5 @@ class Quoine(RESTInterface):
         :param kwargs: additional kwargs, passed to requests.Requests() as 'param' kwarg.
         :return: :class:`requests.Response()` object.
         """
-        return self.request('accounts/balance', authenticate=True,
-                            params=kwargs, method='GET')
+        return self.request('GET', 'accounts/balance', authenticate=True,
+                            params=kwargs)
