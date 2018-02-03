@@ -26,6 +26,13 @@ class APIResponse(requests.Response, metaclass=ABCMeta):
         self.method_args = args
         self.method_kwargs = kwargs
         self.received_at_dt = datetime.datetime.utcnow().replace(tzinfo=datetime.timezone.utc)
+        self._cached_formatted = None
+
+    def json(self, **kwargs):
+        """Wrap around response.json() to avoid None value in returned data."""
+        default_kwargs = {'parse_int': str, 'parse_float': str}
+        default_kwargs.update(**kwargs)
+        return self.response.json(**default_kwargs)
 
     def __getattr__(self, attr):
         """Use methods of the encapsulated object, otherwise use what's available in the wrapper."""
@@ -42,7 +49,9 @@ class APIResponse(requests.Response, metaclass=ABCMeta):
     @property
     def formatted(self):
         """Return the formatted data, extracted from the json response."""
-        return getattr(self, self.method)
+        if not self._cached_formatted:
+            self._cached_formatted = getattr(self, self.method)()
+        return self._cached_formatted
 
     @abstractmethod
     def ticker(self, bid, ask, high, low, last, volume, ts):
@@ -75,21 +84,29 @@ class APIResponse(requests.Response, metaclass=ABCMeta):
         return ask(price, size, side, oid, otype, ts)
 
     @abstractmethod
-    def order_status(self, *args):
+    def order_status(self, price, size, side, oid, otype, ts):
         """Return namedtuple with given data."""
-        raise NotImplementedError
+        order_status = namedtuple('Order', ("price", "size", "side", "order_id", "order_type",
+                                            "state", "timestamp"))
+        return order_status(price, size, side, oid, otype, ts)
 
     @abstractmethod
-    def cancel_order(self, *args):
+    def cancel_order(self, oid, success, timestamp):
         """Return namedtuple with given data."""
-        raise NotImplementedError
+        cancelled_order = namedtuple('Cancelled_Order', ("order_id", "successful", "timestamp"))
+        return cancelled_order(oid, success, timestamp)
 
     @abstractmethod
-    def open_orders(self, *args):
+    def open_orders(self, orders, timestamp):
         """Return namedtuple with given data."""
-        raise NotImplementedError
+        open_orders = namedtuple('Open_Orders', ('orders', 'timestamp'))
+        return open_orders(orders, timestamp)
 
     @abstractmethod
-    def wallet(self, *args):
-        """Return namedtuple with given data."""
-        raise NotImplementedError
+    def wallet(self, balances, timestamp):
+        """Return namedtuple with given data.
+
+        :param balances: dict of currency=value kwargs
+        """
+        wallet = namedtuple('Wallet', list(balances.keys()) + 'timestamp')
+        return wallet(timestamp=timestamp, **balances)

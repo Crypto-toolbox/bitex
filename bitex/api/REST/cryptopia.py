@@ -64,7 +64,7 @@ class CryptopiaREST(RESTAPI):
 
         # Prepare POST Payload arguments
         nonce = self.nonce()
-        params = kwargs.get('params', {})
+        params = req_kwargs.pop('params', {})
         post_data = json.dumps(params)
         url = 'https://www.cryptopia.co.nz/Api/' + endpoint
         parsed_url = urllib.parse.quote_plus(url).lower()

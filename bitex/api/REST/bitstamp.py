@@ -25,11 +25,11 @@ class BitstampREST(RESTAPI):
     def __init__(self, addr=None, user_id=None, key=None, secret=None,
                  version=None, timeout=5, config=None):
         """Initialize the class instance."""
-        addr = 'https://www.bitstamp.net/api' if not addr else addr
+        addr = addr or 'https://www.bitstamp.net/api'
         if user_id == '':
             raise ValueError("Invalid user id - cannot be empty string! "
                              "Pass None instead!")
-        version = 'v2' if not version else version
+        version = version or 'v2'
         self.user_id = user_id
         super(BitstampREST, self).__init__(addr=addr, version=version,
                                            key=key, secret=secret,
@@ -44,12 +44,6 @@ class BitstampREST(RESTAPI):
 
         if self.user_id is None:
             raise IncompleteCredentialsError
-
-    def generate_uri(self, endpoint):
-        """Generate a Unique Resource Identifier for bitstamp."""
-        if endpoint.startswith('api'):
-            return endpoint[3:]
-        return super(BitstampREST, self).generate_uri(endpoint)
 
     def load_config(self, fname):
         """Load configuration from a file."""

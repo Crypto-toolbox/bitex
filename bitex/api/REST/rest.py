@@ -1,6 +1,7 @@
 """Basic REST API object."""
 # Import Built-Ins
 import logging
+from os.path import join as join_path
 
 # Import Third-Party
 import requests
@@ -42,9 +43,7 @@ class RESTAPI(BaseAPI):
         :param endpoint: str, endpoint path (i.e. /market/btcusd)
         :return: str, URI
         """
-        if self.version:
-            return '/' + self.version + '/' + endpoint
-        return '/' + endpoint
+        return '/' + join_path(self.version or '', endpoint)
 
     def generate_url(self, uri):
         """
@@ -70,7 +69,7 @@ class RESTAPI(BaseAPI):
         url = self.generate_url(uri)
         template = {'url': url, 'headers': {}, 'files': {},
                     'data': {}, 'params': {}, 'auth': {}, 'cookies': {},
-                    'hooks': {}, 'json': {}, }
+                    'hooks': {}, 'json': {}}
         template.update(kwargs)
         return template
 
@@ -82,8 +81,8 @@ class RESTAPI(BaseAPI):
         :param request_kwargs: kwargs for request.Request()
         :return: request.Response() object
         """
-        request_kwargs.update({'method': method_verb})
-        resp = requests.request(**request_kwargs, timeout=self.timeout)
+        resp = requests.request(method_verb, **request_kwargs, timeout=self.timeout)
+
         return resp
 
     def private_query(self, method_verb, endpoint, **request_kwargs):

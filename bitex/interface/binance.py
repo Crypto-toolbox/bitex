@@ -2,6 +2,9 @@
 # Import Built-Ins
 import logging
 
+# Import Third-party
+import requests
+
 # Import Homebrew
 from bitex.api.REST.binance import BinanceREST
 from bitex.interface.rest import RESTInterface
@@ -32,7 +35,7 @@ class Binance(RESTInterface):
 
     def _get_supported_pairs(self):
         """Return a list of supported pairs."""
-        r = self.request('GET', 'v1/exchangeInfo').json()
+        r = requests.request('GET', 'https://api.binance.com/api/v1/exchangeInfo').json()
         pairs = [entry['symbol'] for entry in r['symbols']]
         return pairs
 

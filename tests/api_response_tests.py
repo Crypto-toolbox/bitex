@@ -38,6 +38,18 @@ class APIResponseTests(unittest.TestCase):
             def ask(self, price, size, side, oid, otype, ts):
                 pass
 
+            def cancel_order(self, *args):
+                pass
+
+            def open_orders(self, *args):
+                pass
+
+            def order_status(self, *args):
+                pass
+
+            def wallet(self, *args):
+                pass
+
         api_response = TestAPIResponse('test_method', self.dummy_request)
 
         # Assert all expected attributes are present

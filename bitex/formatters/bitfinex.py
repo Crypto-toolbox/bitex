@@ -12,7 +12,7 @@ class BitfinexFormattedResponse(APIResponse):
     Returns the standardized method's json results as a formatted data in a namedTuple.
     """
 
-    def ticker(self, *args):
+    def ticker(self):
         """Return namedtuple with given data."""
         data = self.json(parse_int=str, parse_float=str)
 
@@ -22,39 +22,39 @@ class BitfinexFormattedResponse(APIResponse):
         low = data["low"]
         last = data["last_price"]
         volume = data["volume"]
-        timestamp = datetime.utcfromtimestamp(data["timestamp"])
+        timestamp = datetime.utcfromtimestamp(float(data["timestamp"]))
 
         return super(BitfinexFormattedResponse, self).ticker(bid, ask, high, low, last, volume,
                                                              timestamp)
 
-    def order_book(self, bids, asks, ts):
+    def order_book(self):
         """Return namedtuple with given data."""
         raise NotImplementedError
 
-    def trades(self, trades, ts):
+    def trades(self):
         """Return namedtuple with given data."""
         raise NotImplementedError
 
-    def bid(self, price, size, side, oid, otype, ts):
+    def bid(self):
         """Return namedtuple with given data."""
         raise NotImplementedError
 
-    def ask(self, price, size, side, oid, otype, ts):
+    def ask(self):
         """Return namedtuple with given data."""
         raise NotImplementedError
 
-    def order_status(self, *args):
+    def order_status(self):
         """Return namedtuple with given data."""
         raise NotImplementedError
 
-    def cancel_order(self, *args):
+    def cancel_order(self):
         """Return namedtuple with given data."""
         raise NotImplementedError
 
-    def open_orders(self, *args):
+    def open_orders(self):
         """Return namedtuple with given data."""
         raise NotImplementedError
 
-    def wallet(self, *args):
+    def wallet(self):
         """Return namedtuple with given data."""
         raise NotImplementedError

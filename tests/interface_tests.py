@@ -1,15 +1,37 @@
 """Interface Test Cases.
 
-Any methods that require a symbol pair are called with 'BTC-USD' - since the api calls are offline
-this should not cause any error, even for exchanges that do not support that pair.
-You must, however, properly patch _get_supported_pairs() of the exchange instance for
-each test case:
+To get started with testing you need to do some setting up:
+Before you run any tests in BaseInterfaceTests.StandardizedMethodTestCase subclasses, you must,
+properly patch _get_supported_pairs() of the exchange instance to be used in each test case:
+    class VaultoroInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
+        with patch('bitex.interface.vaultoro.Vaultoro._get_supported_pairs', return_value=['BTC-GLD']):
+            exchange = Vaultoro(key='someKey', secret='some_secret')
 
-    with patch('bitex.interface.vaultoro.Vaultoro._get_supported_pairs', return_value=['BTC-USD']):
-        exchange = Vaultoro(key='someKey', secret='some_secret')
+        def __init__(self, *args, **kwargs):
+            pass
+        ...
+
+If you do not, this may cause an error when instantiation the exchange, since it calls the real API.
 
 It's important to pass credentials, as without them the Interface is designed to throw an exception
-and not make the call.
+and not make the call on private endpoint. These do not need to be real credentials and may be
+dummy values.
+
+Each method test function within the TestCase classes needs the following parameters
+to run properly:
+
+    :param method_args: Method arguments to pass as ``*args`` to the method.
+    :param method_kwargs:  Method keyword arguments to pass as ``**kwargs`` to the method.
+    :param mock_resp_json: The json data to return when calling MockResponse class
+    :param expected_result: The expected namedtuple to be found in ApiResponse.formatted
+
+The :param mock_resp_json: should be json-dumped string, and ideally a snapshot of returned
+data from the endpoint you're trying to test.
+
+The expected_result parameter is the object you expect to see - it's tested using
+``assertIsInstance`` in :meth:``StandardizedMethodTestCase._assert_method_formatter_passes``,
+and any fields required are tested as well, in the helper test cases of
+:class:``StandardizedMethodTestCase``.
 
 
 """
@@ -22,8 +44,8 @@ from unittest.mock import patch
 # Import Third-Party
 
 # Import Homebrew
-from helpers import MockResponse, BaseInterfaceTests
-from payloads import *
+from tests.helpers import MockResponse, BaseInterfaceTests
+from tests.payloads import *
 from bitex.interface import Binance, Bitfinex, Bitstamp, Bittrex
 from bitex.interface import CCEX, CoinCheck, Cryptopia
 from bitex.interface import GDAX, Gemini, HitBTC, ItBit, Kraken, OKCoin
@@ -31,8 +53,6 @@ from bitex.interface import Poloniex, QuadrigaCX, Quoine, TheRockTrading, Vaulto
 
 # Init Logging Facilities
 log = logging.getLogger(__name__)
-
-tests_folder_dir = '.'
 
 
 class BinanceInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
@@ -56,53 +76,67 @@ class BinanceInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
         self.assertEqual(sorted(b.supported_pairs), expected_list)
 
     def test_ticker_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = binance_ticker
-        super(BinanceInterfaceTests, self).test_ticker_formatter(expected_result, mock_json)
+        mock_resp_json = binance_ticker
+        super(BinanceInterfaceTests, self).test_ticker_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_order_book_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = binance_order_book
-        super(BinanceInterfaceTests, self).test_order_book_formatter(expected_result, mock_json)
+        mock_resp_json = binance_order_book
+        super(BinanceInterfaceTests, self).test_order_book_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_trades_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = binance_trades
-        super(BinanceInterfaceTests, self).test_trades_formatter(expected_result, mock_json)
+        mock_resp_json = binance_trades
+        super(BinanceInterfaceTests, self).test_trades_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_bid_formatter(self):
+        method_args = ['BTC-USD', 1000, 10]
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(BinanceInterfaceTests, self).test_bid_formatter(expected_result, mock_json)
+        mock_resp_json = {}
+        super(BinanceInterfaceTests, self).test_bid_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_ask_formatter(self):
+        method_args = ['BTC-USD', 1000, 10]
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(BinanceInterfaceTests, self).test_ask_formatter(expected_result, mock_json)
+        mock_resp_json = {}
+        super(BinanceInterfaceTests, self).test_ask_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_open_orders_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(BinanceInterfaceTests, self).test_open_orders_formatter(expected_result, mock_json)
+        mock_resp_json = {}
+        super(BinanceInterfaceTests, self).test_open_orders_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_order_status_formatter(self):
-        additional_args = ['BTC-USD']
+        method_args = ['My_Order_ID', 'BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(BinanceInterfaceTests, self).test_order_status_formatter(expected_result, mock_json,
-                                                                       method_args=additional_args)
+        mock_resp_json = {}
+        super(BinanceInterfaceTests, self).test_order_status_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_cancel_order_formatter(self):
-        kwargs = {'pair': 'BTC-USD'}
+        method_args = ['BTC-USD']
+        method_kwargs = {'pair': 'BTC-USD'}
         expected_result = tuple()
-        mock_json = {}
-        super(BinanceInterfaceTests, self).test_cancel_order_formatter(expected_result, mock_json,
-                                                                       method_kwargs=kwargs)
+        mock_resp_json = {}
+        super(BinanceInterfaceTests, self).test_cancel_order_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_wallet_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = dict()
-        super(BinanceInterfaceTests, self).test_wallet_formatter(expected_result, mock_json)
+        mock_resp_json = dict()
+        super(BinanceInterfaceTests, self).test_wallet_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
 
 class BitfinexInterfacTests(BaseInterfaceTests.StandardizedMethodTestCase):
@@ -126,53 +160,68 @@ class BitfinexInterfacTests(BaseInterfaceTests.StandardizedMethodTestCase):
         self.assertEqual(sorted(b.supported_pairs), expected_list)
 
     def test_ticker_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = bitfinex_ticker
-        super(BitfinexInterfacTests, self).test_ticker_formatter(expected_result, mock_json)
+        mock_resp_json = bitfinex_ticker
+        super(BitfinexInterfacTests, self).test_ticker_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_order_book_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = bitfinex_order_book
-        super(BitfinexInterfacTests, self).test_order_book_formatter(expected_result, mock_json)
+        mock_resp_json = bitfinex_order_book
+        super(BitfinexInterfacTests, self).test_order_book_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_trades_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = bitfinex_trades
-        super(BitfinexInterfacTests, self).test_trades_formatter(expected_result, mock_json)
+        mock_resp_json = bitfinex_trades
+        super(BitfinexInterfacTests, self).test_trades_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_bid_formatter(self):
+        method_args = ['BTC-USD', 1000, 10]
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(BitfinexInterfacTests, self).test_bid_formatter(expected_result, mock_json)
+        mock_resp_json = {}
+        super(BitfinexInterfacTests, self).test_bid_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_ask_formatter(self):
+        method_args = ['BTC-USD', 1000, 10]
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(BitfinexInterfacTests, self).test_ask_formatter(expected_result, mock_json)
+        mock_resp_json = {}
+        super(BitfinexInterfacTests, self).test_ask_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_open_orders_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(BitfinexInterfacTests, self).test_open_orders_formatter(expected_result, mock_json)
+        mock_resp_json = {}
+        super(BitfinexInterfacTests, self).test_open_orders_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_order_status_formatter(self):
-        additional_args = ['BTC-USD']
+        method_args = ['My_Order_ID']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(BitfinexInterfacTests, self).test_order_status_formatter(expected_result, mock_json,
-                                                                       method_args=additional_args)
+        mock_resp_json = {}
+        super(BitfinexInterfacTests, self).test_order_status_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_cancel_order_formatter(self):
         additional_args = ['BTC-USD']
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(BitfinexInterfacTests, self).test_cancel_order_formatter(expected_result, mock_json,
-                                                                       method_args=additional_args)
+        mock_resp_json = {}
+        super(BitfinexInterfacTests, self).test_cancel_order_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_wallet_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(BitfinexInterfacTests, self).test_wallet_formatter(expected_result, mock_json)
+        mock_resp_json = {}
+        super(BitfinexInterfacTests, self).test_wallet_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
 
 class BitstampInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
@@ -196,53 +245,68 @@ class BitstampInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
         self.assertEqual(sorted(b.supported_pairs), expected_list)
 
     def test_ticker_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = bitstamp_ticker
-        super(BitstampInterfaceTests, self).test_ticker_formatter(expected_result, mock_json)
+        mock_resp_json = bitstamp_ticker
+        super(BitstampInterfaceTests, self).test_ticker_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_order_book_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = bitstamp_order_book
-        super(BitstampInterfaceTests, self).test_order_book_formatter(expected_result, mock_json)
+        mock_resp_json = bitstamp_order_book
+        super(BitstampInterfaceTests, self).test_order_book_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_trades_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = bitstamp_trades
-        super(BitstampInterfaceTests, self).test_trades_formatter(expected_result, mock_json)
+        mock_resp_json = bitstamp_trades
+        super(BitstampInterfaceTests, self).test_trades_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_bid_formatter(self):
+        method_args = ['BTC-USD', 1000, 10]
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(BitstampInterfaceTests, self).test_bid_formatter(expected_result, mock_json)
+        mock_resp_json = {}
+        super(BitstampInterfaceTests, self).test_bid_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_ask_formatter(self):
+        method_args = ['BTC-USD', 1000, 10]
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(BitstampInterfaceTests, self).test_ask_formatter(expected_result, mock_json)
+        mock_resp_json = {}
+        super(BitstampInterfaceTests, self).test_ask_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_open_orders_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(BitstampInterfaceTests, self).test_open_orders_formatter(expected_result, mock_json)
+        mock_resp_json = {}
+        super(BitstampInterfaceTests, self).test_open_orders_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_order_status_formatter(self):
-        additional_args = ['BTC-USD']
+        method_args = ['My_Order_ID']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(BitstampInterfaceTests, self).test_order_status_formatter(expected_result, mock_json,
-                                                                        method_args=additional_args)
+        mock_resp_json = {}
+        super(BitstampInterfaceTests, self).test_order_status_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_cancel_order_formatter(self):
         additional_args = ['BTC-USD']
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(BitstampInterfaceTests, self).test_cancel_order_formatter(expected_result, mock_json,
-                                                                        method_args=additional_args)
+        mock_resp_json = {}
+        super(BitstampInterfaceTests, self).test_cancel_order_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_wallet_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(BitstampInterfaceTests, self).test_wallet_formatter(expected_result, mock_json)
+        mock_resp_json = {}
+        super(BitstampInterfaceTests, self).test_wallet_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
 
 class BittrexInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
@@ -266,53 +330,67 @@ class BittrexInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
         self.assertEqual(sorted(b.supported_pairs), expected_list)
 
     def test_ticker_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = bittrex_ticker
-        super(BittrexInterfaceTests, self).test_ticker_formatter(expected_result, mock_json)
+        mock_resp_json = bittrex_ticker
+        super(BittrexInterfaceTests, self).test_ticker_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_order_book_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = bittrex_order_book
-        super(BittrexInterfaceTests, self).test_order_book_formatter(expected_result, mock_json)
+        mock_resp_json = bittrex_order_book
+        super(BittrexInterfaceTests, self).test_order_book_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_trades_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = bittrex_trades
-        super(BittrexInterfaceTests, self).test_trades_formatter(expected_result, mock_json)
+        mock_resp_json = bittrex_trades
+        super(BittrexInterfaceTests, self).test_trades_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_bid_formatter(self):
+        method_args = ['BTC-USD', 1000, 10]
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(BittrexInterfaceTests, self).test_bid_formatter(expected_result, mock_json)
+        mock_resp_json = {}
+        super(BittrexInterfaceTests, self).test_bid_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_ask_formatter(self):
+        method_args = ['BTC-USD', 1000, 10]
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(BittrexInterfaceTests, self).test_ask_formatter(expected_result, mock_json)
+        mock_resp_json = {}
+        super(BittrexInterfaceTests, self).test_ask_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_open_orders_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(BittrexInterfaceTests, self).test_open_orders_formatter(expected_result, mock_json)
+        mock_resp_json = {}
+        super(BittrexInterfaceTests, self).test_open_orders_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_order_status_formatter(self):
-        additional_args = ['BTC-USD']
+        method_args = ['My_Order_ID']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(BittrexInterfaceTests, self).test_order_status_formatter(expected_result, mock_json,
-                                                            method_args=additional_args)
+        mock_resp_json = {}
+        super(BittrexInterfaceTests, self).test_order_status_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_cancel_order_formatter(self):
-        additional_args = ['BTC-USD']
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(BittrexInterfaceTests, self).test_cancel_order_formatter(expected_result, mock_json,
-                                                            method_args=additional_args)
+        mock_resp_json = {}
+        super(BittrexInterfaceTests, self).test_cancel_order_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_wallet_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(BittrexInterfaceTests, self).test_wallet_formatter(expected_result, mock_json)
+        mock_resp_json = {}
+        super(BittrexInterfaceTests, self).test_wallet_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
 
 class CCEXInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
@@ -336,53 +414,68 @@ class CCEXInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
         self.assertEqual(sorted(b.supported_pairs), expected_list)
 
     def test_ticker_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = ccex_ticker
-        super(CCEXInterfaceTests, self).test_ticker_formatter(expected_result, mock_json)
+        mock_resp_json = ccex_ticker
+        super(CCEXInterfaceTests, self).test_ticker_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_order_book_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = ccex_order_book
-        super(CCEXInterfaceTests, self).test_order_book_formatter(expected_result, mock_json)
+        mock_resp_json = ccex_order_book
+        super(CCEXInterfaceTests, self).test_order_book_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_trades_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = ccex_trades
-        super(CCEXInterfaceTests, self).test_trades_formatter(expected_result, mock_json)
+        mock_resp_json = ccex_trades
+        super(CCEXInterfaceTests, self).test_trades_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_bid_formatter(self):
+        method_args = ['BTC-USD', 1000, 10]
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(CCEXInterfaceTests, self).test_bid_formatter(expected_result, mock_json)
+        mock_resp_json = {}
+        super(CCEXInterfaceTests, self).test_bid_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_ask_formatter(self):
+        method_args = ['BTC-USD', 1000, 10]
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(CCEXInterfaceTests, self).test_ask_formatter(expected_result, mock_json)
+        mock_resp_json = {}
+        super(CCEXInterfaceTests, self).test_ask_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_open_orders_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(CCEXInterfaceTests, self).test_open_orders_formatter(expected_result, mock_json)
+        mock_resp_json = {}
+        super(CCEXInterfaceTests, self).test_open_orders_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_order_status_formatter(self):
-        additional_args = ['BTC-USD']
+        method_args = ['My_Order_ID']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(CCEXInterfaceTests, self).test_order_status_formatter(expected_result, mock_json,
-                                                            method_args=additional_args)
+        mock_resp_json = {}
+        super(CCEXInterfaceTests, self).test_order_status_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_cancel_order_formatter(self):
         additional_args = ['BTC-USD']
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(CCEXInterfaceTests, self).test_cancel_order_formatter(expected_result, mock_json,
-                                                            method_args=additional_args)
+        mock_resp_json = {}
+        super(CCEXInterfaceTests, self).test_cancel_order_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_wallet_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(CCEXInterfaceTests, self).test_wallet_formatter(expected_result, mock_json)
+        mock_resp_json = {}
+        super(CCEXInterfaceTests, self).test_wallet_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
 
 class CoinCheckInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
@@ -403,53 +496,68 @@ class CoinCheckInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
         self.assertEqual(['btc-jpy'], CoinCheck()._get_supported_pairs())
 
     def test_ticker_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = coincheck_ticker
-        super(CoinCheckInterfaceTests, self).test_ticker_formatter(expected_result, mock_json)
+        mock_resp_json = coincheck_ticker
+        super(CoinCheckInterfaceTests, self).test_ticker_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_order_book_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = coincheck_order_book
-        super(CoinCheckInterfaceTests, self).test_order_book_formatter(expected_result, mock_json)
+        mock_resp_json = coincheck_order_book
+        super(CoinCheckInterfaceTests, self).test_order_book_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_trades_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = coincheck_trades
-        super(CoinCheckInterfaceTests, self).test_trades_formatter(expected_result, mock_json)
+        mock_resp_json = coincheck_trades
+        super(CoinCheckInterfaceTests, self).test_trades_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_bid_formatter(self):
+        method_args = ['BTC-USD', 1000, 10]
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(CoinCheckInterfaceTests, self).test_bid_formatter(expected_result, mock_json)
+        mock_resp_json = {}
+        super(CoinCheckInterfaceTests, self).test_bid_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_ask_formatter(self):
+        method_args = ['BTC-USD', 1000, 10]
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(CoinCheckInterfaceTests, self).test_ask_formatter(expected_result, mock_json)
+        mock_resp_json = {}
+        super(CoinCheckInterfaceTests, self).test_ask_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_open_orders_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(CoinCheckInterfaceTests, self).test_open_orders_formatter(expected_result, mock_json)
+        mock_resp_json = {}
+        super(CoinCheckInterfaceTests, self).test_open_orders_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_order_status_formatter(self):
-        additional_args = ['BTC-USD']
+        method_args = ['My_Order_ID']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(CoinCheckInterfaceTests, self).test_order_status_formatter(expected_result, mock_json,
-                                                            method_args=additional_args)
+        mock_resp_json = {}
+        super(CoinCheckInterfaceTests, self).test_order_status_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_cancel_order_formatter(self):
         additional_args = ['BTC-USD']
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(CoinCheckInterfaceTests, self).test_cancel_order_formatter(expected_result, mock_json,
-                                                            method_args=additional_args)
+        mock_resp_json = {}
+        super(CoinCheckInterfaceTests, self).test_cancel_order_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_wallet_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(CoinCheckInterfaceTests, self).test_wallet_formatter(expected_result, mock_json)
+        mock_resp_json = {}
+        super(CoinCheckInterfaceTests, self).test_wallet_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
 
 class CryptopiaInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
@@ -472,53 +580,68 @@ class CryptopiaInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
         self.assertEqual(sorted(b.supported_pairs), sorted(expected_list))
 
     def test_ticker_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = cryptopia_tickers
-        super(CryptopiaInterfaceTests, self).test_ticker_formatter(expected_result, mock_json)
+        mock_resp_json = cryptopia_tickers
+        super(CryptopiaInterfaceTests, self).test_ticker_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_order_book_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = cryptopia_order_book
-        super(CryptopiaInterfaceTests, self).test_order_book_formatter(expected_result, mock_json)
+        mock_resp_json = cryptopia_order_book
+        super(CryptopiaInterfaceTests, self).test_order_book_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_trades_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = cryptopia_trades
-        super(CryptopiaInterfaceTests, self).test_trades_formatter(expected_result, mock_json)
+        mock_resp_json = cryptopia_trades
+        super(CryptopiaInterfaceTests, self).test_trades_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_bid_formatter(self):
+        method_args = ['BTC-USD', 1000, 10]
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(CryptopiaInterfaceTests, self).test_bid_formatter(expected_result, mock_json)
+        mock_resp_json = {}
+        super(CryptopiaInterfaceTests, self).test_bid_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_ask_formatter(self):
+        method_args = ['BTC-USD', 1000, 10]
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(CryptopiaInterfaceTests, self).test_ask_formatter(expected_result, mock_json)
+        mock_resp_json = {}
+        super(CryptopiaInterfaceTests, self).test_ask_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_open_orders_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(CryptopiaInterfaceTests, self).test_open_orders_formatter(expected_result, mock_json)
+        mock_resp_json = {}
+        super(CryptopiaInterfaceTests, self).test_open_orders_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_order_status_formatter(self):
-        additional_args = ['BTC-USD']
+        method_args = ['My_Order_ID']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(CryptopiaInterfaceTests, self).test_order_status_formatter(expected_result, mock_json,
-                                                            method_args=additional_args)
+        mock_resp_json = {}
+        super(CryptopiaInterfaceTests, self).test_order_status_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_cancel_order_formatter(self):
         additional_args = ['BTC-USD']
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(CryptopiaInterfaceTests, self).test_cancel_order_formatter(expected_result, mock_json,
-                                                            method_args=additional_args)
+        mock_resp_json = {}
+        super(CryptopiaInterfaceTests, self).test_cancel_order_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_wallet_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(CryptopiaInterfaceTests, self).test_wallet_formatter(expected_result, mock_json)
+        mock_resp_json = {}
+        super(CryptopiaInterfaceTests, self).test_wallet_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
 
 class GDAXInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
@@ -543,53 +666,68 @@ class GDAXInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
         self.assertEqual(sorted(b.supported_pairs), expected_list)
 
     def test_ticker_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = gdax_ticker
-        super(GDAXInterfaceTests, self).test_ticker_formatter(expected_result, mock_json)
+        mock_resp_json = gdax_ticker
+        super(GDAXInterfaceTests, self).test_ticker_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_order_book_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = gdax_order_book
-        super(GDAXInterfaceTests, self).test_order_book_formatter(expected_result, mock_json)
+        mock_resp_json = gdax_order_book
+        super(GDAXInterfaceTests, self).test_order_book_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_trades_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = gdax_trades
-        super(GDAXInterfaceTests, self).test_trades_formatter(expected_result, mock_json)
+        mock_resp_json = gdax_trades
+        super(GDAXInterfaceTests, self).test_trades_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_bid_formatter(self):
+        method_args = ['BTC-USD', 1000, 10]
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(GDAXInterfaceTests, self).test_bid_formatter(expected_result, mock_json)
+        mock_resp_json = {}
+        super(GDAXInterfaceTests, self).test_bid_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_ask_formatter(self):
+        method_args = ['BTC-USD', 1000, 10]
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(GDAXInterfaceTests, self).test_ask_formatter(expected_result, mock_json)
+        mock_resp_json = {}
+        super(GDAXInterfaceTests, self).test_ask_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_open_orders_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(GDAXInterfaceTests, self).test_open_orders_formatter(expected_result, mock_json)
+        mock_resp_json = {}
+        super(GDAXInterfaceTests, self).test_open_orders_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_order_status_formatter(self):
-        additional_args = ['BTC-USD']
+        method_args = ['My_Order_ID']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(GDAXInterfaceTests, self).test_order_status_formatter(expected_result, mock_json,
-                                                                       method_args=additional_args)
+        mock_resp_json = {}
+        super(GDAXInterfaceTests, self).test_order_status_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_cancel_order_formatter(self):
         additional_args = ['BTC-USD']
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(GDAXInterfaceTests, self).test_cancel_order_formatter(expected_result, mock_json,
-                                                                       method_args=additional_args)
+        mock_resp_json = {}
+        super(GDAXInterfaceTests, self).test_cancel_order_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_wallet_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(GDAXInterfaceTests, self).test_wallet_formatter(expected_result, mock_json)
+        mock_resp_json = {}
+        super(GDAXInterfaceTests, self).test_wallet_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
 
 class GeminiInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
@@ -612,53 +750,68 @@ class GeminiInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
         self.assertEqual(sorted(b.supported_pairs), expected_list)
 
     def test_ticker_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = gemini_ticker
-        super(GeminiInterfaceTests, self).test_ticker_formatter(expected_result, mock_json)
+        mock_resp_json = gemini_ticker
+        super(GeminiInterfaceTests, self).test_ticker_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_order_book_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = gemini_order_book
-        super(GeminiInterfaceTests, self).test_order_book_formatter(expected_result, mock_json)
+        mock_resp_json = gemini_order_book
+        super(GeminiInterfaceTests, self).test_order_book_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_trades_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = gemini_trades
-        super(GeminiInterfaceTests, self).test_trades_formatter(expected_result, mock_json)
+        mock_resp_json = gemini_trades
+        super(GeminiInterfaceTests, self).test_trades_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_bid_formatter(self):
+        method_args = ['BTC-USD', 1000, 10]
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(GeminiInterfaceTests, self).test_bid_formatter(expected_result, mock_json)
+        mock_resp_json = {}
+        super(GeminiInterfaceTests, self).test_bid_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_ask_formatter(self):
+        method_args = ['BTC-USD', 1000, 10]
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(GeminiInterfaceTests, self).test_ask_formatter(expected_result, mock_json)
+        mock_resp_json = {}
+        super(GeminiInterfaceTests, self).test_ask_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_open_orders_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(GeminiInterfaceTests, self).test_open_orders_formatter(expected_result, mock_json)
+        mock_resp_json = {}
+        super(GeminiInterfaceTests, self).test_open_orders_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_order_status_formatter(self):
-        additional_args = ['BTC-USD']
+        method_args = ['My_Order_ID']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(GeminiInterfaceTests, self).test_order_status_formatter(expected_result, mock_json,
-                                                                       method_args=additional_args)
+        mock_resp_json = {}
+        super(GeminiInterfaceTests, self).test_order_status_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_cancel_order_formatter(self):
         additional_args = ['BTC-USD']
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(GeminiInterfaceTests, self).test_cancel_order_formatter(expected_result, mock_json,
-                                                                       method_args=additional_args)
+        mock_resp_json = {}
+        super(GeminiInterfaceTests, self).test_cancel_order_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_wallet_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(GeminiInterfaceTests, self).test_wallet_formatter(expected_result, mock_json)
+        mock_resp_json = {}
+        super(GeminiInterfaceTests, self).test_wallet_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
 
 class HitBTCInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
@@ -681,53 +834,68 @@ class HitBTCInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
         self.assertEqual(sorted(b.supported_pairs), sorted(expected_list))
 
     def test_ticker_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = hitbtc_ticker
-        super(HitBTCInterfaceTests, self).test_ticker_formatter(expected_result, mock_json)
+        mock_resp_json = hitbtc_ticker
+        super(HitBTCInterfaceTests, self).test_ticker_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_order_book_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = hitbtc_order_book
-        super(HitBTCInterfaceTests, self).test_order_book_formatter(expected_result, mock_json)
+        mock_resp_json = hitbtc_order_book
+        super(HitBTCInterfaceTests, self).test_order_book_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_trades_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = hitbtc_trades
-        super(HitBTCInterfaceTests, self).test_trades_formatter(expected_result, mock_json)
+        mock_resp_json = hitbtc_trades
+        super(HitBTCInterfaceTests, self).test_trades_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_bid_formatter(self):
+        method_args = ['BTC-USD', 1000, 10]
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(HitBTCInterfaceTests, self).test_bid_formatter(expected_result, mock_json)
+        mock_resp_json = {}
+        super(HitBTCInterfaceTests, self).test_bid_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_ask_formatter(self):
+        method_args = ['BTC-USD', 1000, 10]
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(HitBTCInterfaceTests, self).test_ask_formatter(expected_result, mock_json)
+        mock_resp_json = {}
+        super(HitBTCInterfaceTests, self).test_ask_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_open_orders_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(HitBTCInterfaceTests, self).test_open_orders_formatter(expected_result, mock_json)
+        mock_resp_json = {}
+        super(HitBTCInterfaceTests, self).test_open_orders_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_order_status_formatter(self):
-        additional_args = ['BTC-USD']
+        method_args = ['My_Order_ID']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(HitBTCInterfaceTests, self).test_order_status_formatter(expected_result, mock_json,
-                                                            method_args=additional_args)
+        mock_resp_json = {}
+        super(HitBTCInterfaceTests, self).test_order_status_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_cancel_order_formatter(self):
         additional_args = ['BTC-USD']
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(HitBTCInterfaceTests, self).test_cancel_order_formatter(expected_result, mock_json,
-                                                            method_args=additional_args)
+        mock_resp_json = {}
+        super(HitBTCInterfaceTests, self).test_cancel_order_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_wallet_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(HitBTCInterfaceTests, self).test_wallet_formatter(expected_result, mock_json)
+        mock_resp_json = {}
+        super(HitBTCInterfaceTests, self).test_wallet_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
 
 class ItBitInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
@@ -750,62 +918,77 @@ class ItBitInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
         self.assertEqual(sorted(b.supported_pairs), expected_list)
 
     def test_ticker_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = itbit_ticker
-        super(ItBitInterfaceTests, self).test_ticker_formatter(expected_result, mock_json)
+        mock_resp_json = itbit_ticker
+        super(ItBitInterfaceTests, self).test_ticker_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_order_book_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = itbit_order_book
-        super(ItBitInterfaceTests, self).test_order_book_formatter(expected_result, mock_json)
+        mock_resp_json = itbit_order_book
+        super(ItBitInterfaceTests, self).test_order_book_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_trades_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = itbit_trades
-        super(ItBitInterfaceTests, self).test_trades_formatter(expected_result, mock_json)
+        mock_resp_json = itbit_trades
+        super(ItBitInterfaceTests, self).test_trades_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_bid_formatter(self):
+        method_args = ['BTC-USD', 1000, 10]
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(ItBitInterfaceTests, self).test_bid_formatter(expected_result, mock_json)
+        mock_resp_json = {}
+        super(ItBitInterfaceTests, self).test_bid_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_ask_formatter(self):
+        method_args = ['BTC-USD', 1000, 10]
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(ItBitInterfaceTests, self).test_ask_formatter(expected_result, mock_json)
+        mock_resp_json = {}
+        super(ItBitInterfaceTests, self).test_ask_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_open_orders_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(ItBitInterfaceTests, self).test_open_orders_formatter(expected_result, mock_json)
+        mock_resp_json = {}
+        super(ItBitInterfaceTests, self).test_open_orders_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_order_status_formatter(self):
-        additional_args = ['BTC-USD']
+        method_args = ['My_Order_ID']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(ItBitInterfaceTests, self).test_order_status_formatter(expected_result, mock_json,
-                                                                       method_args=additional_args)
+        mock_resp_json = {}
+        super(ItBitInterfaceTests, self).test_order_status_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_cancel_order_formatter(self):
         additional_args = ['BTC-USD']
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(ItBitInterfaceTests, self).test_cancel_order_formatter(expected_result, mock_json,
-                                                                       method_args=additional_args)
+        mock_resp_json = {}
+        super(ItBitInterfaceTests, self).test_cancel_order_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_wallet_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(ItBitInterfaceTests, self).test_wallet_formatter(expected_result, mock_json)
+        mock_resp_json = {}
+        super(ItBitInterfaceTests, self).test_wallet_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
 
 class KrakenInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
     with patch('bitex.interface.kraken.Kraken._get_supported_pairs', return_value=['BTC-USD']):
-        exchange = Kraken(key='shadow', secret='panda')
+        exchange = Kraken(key='shadow', secret='11LX0lqM9aExe63oe975Fjms5I9plFAPDxj0puwFBKGct79CP9GESjl5IRTDP8bqNaMYWXxEO8UbM0e4kacRtw==')
 
     @patch('bitex.interface.rest.RESTInterface.request')
     def test_request_generates_params_for_RESTInterface_request_correctly(self, mocked_api):
-        api = Kraken(key='1231', secret='YW55IGNhcm5hbCBwbGVhc3VyZS4=')
+        api = Kraken(key='1231', secret='11LX0lqM9aExe63oe975Fjms5I9plFAPDxj0puwFBKGct79CP9GESjl5IRTDP8bqNaMYWXxEO8UbM0e4kacRtw==')
         api.request('some_endpoint', authenticate=True)
         mocked_api.assert_called_with('POST', 'private/some_endpoint', authenticate=True)
         api.request('some_endpoint', authenticate=False)
@@ -819,53 +1002,68 @@ class KrakenInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
         self.assertEqual(sorted(b.supported_pairs), sorted(expected_list))
 
     def test_ticker_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = kraken_ticker
-        super(KrakenInterfaceTests, self).test_ticker_formatter(expected_result, mock_json)
+        mock_resp_json = kraken_ticker
+        super(KrakenInterfaceTests, self).test_ticker_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_order_book_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = kraken_order_book
-        super(KrakenInterfaceTests, self).test_order_book_formatter(expected_result, mock_json)
+        mock_resp_json = kraken_order_book
+        super(KrakenInterfaceTests, self).test_order_book_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_trades_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = kraken_trades
-        super(KrakenInterfaceTests, self).test_trades_formatter(expected_result, mock_json)
+        mock_resp_json = kraken_trades
+        super(KrakenInterfaceTests, self).test_trades_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_bid_formatter(self):
+        method_args = ['BTC-USD', 1000, 10]
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(KrakenInterfaceTests, self).test_bid_formatter(expected_result, mock_json)
+        mock_resp_json = {}
+        super(KrakenInterfaceTests, self).test_bid_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_ask_formatter(self):
+        method_args = ['BTC-USD', 1000, 10]
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(KrakenInterfaceTests, self).test_ask_formatter(expected_result, mock_json)
+        mock_resp_json = {}
+        super(KrakenInterfaceTests, self).test_ask_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_open_orders_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(KrakenInterfaceTests, self).test_open_orders_formatter(expected_result, mock_json)
+        mock_resp_json = {}
+        super(KrakenInterfaceTests, self).test_open_orders_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_order_status_formatter(self):
-        additional_args = ['BTC-USD']
+        method_args = ['My_Order_ID']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(KrakenInterfaceTests, self).test_order_status_formatter(expected_result, mock_json,
-                                                            method_args=additional_args)
+        mock_resp_json = {}
+        super(KrakenInterfaceTests, self).test_order_status_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_cancel_order_formatter(self):
         additional_args = ['BTC-USD']
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(KrakenInterfaceTests, self).test_cancel_order_formatter(expected_result, mock_json,
-                                                            method_args=additional_args)
+        mock_resp_json = {}
+        super(KrakenInterfaceTests, self).test_cancel_order_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_wallet_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(KrakenInterfaceTests, self).test_wallet_formatter(expected_result, mock_json)
+        mock_resp_json = {}
+        super(KrakenInterfaceTests, self).test_wallet_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
 
 class OKCoinInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
@@ -886,53 +1084,68 @@ class OKCoinInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
                                  'ltc_cny', 'eth_cny', 'etc_cny', 'bch_cny'])
 
     def test_ticker_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = okcoin_ticker
-        super(OKCoinInterfaceTests, self).test_ticker_formatter(expected_result, mock_json)
+        mock_resp_json = okcoin_ticker
+        super(OKCoinInterfaceTests, self).test_ticker_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_order_book_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = okcoin_order_book
-        super(OKCoinInterfaceTests, self).test_order_book_formatter(expected_result, mock_json)
+        mock_resp_json = okcoin_order_book
+        super(OKCoinInterfaceTests, self).test_order_book_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_trades_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = okcoin_trades
-        super(OKCoinInterfaceTests, self).test_trades_formatter(expected_result, mock_json)
+        mock_resp_json = okcoin_trades
+        super(OKCoinInterfaceTests, self).test_trades_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_bid_formatter(self):
+        method_args = ['BTC-USD', 1000, 10]
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(OKCoinInterfaceTests, self).test_bid_formatter(expected_result, mock_json)
+        mock_resp_json = {}
+        super(OKCoinInterfaceTests, self).test_bid_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_ask_formatter(self):
+        method_args = ['BTC-USD', 1000, 10]
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(OKCoinInterfaceTests, self).test_ask_formatter(expected_result, mock_json)
+        mock_resp_json = {}
+        super(OKCoinInterfaceTests, self).test_ask_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_open_orders_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(OKCoinInterfaceTests, self).test_open_orders_formatter(expected_result, mock_json)
+        mock_resp_json = {}
+        super(OKCoinInterfaceTests, self).test_open_orders_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_order_status_formatter(self):
-        additional_args = ['BTC-USD']
+        method_args = ['My_Order_ID']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(OKCoinInterfaceTests, self).test_order_status_formatter(expected_result, mock_json,
-                                                            method_args=additional_args)
+        mock_resp_json = {}
+        super(OKCoinInterfaceTests, self).test_order_status_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_cancel_order_formatter(self):
         additional_args = ['BTC-USD']
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(OKCoinInterfaceTests, self).test_cancel_order_formatter(expected_result, mock_json,
-                                                            method_args=additional_args)
+        mock_resp_json = {}
+        super(OKCoinInterfaceTests, self).test_cancel_order_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_wallet_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(OKCoinInterfaceTests, self).test_wallet_formatter(expected_result, mock_json)
+        mock_resp_json = {}
+        super(OKCoinInterfaceTests, self).test_wallet_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
 
 class PoloniexInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
@@ -956,53 +1169,68 @@ class PoloniexInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
         self.assertEqual(sorted(b.supported_pairs), sorted(expected_list))
 
     def test_ticker_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = poloniex_ticker
-        super(PoloniexInterfaceTests, self).test_ticker_formatter(expected_result, mock_json)
+        mock_resp_json = poloniex_ticker
+        super(PoloniexInterfaceTests, self).test_ticker_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_order_book_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = poloniex_order_book
-        super(PoloniexInterfaceTests, self).test_order_book_formatter(expected_result, mock_json)
+        mock_resp_json = poloniex_order_book
+        super(PoloniexInterfaceTests, self).test_order_book_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_trades_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = poloniex_trades
-        super(PoloniexInterfaceTests, self).test_trades_formatter(expected_result, mock_json)
+        mock_resp_json = poloniex_trades
+        super(PoloniexInterfaceTests, self).test_trades_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_bid_formatter(self):
+        method_args = ['BTC-USD', 1000, 10]
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(PoloniexInterfaceTests, self).test_bid_formatter(expected_result, mock_json)
+        mock_resp_json = {}
+        super(PoloniexInterfaceTests, self).test_bid_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_ask_formatter(self):
+        method_args = ['BTC-USD', 1000, 10]
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(PoloniexInterfaceTests, self).test_ask_formatter(expected_result, mock_json)
+        mock_resp_json = {}
+        super(PoloniexInterfaceTests, self).test_ask_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_open_orders_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(PoloniexInterfaceTests, self).test_open_orders_formatter(expected_result, mock_json)
+        mock_resp_json = {}
+        super(PoloniexInterfaceTests, self).test_open_orders_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_order_status_formatter(self):
-        additional_args = ['BTC-USD']
+        method_args = ['My_Order_ID']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(PoloniexInterfaceTests, self).test_order_status_formatter(expected_result, mock_json,
-                                                            method_args=additional_args)
+        mock_resp_json = {}
+        super(PoloniexInterfaceTests, self).test_order_status_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_cancel_order_formatter(self):
         additional_args = ['BTC-USD']
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(PoloniexInterfaceTests, self).test_cancel_order_formatter(expected_result, mock_json,
-                                                            method_args=additional_args)
+        mock_resp_json = {}
+        super(PoloniexInterfaceTests, self).test_cancel_order_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_wallet_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(PoloniexInterfaceTests, self).test_wallet_formatter(expected_result, mock_json)
+        mock_resp_json = {}
+        super(PoloniexInterfaceTests, self).test_wallet_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
 
 class QuadrigaCXInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
@@ -1023,53 +1251,68 @@ class QuadrigaCXInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
         self.assertEqual(b._get_supported_pairs(), expected_list)
 
     def test_ticker_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = quadriga_ticker
-        super(QuadrigaCXInterfaceTests, self).test_ticker_formatter(expected_result, mock_json)
+        mock_resp_json = quadriga_ticker
+        super(QuadrigaCXInterfaceTests, self).test_ticker_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_order_book_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = quadriga_order_book
-        super(QuadrigaCXInterfaceTests, self).test_order_book_formatter(expected_result, mock_json)
+        mock_resp_json = quadriga_order_book
+        super(QuadrigaCXInterfaceTests, self).test_order_book_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_trades_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = quadriga_trades
-        super(QuadrigaCXInterfaceTests, self).test_trades_formatter(expected_result, mock_json)
+        mock_resp_json = quadriga_trades
+        super(QuadrigaCXInterfaceTests, self).test_trades_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_bid_formatter(self):
+        method_args = ['BTC-USD', 1000, 10]
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(QuadrigaCXInterfaceTests, self).test_bid_formatter(expected_result, mock_json)
+        mock_resp_json = {}
+        super(QuadrigaCXInterfaceTests, self).test_bid_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_ask_formatter(self):
+        method_args = ['BTC-USD', 1000, 10]
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(QuadrigaCXInterfaceTests, self).test_ask_formatter(expected_result, mock_json)
+        mock_resp_json = {}
+        super(QuadrigaCXInterfaceTests, self).test_ask_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_open_orders_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(QuadrigaCXInterfaceTests, self).test_open_orders_formatter(expected_result, mock_json)
+        mock_resp_json = {}
+        super(QuadrigaCXInterfaceTests, self).test_open_orders_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_order_status_formatter(self):
-        additional_args = ['BTC-USD']
+        method_args = ['My_Order_ID']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(QuadrigaCXInterfaceTests, self).test_order_status_formatter(expected_result, mock_json,
-                                                            method_args=additional_args)
+        mock_resp_json = {}
+        super(QuadrigaCXInterfaceTests, self).test_order_status_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_cancel_order_formatter(self):
         additional_args = ['BTC-USD']
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(QuadrigaCXInterfaceTests, self).test_cancel_order_formatter(expected_result, mock_json,
-                                                            method_args=additional_args)
+        mock_resp_json = {}
+        super(QuadrigaCXInterfaceTests, self).test_cancel_order_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_wallet_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(QuadrigaCXInterfaceTests, self).test_wallet_formatter(expected_result, mock_json)
+        mock_resp_json = {}
+        super(QuadrigaCXInterfaceTests, self).test_wallet_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
 
 class QuoinexInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
@@ -1092,53 +1335,68 @@ class QuoinexInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
         self.assertEqual(sorted(b.supported_pairs), expected_list)
 
     def test_ticker_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = quoinex_ticker
-        super(QuoinexInterfaceTests, self).test_ticker_formatter(expected_result, mock_json)
+        mock_resp_json = quoinex_ticker
+        super(QuoinexInterfaceTests, self).test_ticker_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_order_book_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = quoinex_order_book
-        super(QuoinexInterfaceTests, self).test_order_book_formatter(expected_result, mock_json)
+        mock_resp_json = quoinex_order_book
+        super(QuoinexInterfaceTests, self).test_order_book_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_trades_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = quoinex_trades
-        super(QuoinexInterfaceTests, self).test_trades_formatter(expected_result, mock_json)
+        mock_resp_json = quoinex_trades
+        super(QuoinexInterfaceTests, self).test_trades_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_bid_formatter(self):
+        method_args = ['BTC-USD', 1000, 10]
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(QuoinexInterfaceTests, self).test_bid_formatter(expected_result, mock_json)
+        mock_resp_json = {}
+        super(QuoinexInterfaceTests, self).test_bid_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_ask_formatter(self):
+        method_args = ['BTC-USD', 1000, 10]
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(QuoinexInterfaceTests, self).test_ask_formatter(expected_result, mock_json)
+        mock_resp_json = {}
+        super(QuoinexInterfaceTests, self).test_ask_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_open_orders_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(QuoinexInterfaceTests, self).test_open_orders_formatter(expected_result, mock_json)
+        mock_resp_json = {}
+        super(QuoinexInterfaceTests, self).test_open_orders_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_order_status_formatter(self):
-        additional_args = ['BTC-USD']
+        method_args = ['My_Order_ID']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(QuoinexInterfaceTests, self).test_order_status_formatter(expected_result, mock_json,
-                                                                       method_args=additional_args)
+        mock_resp_json = {}
+        super(QuoinexInterfaceTests, self).test_order_status_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_cancel_order_formatter(self):
         additional_args = ['BTC-USD']
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(QuoinexInterfaceTests, self).test_cancel_order_formatter(expected_result, mock_json,
-                                                                       method_args=additional_args)
+        mock_resp_json = {}
+        super(QuoinexInterfaceTests, self).test_cancel_order_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_wallet_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(QuoinexInterfaceTests, self).test_wallet_formatter(expected_result, mock_json)
+        mock_resp_json = {}
+        super(QuoinexInterfaceTests, self).test_wallet_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
 
 class TheRockTradingInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
@@ -1163,53 +1421,67 @@ class TheRockTradingInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase
         self.assertEqual(sorted(b.supported_pairs), sorted(expected_list))
 
     def test_ticker_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = rock_trading_ticker
-        super(TheRockTradingInterfaceTests, self).test_ticker_formatter(expected_result, mock_json)
+        mock_resp_json = rock_trading_ticker
+        super(TheRockTradingInterfaceTests, self).test_ticker_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_order_book_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = rock_trading_order_book
-        super(TheRockTradingInterfaceTests, self).test_order_book_formatter(expected_result, mock_json)
+        mock_resp_json = rock_trading_order_book
+        super(TheRockTradingInterfaceTests, self).test_order_book_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_trades_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = rock_trading_trades
-        super(TheRockTradingInterfaceTests, self).test_trades_formatter(expected_result, mock_json)
+        mock_resp_json = rock_trading_trades
+        super(TheRockTradingInterfaceTests, self).test_trades_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_bid_formatter(self):
+        method_args = ['BTC-USD', 1000, 10]
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(TheRockTradingInterfaceTests, self).test_bid_formatter(expected_result, mock_json)
+        mock_resp_json = {}
+        super(TheRockTradingInterfaceTests, self).test_bid_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_ask_formatter(self):
+        method_args = ['BTC-USD', 1000, 10]
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(TheRockTradingInterfaceTests, self).test_ask_formatter(expected_result, mock_json)
+        mock_resp_json = {}
+        super(TheRockTradingInterfaceTests, self).test_ask_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_open_orders_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(TheRockTradingInterfaceTests, self).test_open_orders_formatter(expected_result, mock_json)
+        mock_resp_json = {}
+        super(TheRockTradingInterfaceTests, self).test_open_orders_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_order_status_formatter(self):
-        additional_args = ['BTC-USD']
+        method_args = ['My_Order_ID']
+        method_kwargs = {'pair': 'BTC-USD'}
         expected_result = tuple()
-        mock_json = {}
-        super(TheRockTradingInterfaceTests, self).test_order_status_formatter(expected_result, mock_json,
-                                                            method_args=additional_args)
+        mock_resp_json = {}
+        super(TheRockTradingInterfaceTests, self).test_order_status_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_cancel_order_formatter(self):
-        additional_args = ['BTC-USD']
+        method_args = ['My_Order_ID']
+        method_kwargs = {'pair': 'BTC-USD'}
         expected_result = tuple()
-        mock_json = {}
-        super(TheRockTradingInterfaceTests, self).test_cancel_order_formatter(expected_result, mock_json,
-                                                            method_args=additional_args)
+        mock_resp_json = {}
+        super(TheRockTradingInterfaceTests, self).test_cancel_order_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_wallet_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(TheRockTradingInterfaceTests, self).test_wallet_formatter(expected_result, mock_json)
+        mock_resp_json = {}
+        super(TheRockTradingInterfaceTests, self).test_wallet_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
 
 class VaultoroInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
@@ -1229,53 +1501,68 @@ class VaultoroInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
         self.assertEqual(b._get_supported_pairs(), ['BTC-GLD'])
 
     def test_ticker_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = vaultoro_ticker
-        super(VaultoroInterfaceTests, self).test_ticker_formatter(expected_result, mock_json)
+        mock_resp_json = vaultoro_ticker
+        super(VaultoroInterfaceTests, self).test_ticker_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_order_book_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = vaultoro_order_book
-        super(VaultoroInterfaceTests, self).test_order_book_formatter(expected_result, mock_json)
+        mock_resp_json = vaultoro_order_book
+        super(VaultoroInterfaceTests, self).test_order_book_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_trades_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = vaultoro_trades
-        super(VaultoroInterfaceTests, self).test_trades_formatter(expected_result, mock_json)
+        mock_resp_json = vaultoro_trades
+        super(VaultoroInterfaceTests, self).test_trades_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_bid_formatter(self):
+        method_args = ['BTC-USD', 1000, 10]
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(VaultoroInterfaceTests, self).test_bid_formatter(expected_result, mock_json)
+        mock_resp_json = {}
+        super(VaultoroInterfaceTests, self).test_bid_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_ask_formatter(self):
+        method_args = ['BTC-USD', 1000, 10]
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(VaultoroInterfaceTests, self).test_ask_formatter(expected_result, mock_json)
+        mock_resp_json = {}
+        super(VaultoroInterfaceTests, self).test_ask_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_open_orders_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(VaultoroInterfaceTests, self).test_open_orders_formatter(expected_result, mock_json)
+        mock_resp_json = {}
+        super(VaultoroInterfaceTests, self).test_open_orders_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_order_status_formatter(self):
-        additional_args = ['BTC-USD']
+        method_args = ['My_Order_ID']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(VaultoroInterfaceTests, self).test_order_status_formatter(expected_result, mock_json,
-                                                            method_args=additional_args)
+        mock_resp_json = {}
+        super(VaultoroInterfaceTests, self).test_order_status_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_cancel_order_formatter(self):
         additional_args = ['BTC-USD']
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(VaultoroInterfaceTests, self).test_cancel_order_formatter(expected_result, mock_json,
-                                                            method_args=additional_args)
+        mock_resp_json = {}
+        super(VaultoroInterfaceTests, self).test_cancel_order_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_wallet_formatter(self):
+        method_args = ['BTC-USD']
+        method_kwargs = {}
         expected_result = tuple()
-        mock_json = {}
-        super(VaultoroInterfaceTests, self).test_wallet_formatter(expected_result, mock_json)
+        mock_resp_json = {}
+        super(VaultoroInterfaceTests, self).test_wallet_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
 
 if __name__ == '__main__':

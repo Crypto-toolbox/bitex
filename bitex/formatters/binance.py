@@ -12,7 +12,7 @@ class BinanceFormattedResponse(APIResponse):
     Returns the standardized method's json results as a formatted data in a namedTuple.
     """
 
-    def ticker(self, *args):
+    def ticker(self):
         """Return namedtuple with given data."""
         data = self.json(parse_int=str, parse_float=str)
         bid = data["bidPrice"]
@@ -25,34 +25,41 @@ class BinanceFormattedResponse(APIResponse):
         return super(BinanceFormattedResponse, self).ticker(bid, ask, high, low, last, volume,
                                                             timestamp)
 
-    def order_book(self, bids, asks, ts):
+    def order_book(self):
+        """Return namedtuple with given data."""
+        data = self.json()
+        bids = data['bids']
+        asks = data['asks']
+        timestamp = datetime.utcnow()
+        return super(BinanceFormattedResponse, self).order_book(bids, asks, timestamp)
+
+    def trades(self):
+        """Return namedtuple with given data."""
+        data = self.json()
+        trades = data
+        timestamp = datetime.utcnow()
+        return super(BinanceFormattedResponse, self).trades(trades, timestamp)
+
+    def bid(self):
         """Return namedtuple with given data."""
         raise NotImplementedError
 
-    def trades(self, trades, ts):
+    def ask(self):
         """Return namedtuple with given data."""
         raise NotImplementedError
 
-    def bid(self, price, size, side, oid, otype, ts):
+    def order_status(self):
         """Return namedtuple with given data."""
         raise NotImplementedError
 
-    def ask(self, price, size, side, oid, otype, ts):
+    def cancel_order(self):
         """Return namedtuple with given data."""
         raise NotImplementedError
 
-    def order_status(self, *args):
+    def open_orders(self):
         """Return namedtuple with given data."""
         raise NotImplementedError
 
-    def cancel_order(self, *args):
-        """Return namedtuple with given data."""
-        raise NotImplementedError
-
-    def open_orders(self, *args):
-        """Return namedtuple with given data."""
-        raise NotImplementedError
-
-    def wallet(self, *args):
+    def wallet(self):
         """Return namedtuple with given data."""
         raise NotImplementedError

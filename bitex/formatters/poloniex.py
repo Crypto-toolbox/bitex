@@ -12,7 +12,7 @@ class PoloniexFormattedResponse(APIResponse):
     Returns the standardized method's json results as a formatted data in a namedTuple.
     """
 
-    def ticker(self, *args):
+    def ticker(self):
         """Return namedtuple with given data."""
         # The Poloniex public ticker returns a json containing the ticker of all the pairs traded
         # on the exchange. This is why we had to store the arguments passed to the method (ticker,
@@ -32,34 +32,34 @@ class PoloniexFormattedResponse(APIResponse):
         return super(PoloniexFormattedResponse, self).ticker(bid, ask, high, low, last, volume,
                                                              timestamp)
 
-    def order_book(self, bids, asks, ts):
+    def order_book(self):
         """Return namedtuple with given data."""
         raise NotImplementedError
 
-    def trades(self, trades, ts):
+    def trades(self):
         """Return namedtuple with given data."""
         raise NotImplementedError
 
-    def bid(self, price, size, side, oid, otype, ts):
+    def bid(self):
         """Return namedtuple with given data."""
         raise NotImplementedError
 
-    def ask(self, price, size, side, oid, otype, ts):
+    def ask(self):
         """Return namedtuple with given data."""
         raise NotImplementedError
 
-    def order_status(self, *args):
+    def order_status(self):
         """Return namedtuple with given data."""
         raise NotImplementedError
 
-    def cancel_order(self, *args):
+    def cancel_order(self):
         """Return namedtuple with given data."""
         raise NotImplementedError
 
-    def open_orders(self, *args):
+    def open_orders(self):
         """Return namedtuple with given data."""
         raise NotImplementedError
 
-    def wallet(self, *args):
+    def wallet(self):
         """Return namedtuple with given data."""
         raise NotImplementedError

@@ -3,6 +3,9 @@
 # Import Built-Ins
 import logging
 
+# Import Third-party
+import requests
+
 # Import Homebrew
 from bitex.api.REST.gdax import GDAXREST
 from bitex.interface.rest import RESTInterface
@@ -21,7 +24,8 @@ class GDAX(RESTInterface):
         super(GDAX, self).__init__('GDAX', GDAXREST(**api_kwargs))
 
     def _get_supported_pairs(self):
-        return []
+        r = requests.request('GET', 'https://api.gdax.com/products').json()
+        return [x['product_id'] for x in r]
 
     # Public Endpoints
     @check_and_format_pair
@@ -35,7 +39,7 @@ class GDAX(RESTInterface):
         :param kwargs: additional kwargs, passed to requests.Requests() as 'param' kwarg.
         :return: :class:`requests.Response()` object.
         """
-        raise NotImplementedError
+        return self.request('GET', 'products/%s/ticker' % pair, params=kwargs)
 
     @check_and_format_pair
     @format_with(GDAXFormattedResponse)
@@ -48,7 +52,7 @@ class GDAX(RESTInterface):
         :param kwargs: additional kwargs, passed to requests.Requests() as 'param' kwarg.
         :return: :class:`requests.Response()` object.
         """
-        raise NotImplementedError
+        return self.request('GET', 'products/%s/book' % pair, params=kwargs)
 
     @check_and_format_pair
     @format_with(GDAXFormattedResponse)
@@ -61,9 +65,15 @@ class GDAX(RESTInterface):
         :param kwargs: additional kwargs, passed to requests.Requests() as 'param' kwarg.
         :return: :class:`requests.Response()` object.
         """
-        raise NotImplementedError
+        return self.request('GET', 'products/%s/trades' % pair, params=kwargs)
 
     # Private Endpoints
+
+    def _place_order(self, pair, price, size, side, **kwargs):
+        params = {'product_id': pair, 'side': side, 'size': size, 'price': price}
+        params.update(kwargs)
+        return self.request('POST', 'orders', data=params, authenticate=True)
+
     @check_and_format_pair
     @format_with(GDAXFormattedResponse)
     def ask(self, pair, price, size, *args, **kwargs):
@@ -77,7 +87,7 @@ class GDAX(RESTInterface):
         :param kwargs: additional kwargs, passed to requests.Requests() as 'param' kwarg.
         :return: :class:`requests.Response()` object.
         """
-        raise NotImplementedError
+        return self._place_order(pair, price, size, 'sell', **kwargs)
 
     @check_and_format_pair
     @format_with(GDAXFormattedResponse)
@@ -92,7 +102,7 @@ class GDAX(RESTInterface):
         :param kwargs: additional kwargs, passed to requests.Requests() as 'param' kwarg.
         :return: :class:`requests.Response()` object.
         """
-        raise NotImplementedError
+        return self._place_order(pair, price, size, 'buy', **kwargs)
 
     @format_with(GDAXFormattedResponse)
     def order_status(self, order_id, *args, **kwargs):
@@ -104,7 +114,7 @@ class GDAX(RESTInterface):
         :param kwargs: additional kwargs, passed to requests.Requests() as 'param' kwarg.
         :return: :class:`requests.Response()` object.
         """
-        raise NotImplementedError
+        return self.request('GET', 'orders/%s' % order_id, authenticate=True, params=kwargs)
 
     @format_with(GDAXFormattedResponse)
     def open_orders(self, *args, **kwargs):
@@ -115,7 +125,7 @@ class GDAX(RESTInterface):
         :param kwargs: additional kwargs, passed to requests.Requests() as 'param' kwarg.
         :return: :class:`requests.Response()` object.
         """
-        raise NotImplementedError
+        return self.request('GET', 'orders', authenticate=True, params=kwargs)
 
     @format_with(GDAXFormattedResponse)
     def cancel_order(self, *order_ids, **kwargs):
@@ -126,10 +136,14 @@ class GDAX(RESTInterface):
         :param kwargs: additional kwargs, passed to requests.Requests() as 'param' kwarg.
         :return: :class:`requests.Response()` object.
         """
-        raise NotImplementedError
+        path = 'orders/%s'
+        resps = []
+        for oid in order_ids:
+            resps.append(self.request('DELETE', path % oid, authenticate=True, params=kwargs))
+        return resps if len(resps) > 1 else resps[0]
 
     @format_with(GDAXFormattedResponse)
-    def wallet(self, *args, **kwargs):
+    def wallet(self, account_id, *args, **kwargs):
         """
         Return the wallet of this account.
 
@@ -137,4 +151,4 @@ class GDAX(RESTInterface):
         :param kwargs: additional kwargs, passed to requests.Requests() as 'param' kwarg.
         :return: :class:`requests.Response()` object.
         """
-        raise NotImplementedError
+        return self.request('GET', 'accounts/%s' % account_id, authenticate=True, params=kwargs)
