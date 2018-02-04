@@ -95,8 +95,9 @@ class RESTAPI(BaseAPI):
         :return: request.Response() object
         """
         self.check_auth_requirements()
+        request_kwargs['method'] = method_verb
         request_kwargs = self.sign_request_kwargs(endpoint, **request_kwargs)
-        return self._query(method_verb, **request_kwargs)
+        return self._query(**request_kwargs)
 
     def public_query(self, method_verb, endpoint, **request_kwargs):
         """

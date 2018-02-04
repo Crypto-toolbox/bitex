@@ -181,7 +181,7 @@ class RESTAPITests(TestCase):
         d = api.sign_request_kwargs('market')
         template = {'url': 'http://some.api.com/v2/market',
                     'headers': {}, 'files': {}, 'data': {}, 'hooks': {},
-                    'params': {}, 'auth': {}, 'cookies': {}, 'json': {}}
+                    'params': {}, 'auth': {}, 'cookies': {}, 'json': {}, 'method': {}}
         for k in template:
             self.assertTrue(k in d)
 
