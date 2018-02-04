@@ -614,12 +614,14 @@ class PoloniexRESTTest(TestCase):
         api = PoloniexREST(key=key, secret=secret)
 
         # Check signatured request kwargs
-        with mock.patch.object(RESTAPI, 'nonce', return_value='100'):
-            ret_value = api.sign_request_kwargs('test_signature', params={'param_1': 'abc'})
-            request_string = 'command=test_signature&nonce=100&param_1=abc'
+        with mock.patch.object(api, 'nonce', return_value='100'):
+            ret_value = api.sign_request_kwargs('test_signature',
+                                                params={'param_1': 'abc'})
+            request_string = 'param_1=abc&nonce=100&command=test_signature'
             # Construct expected result
 
-            signature = hmac.new(secret.encode('utf8'), request_string.encode('utf8'),
+            signature = hmac.new(secret.encode('utf8'),
+                                 request_string.encode('utf8'),
                                  hashlib.sha512).hexdigest()
             self.assertIn('headers', ret_value)
             self.assertIn('Sign', ret_value['headers'])
@@ -646,12 +648,14 @@ class QuoineRESTTest(TestCase):
 
         # Check signatured request kwargs
         with mock.patch.object(RESTAPI, 'nonce', return_value='100'):
-            r = api.sign_request_kwargs('products', params={'param_1': 'abc'})
+            r = api.sign_request_kwargs('products', params={'param_1': 'abc'},
+                                        method="GET")
 
             url = 'https://api.quoine.com'
-            path = 'products?param_1=abc'
-            expected_signature = jwt.encode({'path': path, 'nonce': '100', 'token_id': key},
-                                            secret, algorithm='HS256')
+            path = '/products?param_1=abc'
+            expected_signature = jwt.encode(
+                {'path': path, 'nonce': '100', 'token_id': key},
+                secret, algorithm='HS256')
             self.assertIn('X-Quoine-Auth', r['headers'])
             self.assertEqual(r['headers']['X-Quoine-Auth'], expected_signature)
             self.assertIn('X-Quoine-API-Version', r['headers'])

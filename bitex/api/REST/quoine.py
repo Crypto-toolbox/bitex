@@ -5,12 +5,12 @@ Documentation available here:
 """
 # Import Built-ins
 import logging
+import time
 import urllib
 import urllib.parse
 
 # Import Third-Party
 import jwt
-
 # Import Homebrew
 from bitex.api.REST import RESTAPI
 
@@ -47,7 +47,14 @@ class QuoineREST(RESTAPI):
         # Prepare Payload arguments
         params = kwargs.get('params', {})
 
-        path = endpoint + '?' + urllib.parse.urlencode(params)
+        path = '/' + endpoint
+
+        if req_kwargs.get('method', 'POST') == 'POST':
+            req_kwargs['json'] = params
+            del req_kwargs['params']
+        elif req_kwargs.get('method') == 'GET' and params:
+            path += '?' + urllib.parse.urlencode(params)
+
         msg = {'path': path, 'nonce': self.nonce(), 'token_id': self.key}
 
         # generate signature
@@ -56,4 +63,5 @@ class QuoineREST(RESTAPI):
         req_kwargs['headers'] = {'X-Quoine-API-Version': self.version,
                                  'X-Quoine-Auth': signature,
                                  'Content-Type': 'application/json'}
+
         return req_kwargs

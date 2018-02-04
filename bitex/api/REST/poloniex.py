@@ -7,6 +7,7 @@ Documentation available here:
 import logging
 import hashlib
 import hmac
+import time
 import urllib
 import urllib.parse
 
@@ -38,22 +39,30 @@ class PoloniexREST(RESTAPI):
 
         # Prepare Payload arguments
         try:
-            params = kwargs['params']
+            payload = kwargs['params']
         except KeyError:
-            params = {}
-        nonce = self.nonce()
-        cmd = endpoint
+            payload = {}
+        payload['nonce'] = self.nonce()
 
-        payload = params
+        payload.update({'command': endpoint})
 
         # generate signature
-        msg = 'command=' + cmd + '&nonce=' + nonce + '&' + urllib.parse.urlencode(payload)
+        msg = urllib.parse.urlencode(payload)
         sig = hmac.new(self.secret.encode('utf-8'), msg.encode('utf-8'),
                        hashlib.sha512).hexdigest()
 
         # update req_kwargs keys
         req_kwargs['headers'] = {'Key': self.key, 'Sign': sig}
-        req_kwargs['data'] = params
+        req_kwargs['data'] = payload
         req_kwargs['url'] = self.addr + '/tradingApi'
 
         return req_kwargs
+
+    @staticmethod
+    def nonce():
+        """
+        Create a Nonce value for signature generation.
+
+        :return: Nonce as string
+        """
+        return str(int(round(1000 * 10000 * time.time())))
