@@ -39,12 +39,12 @@ class PoloniexREST(RESTAPI):
 
         # Prepare Payload arguments
         try:
-            params = kwargs['params']
+            payload = kwargs['params']
         except KeyError:
-            params = {}
-        params['nonce'] = self.nonce()
+            payload = {}
+        payload['nonce'] = self.nonce()
 
-        payload = params
+        payload.update({'command': endpoint})
 
         # generate signature
         msg = urllib.parse.urlencode(payload)
@@ -53,7 +53,7 @@ class PoloniexREST(RESTAPI):
 
         # update req_kwargs keys
         req_kwargs['headers'] = {'Key': self.key, 'Sign': sig}
-        req_kwargs['data'] = params
+        req_kwargs['data'] = payload
         req_kwargs['url'] = self.addr + '/tradingApi'
 
         return req_kwargs

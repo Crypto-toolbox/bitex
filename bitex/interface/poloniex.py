@@ -31,10 +31,10 @@ class Poloniex(RESTInterface):
         else:
             req_kwargs['params'] = {'command': endpoint}
         if authenticate:
-            return super(Poloniex, self).request('POST', endpoint, authenticate=True,
-                                                 **req_kwargs)
-        return super(Poloniex, self).request('GET', 'public', authenticate=False,
-                                             **req_kwargs)
+            return super(Poloniex, self).request(
+                'POST', endpoint, authenticate=True, **req_kwargs)
+        return super(Poloniex, self).request(
+            'GET', 'public', authenticate=False, **req_kwargs)
 
     def _get_supported_pairs(self):
         """Return a list of supported pairs."""
