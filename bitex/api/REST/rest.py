@@ -81,8 +81,10 @@ class RESTAPI(BaseAPI):
         :param request_kwargs: kwargs for request.Request()
         :return: request.Response() object
         """
-        resp = requests.request(method_verb, **request_kwargs, timeout=self.timeout)
-
+        if 'method' not in request_kwargs:
+            resp = requests.request(method_verb, **request_kwargs, timeout=self.timeout)
+        else:
+            resp = requests.request(**request_kwargs, timeout=self.timeout)
         return resp
 
     def private_query(self, method_verb, endpoint, **request_kwargs):
