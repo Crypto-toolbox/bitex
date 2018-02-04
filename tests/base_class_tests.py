@@ -178,7 +178,7 @@ class RESTAPITests(TestCase):
         api = RESTAPI(addr='http://some.api.com', key='shadow', secret='panda',
                       version='v2')
         # generate_request_kwargs returns a dict with all necessary keys present
-        d = api.sign_request_kwargs('market')
+        d = api.sign_request_kwargs('market', method="Test")
         template = {'url': 'http://some.api.com/v2/market',
                     'headers': {}, 'files': {}, 'data': {}, 'hooks': {},
                     'params': {}, 'auth': {}, 'cookies': {}, 'json': {}, 'method': {}}
