@@ -74,7 +74,7 @@ class CryptopiaREST(RESTAPI):
         md5.update(post_data.encode('utf-8'))
         request_content_b64_string = base64.b64encode(md5.digest()).decode('utf-8')
         signature = (self.key + 'POST' + parsed_url + nonce + request_content_b64_string)
-        hmac_sig = base64.b64encode(hmac.new(base64.b64encode(self.secret.encode('utf-8')),
+        hmac_sig = base64.b64encode(hmac.new(base64.b64decode(self.secret),
                                              signature.encode('utf-8'),
                                              hashlib.sha256).digest())
         header_data = 'amx ' + self.key + ':' + hmac_sig.decode('utf-8') + ':' + nonce
