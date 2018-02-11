@@ -141,4 +141,4 @@ class GDAXFormattedResponse(APIResponse):
         """Return namedtuple with given data."""
         data = self.json(parse_int=str, parse_float=str)
         balances = {d['currency']: d['available'] for d in data}
-        return super(GDAXFormattedResponse, self).wallet(timestamp=self.received_at, **balances)
+        return super(GDAXFormattedResponse, self).wallet(balances, self.received_at)
