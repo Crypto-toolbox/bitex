@@ -1,6 +1,7 @@
 """FormattedResponse Class for Standardized methods of the Bitstamp Interface class."""
 # Import Built-ins
 from datetime import datetime
+import pytz
 
 # Import Home-brewed
 from bitex.formatters.base import APIResponse
@@ -36,24 +37,55 @@ class BitstampFormattedResponse(APIResponse):
 
     def bid(self):
         """Return namedtuple with given data."""
-        raise NotImplementedError
+        data = self.json(parse_int=str, parse_float=str)
+        oid, ts, side = data['id'], data['datetime'], 'ask' if data['type'] else 'bid'
+        price, size = data['price'], data['amount']
+        return super(BitstampFormattedResponse, self).bid(oid, price, size, side, ts)
 
     def ask(self):
         """Return namedtuple with given data."""
-        raise NotImplementedError
+        data = self.json(parse_int=str, parse_float=str)
+        oid, ts, side = data['id'], data['datetime'], 'ask' if data['type'] else 'bid'
+        price, size = data['price'], data['amount']
+        return super(BitstampFormattedResponse, self).ask(oid, price, size, side, ts)
 
     def order_status(self):
         """Return namedtuple with given data."""
-        raise NotImplementedError
+        data = self.json(parse_int=str, parse_float=str)
+        state = data['status']
+        oid = self.method_args[0]
+        ts = self.received_at
+        return super(BitstampFormattedResponse, self).order_status(
+            oid, 'N/A', 'N/A', 'N/A', 'N/A', state, ts)
 
     def cancel_order(self):
         """Return namedtuple with given data."""
-        raise NotImplementedError
+        data = self.json(parse_int=str, parse_float=float)
+        extracted_data = (data['id'], True if ('error' in data and data['error']) else False,
+                          data['datetime'], data['error'] if 'error' in data else None)
+        return super(BitstampFormattedResponse, self).cancel_order(*extracted_data)
 
     def open_orders(self):
         """Return namedtuple with given data."""
-        raise NotImplementedError
+        data = self.json(parse_int=str, parse_float=str)
+        unpacked_orders = []
+        for order in data:
+            if order['type']:
+                side = 'ask'
+            else:
+                side = 'bid'
+            if 'pair' in self.method_kwargs:
+                unpacked_order = (data['id'], self.method_kwargs['pair'], data['price'],
+                                  data['amount'], side, data['datetime'])
+            else:
+                unpacked_order = (data['id'], data['currency_pair'], data['price'], data['amount'],
+                                  side, data['datetime'])
+            unpacked_orders.append(unpacked_order)
+
+        ts = self.received_at
+        return super(BitstampFormattedResponse, self).open_orders(unpacked_orders, ts)
 
     def wallet(self):
         """Return namedtuple with given data."""
-        raise NotImplementedError
+        data = self.json(parse_int=str, parse_float=str)
+        return super(BitstampFormattedResponse, self).wallet(data, self.received_at)
