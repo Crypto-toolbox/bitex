@@ -25,7 +25,7 @@ class GDAX(RESTInterface):
 
     def _get_supported_pairs(self):
         r = requests.request('GET', 'https://api.gdax.com/products').json()
-        return [x['product_id'] for x in r]
+        return [x['id'] for x in r]
 
     # Public Endpoints
     @check_and_format_pair
