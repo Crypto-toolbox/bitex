@@ -143,7 +143,7 @@ class GDAX(RESTInterface):
         return resps if len(resps) > 1 else resps[0]
 
     @format_with(GDAXFormattedResponse)
-    def wallet(self, account_id, *args, **kwargs):
+    def wallet(self, *args, **kwargs):
         """
         Return the wallet of this account.
 
@@ -151,4 +151,4 @@ class GDAX(RESTInterface):
         :param kwargs: additional kwargs, passed to requests.Requests() as 'param' kwarg.
         :return: :class:`requests.Response()` object.
         """
-        return self.request('GET', 'accounts/%s' % account_id, authenticate=True, params=kwargs)
+        return self.request('GET', 'accounts', authenticate=True, params=kwargs)
