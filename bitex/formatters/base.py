@@ -112,5 +112,5 @@ class APIResponse(requests.Response, metaclass=ABCMeta):
 
         :param balances: dict of currency=value kwargs
         """
-        wallet = namedtuple('Wallet', list(balances.keys()) + 'timestamp')
+        wallet = namedtuple('Wallet', list(balances.keys()) + ['timestamp'])
         return wallet(timestamp=timestamp, **balances)
