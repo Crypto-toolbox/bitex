@@ -40,14 +40,14 @@ class BitstampFormattedResponse(APIResponse):
         data = self.json(parse_int=str, parse_float=str)
         oid, ts, side = data['id'], data['datetime'], 'ask' if data['type'] else 'bid'
         price, size = data['price'], data['amount']
-        return super(BitstampFormattedResponse, self).bid(oid, price, size, side, ts)
+        return super(BitstampFormattedResponse, self).bid(oid, price, size, side, 'N/A', ts)
 
     def ask(self):
         """Return namedtuple with given data."""
         data = self.json(parse_int=str, parse_float=str)
         oid, ts, side = data['id'], data['datetime'], 'ask' if data['type'] else 'bid'
         price, size = data['price'], data['amount']
-        return super(BitstampFormattedResponse, self).ask(oid, price, size, side, ts)
+        return super(BitstampFormattedResponse, self).ask(oid, price, size, side, 'N/A', ts)
 
     def order_status(self):
         """Return namedtuple with given data."""

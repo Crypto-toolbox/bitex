@@ -67,7 +67,7 @@ class Bitstamp(RESTInterface):
     @format_with(BitstampFormattedResponse)
     def ask(self, pair, price, size, *args, market=False, **kwargs):
         """Place an ask order."""
-        return self._place_order(pair, price, size, 'buy', market=market, **kwargs)
+        return self._place_order(pair, price, size, 'sell', market=market, **kwargs)
 
     @check_and_format_pair
     @format_with(BitstampFormattedResponse)
@@ -75,27 +75,27 @@ class Bitstamp(RESTInterface):
         """Place a bid order."""
         return self._place_order(pair, price, size, 'buy', market=market, **kwargs)
 
-    def _place_order(self, pair, size, price, side, market=None, **kwargs):
+    def _place_order(self, pair, price, size, side, market=None, **kwargs):
         """Place an order with the given parameters."""
         payload = {'amount': size, 'price': price}
         payload.update(kwargs)
         if market:
-            return self.request('%s/market/%s/' % (side, pair), authenticate=True, data=payload)
-        return self.request('%s/%s/' % (side, pair), authenticate=True, data=payload)
+            return self.request('%s/market/%s/' % (side, pair), authenticate=True, params=payload)
+        return self.request('%s/%s/' % (side, pair), authenticate=True, params=payload)
 
     @format_with(BitstampFormattedResponse)
     def order_status(self, order_id, *args, **kwargs):
         """Return the order status for the given order's ID."""
         payload = {'id': order_id}
         payload.update(kwargs)
-        return self.request('api/order_status/', authenticate=True, data=payload)
+        return self.request('api/order_status/', authenticate=True, params=payload)
 
     @format_with(BitstampFormattedResponse)
     def open_orders(self, *args, pair=None, **kwargs):
         """Return all open orders."""
         if pair:
-            return self.request('open_orders/%s/' % pair, authenticate=True, data=kwargs)
-        return self.request('open_orders/all/', authenticate=True, data=kwargs)
+            return self.request('open_orders/%s/' % pair, authenticate=True, params=kwargs)
+        return self.request('open_orders/all/', authenticate=True, params=kwargs)
 
     @format_with(BitstampFormattedResponse)
     def cancel_order(self, *order_ids, **kwargs):
@@ -104,7 +104,7 @@ class Bitstamp(RESTInterface):
         payload = kwargs
         for oid in order_ids:
             payload.update({'id': oid})
-            r = self.request('cancel_order/', authenticate=True, data=payload)
+            r = self.request('cancel_order/', authenticate=True, params=payload)
             results.append(r)
         return results if len(results) > 1 else results[0]
 
@@ -117,8 +117,8 @@ class Bitstamp(RESTInterface):
             except AttributeError:
                 pair = kwargs['pair']
                 
-            return self.request('balance/%s/' % pair, authenticate=True, data=kwargs)
-        return self.request('balance/', authenticate=True, data=kwargs)
+            return self.request('balance/%s/' % pair, authenticate=True, params=kwargs)
+        return self.request('balance/', authenticate=True, params=kwargs)
 
     ###########################
     # Exchange Specific Methods
@@ -139,16 +139,16 @@ class Bitstamp(RESTInterface):
     def user_transactions(self, pair, **kwargs):
         """Return user transactions."""
         if pair:
-            return self.request('user_transactions/%s/' % pair, authenticate=True, data=kwargs)
-        return self.request('api/user_transactions/', authenticate=True, data=kwargs)
+            return self.request('user_transactions/%s/' % pair, authenticate=True, params=kwargs)
+        return self.request('api/user_transactions/', authenticate=True, params=kwargs)
 
     def cancel_all_orders(self, **kwargs):
         """Cancel all orders."""
-        return self.request('api/cancel_all_orders/', authenticate=True, data=kwargs)
+        return self.request('api/cancel_all_orders/', authenticate=True, params=kwargs)
 
     def withdrawal_request(self, **kwargs):
         """Issue a withdrawal request."""
-        return self.request('api/withdrawal_request', authenticate=True, data=kwargs)
+        return self.request('api/withdrawal_request', authenticate=True, params=kwargs)
 
     def withdraw(self, currency, **kwargs):  # pylint: disable=unused-argument
         """Withdraw currency from the account."""
@@ -180,33 +180,33 @@ class Bitstamp(RESTInterface):
     def transfer_sub_to_main(self, **kwargs):
         """Transfer currency from sub account to main."""
         return self.request('transfer_to_main/', authenticate=True,
-                            data=kwargs)
+                            params=kwargs)
 
     def transfer_main_to_sub(self, **kwargs):
         """Transfer currency from main account to sub account."""
         return self.request('transfer_from_main/', authenticate=True,
-                            data=kwargs)
+                            params=kwargs)
 
     def open_bank_withdrawal(self, **kwargs):
         """Issue a bank withdrawal."""
-        return self.request('withdrawal/open/', authenticate=True, data=kwargs)
+        return self.request('withdrawal/open/', authenticate=True, params=kwargs)
 
     def bank_withdrawal_status(self, **kwargs):
         """Query status of a bank withdrawal."""
         return self.request('withdrawal/status/', authenticate=True,
-                            data=kwargs)
+                            params=kwargs)
 
     def cancel_bank_withdrawal(self, **kwargs):
         """Cancel a bank withdrawal."""
         return self.request('withdrawal/cancel/', authenticate=True,
-                            data=kwargs)
+                            params=kwargs)
 
     def liquidate(self, **kwargs):
         """Liquidate all assets."""
         return self.request('liquidation_address/new/', authenticate=True,
-                            data=kwargs)
+                            params=kwargs)
 
     def liquidation_info(self, **kwargs):
         """Return liquidity information."""
         return self.request('liquidation_address/info/', authenticate=True,
-                            data=kwargs)
+                            params=kwargs)

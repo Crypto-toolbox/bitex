@@ -73,7 +73,7 @@ class BitstampREST(RESTAPI):
         params['key'] = self.key
         params['nonce'] = nonce
         params['signature'] = signature
-        req_kwargs['data'] = params
+        req_kwargs['data'] = params or req_kwargs['data']
         if endpoint.startswith('api'):
             req_kwargs['url'] = self.addr + '/' + endpoint
 
