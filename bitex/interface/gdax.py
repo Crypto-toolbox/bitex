@@ -72,7 +72,7 @@ class GDAX(RESTInterface):
     def _place_order(self, pair, price, size, side, **kwargs):
         params = {'product_id': pair, 'side': side, 'size': size, 'price': price}
         params.update(kwargs)
-        return self.request('POST', 'orders', data=params, authenticate=True)
+        return self.request('POST', 'orders', json=params, authenticate=True)
 
     @check_and_format_pair
     @format_with(GDAXFormattedResponse)
@@ -114,7 +114,7 @@ class GDAX(RESTInterface):
         :param kwargs: additional kwargs, passed to requests.Requests() as 'param' kwarg.
         :return: :class:`requests.Response()` object.
         """
-        return self.request('GET', 'orders/%s' % order_id, authenticate=True, params=kwargs)
+        return self.request('GET', 'orders/%s' % order_id, authenticate=True, json=kwargs)
 
     @format_with(GDAXFormattedResponse)
     def open_orders(self, *args, **kwargs):
@@ -125,7 +125,7 @@ class GDAX(RESTInterface):
         :param kwargs: additional kwargs, passed to requests.Requests() as 'param' kwarg.
         :return: :class:`requests.Response()` object.
         """
-        return self.request('GET', 'orders', authenticate=True, params=kwargs)
+        return self.request('GET', 'orders', authenticate=True, json=kwargs)
 
     @format_with(GDAXFormattedResponse)
     def cancel_order(self, *order_ids, **kwargs):
@@ -139,7 +139,7 @@ class GDAX(RESTInterface):
         path = 'orders/%s'
         resps = []
         for oid in order_ids:
-            resps.append(self.request('DELETE', path % oid, authenticate=True, params=kwargs))
+            resps.append(self.request('DELETE', path % oid, authenticate=True, json=kwargs))
         return resps if len(resps) > 1 else resps[0]
 
     @format_with(GDAXFormattedResponse)
@@ -151,4 +151,4 @@ class GDAX(RESTInterface):
         :param kwargs: additional kwargs, passed to requests.Requests() as 'param' kwarg.
         :return: :class:`requests.Response()` object.
         """
-        return self.request('GET', 'accounts', authenticate=True, params=kwargs)
+        return self.request('GET', 'accounts', authenticate=True, json=kwargs)
