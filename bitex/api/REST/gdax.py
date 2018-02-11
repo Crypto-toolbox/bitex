@@ -35,8 +35,12 @@ class GDAXAuth(AuthBase):
     def __call__(self, request):
         """Generate authentication headers."""
         timestamp = str(time.time())
-        message = (timestamp + request.method + request.path_url +
-                   (request.body.decode() or ''))
+        print(type(timestamp))
+        print(type(request.method))
+        print(type(request.path_url))
+        print(type(request.body))
+        body = request.body.decode() if isinstance(request.body, bytes) else request.body
+        message = (timestamp + request.method + request.path_url + body)
         hmac_key = base64.b64decode(self.secret_key)
         signature = hmac.new(hmac_key, message.encode('utf-8'), hashlib.sha256)
         signature_b64 = base64.b64encode(signature.digest())
