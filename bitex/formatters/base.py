@@ -75,13 +75,13 @@ class APIResponse(requests.Response, metaclass=ABCMeta):
     def bid(self, oid, price, size, side, otype, ts):
         """Return namedtuple with given data."""
         bid = namedtuple('Bid', ("order_id", "price", "size", "side", "order_type", "timestamp"))
-        return bid(price, size, side, oid, otype, ts)
+        return bid(oid, price, size, side, otype, ts)
 
     @abstractmethod
     def ask(self, oid, price, size, side, otype, ts):
         """Return namedtuple with given data."""
         ask = namedtuple('Ask', ("order_id", "price", "size", "side", "order_type", "timestamp"))
-        return ask(price, size, side, oid, otype, ts)
+        return ask(oid, price, size, side, otype, ts)
 
     @abstractmethod
     def order_status(self, oid, price, size, side, otype, state, ts):
