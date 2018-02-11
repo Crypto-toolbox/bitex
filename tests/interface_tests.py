@@ -690,14 +690,48 @@ class GDAXInterfaceTests(BaseInterfaceTests.StandardizedMethodTestCase):
         method_args = ['BTC-USD', 1000, 10]
         method_kwargs = {}
         expected_result = tuple()
-        mock_resp_json = {}
+        mock_resp_json = {
+            "id": "d0c5340b-6d6c-49d9-b567-48c4bfca13d2",
+            "price": "0.10000000",
+            "size": "0.01000000",
+            "product_id": "BTC-USD",
+            "side": "buy",
+            "stp": "dc",
+            "type": "limit",
+            "time_in_force": "GTC",
+            "post_only": False,
+            "created_at": "2016-12-08T20:02:28.53864Z",
+            "fill_fees": "0.0000000000000000",
+            "filled_size": "0.00000000",
+            "executed_value": "0.0000000000000000",
+            "status": "pending",
+            "settled": False
+        }
+        mock_resp_json = json.dumps(mock_resp_json)
         super(GDAXInterfaceTests, self).test_bid_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_ask_formatter(self):
         method_args = ['BTC-USD', 1000, 10]
         method_kwargs = {}
         expected_result = tuple()
-        mock_resp_json = {}
+        mock_resp_json = {
+            "id": "d0c5340b-6d6c-49d9-b567-48c4bfca13d2",
+            "price": "0.10000000",
+            "size": "0.01000000",
+            "product_id": "BTC-USD",
+            "side": "buy",
+            "stp": "dc",
+            "type": "limit",
+            "time_in_force": "GTC",
+            "post_only": False,
+            "created_at": "2016-12-08T20:02:28.53864Z",
+            "fill_fees": "0.0000000000000000",
+            "filled_size": "0.00000000",
+            "executed_value": "0.0000000000000000",
+            "status": "pending",
+            "settled": False
+        }
+        mock_resp_json = json.dumps(mock_resp_json)
         super(GDAXInterfaceTests, self).test_ask_formatter(method_args, method_kwargs, mock_resp_json, expected_result)
 
     def test_open_orders_formatter(self):
