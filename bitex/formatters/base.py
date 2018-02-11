@@ -72,33 +72,37 @@ class APIResponse(requests.Response, metaclass=ABCMeta):
         return fmt_trades(trades, ts)
 
     @abstractmethod
-    def bid(self, price, size, side, oid, otype, ts):
+    def bid(self, oid, price, size, side, otype, ts):
         """Return namedtuple with given data."""
-        bid = namedtuple('Bid', ("price", "size", "side", "order_id", "order_type", "timestamp"))
+        bid = namedtuple('Bid', ("order_id", "price", "size", "side", "order_type", "timestamp"))
         return bid(price, size, side, oid, otype, ts)
 
     @abstractmethod
-    def ask(self, price, size, side, oid, otype, ts):
+    def ask(self, oid, price, size, side, otype, ts):
         """Return namedtuple with given data."""
-        ask = namedtuple('Ask', ("price", "size", "side", "order_id", "order_type", "timestamp"))
+        ask = namedtuple('Ask', ("order_id", "price", "size", "side", "order_type", "timestamp"))
         return ask(price, size, side, oid, otype, ts)
 
     @abstractmethod
-    def order_status(self, price, size, side, oid, otype, ts):
+    def order_status(self, oid, price, size, side, otype, state, ts):
         """Return namedtuple with given data."""
-        order_status = namedtuple('Order', ("price", "size", "side", "order_id", "order_type",
+        order_status = namedtuple('Order', ("order_id", "price", "size", "side", "order_type",
                                             "state", "timestamp"))
-        return order_status(price, size, side, oid, otype, ts)
+        return order_status(oid, price, size, side, otype, state, ts)
 
     @abstractmethod
-    def cancel_order(self, oid, success, timestamp):
+    def cancel_order(self, oid, success, timestamp, error=None):
         """Return namedtuple with given data."""
-        cancelled_order = namedtuple('Cancelled_Order', ("order_id", "successful", "timestamp"))
-        return cancelled_order(oid, success, timestamp)
+        cancelled_order = namedtuple('Cancelled_Order', ("order_id", "successful", "timestamp", "error"))
+        return cancelled_order(oid, success, timestamp, error)
 
     @abstractmethod
     def open_orders(self, orders, timestamp):
-        """Return namedtuple with given data."""
+        """Return namedtuple with given data.
+
+        An order should be the following layout:
+            order = id, pair, price, size, side, ts
+        """
         open_orders = namedtuple('Open_Orders', ('orders', 'timestamp'))
         return open_orders(orders, timestamp)
 
