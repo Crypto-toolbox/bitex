@@ -43,7 +43,7 @@ class RESTAPI(BaseAPI):
         :param endpoint: str, endpoint path (i.e. /market/btcusd)
         :return: str, URI
         """
-        return '/' + join_path(self.version or '', endpoint)
+        return '/' + join_path(self.version or '', endpoint).replace('\\', '/')
 
     def generate_url(self, uri):
         """
