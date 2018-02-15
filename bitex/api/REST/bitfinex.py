@@ -38,22 +38,42 @@ class BitfinexREST(RESTAPI):
 
         # Parameters go into headers, so pop params key and generate signature
         params = req_kwargs.pop('params')
+        uri = self.generate_uri(endpoint)
+        nonce = self.nonce()
 
-        params['request'] = self.generate_uri(endpoint)
-        params['nonce'] = self.nonce()
+        if self.version == 'v1':
 
-        # convert to json, encode and hash
-        payload = json.dumps(params)
-        data = base64.standard_b64encode(payload.encode('utf8'))
+            params['request'] = uri
+            params['nonce'] = nonce
 
-        hmac_sig = hmac.new(self.secret.encode('utf8'), data, hashlib.sha384)
-        signature = hmac_sig.hexdigest()
+            # convert to json, encode and hash
+            payload = json.dumps(params)
+            data = base64.standard_b64encode(payload.encode('utf8'))
 
-        # Update headers and return
-        req_kwargs['headers'] = {"X-BFX-APIKEY": self.key,
-                                 "X-BFX-SIGNATURE": signature,
-                                 "X-BFX-PAYLOAD": data,
-                                 "Content-Type": "application/json",
-                                 "Accept": "application/json"}
+            hmac_sig = hmac.new(self.secret.encode('utf8'), data, hashlib.sha384)
+            signature = hmac_sig.hexdigest()
+
+            # Update headers and return
+            req_kwargs['headers'] = {"X-BFX-APIKEY": self.key,
+                                     "X-BFX-SIGNATURE": signature,
+                                     "X-BFX-PAYLOAD": data,
+                                     "Content-Type": "application/json",
+                                     "Accept": "application/json"}
+
+        elif self.version == 'v2':
+
+            # convert to json, encode and hash
+            payload = json.dumps(params)
+            signature = "/api" + uri + nonce + payload
+            data = signature.encode('utf8')
+
+            hmac_sig = hmac.new(self.secret.encode('utf8'), data, hashlib.sha384)
+            signature = hmac_sig.hexdigest()
+
+            # Update headers and return
+            req_kwargs['headers'] = {"bfx-apikey": self.key,
+                                     "bfx-signature": signature,
+                                     "bfx-nonce": nonce,
+                                     "content-type": "application/json"}
 
         return req_kwargs
