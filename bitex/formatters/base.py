@@ -54,63 +54,69 @@ class APIResponse(requests.Response, metaclass=ABCMeta):
         return self._cached_formatted
 
     @abstractmethod
-    def ticker(self, bid, ask, high, low, last, volume, ts):
+    def ticker(self, bid, ask, high, low, last, volume, ts, error=None):
         """Return namedtuple with given data."""
-        ticker = namedtuple("Ticker", ("bid", "ask", "high", "low", "last", "volume", "timestamp"))
-        return ticker(bid, ask, high, low, last, volume, ts)
+        ticker = namedtuple(
+            "Ticker", ("bid", "ask", "high", "low", "last", "volume", "timestamp", "error"))
+        return ticker(bid, ask, high, low, last, volume, ts, error)
 
     @abstractmethod
-    def order_book(self, bids, asks, ts):
+    def order_book(self, bids, asks, ts, error=None):
         """Return namedtuple with given data."""
-        order_book = namedtuple("OrderBook", ("bids", "asks", "timestamp"))
-        return order_book(bids, asks, ts)
+        order_book = namedtuple(
+            "OrderBook", ("bids", "asks", "timestamp", "error"))
+        return order_book(bids, asks, ts, error)
 
     @abstractmethod
-    def trades(self, trades, ts):
+    def trades(self, trades, ts, error=None):
         """Return namedtuple with given data."""
-        fmt_trades = namedtuple('Trades', ("trades", "timestamp"))
-        return fmt_trades(trades, ts)
+        fmt_trades = namedtuple('Trades', ("trades", "timestamp", "error"))
+        return fmt_trades(trades, ts, error)
 
     @abstractmethod
-    def bid(self, oid, price, size, side, otype, ts):
+    def bid(self, oid, price, size, side, otype, ts, error=None):
         """Return namedtuple with given data."""
-        bid = namedtuple('Bid', ("order_id", "price", "size", "side", "order_type", "timestamp"))
-        return bid(oid, price, size, side, otype, ts)
+        bid = namedtuple(
+            'Bid', ("order_id", "price", "size", "side", "order_type", "timestamp", "error"))
+        return bid(oid, price, size, side, otype, ts, error)
 
     @abstractmethod
-    def ask(self, oid, price, size, side, otype, ts):
+    def ask(self, oid, price, size, side, otype, ts, error=None):
         """Return namedtuple with given data."""
-        ask = namedtuple('Ask', ("order_id", "price", "size", "side", "order_type", "timestamp"))
-        return ask(oid, price, size, side, otype, ts)
+        ask = namedtuple(
+            'Ask', ("order_id", "price", "size", "side", "order_type", "timestamp", "error"))
+        return ask(oid, price, size, side, otype, ts, error)
 
     @abstractmethod
-    def order_status(self, oid, price, size, side, otype, state, ts):
+    def order_status(self, oid, price, size, side, otype, state, ts, error=None):
         """Return namedtuple with given data."""
-        order_status = namedtuple('Order', ("order_id", "price", "size", "side", "order_type",
-                                            "state", "timestamp"))
-        return order_status(oid, price, size, side, otype, state, ts)
+        order_status = namedtuple('Order',
+                                  ("order_id", "price", "size", "side", "order_type", "state",
+                                   "timestamp", "error"))
+        return order_status(oid, price, size, side, otype, state, ts, error)
 
     @abstractmethod
     def cancel_order(self, oid, success, timestamp, error=None):
         """Return namedtuple with given data."""
-        cancelled_order = namedtuple('Cancelled_Order', ("order_id", "successful", "timestamp", "error"))
+        cancelled_order = namedtuple(
+            'Cancelled_Order', ("order_id", "successful", "timestamp", "error"))
         return cancelled_order(oid, success, timestamp, error)
 
     @abstractmethod
-    def open_orders(self, orders, timestamp):
+    def open_orders(self, orders, timestamp, error=None):
         """Return namedtuple with given data.
 
         An order should be the following layout:
             order = id, pair, price, size, side, ts
         """
-        open_orders = namedtuple('Open_Orders', ('orders', 'timestamp'))
-        return open_orders(orders, timestamp)
+        open_orders = namedtuple('Open_Orders', ('orders', 'timestamp', "error"))
+        return open_orders(orders, timestamp, error)
 
     @abstractmethod
-    def wallet(self, balances, timestamp):
+    def wallet(self, balances, timestamp, error=None):
         """Return namedtuple with given data.
 
         :param balances: dict of currency=value kwargs
         """
-        wallet = namedtuple('Wallet', list(balances.keys()) + ['timestamp'])
-        return wallet(timestamp=timestamp, **balances)
+        wallet = namedtuple('Wallet', list(balances.keys()) + ['timestamp', 'error'])
+        return wallet(timestamp=timestamp, error=error **balances)
