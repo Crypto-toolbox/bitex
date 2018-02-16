@@ -33,9 +33,21 @@ class KrknFormatter(Formatter):
         Furthermore, since Kraken uses 'XBT' as Bitcoins symbol, we look for, and
         replace occurrences of 'btc' with 'XBT'.
 
+        In addition there are some exceptions from this rules. Kraken is using
+        the pairs 'BCHEUR', 'BCHUSD', 'BCHXBT', 'DASHEUR', 'DASHUSD', 'DASHXBT',
+        'EOSETH', 'EOSXBT', 'GNOETH', 'GNOXBT' and 'USDTZUSD' as they are.
+        If the input matches one of this pairs, we just return the uppercase
+        representation of it.
+
         :param input_pair: str
         :return: str
         """
+        # There are some exceptions from the general formatting rule
+        # see https://api.kraken.com/0/public/AssetPairs
+        format_exceptions = ['BCHEUR', 'BCHUSD', 'BCHXBT', 'DASHEUR', 'DASHUSD', 'DASHXBT', 'EOSETH', 'EOSXBT', 'GNOETH', 'GNOXBT', 'USDTZUSD']
+        if input_pair.upper() in format_exceptions:
+            return input_pair.upper()
+
         if len(input_pair) % 2 == 0:
             base_cur, quote_cur = input_pair[:len(input_pair)//2], input_pair[len(input_pair)//2:]
         else:
@@ -84,8 +96,13 @@ class KrknFormatter(Formatter):
     @staticmethod
     def order_book(data, *args, **kwargs):
         pair = args[1]
+
+        # There are some exceptions from the general formatting rule
+        # see https://api.kraken.com/0/public/AssetPairs
+        format_exceptions = ['BCHEUR', 'BCHUSD', 'BCHXBT', 'DASHEUR', 'DASHUSD', 'DASHXBT', 'EOSETH', 'EOSXBT', 'GNOETH', 'GNOXBT', 'USDTZUSD']
+
         forex = ['EUR', 'USD', 'GBP', 'JPY', 'CAD']
-        if len(pair) == 6:
+        if len(pair) == 6 and pair.upper() not in format_exceptions:
             base_cur = pair[:3]
             quote_cur = pair[3:]
             if base_cur.upper() in forex:
