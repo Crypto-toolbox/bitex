@@ -136,6 +136,10 @@ class BitfinexRESTTests(TestCase):
     def test_sign_request_kwargs_method_and_signature(self):
         # Test that the sign_request_kwargs generate appropriate kwargs:
         key, secret = 'panda', 'shadow'
+
+        """
+        Test API Version 1 Signature
+        """
         with mock.patch.object(RESTAPI, 'nonce', return_value=str(100)):
             api = BitfinexREST(key=key, secret=secret)
             self.assertEqual(api.nonce(), str(100))
@@ -159,6 +163,28 @@ class BitfinexRESTTests(TestCase):
             self.assertIn(ret_values['headers']['X-BFX-PAYLOAD'], data)
             self.assertIn('X-BFX-SIGNATURE', ret_values['headers'])
             self.assertIn(ret_values['headers']['X-BFX-SIGNATURE'], signatures)
+
+        """
+        Test API Version 2 Signature
+        """
+        with mock.patch.object(RESTAPI, 'nonce', return_value=str(100)):
+            api = BitfinexREST(key=key, secret=secret, version='v2')
+            self.assertEqual(api.nonce(), str(100))
+            self.assertEqual(api.version, 'v1')
+            self.assertEqual(api.generate_uri('testing/signature'), '/v2/testing/signature')
+            ret_values = api.sign_request_kwargs('testing/signature', params={'param_1': 'abc'})
+
+            data = ('/api' + '/v2/testing/signature' + '100' + '{"param_1":"abc}').encode('utf-8')
+            signatures = hmac.new(secret.encode('utf8'), data, hashlib.sha384).hexdigest()
+
+            self.assertIn('bfx-apikey', ret_values['headers'])
+            self.assertEqual(ret_values['headers']['x-bfx-apikey'], key)
+            self.assertIn('bfx-signature', ret_values['headers'])
+            self.assertIn(ret_values['headers']['x-bfx-signature'], signatures)
+            self.assertIn('bfx-nonce', ret_values['headers'])
+            self.assertEqual(ret_values['headers']['bfx-nonce'], '100')
+            self.assertIn('content-type', ret_values['headers'])
+            self.assertEqual(ret_values['headers']['content-type'], 'application/json')
 
 
 class BittrexRESTTest(TestCase):
