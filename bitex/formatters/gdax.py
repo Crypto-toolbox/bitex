@@ -128,9 +128,9 @@ class GDAXFormattedResponse(APIResponse):
         if 'message' in data:
             return super(GDAXFormattedResponse, self).cancel_order(
                 self.method_args[0], False, self.received_at, data['message'])
-        else:
-            return super(GDAXFormattedResponse, self).cancel_order(
-                self.method_args[0], True, self.received_at, None)
+
+        return super(GDAXFormattedResponse, self).cancel_order(
+            self.method_args[0], True, self.received_at, None)
 
     def open_orders(self):
         """Return namedtuple with given data."""

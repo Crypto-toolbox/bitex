@@ -29,7 +29,7 @@ class APIResponse(requests.Response, metaclass=ABCMeta):
         self._cached_formatted = None
 
     def json(self, **kwargs):
-        """Wrap around response.json() to avoid None value in returned data."""
+        """Wrap around response's json method to avoid None value in returned data."""
         default_kwargs = {'parse_int': str, 'parse_float': str}
         default_kwargs.update(**kwargs)
         return self.response.json(**default_kwargs)
@@ -119,4 +119,4 @@ class APIResponse(requests.Response, metaclass=ABCMeta):
         :param balances: dict of currency=value kwargs
         """
         wallet = namedtuple('Wallet', list(balances.keys()) + ['timestamp', 'error'])
-        return wallet(timestamp=timestamp, error=error **balances)
+        return wallet(timestamp=timestamp, error=error, **balances)

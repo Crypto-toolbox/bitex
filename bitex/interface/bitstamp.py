@@ -116,7 +116,7 @@ class Bitstamp(RESTInterface):
                 pair = kwargs['pair'].format_for(self.name).lower()
             except AttributeError:
                 pair = kwargs['pair']
-                
+
             return self.request('balance/%s/' % pair, authenticate=True, params=kwargs)
         return self.request('balance/', authenticate=True, params=kwargs)
 

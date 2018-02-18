@@ -5,7 +5,6 @@ Documentation available here:
 """
 # Import Built-ins
 import logging
-import time
 import urllib
 import urllib.parse
 

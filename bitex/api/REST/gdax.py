@@ -75,8 +75,7 @@ class GDAXREST(RESTAPI):
 
         if self.passphrase is None:
             raise IncompleteCredentialsError
-        else:
-            return
+        return
 
     def load_config(self, fname):
         """Load configuration from a file."""

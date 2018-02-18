@@ -1,7 +1,6 @@
 """FormattedResponse Class for Standardized methods of the Bitstamp Interface class."""
 # Import Built-ins
 from datetime import datetime
-import pytz
 
 # Import Home-brewed
 from bitex.formatters.base import APIResponse
