@@ -8,6 +8,7 @@ root: true
 
 env:
   global:
+    - LABEL = NULL
     - IS_NIGHTLY = `[ "$TRAVIS_BRANCH" == "nightly" ] then echo 1 else echo 0`
 
 allow_failures:
@@ -24,27 +25,32 @@ install:
 
 
 # Script for the `Test` stage
-script:
-  - coverage run --source=bitex setup.py test
-  - coveralls
+
 
 jobs:
   include:
     - stage: lint
       python: 3.6
-      env: ALLOW_FAILURE=$IS_NIGHTLY
+      env:
+        - LABEL=PyLint
+        - ALLOW_FAILURE=$IS_NIGHTLY
       script:
         - pylint --rcfile=pylint.rc bitex
 
     - stage: lint
       python: 3.6
-      env: ALLOW_FAILURE=$IS_NIGHTLY
+      env:
+        - LABEL=PyDocStyle
+        - ALLOW_FAILURE=$IS_NIGHTLY
       script:
         - pydocstyle bitex
 
     - stage: lint
       python: 3.6
-      env: ALLOW_FAILURE=$IS_NIGHTLY
+      env:
+        - LABEL=PyCodeStyle
+        - ALLOW_FAILURE=$IS_NIGHTLY
+
       script:
         - pycodestyle --max-line-length=100 bitex
 
@@ -55,33 +61,50 @@ jobs:
 
     - stage: test
       python: 3.5
-      env: ALLOW_FAILURE=$IS_NIGHTLY
+      env:
+        - LABEL="Base class tests"
+        - ALLOW_FAILURE=$IS_NIGHTLY
       script:
         - python -m unittest -v tests/base_class_tests.py
 
     - stage: test
       python: 3.5
-      env: ALLOW_FAILURE=$IS_NIGHTLY
+      env:
+        - LABEL="RESTAPI class tests"
+        - ALLOW_FAILURE=$IS_NIGHTLY
       script:
         - python -m unittest -v tests/api_tests.py
 
     - stage: test
       python: 3.5
-      env: ALLOW_FAILURE=$IS_NIGHTLY
+      env:
+        - LABEL="Interface tests"
+        - ALLOW_FAILURE=$IS_NIGHTLY
       script:
         - python -m unittest -v tests/interface_tests.py
 
     - stage: test
       python: 3.5
-      env: ALLOW_FAILURE=$IS_NIGHTLY
+      env:
+        - LABEL="APIResponse class tests"
+        - ALLOW_FAILURE=$IS_NIGHTLY
       script:
         - python -m unittest -v tests/api_response_tests.py
 
     - stage: test
       python: 3.5
-      env: ALLOW_FAILURE=$IS_NIGHTLY
+      env:
+        - LABEL="PairFormatter class tests"
+        - ALLOW_FAILURE=$IS_NIGHTLY
       script:
         - python -m unittest -v tests/pair_tests.py
+
+    - stage: coverage
+      python: 3.5
+      env: ALLOW_FAILURE=1
+      script:
+        - coverage run --source=bitex setup.py test
+        - coveralls
 
     - stage: deploy
       python: 3.5
@@ -94,5 +117,6 @@ stages:
   - name: compile
   - name: test
     if: branch != nightly
+  - name: coverage
   - name: deploy
     if: tag IS present OR branch = nightly
