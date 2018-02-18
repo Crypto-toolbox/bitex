@@ -84,7 +84,9 @@ class PairFormatter:
         """
         base = 'XBT' if base == 'BTC' else base
         quote = 'XBT' if quote == 'BTC' else quote
-
+        format_exceptions = ['BCHEUR', 'BCHUSD', 'BCHXBT', 'DASHEUR', 'DASHUSD', 'DASHXBT',
+                             'EOSETH', 'EOSXBT', 'GNOETH', 'GNOXBT', 'USDTZUSD']
+        
         def add_prefix(cur):
             """Add the correct prefix to the currency."""
             if 'BCH' in (base, quote):
@@ -92,7 +94,8 @@ class PairFormatter:
             elif cur in ('USD', 'EUR', 'GBP', 'JPY', 'CAD'):
                 return 'Z' + cur
             return 'X' + cur
-
+        if (base+quote).upper() in format_exceptions:
+            return (base + quote).upper()
         return add_prefix(base) + add_prefix(quote)
 
     @staticmethod
