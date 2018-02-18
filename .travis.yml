@@ -53,6 +53,36 @@ jobs:
       env: ALLOW_FAILURE=$IS_NIGHTLY
       script: python setup.py install
 
+    - stage: test
+      python: 3.5
+      env: ALLOW_FAILURE=$IS_NIGHTLY
+      script:
+        - python -m unittest -v tests/base_class_tests.py
+
+    - stage: test
+      python: 3.5
+      env: ALLOW_FAILURE=$IS_NIGHTLY
+      script:
+        - python -m unittest -v tests/api_tests.py
+
+    - stage: test
+      python: 3.5
+      env: ALLOW_FAILURE=$IS_NIGHTLY
+      script:
+        - python -m unittest -v tests/interface_tests.py
+
+    - stage: test
+      python: 3.5
+      env: ALLOW_FAILURE=$IS_NIGHTLY
+      script:
+        - python -m unittest -v tests/api_response_tests.py
+
+    - stage: test
+      python: 3.5
+      env: ALLOW_FAILURE=$IS_NIGHTLY
+      script:
+        - python -m unittest -v tests/pair_tests.py
+
     - stage: deploy
       python: 3.5
       env: ALLOW_FAILURE=$IS_NIGHTLY
