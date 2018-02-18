@@ -369,7 +369,7 @@ class Bitfinex(RESTInterface):
         """Return candle data."""
         time_frame = endpoint_kwargs.pop('time_frame')
         section = endpoint_kwargs.pop('section')
-        return self.request('candles/trade:%s:%s/%s' % (time_frame, pair, section),
+        return self.request('candles/trade:%s:t%s/%s' % (time_frame, pair.upper(), section),
                             params=endpoint_kwargs)
 
     @check_version_compatibility(v1=v1_only_methods, v2=v2_only_methods)
