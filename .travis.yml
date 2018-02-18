@@ -60,7 +60,6 @@ jobs:
       script: python setup.py install
 
     - stage: test
-      python: 3.5
       env:
         - LABEL="Base class tests"
         - ALLOW_FAILURE=$IS_NIGHTLY
@@ -68,7 +67,6 @@ jobs:
         - python -m unittest -v tests/base_class_tests.py
 
     - stage: test
-      python: 3.5
       env:
         - LABEL="RESTAPI class tests"
         - ALLOW_FAILURE=$IS_NIGHTLY
@@ -76,7 +74,6 @@ jobs:
         - python -m unittest -v tests/api_tests.py
 
     - stage: test
-      python: 3.5
       env:
         - LABEL="Interface tests"
         - ALLOW_FAILURE=$IS_NIGHTLY
@@ -84,7 +81,6 @@ jobs:
         - python -m unittest -v tests/interface_tests.py
 
     - stage: test
-      python: 3.5
       env:
         - LABEL="APIResponse class tests"
         - ALLOW_FAILURE=$IS_NIGHTLY
@@ -92,7 +88,6 @@ jobs:
         - python -m unittest -v tests/api_response_tests.py
 
     - stage: test
-      python: 3.5
       env:
         - LABEL="PairFormatter class tests"
         - ALLOW_FAILURE=$IS_NIGHTLY
