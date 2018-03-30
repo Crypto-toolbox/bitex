@@ -302,9 +302,11 @@ class Bitfinex(RESTInterface):
         return self.request('history', authenticate=True, params=endpoint_kwargs)
 
     @check_version_compatibility(v1=v1_only_methods, v2=v2_only_methods)
-    def deposit_withdrawal_history(self, **endpoint_kwargs):
+    def deposit_withdrawal_history(self, currency, **endpoint_kwargs):
         """Return the deposit/withdrawal history of the account."""
-        return self.request('history/movement', authenticate=True, params=endpoint_kwargs)
+        payload = {'currency': currency}
+        payload.update(endpoint_kwargs)
+        return self.request('history/movements', authenticate=True, params=payload)
 
     @check_version_compatibility(v1=v1_only_methods, v2=v2_only_methods)
     @check_and_format_pair
