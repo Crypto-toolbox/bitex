@@ -42,49 +42,43 @@ class Bittrex(RESTInterface):
     @check_and_format_pair
     def ticker(self, pair, *args, **kwargs):
         """Return the ticker for the given pair."""
-        payload = {'market': pair}
-        payload.update(kwargs)
-        return self.request('public/getmarketsummary', params=payload)
+        kwargs.update({'market': pair})
+        return self.request('public/getmarketsummary', params=kwargs)
 
     @check_and_format_pair
     @format_with(BittrexFormattedResponse)
     def order_book(self, pair, *args, **kwargs):
         """Return the order book for the given pair."""
-        payload = {'market': pair, 'type': 'both'}
-        payload.update(kwargs)
-        return self.request('public/getorderbook', params=payload)
+        kwargs.update({'market': pair, 'type': 'both'})
+        return self.request('public/getorderbook', params=kwargs)
 
     @check_and_format_pair
     @format_with(BittrexFormattedResponse)
     def trades(self, pair, *args, **kwargs):
         """Return the trades for the given pair."""
-        payload = {'market': pair}
-        payload.update(kwargs)
-        return self.request('public/getmarkethistory', params=payload)
+        kwargs.update({'market': pair})
+        return self.request('public/getmarkethistory', params=kwargs)
 
     # Private Endpoints
     @check_and_format_pair
     @format_with(BittrexFormattedResponse)
     def ask(self, pair, price, size, *args, **kwargs):
         """Place an ask order."""
-        payload = {'market': pair, 'quantity': size, 'rate': price}
-        payload.update(kwargs)
-        return self.request('market/selllimit', params=payload, authenticate=True)
+        kwargs.update({'market': pair, 'quantity': size, 'rate': price})
+        return self.request('market/selllimit', params=kwargs, authenticate=True)
 
     @check_and_format_pair
     @format_with(BittrexFormattedResponse)
     def bid(self, pair, price, size, *args, **kwargs):
         """Place a bid order."""
-        payload = {'market': pair, 'quantity': size, 'rate': price}
-        payload.update(kwargs)
-        return self.request('market/buylimit', params=payload, authenticate=True)
+        kwargs.update({'market': pair, 'quantity': size, 'rate': price})
+        return self.request('market/buylimit', params=kwargs, authenticate=True)
 
     @format_with(BittrexFormattedResponse)
     def order_status(self, order_id, *args, **kwargs):
         """Return order status of order with given id."""
-        payload = {'uuid': order_id}
-        payload.update(kwargs)
-        return self.request('account/getorder', params=payload, authenticate=True)
+        kwargs.update({'uuid': order_id})
+        return self.request('account/getorder', params=kwargs, authenticate=True)
 
     @format_with(BittrexFormattedResponse)
     def open_orders(self, *args, **kwargs):
@@ -95,22 +89,21 @@ class Bittrex(RESTInterface):
     def cancel_order(self, *order_ids, **kwargs):
         """Cancel order(s) with given ID(s)."""
         results = []
-        payload = kwargs
         for uuid in order_ids:
-            payload.update({'uuid': uuid})
-            r = self.request('market/cancel', params=payload, authenticate=True)
+            kwargs.update({'uuid': uuid})
+            r = self.request('market/cancel', params=kwargs, authenticate=True)
             results.append(r)
         return results if len(results) > 1 else results[0]
 
     @format_with(BittrexFormattedResponse)
-    def wallet(self, *args, currency=None, **kwargs):  # pylint: disable=arguments-differ
+    # pylint: disable=arguments-differ
+    def wallet(self, *args, currency=None, **kwargs):
         """Return the account wallet."""
+        endpoint = 'account/getbalances'
         if currency:
-            payload = {'currency': currency}
-            payload.update(kwargs)
-            return self.request('account/getbalance', params=payload, authenticate=True)
-        payload = kwargs
-        return self.request('account/getbalances', params=payload, authenticate=True)
+            endpoint = 'account/getbalance'
+            kwargs.update({'currency': currency})
+        return self.request(endpoint, params=kwargs, authenticate=True)
 
     ###########################
     # Exchange Specific Methods
@@ -118,25 +111,34 @@ class Bittrex(RESTInterface):
 
     def deposit_address(self, currency, **kwargs):
         """Return the deposit address for given currency."""
-        payload = {'currency': currency}
-        payload.update(kwargs)
-        return self.request('account/getdepositaddress', params=payload, authenticate=True)
+        kwargs.update({'currency': currency})
+        return self.request('account/getdepositaddress', params=kwargs, authenticate=True)
 
     def withdraw(self, **kwargs):
         """Issue a withdrawal."""
-        return self.request('account/withdraw', params=kwargs)
+        return self.request('account/withdraw', params=kwargs, authenticate=True)
 
-    def trade_history(self, *args, **kwargs):  # pylint: disable=unused-argument
+    def trade_history(self, pair=None, **kwargs):
         """Return the account's trade history."""
+        if pair:
+            try:
+                pair = pair.format_for(self.name)
+            except AttributeError:
+                pair = pair
+            kwargs.update({'market': pair})
         return self.request('account/getorderhistory', params=kwargs, authenticate=True)
 
-    def withdrawal_history(self, *args, **kwargs):  # pylint: disable=unused-argument
+    def withdrawal_history(self, currency=None, **kwargs):
         """Return the account's withdrawal history."""
-        return self.request('account/getwithdrawalhistory', params=kwargs)
+        if currency:
+            kwargs.update({'currency': currency})
+        return self.request('account/getwithdrawalhistory', params=kwargs, authenticate=True)
 
-    def deposit_history(self, *args, **kwargs):  # pylint: disable=unused-argument
+    def deposit_history(self, currency=None, **kwargs):
         """Return the account's deposit history."""
-        return self.request('account/getdeposithistory', params=kwargs)
+        if currency:
+            kwargs.update({'currency': currency})
+        return self.request('account/getdeposithistory', params=kwargs, authenticate=True)
 
     def pairs(self, **kwargs):
         """Return the available pairs."""
