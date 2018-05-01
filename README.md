@@ -66,17 +66,19 @@ at an exchange via its API.
 
 The Methods are:
 
-| Method           | Required Parameters | Requires Authentification? | Function                                                                                        |
-|------------------|---------------------|----------------------------|-------------------------------------------------------------------------------------------------|
-| ticker()         | pair                | No                         | Returns a specified pair's 'ticker' data from the exchange API.                                 |
-| order_book       | pair                | No                         | Returns a specified pair's `order book` data from the exchange API.                             |
-| `trades()`       | pair                | No                         | Returns a specified pair's `trades` data from the exchange API                                  |
-| `ask()`          | pair, price, size   | Yes                        | Places an `ask` order of type `limit` via the exchange API.                                     |
-| `bid()`          | pair, price, size   | Yes                        | Places an `bid` order of type `limit` via the exchange API.                                     |
-| `order_status()` | order_id            | Yes                        | Requests the status of the given `order id` via the exchange API.                               |
-| `open_orders()`  | -                   | Yes                        | Requests all `open orders` via the exchange API.                                                |
-| `cancel_order()` | *order_ids          | Yes                        | Cancels one or more `orders` by their given `order id` via the exchange API.                    |
-| `wallet()`       | -                   | Yes                        | Requests the current balances of the account associated with the API keys via the exchange API. |
+| Method           | Required Parameters | Requires Authentication? | Function                                                                                        |
+|------------------|---------------------|--------------------------|-------------------------------------------------------------------------------------------------|
+| ticker()         | pair                | No                       | Returns a specified pair's 'ticker' data from the exchange API.                                 |
+| order_book       | pair                | No                       | Returns a specified pair's `order book` data from the exchange API.                             |
+| `trades()`       | pair                | No                       | Returns a specified pair's `trades` data from the exchange API                                  |
+| `ask()`          | pair, price, size   | Yes                      | Places an `ask` order of type `limit` via the exchange API.                                     |
+| `bid()`          | pair, price, size   | Yes                      | Places an `bid` order of type `limit` via the exchange API.                                     |
+| `order_status()` | order_id            | Yes                      | Requests the status of the given `order id` via the exchange API.                               |
+| `open_orders()`  | -                   | Yes                      | Requests all `open orders` via the exchange API.                                                |
+| `cancel_order()` | *order_ids          | Yes                      | Cancels one or more `orders` by their given `order id` via the exchange API.                    |
+| `wallet()`       | -                   | Yes                      | Requests the current balances of the account associated with the API keys via the exchange API. |
+
+All standardized methods require also `*args` and `**kwargs` (even if they are not used).
 
 
 # Standardized Pairs
