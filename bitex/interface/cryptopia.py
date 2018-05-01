@@ -29,10 +29,8 @@ class Cryptopia(RESTInterface):
 
     def request(self, endpoint, authenticate=False, **req_kwargs):
         """Query the API and return its result."""
-        if authenticate:
-            return super(Cryptopia, self).request('POST', endpoint, authenticate=authenticate,
-                                                  **req_kwargs)
-        return super(Cryptopia, self).request('GET', endpoint, authenticate=authenticate,
+        verb = 'POST' if authenticate else 'GET'
+        return super(Cryptopia, self).request(verb, endpoint, authenticate=authenticate,
                                               **req_kwargs)
 
     # Public Endpoints
@@ -41,19 +39,19 @@ class Cryptopia(RESTInterface):
     @format_with(CryptopiaFormattedResponse)
     def ticker(self, pair, *args, **kwargs):
         """Return the ticker for the given pair."""
-        return self.request('GET', 'GetMarket/' + pair, params=kwargs)
+        return self.request('GetMarket/' + pair, params=kwargs)
 
     @check_and_format_pair
     @format_with(CryptopiaFormattedResponse)
     def order_book(self, pair, *args, **kwargs):
         """Return the order book for the given pair."""
-        return self.request('GET', 'GetMarketOrders/' + pair, params=kwargs)
+        return self.request('GetMarketOrders/' + pair, params=kwargs)
 
     @check_and_format_pair
     @format_with(CryptopiaFormattedResponse)
     def trades(self, pair, *args, **kwargs):
         """Return the trades for the given pair."""
-        return self.request('GET', 'GetMarketHistory/' + pair, params=kwargs)
+        return self.request('GetMarketHistory/' + pair, params=kwargs)
 
     # Private Endpoints
     # pylint: disable=unused-argument
@@ -89,11 +87,11 @@ class Cryptopia(RESTInterface):
     def cancel_order(self, *order_ids, **kwargs):
         """Cancel order(s) with the given ID(s)."""
         results = []
-        payload = {'Type': 'Trade'}
+        if kwargs.get('Type') is None:
+            kwargs.update({'Type': 'Trade'})
         for oid in order_ids:
-            payload.update({'OrderId': oid})
-            r = self.request('CancelTrade', params=payload,
-                             authenticate=True)
+            kwargs.update({'OrderId': oid})
+            r = self.request('CancelTrade', params=kwargs, authenticate=True)
             results.append(r)
         return results if len(results) > 1 else results[0]
 
@@ -101,3 +99,20 @@ class Cryptopia(RESTInterface):
     def wallet(self, *args, **kwargs):
         """Return the account's wallet."""
         return self.request('GetBalance', params=kwargs, authenticate=True)
+
+    @check_and_format_pair
+    @format_with(CryptopiaFormattedResponse)
+    def trade_history(self, pair, **kwargs):
+        """Return the account's trading history for the given pair."""
+        kwargs.update({'Market': pair})
+        return self.request('GetTradeHistory', params=kwargs, authenticate=True)
+
+    @format_with(CryptopiaFormattedResponse)
+    def transactions(self, transaction_type=None, **kwargs):
+        """
+        Return the account's deposit/withdrawal history.
+        :param transaction_type: deposit or withdrawal (default: None, for both)
+        """
+        if transaction_type:
+            kwargs.update({'Type': transaction_type})
+        return self.request('GetTransactions', params=kwargs, authenticate=True)
