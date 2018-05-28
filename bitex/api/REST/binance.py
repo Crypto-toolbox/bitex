@@ -1,7 +1,7 @@
-"""Bitfinex REST API backend.
+"""Binance REST API backend.
 
 Documentation available at:
-    https://docs.bitfinex.com/docs
+    https://github.com/binance-exchange/binance-official-api-docs/
 """
 # pylint: disable=too-many-arguments
 # Import Built-ins
@@ -21,11 +21,11 @@ log = logging.getLogger(__name__)
 
 
 class BinanceREST(RESTAPI):
-    """Bitfinex REST API class."""
+    """Binance REST API class."""
 
     def __init__(self, key=None, secret=None, version=None, addr=None, timeout=None, config=None):
         """Initialize the class instance."""
-        addr = 'https://api.binance.com/api'
+        addr = 'https://api.binance.com'
         # We force version to None here as different endpoints require different versions,
         # so the interface will have to define the version as part of the endpoint.
         super(BinanceREST, self).__init__(addr=addr, version=None, key=key, secret=secret,
@@ -44,31 +44,19 @@ class BinanceREST(RESTAPI):
         request_kwargs = self.sign_request_kwargs(endpoint, method_verb, **request_kwargs)
         return self._query(method_verb, **request_kwargs)
 
-    # pylint: disable=arguments-differ
     def sign_request_kwargs(self, endpoint, method_verb=None, **kwargs):
         """Sign the request."""
-        method_verb = method_verb or 'GET'
-        req_kwargs = super(BinanceREST, self).sign_request_kwargs(endpoint, **kwargs)
-        req_kwargs['params'] = {}
-        # Prepare arguments for query request.
+        uri = self.generate_uri(endpoint)
+        url = self.generate_url(uri)
+        req_kwargs = {'url': url, 'headers': {'X-MBX-APIKEY': self.key.encode('utf-8')}}
+
         params = kwargs.pop('params', {})
-
         params['timestamp'] = str(int(time.time() * 1000))
-
-        # Build request address
         req_string = urllib.parse.urlencode(params)
+        params['signature'] = hmac.new(self.secret.encode('utf-8'), req_string.encode('utf-8'),
+                                       hashlib.sha256).hexdigest()
 
-        # generate signature
-        signature = hmac.new(self.secret.encode('utf-8'), req_string.encode('utf-8'),
-                             hashlib.sha256).hexdigest()
-
-        req_string += '&signature=' + signature
-
-        if method_verb == "GET":
-            req_kwargs['url'] += '?' + req_string
-        else:
-            req_kwargs['data'] = req_string
-
-        req_kwargs['headers'] = {'X-MBX-APIKEY': self.key.encode('utf-8')}
+        # WAPI params must be in the querystring, see https://github.com/ccxt/ccxt/issues/320
+        req_kwargs['params'] = params
 
         return req_kwargs
