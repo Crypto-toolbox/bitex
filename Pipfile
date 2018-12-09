@@ -16,6 +16,7 @@ pytz = "*"
 pydocstyle = "*"
 pyre-check = "*"
 bumpversion = "*"
+sphinx = "*"
 
 
 [requires]
