@@ -1,0 +1,26 @@
+[[source]]
+
+name = "pypi"
+url = "https://pypi.python.org/simple"
+verify_ssl = true
+
+
+[packages]
+
+requests = "*"
+pyjwt = "*"
+twine = "*"
+pytest = "*"
+pytz = "*"
+"flake8" = "*"
+pydocstyle = "*"
+pyre-check = "*"
+
+
+[requires]
+
+python_version = "3.7"
+
+
+[dev-packages]
+
