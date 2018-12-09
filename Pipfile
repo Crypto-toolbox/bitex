@@ -15,6 +15,7 @@ pytz = "*"
 "flake8" = "*"
 pydocstyle = "*"
 pyre-check = "*"
+bumpversion = "*"
 
 
 [requires]
