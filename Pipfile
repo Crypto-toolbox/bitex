@@ -1,12 +1,9 @@
 [[source]]
-
 name = "pypi"
 url = "https://pypi.python.org/simple"
 verify_ssl = true
 
-
 [packages]
-
 requests = "*"
 pyjwt = "*"
 twine = "*"
@@ -17,12 +14,10 @@ pydocstyle = "*"
 pyre-check = "*"
 bumpversion = "*"
 sphinx = "*"
-
+pluggy = "*"
+bitex = {path = "."}
 
 [requires]
-
 python_version = "3.7"
 
-
 [dev-packages]
-
