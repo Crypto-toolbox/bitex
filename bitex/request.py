@@ -1,10 +1,11 @@
-import urllib3
+from typing import Union
+
+from urllib3.exceptions import LocationParseError
 
 from requests import Request, PreparedRequest
-from urllib3.exceptions import LocationParseError
 from requests.packages.urllib3.util import parse_url
 
-from bitex.plugins import PLUGINS, HOOKS
+from bitex.plugins import PLUGINS
 from bitex.constants import BITEX_SHORTHAND_NO_ACTION_REGEX, BITEX_SHORTHAND_WITH_ACTION_REGEX
 
 
@@ -40,7 +41,7 @@ class BitexRequest(Request):
     def __repr__(self):
         return f'<BitexRequest [{self.method}]>'
 
-    def parse_target_exchange(self)-> str:
+    def parse_target_exchange(self)-> Union[str, None]:
         """Check the URL for its scheme and extract an exchange name, if any.
 
         If the url starts with http/https we set :attr:`BitexRequest.exchange`
