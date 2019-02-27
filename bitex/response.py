@@ -1,3 +1,4 @@
+from typing import Union, Dict
 from requests.models import Response
 
 
@@ -7,7 +8,7 @@ class BitexResponse(Response):
     def __repr__(self):
         return '<BitexResponse [%s]>' % (self.status_code)
 
-    def triples(self):
+    def triples(self) -> List[Tuple[int, str, Union[str, int, float]], ...]:
         """Return the data of the response in three-column layout.
 
         Data is returned as a list of 3-item tuples::
@@ -20,7 +21,7 @@ class BitexResponse(Response):
         """
         raise NotImplementedError
 
-    def key_value_dict(self):
+    def key_value_dict(self) -> Dict[str, Union[str, int, float]]:
         """Return the data of the response in a flattened dict.
 
         This provides the data as a dict of key-value pairs, which is ready for
