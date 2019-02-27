@@ -1,4 +1,5 @@
-from typing import Union, Dict
+from typing import Union, Dict, Tuple
+
 from requests.models import Response
 
 
@@ -6,7 +7,7 @@ class BitexResponse(Response):
     """Custom Response class."""
 
     def __repr__(self):
-        return '<BitexResponse [%s]>' % (self.status_code)
+        return f'<{self.__class__.__qualname__} [{self.status_code}]>'
 
     def triples(self) -> List[Tuple[int, str, Union[str, int, float]], ...]:
         """Return the data of the response in three-column layout.
