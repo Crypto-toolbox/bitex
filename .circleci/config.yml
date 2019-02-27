@@ -1,0 +1,32 @@
+version: 2
+jobs:
+  build:
+    working_directory: ~/ci
+    docker:
+      - image: circleci/python:3.6.4
+    steps:
+      - checkout
+      - run:
+          name: Install Library
+          command: |  # use pipenv to install dependencies
+            sudo pip install pipenv
+            pipenv install
+      - run:
+          name: Run Linters
+          command: | # Run Linters
+            cd ~/ci/bitex
+            pylint bitex
+            pyre check
+            pydocstyle bitex
+  test:
+    working_directory: ~/ci
+    docker:
+      - image: circleci/python:3.6.4
+    steps:
+      - checkout
+      - run:
+          name: Run tests
+          command: |  # use pipenv to install dependencies
+            sudo pip install pipenv
+            pipenv install
+            pipenv run pytest tests
