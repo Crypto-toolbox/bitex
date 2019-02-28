@@ -144,8 +144,8 @@ class BitexSession(requests.Session):
             cookies = cookiejar_from_dict(cookies)
 
         # Merge with session cookies
-        merged_cookies = merge_cookies(
-            merge_cookies(RequestsCookieJar(), self.cookies), cookies)
+        session_cookies = merge_cookies(RequestsCookieJar(), self.cookies)
+        merged_cookies = merge_cookies(session_cookies, cookies)
 
         # Set environment's basic authentication if not explicitly set.
         auth = request.auth
@@ -158,7 +158,8 @@ class BitexSession(requests.Session):
         if custom_classes:
             p = custom_classes['PreparedRequest'](request.exchange)
             # Only use the custom auth class if no auth object was
-            # provided explicitly.
+            # provided explicitly. Otherwise we would overwrite user-specified
+            # auth objects passed to self.request.
             if not self.auth and request.private:
                 self.auth = custom_classes['Auth'](self.key, self.secret)
         else:
