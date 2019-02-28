@@ -1,4 +1,4 @@
-from typing import Union, Dict, Tuple
+from typing import Union, Dict, Tuple, List
 
 from requests.models import Response
 
@@ -9,7 +9,7 @@ class BitexResponse(Response):
     def __repr__(self):
         return f'<{self.__class__.__qualname__} [{self.status_code}]>'
 
-    def triples(self) -> List[Tuple[int, str, Union[str, int, float]], ...]:
+    def triples(self) -> List[Tuple[int, str, Union[str, int, float]]]:
         """Return the data of the response in three-column layout.
 
         Data is returned as a list of 3-item tuples::
