@@ -58,9 +58,13 @@ class BitexRequest(Request):
             parse_url(self.url).scheme
         except LocationParseError:
             # This string isn't parsable by urllib - it may be a shorthand.
-            scheme, _ = self.url.split(":", maxsplit=1)
-            if scheme:
-                return scheme
+            try:
+                scheme, _ = self.url.split(":", maxsplit=1)
+                if scheme:
+                    return scheme
+            except ValueError:
+                # Nope, that didn't work. This isn't a known format, return None.
+                return None
         else:
             return None
 
