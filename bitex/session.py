@@ -37,7 +37,7 @@ else:
 log = logging.getLogger(__name__)
 
 
-class BitexSession(requests.Session, metaclass=abc.ABCMeta):
+class BitexSession(requests.Session):
     """Custom requests.Session object for keep-alive http connections to API endpoints.
 
     It expects a BitexAuth instance of subclass thereof on instantiation, and
@@ -94,10 +94,6 @@ class BitexSession(requests.Session, metaclass=abc.ABCMeta):
             hooks=None, stream=None, verify=None, cert=None, json=None
     ) -> BitexResponse:
         """Constructs a :cls:`BitexRequest`, prepares and sends it.
-
-        This implementation extends :cls:`requests.Session.request` by
-        making a call to :var:`bitex.PLUGINS` and checking if we have any plugins
-        that may provide a custom :cls:`BitexResponse` class.
 
         `url` may either be a URL starting with http/https, or a :mod:`bitex`
         short-hand url in the format of `<exchange>:<instrument>/<data>/<action>`.
