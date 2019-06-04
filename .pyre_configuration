@@ -1,7 +1,0 @@
-{
-  "binary": "/home/nls/.local/share/virtualenvs/bitex-S5UdMMG6/bin/pyre.bin",
-  "source_directories": [
-    "."
-  ],
-  "typeshed": "/home/nls/.local/share/virtualenvs/bitex-S5UdMMG6/lib/pyre_check/typeshed/"
-}
