@@ -1,4 +1,6 @@
-"""API Abstract Base Classes for bitex.
+"""Bitex Core Module.
+
+Provides abstract base classes for accessing crypto-exchange REST APIs.
 
 Each class is required to access an exchange's API, and must be subclassed before usage.
 
@@ -16,15 +18,12 @@ A minimal, working example::
     class BitexSessionSubclass(BitexSession):
         pass
 
+In action::
+
     >>>auth_obj = BitexAuthSubclass(key, secret)
     >>>session = BitexSessionSubclass(auth=auth_obj)
     >>>session.ticker("exchange_name", "BTCUSD")
     <requests.BitexResponse [200]>
-
-
-
-We subclass the ABC classes defined in this file, and add a custom header to the request in
-BitexAuthSubclass's __call__() method. This is added to all requests made to private endpoints.
 
 """
 from bitex.request import BitexRequest, BitexPreparedRequest
@@ -33,6 +32,6 @@ from bitex.auth import BitexAuth
 from bitex.adapter import BitexHTTPAdapter
 
 
-
+__version__ = '3.0.0'
 
 
