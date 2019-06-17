@@ -20,3 +20,12 @@ def announce_plugin() -> Union[
     Where str is the exchange this plugin belongs to, followed by the auth and
     prepared requests class to use when requesting stated exchange.
     """
+
+
+@hookspec
+def construct_url_from_shorthand(match_dict: Mapping[str, str]) -> Union[str, None]:
+    """Construct the proper REST API URL using the given `match_dict`.
+
+    This allows users of your plugin to use the bitex short-hand for exchanges,
+    when making requests.
+    """
