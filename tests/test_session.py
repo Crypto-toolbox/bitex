@@ -59,7 +59,7 @@ class TestSessionRequestMethod:
             files=None,
             data={},
             json=None,
-            params=None,
+            params={},
             auth=None,
             cookies=None,
             hooks=None,
@@ -78,6 +78,7 @@ class TestSessionRequestMethod:
 
     def test_method_calls_sessions_send_method_with_the_correct_arguments(
             self, _, mock_prep, mock_send):
+        mock_prep.return_value = mock_prep
         self.session.request("GET", "http://test.com")
         mock_send.assert_called_once_with(
             mock_prep,
@@ -143,7 +144,13 @@ class TestSessionPrepareRequestMethod:
                 cookies = cookiejar_from_dict(cookies)
         """
         mock_cookiejar_from_dict.reset_mock()
-        req = BitexRequest(method="get", cookies=cookielib.CookieJar())
+
+        # In order for our jar to not be replaced by an empty dict, we need to
+        # populate it with a dummy value.
+        jar = cookielib.CookieJar()
+        jar._cookies = {'something': False}
+
+        req = BitexRequest(method="get", cookies=jar)
         self.session.prepare_request(req)
         assert not mock_cookiejar_from_dict.called
 
@@ -213,10 +220,11 @@ class TestSessionPrepareRequestMethod:
             self,
             mock_PreparedRequest,
             _,
-            mock_merge_setting,
-            mock_merge_hooks,
+            mock_cookiejar_from_dict,
             mock_merge_cookies,
-            __, ___,
+            mock_merge_hooks,
+            mock_merge_setting,
+            __,
     ):
         """Ensure that we are actually preparing the request before returning it."""
         req = BitexRequest()
@@ -224,6 +232,9 @@ class TestSessionPrepareRequestMethod:
         req.url = "http://test.com"
         req.files = "The file"
         mock_PreparedRequest.return_value = mock_PreparedRequest
+        mock_merge_setting.return_value = mock_merge_setting
+        mock_merge_hooks.return_value = mock_merge_hooks
+        mock_merge_cookies.return_value = mock_merge_cookies
         assert isinstance(self.session.prepare_request(req), BitexPreparedRequest)
         mock_PreparedRequest.prepare.assert_called_once_with(
             method=req.method.upper(),
