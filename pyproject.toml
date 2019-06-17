@@ -29,8 +29,6 @@ classifiers = [
     "Intended Audience :: Information Technology",
     "Intended Audience :: Science/Research",
     "License :: OSI Approved :: MIT License",
-    "Operating System :: MacOS :: MacOS X",
-    "Operating System :: POSIX :: Linux",
     "Programming Language :: Python :: 3.6",
     "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3 :: Only",
@@ -44,6 +42,7 @@ test = ["pytest", "tox"]
 dev = [
   "black",
   "isort",
+  "tox",
 ]
 
 
