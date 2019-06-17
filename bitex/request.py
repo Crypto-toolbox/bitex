@@ -48,27 +48,11 @@ class BitexRequest(Request):
 
         If the url starts with http/https we set :attr:`BitexRequest.exchange`
         to `None`. Otherwise we store the `exchange` in said attribute.
-
-        ..Note::
-
-            We do not check whether or not this is an actual exchange name.
-            Schemes such as `mailto:` are not checked for and may cause errors.
-            Hence, only HTTP urls or :mod:`bitex` short-hand urls are supported
-            by :mod:`bitex`!
         """
-        try:
-            parse_url(self.url).scheme
-        except LocationParseError:
-            # This string isn't parsable by urllib - it may be a shorthand.
-            try:
-                scheme, _ = self.url.split(":", maxsplit=1)
-                if scheme:
-                    return scheme
-            except ValueError:
-                # Nope, that didn't work. This isn't a known format, return None.
-                return None
-        else:
-            return None
+        scheme = parse_url(self.url).scheme
+        if scheme and not scheme.startswith('http'):
+            return scheme
+        return None
 
     def prepare(self) -> BitexPreparedRequest:
         """Constructs a :class:`BitexPreparedRequest` for transmission and returns it.
