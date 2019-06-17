@@ -32,7 +32,6 @@ class BitexHTTPAdapter(HTTPAdapter):
         :param BitexPreparedRequest req:
             The :cls:`BitexPreparedRequest` used to generate the response.
         :param HTTPResponse resp: The urllib3 response object.
-        :rtype: BitexResponse
         """
         if req.exchange in PLUGINS:
             response = PLUGINS[req.exchange]['Response']()

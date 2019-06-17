@@ -8,6 +8,8 @@ from requests.packages.urllib3.util import parse_url
 from bitex.plugins import PLUGINS
 from bitex.constants import BITEX_SHORTHAND_NO_ACTION_REGEX, BITEX_SHORTHAND_WITH_ACTION_REGEX
 
+from bitex.types import RegexMatchDict
+
 
 class BitexPreparedRequest(PreparedRequest):
     def __init__(self, exchange):
@@ -15,7 +17,7 @@ class BitexPreparedRequest(PreparedRequest):
         super(BitexPreparedRequest, self).__init__()
 
     @staticmethod
-    def check_url_for_shorthand(url):
+    def check_url_for_shorthand(url) -> Union[RegexMatchDict, None]:
         """Check if the given URL is a bitex short-hand.
 
         If it is, we return the value of :meth:`re.Match.groupdict`; otherwise
@@ -33,15 +35,15 @@ class BitexPreparedRequest(PreparedRequest):
 
 class BitexRequest(Request):
 
-    def __init__(self, private=False, **kwargs):
+    def __init__(self, private: bool=False, **kwargs) -> None:
         super(BitexRequest, self).__init__(**kwargs)
         self.exchange = self.parse_target_exchange()
         self.private = private
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f'<BitexRequest [{self.method}]>'
 
-    def parse_target_exchange(self)-> Union[str, None]:
+    def parse_target_exchange(self) -> Union[str, None]:
         """Check the URL for its scheme and extract an exchange name, if any.
 
         If the url starts with http/https we set :attr:`BitexRequest.exchange`

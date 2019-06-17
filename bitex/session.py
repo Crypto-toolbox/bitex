@@ -82,7 +82,7 @@ class BitexSession(requests.Session):
     right thing.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         super(BitexSession, self).__init__()
         self.adapters['http://'] = BitexHTTPAdapter
         self.adapters['https://'] = BitexHTTPAdapter
@@ -130,7 +130,7 @@ class BitexSession(requests.Session):
 
         return resp
 
-    def prepare_request(self, request: BitexRequest)-> BitexPreparedRequest:
+    def prepare_request(self, request: BitexRequest) -> BitexPreparedRequest:
         """Prepare a :cls:`BitexPreparedRequest` object for transmission.
 
         This implementation extends :cls:`requests.Session.prepare_request` by
