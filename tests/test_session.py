@@ -1,6 +1,8 @@
 import pytest
 
 from requests.sessions import cookielib
+from requests.cookies import RequestsCookieJar
+from unittest import mock
 from unittest.mock import patch
 
 from bitex.session import (
@@ -68,13 +70,28 @@ class TestSessionRequestMethod:
 
     def test_method_calls_sessions_prepare_request_method(
             self, _, mock_prep_request, __):
-        self.session.request("GET", "http://test.com")
-        pytest.fail("Unfinished Implementation!")
+
+        class MethodCalled(AssertionError):
+            pass
+
+        def sentinel_exception(x):
+            raise MethodCalled
+
+        mock_prep_request.side_effect = sentinel_exception
+
+        with pytest.raises(MethodCalled):
+            self.session.request("GET", "http://test.com")
 
     def test_method_calls_merge_environment_settings_and_passes_params_on_correctly(
-            self, mock_merge_env_settings, _, __):
-        self.session.request("GET", "http://test.com")
-        pytest.fail("Unfinished Implementation!")
+            self, mock_merge_env_settings, mock_prep_request, __):
+        mock_merge_env_settings.return_value = {}
+        given_url = "http://test.com"
+        mock_prep_request.return_value = mock_prep_request
+        mock_prep_request.url = given_url
+        self.session.request(
+            "GET", given_url, proxies='proxy', stream='stream', verify='verify', cert='MyCert'
+        )
+        mock_merge_env_settings.assert_called_once_with(given_url, 'proxy', 'stream', 'verify', 'MyCert')
 
     def test_method_calls_sessions_send_method_with_the_correct_arguments(
             self, _, mock_prep, mock_send):
@@ -171,11 +188,20 @@ class TestSessionPrepareRequestMethod:
             merged_cookies = merge_cookies(session_cookies, cookies)
 
         """
-        req = BitexRequest(cookies={})
+        given_cookies = {'hello': 'there'}
+        mock_merge_cookies.return_value = mock_merge_cookies
+        mock_cookiejar_from_dict.return_value = given_cookies
+        req = BitexRequest(cookies=given_cookies)
         req.method = "get"
         self.session.prepare_request(req)
+
+        mock_merge_cookies.has_calls(
+            [
+                mock.call(mock_merge_cookies, {'hello': 'there'}),
+                mock.call(RequestsCookieJar(), self.session.cookies),
+            ]
+        )
         assert mock_merge_cookies.call_count == 2
-        pytest.fail("Unfinished Implementation!")
 
     @pytest.mark.parametrize(
         "trust_env, kword_auth, instance_auth, expected_result",
