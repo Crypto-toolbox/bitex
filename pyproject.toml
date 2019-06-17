@@ -84,7 +84,7 @@ exclude = '''
   | \.venv
   | build
   | dist
-  | test
+  | tests
   | docs
 )/
 '''
