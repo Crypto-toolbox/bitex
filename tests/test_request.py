@@ -13,7 +13,8 @@ class TestBitexRequest:
             ("https://google.com", None),
             ("http://google.com", None),
             ("google:something.com/else", "google")
-        ]
+        ],
+        ids=['HTTPS Address', "HTTP Address", "Bitex Short-hand Address"]
     )
     def test_parse_target_exchange_parses_schemes_and_returns_correctly(
             self, url, expected_target):
