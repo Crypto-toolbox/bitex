@@ -1,7 +1,11 @@
+# Built-in
 from typing import List
 
+# Third-party
 from requests.models import Response
-from bitex.types import Triple, KeyValuePairs
+
+# Home-brew
+from bitex.types import KeyValuePairs, Triple
 
 
 class BitexResponse(Response):

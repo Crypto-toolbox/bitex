@@ -1,9 +1,11 @@
 """Hook Specifications for :mod:`bitex`'s plugin system."""
-import pluggy
+# Built-in
+from typing import Mapping, Tuple, Type, Union
 
-from typing import Union, Tuple, Type, Mapping
-from requests.auth import AuthBase
+# Third-party
+import pluggy
 from requests import PreparedRequest, Response
+from requests.auth import AuthBase
 
 hookspec = pluggy.HookspecMarker("bitex")
 

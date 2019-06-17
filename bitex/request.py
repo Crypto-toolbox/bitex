@@ -1,13 +1,13 @@
+# Built-in
 from typing import Union
 
-from urllib3.exceptions import LocationParseError
-
-from requests import Request, PreparedRequest
+# Third-party
+from requests import PreparedRequest, Request
 from requests.packages.urllib3.util import parse_url
 
-from bitex.plugins import PLUGINS
+# Home-brew
 from bitex.constants import BITEX_SHORTHAND_NO_ACTION_REGEX, BITEX_SHORTHAND_WITH_ACTION_REGEX
-
+from bitex.plugins import PLUGINS
 from bitex.types import RegexMatchDict
 
 

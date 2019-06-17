@@ -1,7 +1,8 @@
-from bitex.plugins import specs
-from bitex.plugins import base
-
+# Third-party
 import pluggy
+
+# Home-brew
+from bitex.plugins import base, specs
 
 
 def get_plugin_manager():

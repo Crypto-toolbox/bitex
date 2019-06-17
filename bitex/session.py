@@ -1,23 +1,21 @@
-# Import Built-Ins
-import abc
+# Built-in
 import logging
 import platform
 import time
 
-# Import Third-party
+# Third-party
 import requests
-
-from requests.auth import AuthBase
 from requests.compat import cookielib
-from requests.cookies import cookiejar_from_dict, RequestsCookieJar, merge_cookies
-from requests.sessions import merge_setting, merge_hooks
+from requests.cookies import RequestsCookieJar, cookiejar_from_dict, merge_cookies
+from requests.sessions import merge_hooks, merge_setting
 from requests.structures import CaseInsensitiveDict
 from requests.utils import get_netrc_auth
 
-from bitex.plugins import PLUGINS
+# Home-brew
 from bitex.adapter import BitexHTTPAdapter
+from bitex.plugins import PLUGINS
+from bitex.request import BitexPreparedRequest, BitexRequest
 from bitex.response import BitexResponse
-from bitex.request import BitexRequest, BitexPreparedRequest
 
 # Preferred clock, based on which one is more accurate on a given system.
 if platform.system() == "Windows":

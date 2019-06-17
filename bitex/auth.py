@@ -1,13 +1,13 @@
-# Import Built-Ins
+# Built-in
 import json
 import logging
 import time
-
 from urllib.parse import parse_qs
 
-# Import Third-party
+# Third-party
 import requests
 
+# Home-brew
 from bitex.request import BitexPreparedRequest
 from bitex.types import DecodedParams
 

@@ -26,10 +26,10 @@ In action::
     <requests.BitexResponse [200]>
 
 """
-from bitex.request import BitexRequest, BitexPreparedRequest
-from bitex.response import BitexResponse
-from bitex.auth import BitexAuth
+# Home-brew
 from bitex.adapter import BitexHTTPAdapter
-
+from bitex.auth import BitexAuth
+from bitex.request import BitexPreparedRequest, BitexRequest
+from bitex.response import BitexResponse
 
 __version__ = "3.0.0"
