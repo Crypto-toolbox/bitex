@@ -333,7 +333,7 @@ class BitexSession(requests.Session):
             :meth:`requests.Session.request`.
         """
         return self.request(
-            method, f"{exchange}:/{currency}/wallet/withdraw", amount=amount, **kwargs
+            method, f"{exchange}:/{currency}/wallet/withdraw?amount={amount}", **kwargs
         )
 
     def deposit(
