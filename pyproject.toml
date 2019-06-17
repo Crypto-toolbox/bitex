@@ -19,6 +19,7 @@ description-file = "README.rst"
 requires-python = ">3.6"
 requires = [
     'requests',
+    'pluggy',
 ]
 
 # Classifiers, Licensing, keywords for pypi.
