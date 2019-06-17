@@ -37,7 +37,7 @@ classifiers = [
 ]
 keywords = "bitex, crypto, api, interface, api-wrapper, bitcoin, exchange, trading"
 
-[tools.flit.metadata.requires-extra]
+[tool.flit.metadata.requires-extra]
 # Extended dependencies required for development and testing. Flit installs these automatically.
 test = ["pytest", "tox"]
 dev = [
