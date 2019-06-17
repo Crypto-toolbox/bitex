@@ -8,7 +8,7 @@ class BitexResponse(Response):
     """Custom Response class."""
 
     def __repr__(self):
-        return f'<{self.__class__.__qualname__} [{self.status_code}]>'
+        return f"<{self.__class__.__qualname__} [{self.status_code}]>"
 
     def triples(self) -> List[Triple]:
         """Return the data of the response in three-column layout.

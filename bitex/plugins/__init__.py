@@ -17,8 +17,7 @@ pm = get_plugin_manager()
 HOOKS = pm.hook
 
 PLUGINS = {
-    plugin_name: {'Auth': auth_class, 'PreparedRequest': prep_class, "Response": resp_class}
-    for plugin_name, auth_class, prep_class, resp_class
-    in pm.hook.announce_plugin()
+    plugin_name: {"Auth": auth_class, "PreparedRequest": prep_class, "Response": resp_class}
+    for plugin_name, auth_class, prep_class, resp_class in pm.hook.announce_plugin()
     if all(callable(cls) for cls in (auth_class, prep_class, resp_class))
 }

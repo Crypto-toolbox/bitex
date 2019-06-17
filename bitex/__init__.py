@@ -32,6 +32,4 @@ from bitex.auth import BitexAuth
 from bitex.adapter import BitexHTTPAdapter
 
 
-__version__ = '3.0.0'
-
-
+__version__ = "3.0.0"

@@ -9,7 +9,9 @@ hookimpl = pluggy.HookimplMarker("bitex")
 
 
 @hookimpl
-def announce_plugin() -> Union[Tuple[str, Type[HTTPBasicAuth], Type[PreparedRequest], Type[Response]], None]:
+def announce_plugin() -> Union[
+    Tuple[str, Type[HTTPBasicAuth], Type[PreparedRequest], Type[Response]], None
+]:
     """By default we return an AuthBase and PreparedRequest class.
 
     These classes will never be actually used, since the exchange "base" does not

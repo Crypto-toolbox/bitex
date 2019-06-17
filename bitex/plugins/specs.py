@@ -9,7 +9,9 @@ hookspec = pluggy.HookspecMarker("bitex")
 
 
 @hookspec
-def announce_plugin() -> Union[Tuple[str, Type[AuthBase], Type[PreparedRequest], Type[Response]], None]:
+def announce_plugin() -> Union[
+    Tuple[str, Type[AuthBase], Type[PreparedRequest], Type[Response]], None
+]:
     """Announce plugin classes to :mod:`bitex`.
 
     The function should return a Tuple[str, Type[AuthBase], Type[PreparedRequest].

@@ -34,14 +34,13 @@ class BitexPreparedRequest(PreparedRequest):
 
 
 class BitexRequest(Request):
-
-    def __init__(self, private: bool=False, **kwargs) -> None:
+    def __init__(self, private: bool = False, **kwargs) -> None:
         super(BitexRequest, self).__init__(**kwargs)
         self.exchange = self.parse_target_exchange()
         self.private = private
 
     def __repr__(self) -> str:
-        return f'<BitexRequest [{self.method}]>'
+        return f"<BitexRequest [{self.method}]>"
 
     def parse_target_exchange(self) -> Union[str, None]:
         """Check the URL for its scheme and extract an exchange name, if any.
@@ -50,7 +49,7 @@ class BitexRequest(Request):
         to `None`. Otherwise we store the `exchange` in said attribute.
         """
         scheme = parse_url(self.url).scheme
-        if scheme and not scheme.startswith('http'):
+        if scheme and not scheme.startswith("http"):
             return scheme
         return None
 
@@ -64,7 +63,7 @@ class BitexRequest(Request):
         """
         custom_classes = PLUGINS.get(self.exchange)
         if custom_classes:
-            p = custom_classes['PreparedRequest'](self.exchange)
+            p = custom_classes["PreparedRequest"](self.exchange)
         else:
             p = BitexPreparedRequest(self.exchange)
         p.prepare(

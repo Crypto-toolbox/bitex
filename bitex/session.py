@@ -9,11 +9,7 @@ import requests
 
 from requests.auth import AuthBase
 from requests.compat import cookielib
-from requests.cookies import (
-    cookiejar_from_dict,
-    RequestsCookieJar,
-    merge_cookies,
-)
+from requests.cookies import cookiejar_from_dict, RequestsCookieJar, merge_cookies
 from requests.sessions import merge_setting, merge_hooks
 from requests.structures import CaseInsensitiveDict
 from requests.utils import get_netrc_auth
@@ -24,7 +20,7 @@ from bitex.response import BitexResponse
 from bitex.request import BitexRequest, BitexPreparedRequest
 
 # Preferred clock, based on which one is more accurate on a given system.
-if platform.system() == 'Windows':
+if platform.system() == "Windows":
     try:  # Python 3.3+
         preferred_clock = time.perf_counter
     except AttributeError:  # Earlier than Python 3.
@@ -84,14 +80,28 @@ class BitexSession(requests.Session):
 
     def __init__(self) -> None:
         super(BitexSession, self).__init__()
-        self.adapters['http://'] = BitexHTTPAdapter
-        self.adapters['https://'] = BitexHTTPAdapter
+        self.adapters["http://"] = BitexHTTPAdapter
+        self.adapters["https://"] = BitexHTTPAdapter
 
     def request(
-            self, method, url, private=False,
-            params=None, data=None, headers=None, cookies=None, files=None,
-            auth=None, timeout=None, allow_redirects=True, proxies=None,
-            hooks=None, stream=None, verify=None, cert=None, json=None
+        self,
+        method,
+        url,
+        private=False,
+        params=None,
+        data=None,
+        headers=None,
+        cookies=None,
+        files=None,
+        auth=None,
+        timeout=None,
+        allow_redirects=True,
+        proxies=None,
+        hooks=None,
+        stream=None,
+        verify=None,
+        cert=None,
+        json=None,
     ) -> BitexResponse:
         """Constructs a :cls:`BitexRequest`, prepares and sends it.
 
@@ -116,15 +126,10 @@ class BitexSession(requests.Session):
 
         proxies = proxies or {}
 
-        settings = self.merge_environment_settings(
-            prep.url, proxies, stream, verify, cert
-        )
+        settings = self.merge_environment_settings(prep.url, proxies, stream, verify, cert)
 
         # Send the request.
-        send_kwargs = {
-            'timeout': timeout,
-            'allow_redirects': allow_redirects,
-        }
+        send_kwargs = {"timeout": timeout, "allow_redirects": allow_redirects}
         send_kwargs.update(settings)
         resp = self.send(prep, **send_kwargs)
 
@@ -156,12 +161,12 @@ class BitexSession(requests.Session):
         # BitexRequest object.
         custom_classes = PLUGINS.get(request.exchange, None)
         if custom_classes:
-            p = custom_classes['PreparedRequest'](request.exchange)
+            p = custom_classes["PreparedRequest"](request.exchange)
             # Only use the custom auth class if no auth object was
             # provided explicitly. Otherwise we would overwrite user-specified
             # auth objects passed to self.request.
             if not self.auth and request.private:
-                self.auth = custom_classes['Auth'](self.key, self.secret)
+                self.auth = custom_classes["Auth"](self.key, self.secret)
         else:
             p = BitexPreparedRequest(request.exchange)
         p.prepare(
@@ -210,13 +215,7 @@ class BitexSession(requests.Session):
         """
         self.auth.secret = value
 
-    def ticker(
-            self,
-            exchange: str,
-            pair: str,
-            method: str='GET',
-            **kwargs
-    ) -> BitexResponse:
+    def ticker(self, exchange: str, pair: str, method: str = "GET", **kwargs) -> BitexResponse:
         """Request ticker data for the given `pair` at the given `exchange`.
 
         :param str exchange: The exchange you'd like to request data from.
@@ -229,13 +228,7 @@ class BitexSession(requests.Session):
         """
         return self.request(method, f"{exchange}:/{pair}/ticker", **kwargs)
 
-    def orderbook(
-            self,
-            exchange: str,
-            pair: str,
-            method: str='GET',
-            **kwargs
-    ) -> BitexResponse:
+    def orderbook(self, exchange: str, pair: str, method: str = "GET", **kwargs) -> BitexResponse:
         """Request order book data for the given `pair` at the given `exchange`.
 
         :param str exchange: The exchange you'd like to request data from.
@@ -248,13 +241,7 @@ class BitexSession(requests.Session):
         """
         return self.request(method, f"{exchange}:/{pair}/book", **kwargs)
 
-    def trades(
-            self,
-            exchange: str,
-            pair: str,
-            method: str='GET',
-            **kwargs
-    ) -> BitexResponse:
+    def trades(self, exchange: str, pair: str, method: str = "GET", **kwargs) -> BitexResponse:
         """Request trade data for the given `pair` at the given `exchange`.
 
         :param str exchange: The exchange you'd like to request data from.
@@ -265,17 +252,9 @@ class BitexSession(requests.Session):
             Additional keyword arguments which are passed on to
             :meth:`requests.Session.request`.
         """
-        return self.request(
-            method, f"{exchange}:/{pair}/trades", **kwargs
-        )
+        return self.request(method, f"{exchange}:/{pair}/trades", **kwargs)
 
-    def new_order(
-            self,
-            exchange: str,
-            pair: str,
-            method: str='POST',
-            **kwargs
-    ) -> BitexResponse:
+    def new_order(self, exchange: str, pair: str, method: str = "POST", **kwargs) -> BitexResponse:
         """Create a new order for `pair` at the given `exchange`.
 
         :param str exchange: The exchange you'd like to request data from.
@@ -292,16 +271,10 @@ class BitexSession(requests.Session):
             Note that negative `size` values (-5, "-33", etc) result in ask
             orders, positive sizes result in a bid order.
         """
-        return self.request(
-            method, f"{exchange}:/{pair}/order/new", **kwargs
-        )
+        return self.request(method, f"{exchange}:/{pair}/order/new", **kwargs)
 
     def cancel_order(
-            self,
-            exchange: str,
-            pair: str,
-            method: str='DELETE',
-            **kwargs
+        self, exchange: str, pair: str, method: str = "DELETE", **kwargs
     ) -> BitexResponse:
         """Cancel an order with the given `order_id` for `pair` at the given `exchange`.
 
@@ -315,16 +288,10 @@ class BitexSession(requests.Session):
             :meth:`requests.Session.request`.
         :rtype: BitexResponse
         """
-        return self.request(
-            method, f"{exchange}:/{pair}/order/cancel", **kwargs
-        )
+        return self.request(method, f"{exchange}:/{pair}/order/cancel", **kwargs)
 
     def order_status(
-            self,
-            exchange: str,
-            pair: str,
-            method: str='GET',
-            **kwargs
+        self, exchange: str, pair: str, method: str = "GET", **kwargs
     ) -> BitexResponse:
         """Request the order status for `order_id` and `pair` at the given `exchange`.
 
@@ -337,17 +304,9 @@ class BitexSession(requests.Session):
             :meth:`requests.Session.request`.
         :rtype: BitexResponse
         """
-        return self.request(
-            method, f"{exchange}:/{pair}/order/status", **kwargs
-        )
+        return self.request(method, f"{exchange}:/{pair}/order/status", **kwargs)
 
-    def wallet(
-            self,
-            exchange: str,
-            currency: str,
-            method: str='GET',
-            **kwargs
-    ) -> BitexResponse:
+    def wallet(self, exchange: str, currency: str, method: str = "GET", **kwargs) -> BitexResponse:
         """Request wallet data for the given `pair` at the given `exchange`.
 
         :param str exchange: The exchange you'd like to request data from.
@@ -358,17 +317,10 @@ class BitexSession(requests.Session):
             Additional keyword arguments which are passed on to
             :meth:`requests.Session.request`.
         """
-        return self.request(
-            method, f"{exchange}:/{currency}/wallet", **kwargs
-        )
+        return self.request(method, f"{exchange}:/{currency}/wallet", **kwargs)
 
     def withdraw(
-            self,
-            exchange: str,
-            currency: str,
-            amount: str,
-            method: str='PUT',
-            **kwargs
+        self, exchange: str, currency: str, amount: str, method: str = "PUT", **kwargs
     ) -> BitexResponse:
         """Request a withdrawal of the given `currency` at the given `exchange`.
 
@@ -386,11 +338,7 @@ class BitexSession(requests.Session):
         )
 
     def deposit(
-            self,
-            exchange: str,
-            currency: str,
-            method: str='GET',
-            **kwargs
+        self, exchange: str, currency: str, method: str = "GET", **kwargs
     ) -> BitexResponse:
         """Request the deposit address of the given `currency`'s wallet.
 
@@ -402,6 +350,4 @@ class BitexSession(requests.Session):
             Additional keyword arguments which are passed on to
             :meth:`requests.Session.request`.
         """
-        return self.request(
-            method, f"{exchange}:/{currency}/wallet/deposit", **kwargs
-        )
+        return self.request(method, f"{exchange}:/{currency}/wallet/deposit", **kwargs)

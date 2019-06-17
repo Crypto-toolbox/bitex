@@ -19,4 +19,3 @@ BITEX_SHORTHAND_WITH_ACTION_REGEX = re.compile(
     r"(?P<exchange>.+):(?P<instrument>.+)/(?P<endpoint>(wallet|order))/"
     r"(?P<action>(new|cancel|status|balance|withdraw|deposit))"
 )
-

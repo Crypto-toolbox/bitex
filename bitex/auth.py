@@ -32,12 +32,12 @@ class BitexAuth(requests.auth.AuthBase):
     @property
     def key_as_bytes(self) -> bytes:
         """Return the key encoded as bytes."""
-        return self.key.encode('utf-8')
+        return self.key.encode("utf-8")
 
     @property
     def secret_as_bytes(self) -> bytes:
         """Return the secret encoded as bytes."""
-        return self.secret.encode('utf-8')
+        return self.secret.encode("utf-8")
 
     def __call__(self, request: BitexPreparedRequest) -> BitexPreparedRequest:
         """Sign the given request.
@@ -65,19 +65,16 @@ class BitexAuth(requests.auth.AuthBase):
         :param BitexPreparedRequest request:
             The request whose body we should decode.
         """
-        if request.headers["Content-Type"] == 'application/json':
+        if request.headers["Content-Type"] == "application/json":
             # The body is required to be bytes, so we decode to string first
             body = request.body.decode("UTF-8")
             body_as_dict = json.loads(body, parse_int=str, parse_float=str)
-            body_as_dict = {k: [v] for k,v in body_as_dict.items()}
+            body_as_dict = {k: [v] for k, v in body_as_dict.items()}
         else:
             body_as_dict = parse_qs(request.body)
         print(body_as_dict)
         items = body_as_dict.items()
-        return tuple(
-            (key, value)
-            for key, value in sorted(items, key=lambda x: x[0])
-        )
+        return tuple((key, value) for key, value in sorted(items, key=lambda x: x[0]))
 
     @staticmethod
     def nonce() -> str:
