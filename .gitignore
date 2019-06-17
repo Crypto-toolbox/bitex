@@ -4,3 +4,4 @@ __pycache__
 .pyre
 .tox
 .coverage
+docs/build*
