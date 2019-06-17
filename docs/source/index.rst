@@ -10,6 +10,8 @@ Welcome to BitEx's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+.. automodule:: bitex
+   :members:
 
 
 Indices and tables
