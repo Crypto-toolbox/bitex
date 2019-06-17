@@ -1,3 +1,4 @@
+"""Basic auth class for :mod:`bitex`."""
 # Built-in
 import json
 import logging

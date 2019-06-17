@@ -1,3 +1,4 @@
+"""A customized version of :cls:``requests.Session``, tailored to the :mod:``bitex`` library."""
 # Built-in
 import logging
 import platform
@@ -101,7 +102,7 @@ class BitexSession(requests.Session):
         cert=None,
         json=None,
     ) -> BitexResponse:
-        """Constructs a :cls:`BitexRequest`, prepares and sends it.
+        """Construct a :cls:`BitexRequest`, prepare and send it.
 
         `url` may either be a URL starting with http/https, or a :mod:`bitex`
         short-hand url in the format of `<exchange>:<instrument>/<data>/<action>`.

@@ -1,3 +1,4 @@
+"""Hook specifications for third-party :mod:``bitex`` plugins."""
 # Third-party
 import pluggy
 
@@ -6,6 +7,7 @@ from bitex.plugins import base, specs
 
 
 def get_plugin_manager():
+    """Fetch pluggy's plugin manager for our library."""
     pm = pluggy.PluginManager("bitex")
     pm.add_hookspecs(specs)
     pm.load_setuptools_entrypoints("bitex")

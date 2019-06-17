@@ -1,3 +1,4 @@
+""":mod:``bitex`` extension for :cls:``requests.Request`` &  :cls:``requests.PreparedRequest`` classes."""
 # Built-in
 from typing import Union
 
@@ -12,6 +13,11 @@ from bitex.types import RegexMatchDict
 
 
 class BitexPreparedRequest(PreparedRequest):
+    """Bitex extension of :cls"``requests.PreparedRequest``.
+
+    Implements a checker function for short-hand urls.
+    """
+
     def __init__(self, exchange):
         self.exchange = exchange
         super(BitexPreparedRequest, self).__init__()
@@ -34,12 +40,22 @@ class BitexPreparedRequest(PreparedRequest):
 
 
 class BitexRequest(Request):
+    """Bitex extension of :cls"``requests.Request``.
+
+    Implements a parser function for exchange names from a given URL.
+
+    Additionally re-implements :meth:``requests.Request.prepare``, replacing
+    the instantiation of the ``requests.PreparedRequest`` class with an
+    instance of :cls:``.BitexPreparedRequest``.
+    """
+
     def __init__(self, private: bool = False, **kwargs) -> None:
         super(BitexRequest, self).__init__(**kwargs)
         self.exchange = self.parse_target_exchange()
         self.private = private
 
     def __repr__(self) -> str:
+        """Extend original class's __repr__."""
         return f"<BitexRequest [{self.method}]>"
 
     def parse_target_exchange(self) -> Union[str, None]:
@@ -54,7 +70,7 @@ class BitexRequest(Request):
         return None
 
     def prepare(self) -> BitexPreparedRequest:
-        """Constructs a :class:`BitexPreparedRequest` for transmission and returns it.
+        """Construct a :class:`BitexPreparedRequest` for transmission and return it.
 
         .. Note::
 

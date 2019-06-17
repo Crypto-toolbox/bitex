@@ -1,3 +1,6 @@
+"""Custom exceptions raised by the :mod:``bitex`` code base."""
+
+
 class MissingPlugin(ValueError):
     """A plugin was required to complete the request.
 

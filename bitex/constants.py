@@ -1,3 +1,4 @@
+"""Constants used across the :mod``bitex`` code base."""
 # Built-in
 import re
 

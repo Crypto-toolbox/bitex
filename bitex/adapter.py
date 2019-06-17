@@ -1,3 +1,4 @@
+"""Custom :cls:``requests.HTTPAdapter`` for :mod:``bitex``."""
 # Third-party
 from requests.adapters import HTTPAdapter
 from requests.cookies import extract_cookies_to_jar
@@ -20,7 +21,7 @@ class BitexHTTPAdapter(HTTPAdapter):
     """
 
     def build_response(self, req: BitexPreparedRequest, resp: HTTPResponse) -> BitexResponse:
-        """Build a :cls:`BitexResponse` from the given `req` and `resp`,
+        """Build a :cls:`BitexResponse` from the given `req` and `resp`.
 
         The method is largely identical to :meth:`HTTPAdapter.build_response`,
         and only differs in the class type used when constructing a response.

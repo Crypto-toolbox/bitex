@@ -1,3 +1,4 @@
+"""Customized :cls:``requests.Response`` class for the :mod:``bitex`` framework."""
 # Built-in
 from typing import List
 
@@ -9,9 +10,14 @@ from bitex.types import KeyValuePairs, Triple
 
 
 class BitexResponse(Response):
-    """Custom Response class."""
+    """Custom :cls:``requests.Response`` class.
+
+    Supplies additional format outputs of the underlying `JSON` data, as returned
+    by :meth:``.json``.
+    """
 
     def __repr__(self):
+        """Extend original class's __repr__."""
         return f"<{self.__class__.__qualname__} [{self.status_code}]>"
 
     def triples(self) -> List[Triple]:
