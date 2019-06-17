@@ -18,7 +18,7 @@ log = logging.getLogger(__name__)
 class BitexAuth(requests.auth.AuthBase):
     """Authentication Meta Class for API authentication.
 
-    Takes care of generating a signature and preparing data sent, headers and
+    Takes care of generating a signature and preparing data to be sent, headers and
     URLs as required by the exchange this class is subclassed for.
 
     :param str key: API Key.

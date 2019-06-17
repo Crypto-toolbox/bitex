@@ -40,7 +40,7 @@ log = logging.getLogger(__name__)
 class BitexSession(requests.Session):
     """Custom requests.Session object for keep-alive http connections to API endpoints.
 
-    It expects a BitexAuth instance of subclass thereof on instantiation, and
+    It expects a BitexAuth instance or subclass thereof on instantiation, and
     assigns it as the default authentication object for any requests made via
     this class's instance.
 
