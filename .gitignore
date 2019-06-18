@@ -5,3 +5,4 @@ __pycache__
 .tox
 .coverage
 docs/build*
+.circleci/.bumpversion.cfg
