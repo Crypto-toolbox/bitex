@@ -52,7 +52,7 @@ dev = [
 GitHub = "https://github.com/crypto-toolbox/bitex/issues"
 "Bug Tracker" = "https://github.com/crypto-toolbox/bitex/issues"
 
-[tools.flit.scripts]
+[tool.flit.scripts]
 # CLI commands installed along with our package.
 
 
@@ -92,3 +92,34 @@ exclude = '''
   | docs
 )/
 '''
+
+[tool.bumpversion]
+# current_version must be given using the CLI flag `--current-version` and parsed from `bitex.__version__`
+# Note: Since tomlkit doesn't recognize `r""` raw strings, we must escape our back slashes.
+parse = "(?P<major>\\d+)\\.(?P<minor>\\d+)\\.(?P<patch>\\d+)-?(?P<release_type>[dev|nightly|rc|stable]?)(?P<iteration>\\d*)"
+serialize = [
+    "{major}.{minor}.{patch}-{release_type}{iteration}",
+    "{major}.{minor}.{patch}-{release_type}",
+    "{major}.{minor}.{patch}",
+]
+tag = true
+commit = true
+message = "Cut New Release: {current_version} → {new_version}"
+
+[tool.bumpversion.part.release_type]
+# ther order here is secondary, really - bumpversion will always be called explicitly
+# with the `release_type` part.
+values = [
+    "dev",
+    "nightly",
+    "rc",
+    "stable",
+]
+optional_value = "stable"
+
+[tool.bumpversion.part.iteration]
+first_value = "1"
+
+[tool.bumpversion.file."bitex/__init__.py"]
+search = "__version__ = {current_version}"
+replace = "__version__ = {new_version}"
