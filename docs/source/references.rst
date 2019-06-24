@@ -2,6 +2,8 @@
 BitEx API Reference
 ===================
 
+Core Modules
+============
 
 :mod:`bitex.session` Module
 -----------------------------
@@ -45,4 +47,17 @@ BitEx API Reference
 .. automodule:: bitex.exceptions
     :members:
 
+Plugin System
+=============
 
+Hook Specs
+----------
+
+.. automodule:: bitex.plugins.specs
+    :members:
+
+Reference Implementation
+------------------------
+
+.. automodule:: bitex.plugins.base
+    :members:
