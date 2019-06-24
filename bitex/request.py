@@ -1,4 +1,4 @@
-""":mod:``bitex`` extension for :class:``requests.Request`` &  :class:``requests.PreparedRequest`` classes."""
+""":mod:`bitex` extension for :class:`requests.Request` &  :class:`requests.PreparedRequest` classes."""
 # Built-in
 from typing import Union
 
@@ -13,7 +13,7 @@ from bitex.types import RegexMatchDict
 
 
 class BitexPreparedRequest(PreparedRequest):
-    """Bitex extension of :cls"``requests.PreparedRequest``.
+    """Bitex extension of :cls"`requests.PreparedRequest`.
 
     Implements a checker function for short-hand urls.
     """
@@ -40,13 +40,13 @@ class BitexPreparedRequest(PreparedRequest):
 
 
 class BitexRequest(Request):
-    """Bitex extension of :cls"``requests.Request``.
+    """Bitex extension of :cls"`requests.Request`.
 
     Implements a parser function for exchange names from a given URL.
 
-    Additionally re-implements :meth:``requests.Request.prepare``, replacing
-    the instantiation of the ``requests.PreparedRequest`` class with an
-    instance of :class:``.BitexPreparedRequest``.
+    Additionally re-implements :meth:`requests.Request.prepare`, replacing
+    the instantiation of the `requests.PreparedRequest` class with an
+    instance of :class:`.BitexPreparedRequest`.
     """
 
     def __init__(self, private: bool = False, **kwargs) -> None:

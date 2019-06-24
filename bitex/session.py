@@ -1,4 +1,4 @@
-"""A customized version of :class:``requests.Session``, tailored to the :mod:``bitex`` library."""
+"""A customized version of :class:`requests.Session`, tailored to the :mod:`bitex` library."""
 # Built-in
 import logging
 import platform
@@ -48,25 +48,25 @@ class BitexSession(requests.Session):
     `instrument` is either a single `currency` or a currency `pair`.
     `endpoint` describes the kind of endpoint you'd like to use:
 
-        - `trades`
-        - `book`
-        - `ticker`
-        - `wallet`
-        . `order`
+        * `trades`
+        * `book`
+        * `ticker`
+        * `wallet`
+        * `order`
 
     The latter two endpoint types support `actions`, which are listed below:
 
-        - `wallet` actions:
+        * `wallet` actions:
 
-            - `deposit`
-            - `withdraw`
-            - `balance`
+            * `deposit`
+            * `withdraw`
+            * `balance`
 
-        - `order` actions:
+        * `order` actions:
 
-            - `new`
-            - `status`
-            - `cancel`
+            * `new`
+            * `status`
+            * `cancel`
 
     Using one of these methods requires an adequate plugin to be installed for
     `exchange`. If no such plugin is present, an :exc:`MissingPlugin` exception
@@ -138,7 +138,7 @@ class BitexSession(requests.Session):
         """Prepare a :class:`BitexPreparedRequest` object for transmission.
 
         This implementation extends :class:`requests.Session.prepare_request` by
-        making a call to :var:`bitex.PLUGINS` and checking if we have any plugins
+        making a call to :data:`bitex.PLUGINS` and checking if we have any plugins
         that may provide a custom :class:`BitexPreparedRequest` class.
         """
         cookies = request.cookies or {}

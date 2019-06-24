@@ -1,4 +1,4 @@
-"""Custom exceptions raised by the :mod:``bitex`` code base."""
+"""Custom exceptions raised by the :mod:`bitex` code base."""
 
 
 class MissingPlugin(ValueError):

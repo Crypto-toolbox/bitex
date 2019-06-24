@@ -33,7 +33,7 @@ class TestSessionRequestMethod:
 
     All tests mock the following methods & classes::
 
-        :cls:`BitexRequest`
+        :class:`BitexRequest`
         :meth:`BitexSession.send`
         :meth:`BitexSession.prepare_request`
         :meth:`BitexSession.merge_environment_settings`
@@ -52,7 +52,7 @@ class TestSessionRequestMethod:
     @patch("bitex.session.BitexRequest")
     def test_method_instantiates_a_bitex_request_instead_of_a_requests_Request(
             self, mock_request, _, __, ___):
-        """Assert that :meth:`BitexSession` inits a :cls:`BitexRequest` when called."""
+        """Assert that :meth:`BitexSession` inits a :class:`BitexRequest` when called."""
         self.session.request("GET", "http://test.com")
         mock_request.assert_called_once_with(
             method="GET", url="http://test.com",

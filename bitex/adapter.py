@@ -1,4 +1,4 @@
-"""Custom :class:``requests.HTTPAdapter`` for :mod:``bitex``."""
+"""Custom :class:`requests.HTTPAdapter` for :mod:`bitex`."""
 # Third-party
 from requests.adapters import HTTPAdapter
 from requests.cookies import extract_cookies_to_jar

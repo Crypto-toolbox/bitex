@@ -1,4 +1,4 @@
-"""Convenience type definitions for :mod:``bitex``'s type hints."""
+"""Convenience type definitions for :mod:`bitex`'s type hints."""
 # Built-in
 from typing import Any, Dict, List, Tuple, Union
 

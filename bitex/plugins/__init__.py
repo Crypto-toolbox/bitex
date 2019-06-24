@@ -1,4 +1,4 @@
-"""Hook specifications for third-party :mod:``bitex`` plugins."""
+"""Hook specifications for third-party :mod:`bitex` plugins."""
 # Third-party
 import pluggy
 
