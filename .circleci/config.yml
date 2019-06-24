@@ -1,32 +1,164 @@
 version: 2
+
+environment:
+  GIT_COMMIT_DESC: git log --format=oneline -n 1 $CIRCLE_SHA1
+  # This must be set in a job, either explicitly using bash or from a script.
+  # If it is not set, the deploy scripts will NOT execute.
+  DEPLOY_TYPE: None
+
+################################################################################
+#                                                                              #
+# YAML Aliases for our Circle-CI configuration.                                #
+#                                                                              #
+################################################################################
+
+job_defaults: &job_defaults
+  working_directory: ~/ci
+  docker:
+    - image: circleci/python:3.6.4
+
+lint_step: &lint_step
+  - run:
+      name: Run Linters
+      command: | # Run Linters
+        cd ~/ci/bitex
+        tox -e lint
+
+unit_test_step: &unit_test_step
+  - run:
+      name: Run tests
+      command: |
+        tox -e unit-test
+
+integration_test_step: &integration_test_step
+  - run:
+      name: Run tests
+      command: |
+        tox -e integration-tests
+
+
+dev_branch_only: &dev_branch_only
+  filters:
+    branches:
+      only:
+        - dev
+
+################################################################################
+#                                                                              #
+# Circle-CI Job definitions.                                                   #
+#                                                                              #
+################################################################################
+
 jobs:
-  build:
-    working_directory: ~/ci
-    docker:
-      - image: circleci/python:3.6.4
+  # Check the source code using various linters and type checkers.
+  static-checks:
+    <<: *job_defaults
     steps:
       - checkout
-      - run:
-          name: Install Library
-          command: |  # use pipenv to install dependencies
-            sudo pip install pipenv
-            pipenv install
-      - run:
-          name: Run Linters
-          command: | # Run Linters
-            cd ~/ci/bitex
-            pylint bitex
-            pyre check
-            pydocstyle bitex
-  test:
-    working_directory: ~/ci
-    docker:
-      - image: circleci/python:3.6.4
+      <<: *lint_step
+
+  # Run the test suite of the package.
+  unit-tests:
+    <<: *job_defaults
     steps:
       - checkout
+      <<: *unit_test_step
+
       - run:
           name: Run tests
-          command: |  # use pipenv to install dependencies
-            sudo pip install pipenv
-            pipenv install
-            pipenv run pytest tests
+          command: |
+            tox -e unit-test
+
+  integration-tests:
+    <<: *job_defaults
+    steps:
+      - checkout
+      <<: *integration_test_step
+
+  run-test-harness:
+    <<: *job_defaults
+    steps:
+      - checkout
+      <<: *unit_test_step
+      <<: *integration_test_step
+
+  lint-and-test:
+    <<: *job_defaults
+    steps:
+      - checkout
+      <<: *lint_step
+      <<: *unit_test_step
+      <<: *integration_test_step
+
+  # Bump the version according to the commit message. See shell script for details.
+  # This will trigger another CI run, which will in turn deploy a new version
+  # to pypi.
+  bumpversion:
+    <<: *job_defaults
+    steps:
+      - checkout
+      - bump_on_merge
+        name: Bumpversion on merge commits.
+        command: |
+          bump_on_merge.sh
+
+################################################################################
+#                                                                              #
+# Circle-CI Workflow definitions.                                              #
+#                                                                              #
+################################################################################
+
+workflows:
+
+  Commit-Workflow:
+    jobs:
+      # Run linters, checkers and test harnesses against PR branches.
+      - lint-and-test
+      # Bump the version of the package for branches `master`, `dev`.
+      - bump-branch-version
+        filters:
+          branches:
+            only:
+              - dev
+              - master
+      - trigger-deploy-workflow
+        filters:
+          branches:
+            only:
+              - dev
+              - master
+
+  # Package a new release from the latest tag of branch `master`.
+  deploy-release:
+    jobs:
+      - lint-and-test
+      - deploy-to-pypi:
+          requires:
+            - lint-and-test
+
+  # Package a new alpha release from the latest tag of branch `dev`
+  deploy-latest:
+    jobs:
+      - static-checks
+      - deploy-to-pypi:
+          requires:
+            - static-checks
+          <<: *dev_branch_only
+
+  # Package a new nightly release from the latest tag of branch `dev` at midnight, each night.
+  deploy-nightly:
+    triggers:
+      - schedule:
+        cron: "0 0 * * *"
+        <<: *dev_branch_only
+
+        filters:
+          branches:
+            only:
+              - dev
+    jobs:
+      - tag-nightly
+      - deploy-to-pypi:
+          requires:
+            - tag-nightly
+            <<: *dev_branch_only
