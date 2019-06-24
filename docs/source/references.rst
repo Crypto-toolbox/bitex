@@ -39,7 +39,6 @@ Core Modules
 -------------------------------
 
 .. autodata:: bitex.constants
-    :members:
 
 :mod:`bitex.exceptions` Module
 --------------------------------
