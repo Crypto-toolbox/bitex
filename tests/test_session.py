@@ -5,6 +5,7 @@ from requests.cookies import RequestsCookieJar
 from unittest import mock
 from unittest.mock import patch
 
+from bitex.auth import BitexAuth
 from bitex.session import (
     BitexSession,
     BitexHTTPAdapter,
@@ -305,3 +306,27 @@ class TestStandardizedMethods:
         getattr(session, method)(*args, **kwargs)
 
         mock_session_request.assert_called_once_with(expected_args)
+
+
+class TestBitexSessionProperties:
+    def test_secret_property_gets_values_on_session_auth_object_correctly(self):
+        session = BitexSession()
+        session.auth = BitexAuth('key', 'chugaloo')
+        assert session.secret == 'chugaloo'
+
+    def test_secret_property_sets_values_on_session_auth_object_correctly(self):
+        session = BitexSession()
+        session.auth = BitexAuth('key', 'secret')
+        session.secret = 'chugaloo'
+        assert session.secret == 'chugaloo'
+
+    def test_key_property_gets_values_on_session_auth_object_correctly(self):
+        session = BitexSession()
+        session.auth = BitexAuth('chugaloo', 'secret')
+        assert session.key == 'chugaloo'
+
+    def test_key_propert_sets_values_on_session_auth_object_correctly(self):
+        session = BitexSession()
+        session.auth = BitexAuth('key', 'secret')
+        session.key = 'chugaloo'
+        assert session.auth.key == 'chugaloo'
