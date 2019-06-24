@@ -1,12 +1,18 @@
-"""Bitex Core Module.
+"""Bitex-Core Module.
 
-Provides abstract base classes for accessing crypto-exchange REST APIs.
-
-Each class is required to access an exchange's API, and must be subclassed before usage.
+Provides base classes for accessing crypto-exchange REST APIs in a convenient way.
 
 A minimal, working example::
 
-    from bitex import BitexSession, BitexAuth
+    >>>from bitex import BitexSession, BitexAuth
+    >>>auth_obj = BitexAuth(key, secret)
+    >>>session = BitexSession(auth=auth_obj)
+    >>>session.ticker("exchange_name", "BTCUSD")
+    <requests.BitexResponse [200]>
+
+If you'd like to access private endpoint of an API, you'll likely need
+a custom :cls:`.BitexAuth` class, extending its :meth:`.BitexAuth.__call__` method::
+
 
     class BitexAuthSubClass(BitexAuth):
         def __init__(key, secret):
@@ -15,15 +21,10 @@ A minimal, working example::
         def __call__(request):
             request.headers = {'SUPER-SECRET': (self.secret_as_bytes + self.key_as_bytes).encode()}
 
-    class BitexSessionSubclass(BitexSession):
-        pass
-
-In action::
-
-    >>>auth_obj = BitexAuthSubclass(key, secret)
-    >>>session = BitexSessionSubclass(auth=auth_obj)
-    >>>session.ticker("exchange_name", "BTCUSD")
-    <requests.BitexResponse [200]>
+    >>>auth_obj = BitexAuthSubClass(key, secret)
+    >>>session = BitexSession(auth=auth_obj)
+    >>>order_options={'price': 100000, 'size': 10, 'type': 'market'}
+    >>>session.new_order('exchange_name', "BTCUSD", params=order_options)
 
 """
 # Home-brew
