@@ -275,3 +275,33 @@ class TestSessionPrepareRequestMethod:
             hooks=mock_merge_hooks,
         )
 
+
+class TestStandardizedMethods:
+    @pytest.mark.parametrize(
+        'method, expected_http_verb, expected_shorthand',
+        argvalues=[
+            ('ticker', 'GET', 'some_exchange://some_currency_or_pair/ticker'),
+            ('orderbook', 'GET', 'some_exchange://some_currency_or_pair/book'),
+            ('trades', 'GET', 'some_exchange://some_currency_or_pair/trades'),
+            ('new_order', 'POST', 'some_exchange://some_currency_or_pair/order/new'),
+            ('cancel_order', 'DELETE', 'some_exchange://some_currency_or_pair/order/cancel'),
+            ('order_status', 'GET', 'some_exchange://some_currency_or_pair/order/status'),
+            ('wallet', 'GET', 'some_exchange://some_currency_or_pair/wallet'),
+            ('withdraw', 'PUT', 'some_exchange://some_currency_or_pair/wallet?withdraw=some_amount'),
+            ('deposit', 'GET', 'some_exchange://some_currency_or_pair/wallet/deposit_address'),
+        ]
+    )
+    @mock.patch('bitex.session.BitexSession.request')
+    def test_methods_generate_correct_shorthand_and_default_to_correct_http_verb(self, mock_session_request, method, expected_http_verb, expected_shorthand):
+        session = BitexSession()
+
+        args = 'some_exchange', 'currency_or_pair'
+        kwargs = {}
+        if method == 'withdraw':
+            kwargs['amount'] = 'some_amount'
+
+        expected_args = expected_http_verb, expected_shorthand
+
+        getattr(session, method)(*args, **kwargs)
+
+        mock_session_request.assert_called_once_with(expected_args)

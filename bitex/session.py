@@ -225,7 +225,7 @@ class BitexSession(requests.Session):
             Additional keyword arguments which are passed on to
             :meth:`requests.Session.request`.
         """
-        return self.request(method, f"{exchange}:/{pair}/ticker", **kwargs)
+        return self.request(method, f"{exchange}://{pair}/ticker", **kwargs)
 
     def orderbook(self, exchange: str, pair: str, method: str = "GET", **kwargs) -> BitexResponse:
         """Request order book data for the given `pair` at the given `exchange`.
@@ -238,7 +238,7 @@ class BitexSession(requests.Session):
             Additional keyword arguments which are passed on to
             :meth:`requests.Session.request`.
         """
-        return self.request(method, f"{exchange}:/{pair}/book", **kwargs)
+        return self.request(method, f"{exchange}://{pair}/book", **kwargs)
 
     def trades(self, exchange: str, pair: str, method: str = "GET", **kwargs) -> BitexResponse:
         """Request trade data for the given `pair` at the given `exchange`.
@@ -251,7 +251,7 @@ class BitexSession(requests.Session):
             Additional keyword arguments which are passed on to
             :meth:`requests.Session.request`.
         """
-        return self.request(method, f"{exchange}:/{pair}/trades", **kwargs)
+        return self.request(method, f"{exchange}://{pair}/trades", **kwargs)
 
     def new_order(self, exchange: str, pair: str, method: str = "POST", **kwargs) -> BitexResponse:
         """Create a new order for `pair` at the given `exchange`.
@@ -264,13 +264,8 @@ class BitexSession(requests.Session):
             Additional keyword arguments which are passed on to
             :meth:`requests.Session.request`.
         :rtype: BitexResponse
-
-        ..Note::
-
-            Note that negative `size` values (-5, "-33", etc) result in ask
-            orders, positive sizes result in a bid order.
         """
-        return self.request(method, f"{exchange}:/{pair}/order/new", **kwargs)
+        return self.request(method, f"{exchange}://{pair}/order/new", **kwargs)
 
     def cancel_order(
         self, exchange: str, pair: str, method: str = "DELETE", **kwargs
@@ -287,7 +282,7 @@ class BitexSession(requests.Session):
             :meth:`requests.Session.request`.
         :rtype: BitexResponse
         """
-        return self.request(method, f"{exchange}:/{pair}/order/cancel", **kwargs)
+        return self.request(method, f"{exchange}://{pair}/order/cancel", **kwargs)
 
     def order_status(
         self, exchange: str, pair: str, method: str = "GET", **kwargs
@@ -303,7 +298,7 @@ class BitexSession(requests.Session):
             :meth:`requests.Session.request`.
         :rtype: BitexResponse
         """
-        return self.request(method, f"{exchange}:/{pair}/order/status", **kwargs)
+        return self.request(method, f"{exchange}://{pair}/order/status", **kwargs)
 
     def wallet(self, exchange: str, currency: str, method: str = "GET", **kwargs) -> BitexResponse:
         """Request wallet data for the given `pair` at the given `exchange`.
@@ -316,7 +311,7 @@ class BitexSession(requests.Session):
             Additional keyword arguments which are passed on to
             :meth:`requests.Session.request`.
         """
-        return self.request(method, f"{exchange}:/{currency}/wallet", **kwargs)
+        return self.request(method, f"{exchange}://{currency}/wallet", **kwargs)
 
     def withdraw(
         self, exchange: str, currency: str, amount: str, method: str = "PUT", **kwargs
@@ -333,7 +328,7 @@ class BitexSession(requests.Session):
             :meth:`requests.Session.request`.
         """
         return self.request(
-            method, f"{exchange}:/{currency}/wallet/withdraw?amount={amount}", **kwargs
+            method, f"{exchange}://{currency}/wallet/withdraw?amount={amount}", **kwargs
         )
 
     def deposit(
@@ -349,4 +344,4 @@ class BitexSession(requests.Session):
             Additional keyword arguments which are passed on to
             :meth:`requests.Session.request`.
         """
-        return self.request(method, f"{exchange}:/{currency}/wallet/deposit", **kwargs)
+        return self.request(method, f"{exchange}://{currency}/wallet/deposit_address", **kwargs)
