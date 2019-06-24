@@ -288,15 +288,15 @@ class TestStandardizedMethods:
             ('cancel_order', 'DELETE', 'some_exchange://some_currency_or_pair/order/cancel'),
             ('order_status', 'GET', 'some_exchange://some_currency_or_pair/order/status'),
             ('wallet', 'GET', 'some_exchange://some_currency_or_pair/wallet'),
-            ('withdraw', 'PUT', 'some_exchange://some_currency_or_pair/wallet?withdraw=some_amount'),
-            ('deposit', 'GET', 'some_exchange://some_currency_or_pair/wallet/deposit_address'),
+            ('withdraw', 'PUT', 'some_exchange://some_currency_or_pair/wallet/withdraw?amount=some_amount'),
+            ('deposit', 'GET', 'some_exchange://some_currency_or_pair/wallet/deposit'),
         ]
     )
     @mock.patch('bitex.session.BitexSession.request')
     def test_methods_generate_correct_shorthand_and_default_to_correct_http_verb(self, mock_session_request, method, expected_http_verb, expected_shorthand):
         session = BitexSession()
 
-        args = 'some_exchange', 'currency_or_pair'
+        args = 'some_exchange', 'some_currency_or_pair'
         kwargs = {}
         if method == 'withdraw':
             kwargs['amount'] = 'some_amount'
@@ -305,7 +305,7 @@ class TestStandardizedMethods:
 
         getattr(session, method)(*args, **kwargs)
 
-        mock_session_request.assert_called_once_with(expected_args)
+        mock_session_request.assert_called_once_with(*expected_args)
 
 
 class TestBitexSessionProperties:
