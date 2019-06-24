@@ -11,7 +11,7 @@ A minimal, working example::
     <requests.BitexResponse [200]>
 
 If you'd like to access private endpoint of an API, you'll likely need
-a custom :cls:`.BitexAuth` class, extending its :meth:`.BitexAuth.__call__` method::
+a custom :class:`.BitexAuth` class, extending its :meth:`.BitexAuth.__call__` method::
 
 
     class BitexAuthSubClass(BitexAuth):

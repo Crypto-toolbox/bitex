@@ -1,4 +1,4 @@
-"""A customized version of :cls:``requests.Session``, tailored to the :mod:``bitex`` library."""
+"""A customized version of :class:``requests.Session``, tailored to the :mod:``bitex`` library."""
 # Built-in
 import logging
 import platform
@@ -70,7 +70,7 @@ class BitexSession(requests.Session):
 
     Using one of these methods requires an adequate plugin to be installed for
     `exchange`. If no such plugin is present, an :exc:`MissingPlugin` exception
-    is raised by :cls:`bitex.abc.request.BitexPreparedRequest`.
+    is raised by :class:`bitex.abc.request.BitexPreparedRequest`.
 
     Using this shorthand is not mandatory. You may as well construct the entire
     url of an endpoint you'd like to reach manually, and :mod:`bitex` will do the
@@ -102,7 +102,7 @@ class BitexSession(requests.Session):
         cert=None,
         json=None,
     ) -> BitexResponse:
-        """Construct a :cls:`BitexRequest`, prepare and send it.
+        """Construct a :class:`BitexRequest`, prepare and send it.
 
         `url` may either be a URL starting with http/https, or a :mod:`bitex`
         short-hand url in the format of `<exchange>:<instrument>/<data>/<action>`.
@@ -135,11 +135,11 @@ class BitexSession(requests.Session):
         return resp
 
     def prepare_request(self, request: BitexRequest) -> BitexPreparedRequest:
-        """Prepare a :cls:`BitexPreparedRequest` object for transmission.
+        """Prepare a :class:`BitexPreparedRequest` object for transmission.
 
-        This implementation extends :cls:`requests.Session.prepare_request` by
+        This implementation extends :class:`requests.Session.prepare_request` by
         making a call to :var:`bitex.PLUGINS` and checking if we have any plugins
-        that may provide a custom :cls:`BitexPreparedRequest` class.
+        that may provide a custom :class:`BitexPreparedRequest` class.
         """
         cookies = request.cookies or {}
 

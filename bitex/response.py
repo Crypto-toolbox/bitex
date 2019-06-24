@@ -1,4 +1,4 @@
-"""Customized :cls:``requests.Response`` class for the :mod:``bitex`` framework."""
+"""Customized :class:``requests.Response`` class for the :mod:``bitex`` framework."""
 # Built-in
 from typing import List
 
@@ -10,7 +10,7 @@ from bitex.types import KeyValuePairs, Triple
 
 
 class BitexResponse(Response):
-    """Custom :cls:``requests.Response`` class.
+    """Custom :class:``requests.Response`` class.
 
     Supplies additional format outputs of the underlying `JSON` data, as returned
     by :meth:``.json``.

@@ -1,4 +1,4 @@
-"""Custom :cls:``requests.HTTPAdapter`` for :mod:``bitex``."""
+"""Custom :class:``requests.HTTPAdapter`` for :mod:``bitex``."""
 # Third-party
 from requests.adapters import HTTPAdapter
 from requests.cookies import extract_cookies_to_jar
@@ -15,13 +15,13 @@ from bitex.response import BitexResponse
 class BitexHTTPAdapter(HTTPAdapter):
     """Custom HTTP Adapter for :mod:`Bitex`.
 
-    It replaces :cls:`requests.Respopnse` as the default response class when
+    It replaces :class:`requests.Respopnse` as the default response class when
     building the response, with either an adequate plugin-supplied class or
-    :mod:`bitex` 's own default :cls:`BitexResponse` class.
+    :mod:`bitex` 's own default :class:`BitexResponse` class.
     """
 
     def build_response(self, req: BitexPreparedRequest, resp: HTTPResponse) -> BitexResponse:
-        """Build a :cls:`BitexResponse` from the given `req` and `resp`.
+        """Build a :class:`BitexResponse` from the given `req` and `resp`.
 
         The method is largely identical to :meth:`HTTPAdapter.build_response`,
         and only differs in the class type used when constructing a response.
@@ -29,10 +29,10 @@ class BitexHTTPAdapter(HTTPAdapter):
         This class is taken firstly from any valid plugin that supplies an
         adequate class for the exchange that was queried (as stated in
         :attr:`BitexPreparedRequest.exchange`), or :mod:`bitex` 's own default
-        :cls:`BitexResponse` class.
+        :class:`BitexResponse` class.
 
         :param BitexPreparedRequest req:
-            The :cls:`BitexPreparedRequest` used to generate the response.
+            The :class:`BitexPreparedRequest` used to generate the response.
         :param HTTPResponse resp: The urllib3 response object.
         """
         if req.exchange in PLUGINS:

@@ -1,4 +1,4 @@
-""":mod:``bitex`` extension for :cls:``requests.Request`` &  :cls:``requests.PreparedRequest`` classes."""
+""":mod:``bitex`` extension for :class:``requests.Request`` &  :class:``requests.PreparedRequest`` classes."""
 # Built-in
 from typing import Union
 
@@ -46,7 +46,7 @@ class BitexRequest(Request):
 
     Additionally re-implements :meth:``requests.Request.prepare``, replacing
     the instantiation of the ``requests.PreparedRequest`` class with an
-    instance of :cls:``.BitexPreparedRequest``.
+    instance of :class:``.BitexPreparedRequest``.
     """
 
     def __init__(self, private: bool = False, **kwargs) -> None:
