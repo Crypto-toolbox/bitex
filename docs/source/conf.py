@@ -1,3 +1,4 @@
+import bitex
 # -*- coding: utf-8 -*-
 #
 # Configuration file for the Sphinx documentation builder.
@@ -26,7 +27,7 @@ author = 'Nils Diefenbach'
 # The short X.Y version
 version = ''
 # The full version, including alpha/beta/rc tags
-release = '3.0.0'
+release = bitex.__version__
 
 
 # -- General configuration ---------------------------------------------------
