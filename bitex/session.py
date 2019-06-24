@@ -344,4 +344,4 @@ class BitexSession(requests.Session):
             Additional keyword arguments which are passed on to
             :meth:`requests.Session.request`.
         """
-        return self.request(method, f"{exchange}://{currency}/wallet/deposit_address", **kwargs)
+        return self.request(method, f"{exchange}://{currency}/wallet/deposit", **kwargs)
