@@ -36,7 +36,7 @@ BitEx API Reference
 :mod:`bitex.constants` Module
 -------------------------------
 
-.. automodule:: bitex.constants
+.. autodata:: bitex.constants
     :members:
 
 :mod:`bitex.exceptions` Module
