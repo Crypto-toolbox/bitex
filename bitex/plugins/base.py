@@ -18,11 +18,10 @@ hookimpl = pluggy.HookimplMarker("bitex-core")
 def announce_plugin() -> Union[
     Tuple[str, Type[HTTPBasicAuth], Type[PreparedRequest], Type[Response]], None
 ]:
-    """By default we return an AuthBase and PreparedRequest class.
+    """Register a plugin's custom classes to :mod:`bitex`.
 
-    These classes will never be actually used, since the exchange "base" does not
-    exist and is never contacted. However, it serves as a simple example on what
-    this hook function is supposed to return.
+    By default we return a tuple of :class:`str("base")`, :class:`.HTTPBasicBase`,
+    :class:`.PreparedRequest` and :class:`.Response`.
     """
     return "base", HTTPBasicAuth, PreparedRequest, Response
 
