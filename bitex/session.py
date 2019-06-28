@@ -3,6 +3,7 @@
 import logging
 import platform
 import time
+from typing import Optional
 
 # Third-party
 import requests
@@ -14,6 +15,7 @@ from requests.utils import get_netrc_auth
 
 # Home-brew
 from bitex.adapter import BitexHTTPAdapter
+from bitex.auth import BitexAuth
 from bitex.plugins import PLUGINS
 from bitex.request import BitexPreparedRequest, BitexRequest
 from bitex.response import BitexResponse
@@ -35,50 +37,22 @@ log = logging.getLogger(__name__)
 class BitexSession(requests.Session):
     """Custom requests.Session object for keep-alive http connections to API endpoints.
 
-    It expects a BitexAuth instance or subclass thereof on instantiation, and
+    It expects a :class:`.BitexAuth` instance or subclass thereof on instantiation, and
     assigns it as the default authentication object for any requests made via
     this class's instance.
 
-    :mod:`bitex` uses short-hands to unify urls and make using plugins easier.
-    All methods implemented in this class support these shortened urls::
-
-        <exchange>:<instrument>/<endpoint>/<action>
-
-    `exchange` refers to the exchange you want to request data from.
-    `instrument` is either a single `currency` or a currency `pair`.
-    `endpoint` describes the kind of endpoint you'd like to use:
-
-        * `trades`
-        * `book`
-        * `ticker`
-        * `wallet`
-        * `order`
-
-    The latter two endpoint types support `actions`, which are listed below:
-
-        * `wallet` actions:
-
-            * `deposit`
-            * `withdraw`
-            * `balance`
-
-        * `order` actions:
-
-            * `new`
-            * `status`
-            * `cancel`
-
     Using one of these methods requires an adequate plugin to be installed for
-    `exchange`. If no such plugin is present, an :exc:`MissingPlugin` exception
-    is raised by :class:`bitex.abc.request.BitexPreparedRequest`.
+    `exchange`. If no such plugin is present, an :exc:`bitex.exceptions.MissingPlugin` exception
+    is raised by :class:`bitex.request.BitexPreparedRequest`.
 
-    Using this shorthand is not mandatory. You may as well construct the entire
-    url of an endpoint you'd like to reach manually, and :mod:`bitex` will do the
-    right thing.
+    Using the bitex short-hand is not mandatory, but supported. You may as well
+    construct the entire url of an endpoint you'd like to reach manually, and
+    :mod:`bitex` will do the right thing.
     """
 
-    def __init__(self) -> None:
+    def __init__(self, auth: Optional[BitexAuth] = None) -> None:
         super(BitexSession, self).__init__()
+        self.auth = auth
         self.adapters["http://"] = BitexHTTPAdapter
         self.adapters["https://"] = BitexHTTPAdapter
 
