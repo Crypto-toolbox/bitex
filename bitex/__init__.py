@@ -1,6 +1,29 @@
-"""Bitex-Core Module.
+"""BitEx is a FOSS library for accessing Crypto-exchange APIs in a convenient way.
 
-Provides base classes for accessing crypto-exchange REST APIs in a convenient way.
+It extends :mod:`requests` and implements a standardized set of methods to interact
+with exchanges, covering the most commonly used functionality:
+
+    * Acquiring the order book.
+    * Acquiring the latest ticker.
+    * Acquiring trades.
+    * Placing new orders.
+    * Cancelling orders.
+    * Acquiring an order's status.
+    * Fetching a wallet's value.
+    * Fetching a wallet's deposit address.
+    * Withdrawing coins from the wallet.
+
+Additionally, it provides the option to request endpoints which are not one of the
+above using a shorthand.
+
+
+.. Note::
+
+    The implementation of additional methods and their naming is dependent on
+    the plugin and its author for the exchange you're accessing.
+
+Diving right in
+---------------
 
 A minimal, working example::
 
@@ -30,6 +53,9 @@ a custom :class:`.BitexAuth` class, extending its :meth:`.BitexAuth.__call__` me
 
 In the example above, we used bitex's set of standardized methods for accessing
 the change. However, you may also request data using the bitex short-hand notation.
+
+Making your life easier: the BitEx URL Short-Hand Notation
+----------------------------------------------------------
 
 The short-hand notation unifies urls and aims to make using and writing plugins
 easier.
@@ -73,6 +99,9 @@ The previous examples would look as follows, if they used the shorthand instead:
     >>>session.post("SomeExchange:BTCUSD/order/new", params=order_options)
     <BitexResponse [200 OK]>
 
+But the true power of the short-hand is seen when a plugin leverages it. Bitex
+uses :mod:`pluggy` to allow authors to hook right into the parsing of the
+short-hand.
 """
 # Home-brew
 from bitex.adapter import BitexHTTPAdapter
