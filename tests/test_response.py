@@ -1,5 +1,7 @@
+# Third-party
 import pytest
 
+# Home-brew
 from bitex.response import BitexResponse
 
 

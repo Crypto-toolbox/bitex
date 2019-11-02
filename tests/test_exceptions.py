@@ -1,5 +1,7 @@
+# Third-party
 import pytest
 
+# Home-brew
 from bitex.exceptions import MissingPlugin
 
 

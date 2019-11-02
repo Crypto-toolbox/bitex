@@ -1,8 +1,16 @@
-import pytest
-
+# Built-in
 from unittest.mock import patch
 
-from bitex.adapter import BitexHTTPAdapter, BitexResponse, BitexPreparedRequest, CaseInsensitiveDict
+# Third-party
+import pytest
+
+# Home-brew
+from bitex.adapter import (
+    BitexHTTPAdapter,
+    BitexPreparedRequest,
+    BitexResponse,
+    CaseInsensitiveDict,
+)
 
 
 @pytest.fixture
@@ -43,4 +51,3 @@ def test_adapter_returns_bitex_response_by_default(mock_extract_cookies, mock_ge
     assert bitex_response.raw == mock_url_response
     assert bitex_response.request == request
     assert bitex_response.connection == adapter
-

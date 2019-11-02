@@ -1,8 +1,10 @@
-import pytest
-
+# Built-in
 from unittest.mock import patch
 
+# Third-party
+import pytest
 
+# Home-brew
 from bitex.auth import BitexAuth
 from bitex.request import BitexPreparedRequest
 

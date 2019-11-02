@@ -1,17 +1,20 @@
-import pytest
-
-from requests.sessions import cookielib
-from requests.cookies import RequestsCookieJar
+# Built-in
 from unittest import mock
 from unittest.mock import patch
 
+# Third-party
+import pytest
+from requests.cookies import RequestsCookieJar
+from requests.sessions import cookielib
+
+# Home-brew
 from bitex.auth import BitexAuth
 from bitex.session import (
-    BitexSession,
     BitexHTTPAdapter,
+    BitexPreparedRequest,
     BitexRequest,
     BitexResponse,
-    BitexPreparedRequest,
+    BitexSession,
 )
 
 

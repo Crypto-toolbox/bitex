@@ -1,8 +1,11 @@
-from unittest.mock import patch, MagicMock
+# Built-in
+from unittest.mock import MagicMock, patch
 
+# Third-party
 import pytest
 
-from bitex.request import BitexRequest, BitexPreparedRequest
+# Home-brew
+from bitex.request import BitexPreparedRequest, BitexRequest
 
 
 class TestBitexRequest:
@@ -66,4 +69,3 @@ class TestBitexPreparedRequest:
         url = "https://somehwere.com/123"
         result = BitexPreparedRequest.check_url_for_shorthand(url)
         assert result is None
-
