@@ -17,31 +17,90 @@ job_defaults: &job_defaults
   docker:
     - image: circleci/python:3.6.4
 
-lint_step: &lint_step
-  - run:
-      name: Run Linters
-      command: | # Run Linters
-        cd ~/ci/bitex
-        tox -e lint
-
-unit_test_step: &unit_test_step
-  - run:
-      name: Run tests
-      command: |
-        tox -e unit-test
-
-integration_test_step: &integration_test_step
-  - run:
-      name: Run tests
-      command: |
-        tox -e integration-tests
-
-
-dev_branch_only: &dev_branch_only
+master_only: &master_only
   filters:
     branches:
       only:
-        - dev
+        - master
+
+ignnore_master: &ignore_master
+  filters:
+    branches:
+      ignore:
+        - master
+
+python_deps_cache_key: &python_deps_cache_key
+  key: {{ checksum "pyproject.toml" }}-v1
+
+pip_cache_key: & pip_cache_key
+  key: pip-cache-v1
+
+################################################################################
+#                                                                              #
+# Circle-CI Command definitions.                                               #
+#                                                                              #
+################################################################################
+
+commands:
+  job_setup:
+    description: Prepare the workspace and venv for job execution.
+    steps:
+      - attach_workspace:
+          - at: "/home/circleci"
+
+      - run:
+          name: Prepend VirtualEnv to $PATH
+          command: echo 'export PATH=/home/circleci/ci/venv/bin:$PATH' >> ${BASH_ENV}
+
+  lint:
+    description: Execute linters
+    steps:
+      - run:
+          name: Run Linters
+          command: |
+            cd ~/ci/bitex
+            tox -e lint
+
+  unit_tests:
+    description: Run unittests.
+    steps:
+      - run:
+          name: Run tests
+          command: |
+            tox -e unit-test
+
+  integration_tests:
+    description: Run integration tests
+    steps:
+      - run:
+          name: Run tests
+          command: |
+            tox -e integration-tests
+
+  restore_project_caches:
+    description: Restore pip and venv caches, if any.
+    steps:
+      - run: echo "$CACHE_VERSION" > cache_version
+      - restore_cache:
+          key: {{ checksum "pyproject.toml" }}-{{ checksum "cache_version"}}
+
+      - restore_cache:
+          key: pip-cache-{{ checksum "cache_version"}}
+
+  save_project_caches:
+    description: Save the pip cache and venv to the CircleCI Cache.
+    steps:
+      - run: echo "$CACHE_VERSION" > cache_version
+      - save_cache:
+          key: {{ checksum "pyproject.toml" }}-{{ checksum "cache_version"}}
+
+          paths:
+            - "/home/circleci/ci/venv"
+
+      - save_cache:
+          key: pip-cache-{{ checksum "cache_version"}}
+          paths:
+            - "/home/circleci/.cache/pip"
 
 ################################################################################
 #                                                                              #
@@ -50,19 +109,41 @@ dev_branch_only: &dev_branch_only
 ################################################################################
 
 jobs:
+
+  preparation:
+    <<: *job_defaults
+    steps:
+      - checkout
+      - restore_project_caches
+
+      - run:
+          name: Create virtualenv
+          command: |
+            python -m venv /home/circleci/ci/venv
+
+      - persist_to_workspace:
+          paths:
+            - ci
+          root: "/home/circleci"
+
+  finalize:
+    steps:
+      - save_caches
+
+
   # Check the source code using various linters and type checkers.
   static-checks:
     <<: *job_defaults
     steps:
       - checkout
-      <<: *lint_step
+      - lint_step
 
   # Run the test suite of the package.
   unit-tests:
     <<: *job_defaults
     steps:
       - checkout
-      <<: *unit_test_step
+      - unit_test_step
 
       - run:
           name: Run tests
@@ -73,27 +154,24 @@ jobs:
     <<: *job_defaults
     steps:
       - checkout
-      <<: *integration_test_step
+      - integration_test_step
 
   run-test-harness:
     <<: *job_defaults
     steps:
       - checkout
-      <<: *unit_test_step
-      <<: *integration_test_step
+      - unit_test_step
+      - integration_test_step
 
   lint-and-test:
     <<: *job_defaults
     steps:
       - checkout
-      <<: *lint_step
-      <<: *unit_test_step
-      <<: *integration_test_step
+      - lint_step
+      - unit_test_step
+      - integration_test_step
 
-  # Bump the version according to the commit message. See shell script for details.
-  # This will trigger another CI run, which will in turn deploy a new version
-  # to pypi.
-  bumpversion:
+  tagging:
     <<: *job_defaults
     steps:
       - checkout
@@ -110,55 +188,26 @@ jobs:
 
 workflows:
 
-  Commit-Workflow:
-    jobs:
-      # Run linters, checkers and test harnesses against PR branches.
-      - lint-and-test
-      # Bump the version of the package for branches `master`, `dev`.
-      - bump-branch-version
-        filters:
-          branches:
-            only:
-              - dev
-              - master
-      - trigger-deploy-workflow
-        filters:
-          branches:
-            only:
-              - dev
-              - master
-
-  # Package a new release from the latest tag of branch `master`.
-  deploy-release:
-    jobs:
-      - lint-and-test
-      - deploy-to-pypi:
-          requires:
-            - lint-and-test
-
-  # Package a new alpha release from the latest tag of branch `dev`
-  deploy-latest:
+  PR-Workflow:
+    <<: *ignore_master
     jobs:
       - static-checks
-      - deploy-to-pypi:
-          requires:
-            - static-checks
-          <<: *dev_branch_only
+      - unit-tests
+      - integration-tests
 
-  # Package a new nightly release from the latest tag of branch `dev` at midnight, each night.
-  deploy-nightly:
-    triggers:
-      - schedule:
-        cron: "0 0 * * *"
-        <<: *dev_branch_only
 
-        filters:
-          branches:
-            only:
-              - dev
+  Commit-Workflow:
+    <<: *master_only
     jobs:
-      - tag-nightly
+      # Run linters, checkers and test harnesses against PR branches.
+      - static-checks
+      - unit-tests
+      - integration-tests
+      - tagging
+        requires:
+        - static-checks
+        - unit-tests
+        - integration-tests
       - deploy-to-pypi:
           requires:
-            - tag-nightly
-            <<: *dev_branch_only
+            - tagging
