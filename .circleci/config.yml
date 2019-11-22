@@ -23,17 +23,20 @@ master_only: &master_only
       only:
         - master
 
-ignnore_master: &ignore_master
+tags_only: &tags_only
+  filters:
+    branches:
+      ignore: /.*/
+    tags:
+      only: /^v\d+\.\d+.*/
+
+ignore_master: &ignore_master
   filters:
     branches:
       ignore:
         - master
-
-python_deps_cache_key: &python_deps_cache_key
-  key: {{ checksum "pyproject.toml" }}-v1
-
-pip_cache_key: & pip_cache_key
-  key: pip-cache-v1
+    tags:
+      ignore: /.*/
 
 ################################################################################
 #                                                                              #
@@ -195,7 +198,6 @@ workflows:
       - unit-tests
       - integration-tests
 
-
   Commit-Workflow:
     <<: *master_only
     jobs:
@@ -203,11 +205,13 @@ workflows:
       - static-checks
       - unit-tests
       - integration-tests
-      - tagging
-        requires:
-        - static-checks
-        - unit-tests
-        - integration-tests
-      - deploy-to-pypi:
+      - tagging:
           requires:
-            - tagging
+          - static-checks
+          - unit-tests
+          - integration-tests
+
+  Release-Workflow:
+    <<: *tags_only
+    jobs:
+      - deploy-to-pypi
