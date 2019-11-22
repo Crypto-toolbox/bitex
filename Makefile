@@ -1,6 +1,6 @@
-.PHONY: install install-dev tests lint style black black-check isort isort-check flake8 tag publish
+.PHONY: install install-dev install-ci tests lint style black black-check isort isort-check flake8 tag publish
 SHELL := /bin/bash
-#COMMIT_SUBJECT=$(git log --format=oneline -n 1 HEAD --format=%s)
+
 COMMIT_SUBJECT=FIXTURE
 
 install:
@@ -8,6 +8,10 @@ install:
 
 install-dev:
 	pip install ".[dev]"
+
+install-ci: install-dev
+	pip install flit twine
+
 
 tests:
 	cd tests/ && pytest --cov=bitex --disable-warnings -vvv
@@ -30,6 +34,9 @@ flake8:
 style: isort black
 
 lint: flake8 black-check isort-check
+
+tag-type:
+	@bash .circleci/tag_type.sh
 
 tag-feature:
 	@echo Tagging new Feature
