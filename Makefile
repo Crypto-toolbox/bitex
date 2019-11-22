@@ -1,4 +1,4 @@
-.PHONY: install install-dev install-ci tests lint style black black-check isort isort-check flake8 tag publish
+.PHONY: install install-dev install-ci install-test tests lint style black black-check isort isort-check flake8 tag publish
 SHELL := /bin/bash
 
 COMMIT_SUBJECT=FIXTURE
@@ -9,7 +9,10 @@ install:
 install-dev:
 	pip install ".[dev]"
 
-install-ci: install-dev
+install-test:
+	pip install ".[test]"
+
+install-ci: install-dev install-test
 	pip install flit twine
 
 tests:
