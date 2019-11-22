@@ -12,7 +12,6 @@ install-dev:
 install-ci: install-dev
 	pip install flit twine
 
-
 tests:
 	cd tests/ && pytest --cov=bitex --disable-warnings -vvv
 
