@@ -24,7 +24,7 @@ the following custom classes::
 In order to correctly register these, you'll have to write the following
 hook implementation::
 
-    >bitex/plugins/uberex/hooks.py
+    >bitex_uberex/hooks.py
     # Built-in
     from typing import Mapping, Tuple, Type, Union
 
@@ -57,7 +57,7 @@ and parameters given in it.
 
 """
 # Built-in
-from typing import Mapping, Tuple, Type, Union
+from typing import Any, Dict, Mapping, Tuple, Type, Union
 
 # Third-party
 import pluggy
@@ -83,9 +83,12 @@ def announce_plugin() -> Union[
 
 
 @hookspec
-def construct_url_from_shorthand(match_dict: Mapping[str, str]) -> Union[str, None]:
+def construct_url_from_shorthand(match_dict: Mapping[str, str]) -> Union[str, Tuple[str, Dict[str, Any]], None]:
     """Construct the proper REST API URL using the given `match_dict`.
 
     This allows users of your plugin to use the bitex short-hand for exchanges,
     when making requests.
+
+    Note that if the matchdict contains data that needs to be send as part of the
+    body, the returned value should be a tuple of `url, body_dict`.
     """
