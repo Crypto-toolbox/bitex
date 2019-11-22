@@ -13,7 +13,7 @@ environment:
 ################################################################################
 
 job_defaults: &job_defaults
-  working_directory: ~/ci
+  working_directory: ~/ci/bitex
   docker:
     - image: circleci/python:3.6.4
 
@@ -55,22 +55,22 @@ commands:
           name: Prepend VirtualEnv to $PATH
           command: echo 'export PATH=/home/circleci/ci/venv/bin:$PATH' >> ${BASH_ENV}
 
+
   lint:
     description: Execute linters
     steps:
       - run:
           name: Run Linters
-          command: |
-            cd ~/ci/bitex
-            tox -e lint
+          command: make lint
+
 
   unit_tests:
     description: Run unittests.
     steps:
       - run:
           name: Run tests
-          command: |
-            tox -e unit-test
+          command: make tests
+
 
   integration_tests:
     description: Run integration tests
@@ -78,7 +78,36 @@ commands:
       - run:
           name: Run tests
           command: |
-            tox -e integration-tests
+            make integration-tests
+
+
+  tag_release:
+    description: Determine and create new Tag
+    steps:
+      - run:
+          command: |
+            if [[ "$(make tag-type)" == "minor"]]; then
+              make tag-feature
+              git push --tags
+            elif [[ "#(make tag-type)" == "patch" ]]; then
+              make tag-patch
+              git push --tags
+            else
+              echo "No tag type was set - commit must start with FEAT or FIX!"
+              echo "Skipping tagging"
+            fi
+
+
+  publish_on_pypi:
+    description: |
+      Package and upload the project to pypi.
+      Requires TWINE_USERNAME, TWINE_PASSWORD, and TWINE_REPOSITORY to be set.
+    steps:
+      - run:
+          command: |
+            flit build
+            twine upload dist/* --non-interactive --skip-existing
+
 
   restore_project_caches:
     description: Restore pip and venv caches, if any.
@@ -114,7 +143,9 @@ commands:
 jobs:
 
   preparation:
-    <<: *job_defaults
+    working_directory: ~/ci
+    docker:
+      - image: circleci/python:3.6.4
     steps:
       - checkout
       - restore_project_caches
@@ -123,6 +154,11 @@ jobs:
           name: Create virtualenv
           command: |
             python -m venv /home/circleci/ci/venv
+
+      - run:
+          name: Install project
+          command:
+            - make install-ci
 
       - persist_to_workspace:
           paths:
@@ -133,55 +169,35 @@ jobs:
     steps:
       - save_caches
 
-
-  # Check the source code using various linters and type checkers.
   static-checks:
     <<: *job_defaults
     steps:
-      - checkout
+      - job_setup
       - lint_step
 
-  # Run the test suite of the package.
   unit-tests:
     <<: *job_defaults
     steps:
-      - checkout
-      - unit_test_step
-
-      - run:
-          name: Run tests
-          command: |
-            tox -e unit-test
+      - job_setup
+      - unit_tests
 
   integration-tests:
     <<: *job_defaults
     steps:
-      - checkout
-      - integration_test_step
-
-  run-test-harness:
-    <<: *job_defaults
-    steps:
-      - checkout
-      - unit_test_step
-      - integration_test_step
-
-  lint-and-test:
-    <<: *job_defaults
-    steps:
-      - checkout
-      - lint_step
-      - unit_test_step
-      - integration_test_step
+      - job_setup
+      - integration_tests
 
   tagging:
     <<: *job_defaults
     steps:
-      - checkout
-      - bump_on_merge
-        name: Bumpversion on merge commits.
-        command: |
-          bump_on_merge.sh
+      - job_setup
+      - tag_release
+
+  publish:
+    <<: *job_defaults
+    steps:
+      - job_setup
+      - publish_on_pypi
 
 ################################################################################
 #                                                                              #
@@ -194,17 +210,26 @@ workflows:
   PR-Workflow:
     <<: *ignore_master
     jobs:
-      - static-checks
+      - preparation
+      - static-checks:
+          requires:
+            - preparation
       - unit-tests
       - integration-tests
 
   Commit-Workflow:
     <<: *master_only
     jobs:
-      # Run linters, checkers and test harnesses against PR branches.
-      - static-checks
-      - unit-tests
-      - integration-tests
+      - preparation
+      - static-checks:
+          requires:
+            - preparation
+      - unit-tests:
+          requires:
+            - preparation
+      - integration-tests:
+          requires:
+            - preparation
       - tagging:
           requires:
           - static-checks
@@ -214,4 +239,7 @@ workflows:
   Release-Workflow:
     <<: *tags_only
     jobs:
-      - deploy-to-pypi
+      - preparation
+      - publish:
+          requires:
+            - preparation
