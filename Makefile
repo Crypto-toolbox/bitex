@@ -1,8 +1,6 @@
 .PHONY: install install-dev install-ci install-test tests lint style black black-check isort isort-check flake8 tag publish
 SHELL := /bin/bash
 
-COMMIT_SUBJECT=FIXTURE
-
 install:
 	pip install .
 
