@@ -1,4 +1,7 @@
 .PHONY: install install-dev tests lint style black black-check isort isort-check flake8 tag publish
+SHELL := /bin/bash
+#COMMIT_SUBJECT=$(git log --format=oneline -n 1 HEAD --format=%s)
+COMMIT_SUBJECT=FIXTURE
 
 install:
 	pip install .
@@ -28,9 +31,13 @@ style: isort black
 
 lint: flake8 black-check isort-check
 
-tag:
-	@echo Detect part to bump
-	@echo Bump detected part
+tag-feature:
+	@echo Bumping ${BUMP_TYPE}
+	bumpversion --dry-run --allow-dirty minor --verbose
+	@echo tag commit
+tag-patch:
+	@echo Bumping ${BUMP_TYPE}
+	bumpversion --dry-run --allow-dirty patch --verbose
 	@echo tag commit
 
 publish: lint tests
