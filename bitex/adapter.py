@@ -15,7 +15,7 @@ from bitex.response import BitexResponse
 class BitexHTTPAdapter(HTTPAdapter):
     """Custom HTTP Adapter for :mod:`Bitex`.
 
-    It replaces :class:`requests.Respopnse` as the default response class when
+    It replaces :class:`requests.Response` as the default response class when
     building the response, with either an adequate plugin-supplied class or
     :mod:`bitex` 's own default :class:`BitexResponse` class.
     """

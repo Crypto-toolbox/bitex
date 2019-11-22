@@ -4,7 +4,7 @@ This serves both as the fall-back default, as well as a reference implementation
 of the hook specs.
 """
 # Built-in
-from typing import Mapping, Tuple, Type, Union
+from typing import Any, Dict, Mapping, Tuple, Type, Union
 
 # Third-party
 import pluggy
@@ -27,7 +27,7 @@ def announce_plugin() -> Union[
 
 
 @hookimpl
-def construct_url_from_shorthand(match_dict: Mapping[str, str]) -> Union[str, None]:
+def construct_url_from_shorthand(match_dict: Mapping[str, str]) -> Union[str, Tuple[str, Dict[str, Any]], None]:
     """Since bitex is exchange-agnostic at its core, we return `None`.
 
     Returning `None` causes :mod:`bitex` to leave the given url untouched and

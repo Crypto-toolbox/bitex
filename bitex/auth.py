@@ -44,7 +44,7 @@ class BitexAuth(requests.auth.AuthBase):
         """Sign the given request.
 
         This must be extended in subclasses as it merely returns the request and
-        does not do any signing / authentication.
+        does not do any signing / authenticating.
 
         :param requests.PreparedRequest request: The prepared request to sign.
         :rtype: requests.PreparedRequest
@@ -55,9 +55,10 @@ class BitexAuth(requests.auth.AuthBase):
     def decode_body(request: BitexPreparedRequest) -> DecodedParams:
         """Decode the urlencoded body of the given request and return it.
 
-        Some signature algorithms require us to use the body. Since the body is
-        already urlencoded by requests.PreparedRequest.prepare(), we need to undo
-        its work before returning the request body's contents.
+        Some signature algorithms require us to use parameters supplied via the
+        request body. Since the body is already urlencoded using
+        :meth:`requests.PreparedRequest.prepare`, we need to undo its work
+        before returning the request body's contents.
 
         We must accommodate for the case that in some cases the body may be a
         JSON encoded string. We expect the parsed JSON to be a dictionary of
@@ -84,5 +85,7 @@ class BitexAuth(requests.auth.AuthBase):
         By default, this is a unix timestamp with millisecond resolution.
 
         converted to a str.
+
+        :rtype: str
         """
         return str(int(round(1000 * time.time())))

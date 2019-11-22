@@ -33,7 +33,7 @@ A minimal, working example::
     >>>session.ticker("exchange_name", "BTCUSD")
     <BitexResponse [200 OK]>
 
-If you'd like to access private endpoint of an API, you'll likely need
+If you'd like to access a private endpoint of an API, you'll likely need
 a custom :class:`.BitexAuth` class, extending its :meth:`.BitexAuth.__call__` method::
 
 
@@ -99,9 +99,8 @@ The previous examples would look as follows, if they used the shorthand instead:
     >>>session.post("SomeExchange:BTCUSD/order/new", params=order_options)
     <BitexResponse [200 OK]>
 
-But the true power of the short-hand is seen when a plugin leverages it. Bitex
-uses :mod:`pluggy` to allow authors to hook right into the parsing of the
-short-hand.
+As long as a plugin for `SomeExchange` is installed, :mod:`bitex` will convert the
+short-hand to a fully-qualified URL under the hood.
 """
 # Home-brew
 from bitex.adapter import BitexHTTPAdapter
@@ -109,4 +108,4 @@ from bitex.auth import BitexAuth
 from bitex.request import BitexPreparedRequest, BitexRequest
 from bitex.response import BitexResponse
 
-__version__ = "3.0.0-dev"
+__version__ = "3.0.0"

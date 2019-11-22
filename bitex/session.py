@@ -1,8 +1,6 @@
 """A customized version of :class:`requests.Session`, tailored to the :mod:`bitex` library."""
 # Built-in
 import logging
-import platform
-import time
 from typing import Optional
 
 # Third-party
@@ -20,22 +18,13 @@ from bitex.plugins import PLUGINS
 from bitex.request import BitexPreparedRequest, BitexRequest
 from bitex.response import BitexResponse
 
-# Preferred clock, based on which one is more accurate on a given system.
-if platform.system() == "Windows":
-    try:  # Python 3.3+
-        preferred_clock = time.perf_counter
-    except AttributeError:  # Earlier than Python 3.
-        preferred_clock = time.clock
-else:
-    preferred_clock = time.time
-
 
 # Init Logging Facilities
 log = logging.getLogger(__name__)
 
 
 class BitexSession(requests.Session):
-    """Custom requests.Session object for keep-alive http connections to API endpoints.
+    """Custom :class:`requests.Session` object for keep-alive http connections to API endpoints.
 
     It expects a :class:`.BitexAuth` instance or subclass thereof on instantiation, and
     assigns it as the default authentication object for any requests made via
