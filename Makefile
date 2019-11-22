@@ -32,12 +32,13 @@ style: isort black
 lint: flake8 black-check isort-check
 
 tag-feature:
-	@echo Bumping ${BUMP_TYPE}
-	bumpversion --dry-run --allow-dirty minor --verbose
+	@echo Tagging new Feature
+	bumpversion minor --verbose
 	@echo tag commit
+
 tag-patch:
-	@echo Bumping ${BUMP_TYPE}
-	bumpversion --dry-run --allow-dirty patch --verbose
+	@echo Tagging new Patch
+	bumpversion patch --verbose
 	@echo tag commit
 
 publish: lint tests
