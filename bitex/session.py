@@ -18,7 +18,6 @@ from bitex.plugins import PLUGINS
 from bitex.request import BitexPreparedRequest, BitexRequest
 from bitex.response import BitexResponse
 
-
 # Init Logging Facilities
 log = logging.getLogger(__name__)
 

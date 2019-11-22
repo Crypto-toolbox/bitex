@@ -108,4 +108,4 @@ from bitex.auth import BitexAuth
 from bitex.request import BitexPreparedRequest, BitexRequest
 from bitex.response import BitexResponse
 
-__version__ = "3.0.0"
+__version__ = "2.0.0"

@@ -83,7 +83,9 @@ def announce_plugin() -> Union[
 
 
 @hookspec
-def construct_url_from_shorthand(match_dict: Mapping[str, str]) -> Union[str, Tuple[str, Dict[str, Any]], None]:
+def construct_url_from_shorthand(
+    match_dict: Mapping[str, str]
+) -> Union[str, Tuple[str, Dict[str, Any]], None]:
     """Construct the proper REST API URL using the given `match_dict`.
 
     This allows users of your plugin to use the bitex short-hand for exchanges,

@@ -27,7 +27,9 @@ def announce_plugin() -> Union[
 
 
 @hookimpl
-def construct_url_from_shorthand(match_dict: Mapping[str, str]) -> Union[str, Tuple[str, Dict[str, Any]], None]:
+def construct_url_from_shorthand(
+    match_dict: Mapping[str, str]
+) -> Union[str, Tuple[str, Dict[str, Any]], None]:
     """Since bitex is exchange-agnostic at its core, we return `None`.
 
     Returning `None` causes :mod:`bitex` to leave the given url untouched and
