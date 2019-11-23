@@ -35,6 +35,8 @@ style: isort black
 
 lint: flake8 black-check isort-check
 
+checks: lint tests
+
 tag-type:
 	@bash .circleci/tag_type.sh
 
