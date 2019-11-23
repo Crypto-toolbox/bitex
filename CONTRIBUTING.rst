@@ -5,12 +5,12 @@ Github Issues - Bug Reports
     You found a bug and would like to see it fixed - alright then! Make sure to
     include the following:
 
-        - Your Python and OS version
-        - A `pip freeze` of the environment with which you were able to
-            reproduce the bug consistently
-        - Any logs you may have (make sure to set your `logging` level to `logging.DEBUG`)
-        - A description of the expected behaviour
-        - A description of the actual behaviour (as witnessed from your account)
+    - Your Python and OS version
+    - A `pip freeze` of the environment with which you were able to
+        reproduce the bug consistently
+    - Any logs you may have (make sure to set your `logging` level to `logging.DEBUG`)
+    - A description of the expected behaviour
+    - A description of the actual behaviour (as witnessed from your account)
 
     All of these are **required** before work on a bug fix can be started.
 
@@ -19,7 +19,7 @@ Github Issues - Feature Requests
     welcome to submit a feature request on the GitHub issue tracker.
     When you do, be sure to include the following details:
 
-    - What is the current state (e.g. how do things work at the moment from your perspective)
+    - What is the current state (e.g. how do understand things work at the moment)
     - What is the desired state (e.g. your feature description)
     - One or more User Stories which can be used to make sure the feature was
         implemented as you intended.
