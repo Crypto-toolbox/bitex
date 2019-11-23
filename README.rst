@@ -34,9 +34,9 @@ Installation is simple, as it should be::
     pip install bitex
 
 BitEx, by default, does not come with any extensions. But fret not! Plugins for
-exchanges are available via pip as well::
+exchanges are available via pip as well, under the `bitex` namespace like so::
 
-    pip install bitex-kraken
+    pip install bitex-${EXCHANGE_NAME}
 
 
 Qickstart
@@ -120,3 +120,34 @@ After installing, requesting data is easy::
         (12432153, "open":"3796.20000"),
     ]
 
+Development
+===========
+
+If you're looking to work on or with :mod:`bitex`, you'll want the development
+environment setup. We've supplied a few `make` targets to make your life easier::
+
+    # Install bitex and its development requirements
+    make install-dev
+
+.. note::
+
+    As the project currently uses :mod:`flit` as a packaging backend, there is no
+    support for editable installs (`pip install -e`) as of now.
+
+We also supply targets to run code formatters, linters and tests::
+
+    # Run code formatters
+    make style
+
+    # Run linters
+    make lint
+
+    # Run the test suite
+    make tests
+
+    # Run linters and tests
+    make checks
+
+If you'd like to contribute to the project, please have a look at :doc:`CONTRIBUTING.rst`
+on some general pointers about how development takes place, what the expected
+steps of you are and what requirements we have to merge a PR.
